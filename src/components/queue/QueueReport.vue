@@ -63,47 +63,50 @@
       <div>
         <h5 class="mr-2"><b>{{$t('queue.reservation')}}</b></h5>
         <div class="flex align-items-center gap-2">
-          <PrimeCalendar
-              class=""
-              dateFormat="dd.mm.yy"
-              selectionMode="single"
-              v-model="selectDateReserve"
-              :placeholder="$t('common.date')"
-              @date-select="getTimes(calendarId, selectDateReserve)"
-              :monthNavigator="true"
-              :yearNavigator="true"
-              yearRange="2000:2030"
-              :showIcon="true"
-          />
+
+          <Dropdown @change="came" v-model="selectedType" :options="reservations" option-label="name" :onselect="null" option-value="value" :placeholder="$t('common.select')"
+                    class=""/>
           <Dropdown @change="changeQueues" v-model="selectedQueue" :options="queues" option-label="queueNamekz" :placeholder="$t('common.select')"
-                    class="p-inputtext-lg "/>
+                    class=""/>
           <Dropdown v-if="selectQueue" @change="changeQueues2" v-model="selectedQueue2" :options="queues2" option-label="queueNamekz" :placeholder="$t('common.select')"
-                    class="p-inputtext-lg "/>
+                    class=""/>
           <Dropdown v-if="selectQueue2" @change="changeQueues3" v-model="selectedQueue3" :options="queues3" option-label="queueNamekz" :placeholder="$t('common.select')"
-                    class="p-inputtext-lg "/>
-          <div class="ml-6">
-            <Checkbox @change="came(false)" :binary="true" />
-            <label class="mr-2">{{ $t('queue.reservation') }}</label>
-          </div>
-          <div class="">
-            <Checkbox v-model="cameModel" @change="came(true)" :binary="true" />
-            <label class="mr-2">{{ $t('queue.came') }}</label>
-          </div>
+                    class=""/>
         </div>
       </div>
+      <div>
+      <PrimeCalendar
+          class=""
+          dateFormat="dd.mm.yy"
+          selectionMode="single"
+          v-model="reservParams.date"
+          :placeholder="$t('common.date')"
+          @date-select="getTimes()"
+          :monthNavigator="true"
+          :yearNavigator="true"
+          yearRange="2000:2030"
+          :showIcon="true"
+      />
       <Button
           icon="pi pi-print"
-          class="p-button-primary mr-2 mr-4 no-print"
+          class="p-button-primary ml-4 mr-4 no-print"
           @click="printWindow"/>
     </div>
+    </div>
     <div class="card">
-      <DataTable :value="timesList" tableStyle="min-width: 50rem">
+      <DataTable :value="timesList" tableStyle="min-width: 50rem" :loading="loadingTime">
         <template #empty> {{ $t('common.noData') }}</template>
         <Column field="revision_time" :header="$t('queue.time')"></Column>
         <Column field="reservision_number" :header="$t('queue.number')"></Column>
         <Column field="full_name" :header="$t('common.fullName')"></Column>
         <Column field="phone_number" :header="$t('contact.phone')"></Column>
         <Column field="email" :header="$t('contact.email')"></Column>
+        <Column field="state" :header="$t('common.status')">
+          <template #body="{ data }">
+            <span v-if="data.state === 3">{{ $t("queue.notCome") }}</span>
+            <span v-if="data.state === 1">{{ $t("queue.came") }}</span>
+          </template>
+        </Column>
       </DataTable>
     </div>
     </template>
@@ -123,7 +126,7 @@ export default {
       reports:[],
       timesList:[],
       selectDate: null,
-      selectDateReserve: new Date(),
+      //selectDateReserve: new Date(),
       queues: [],
       queues2: [],
       queues3: [],
@@ -135,6 +138,8 @@ export default {
       reservParams: {
         id: null,
         date: null,
+        all_arrived: true,
+        is_arrived: null
       },
       selectedQueue: '',
       selectedQueue2: '',
@@ -143,6 +148,10 @@ export default {
       selectQueue2: false,
       reserveBool: false,
       cameModel: null,
+      notComeModel: null,
+      loading: false,
+      loadingTime: false,
+      selectedType: 2
     }
   },
   methods: {
@@ -190,27 +199,28 @@ export default {
       this.getTimes()
     },
     getTimes() {
+      this.loadingTime = true
       this.reservParams.id = this.queueID
-      this.reservParams.date = this.selectDateReserve
+      //this.reservParams.date = this.selectDateReserve.toISOString().substring(0, 10) + 'T00:00:00Z'
       api
           .post("/queue/getQueueAvailableInfo", this.reservParams, {
             headers: getHeader(),
           })
           .then((response) => {
-            if (response.data) {
-              response.data.forEach(entry => {
-                const t = new Date(entry.revision_time).toISOString().substring(11, 16);
-                entry.revision_time = t;
-              });
-              response.data.map(e => {
-                e.full_name = e.last_name + ' ' + e.first_name
-              });
-              this.timesList = response.data
-            }
+            this.timesList = response.data
+              if(this.timesList){
+                this.timesList.forEach(entry => {
+                  entry.revision_time = new Date(entry.revision_time).toISOString().substring(11, 16);
+                });
+                this.timesList.map(e => {
+                  e.full_name = e.last_name + ' ' + e.first_name
+                });
+              }
+            this.loadingTime = false
           })
           .catch((error) => {
             console.log(error)
-            this.loading = false;
+            this.loadingTime = false;
             this.$toast.add({
               severity: "error",
               summary: this.$t("smartenu.loadError") + ":\n" + error,
@@ -265,9 +275,20 @@ export default {
       return hours+':'+min+':'+Math.round(sec);
     },
     came(data){
-      this.reservParams.is_arrived = data
+      if(data.value === 0){
+        this.reservParams.is_arrived = false
+        this.reservParams.all_arrived = null
+      }
+      if(data.value === 1){
+        this.reservParams.is_arrived = true
+        this.reservParams.all_arrived = null
+      }
+      if(data.value === 2){
+        this.reservParams.all_arrived = true
+        this.reservParams.is_arrived = null
+      }
       this.getTimes()
-    }
+    },
     // padZero(string){
     //   return ("00" + string).slice(-2);
     // },
@@ -286,9 +307,17 @@ export default {
   async created(){
     this.getQueueReport(this.queueID)
     this.queues = await this.getQueue(this.queueID)
-    this.getTimes(this.queueID)
+    this.getTimes()
   },
-
+  computed: {
+    reservations(){
+      return [
+        {	name:	this.$t("common.all"), value: 2},
+        {	name:	this.$t("queue.came"), value: 1},
+        {	name:	this.$t("queue.notCome"), value: 0},
+      ]
+    }
+  }
 };
 </script>
 

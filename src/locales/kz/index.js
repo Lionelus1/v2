@@ -859,6 +859,7 @@ export default {
         day: "Күні",
         time: "Уақыты",
         came: "Келді",
+        notCome: "Келмеді",
         liveQueue: "Кәдімгі кезек",
         choiceTime: "Уақыт таңдау бойынша",
         errorFreeOperators: "Бұл уақытқа орын қалған жоқ басқа уақытты таңдаңыз!",

@@ -1,6 +1,5 @@
 <template>
     <div class="card">
-      <button id="playAudioButton" style="display: none;">Play Audio</button>
       <Sidebar  v-model:visible="visible" :baseZIndex="10000" :showCloseIcon="!findRole(null, 'queue_tv')" position="full" style="background-color: grey; overflow: hidden;" >
       <div>
         <div class="text-center" style="margin-top: 0;margin-bottom: 20px;">          
@@ -98,22 +97,13 @@ export default {
       .then(res => {
         this.audioSrc = `data:audio/mp3;base64,${res.data}`
         this.globAudio = new Audio(this.audioSrc);
-        document.getElementById('playAudioButton').click();
+        this.globAudio.play()
       }).catch(error => {
         console.log(error);
       })
-      document.getElementById('playAudioButton').addEventListener('click', function() {
-        if (this.globAudio) {
-          this.globAudio.play().catch(error => {
-            console.log('Playback failed:', error);
-          });
-        } else {
-          console.log('Audio is not yet loaded.');
-        }
-      });
     },
     audioEnded() {
-      this.$refs.audioq.style.display = "none";
+      //this.$refs.audioq.style.display = "none";
       this.audioSrc = null;
     },
 

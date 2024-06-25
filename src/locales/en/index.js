@@ -1292,6 +1292,7 @@ export default {
         day: "Day",
         time: "Time",
         came: "Came",
+        notCome: "Not come",
         liveQueue: "Queue",
         choiceTime: "Choice of time",
         errorFreeOperators: "It is no longer possible to book for this time, please choose another time!",
