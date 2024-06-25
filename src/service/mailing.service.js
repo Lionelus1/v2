@@ -1,10 +1,12 @@
 import api from "./api";
-import {getHeader, smartEnuApi} from "../config/config";
-
+import { getHeader } from "../config/config";
 
 export class MailingService {
+    mailing(data) {
+        return api.post("/mailing/mailing", data, { headers: getHeader() });
+    }
 
-    getMailing(params) {
-        return api.post("/mailing/mailing", params, {headers: getHeader()});
+    getMailingTemplateByID(templateId) {
+        return api.post("/mailing/getMailingTemplateByID", { templateID: templateId }, { headers: getHeader() });
     }
 }

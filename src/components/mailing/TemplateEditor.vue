@@ -38,6 +38,7 @@
 
 <script>
 import {fileRoute, smartEnuApi} from "@/config/config";
+import {MailingService} from "@/service/mailing.service"
 import { useToast } from "primevue/usetoast";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import { FileService } from "@/service/file.service";
@@ -68,6 +69,7 @@ export default {
       main_image_file: '',
       main_image_file_url: '',
       main_image_id: 0,
+      mailingService: new MailingService(),
     };
   },
   methods: {
@@ -116,34 +118,19 @@ export default {
         AdditionalFilePath: this.additional_file_path,
       };
 
-      fetch(`${smartEnuApi}/mailing/mailing`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(mailingData),
-      })
+      this.mailingService.mailing(mailingData)
           .then(response => {
-            if (!response.ok) {
+            if (!response.status === 200) {
               throw new Error(`HTTP error! status: ${response.status}`);
             }
-            return response.text();
+            this.$router.push('/mailing');
+            return response.json();
           })
-          .then(text => {
-            try {
-              const data = JSON.parse(text);
-              console.log('Success:', data);
-              this.$router.push('/mailing');
-            } catch (error) {
-              console.error('Error parsing JSON:', error);
-              this.toast.add({
-                severity: "error",
-                detail: this.$t('common.errorParsingResponse'),
-                life: 3000,
-              });
-            }
+          .then(data => {
+            console.log('Success:', data);
+            this.$router.push('/mailing');
           })
-          .catch((error) => {
+          .catch(error => {
             console.error('Error:', error);
             this.toast.add({
               severity: "error",
@@ -154,7 +141,6 @@ export default {
     },
     handleEditorClick() {
       if (!this.isDefaultTextRemoved) {
-        // Сохраняем текущую позицию курсора
         const selection = window.getSelection();
         if (selection.rangeCount > 0) {
           this.savedRange = selection.getRangeAt(0);
@@ -184,14 +170,10 @@ export default {
     this.emails = JSON.parse(this.$route.params.emails || '[]');
 
     const templateId = parseInt(this.$route.params.templateId, 10);
-    fetch(`${smartEnuApi}/mailing/getMailingTemplateByID`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ templateID: templateId }),
-    })
-        .then(response => response.json())
+    this.mailingService.getMailingTemplateByID(templateId)
+        .then(response => {
+          return response.data
+        })
         .then(data => {
           if (data.template_content_ru && data.template_content_ru.Valid) {
             this.templateContent = data.template_content_ru.String;
