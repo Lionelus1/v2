@@ -122,7 +122,7 @@
       <Textarea v-model="revisionText" autoResize rows="5" cols="30" />
     </div>
     <template #footer>
-      <Button class="p-button-danger" :disabled="this.needMySign() || !revisionText" :label="$t('common.revision')" @click="revision()" />
+      <Button class="p-button-danger" :disabled="!revisionText" :label="$t('common.revision')" @click="revision()" />
       <Button :label="$t('common.cancel')" @click="close('revisionDialog')" />
     </template>
   </Dialog>
