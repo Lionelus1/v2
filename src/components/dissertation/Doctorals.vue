@@ -92,7 +92,7 @@
         </Column>
         <Column field="meetingTime" :sortable="true" :header="$t('dissertation.meetingTime')">
           <template #body="slotProps">
-            {{ (slotProps.data.meetingTime != null ? getLongDateString(slotProps.data.meetingTime) : "") }}
+            {{ (slotProps.data.meetingTime != null ? getLongDateString(slotProps.data.meetingTime, false) : "") }}
           </template>
         </Column>
         <Column field="dissertation.language" :header="$t('dissertation.defenseLang')">
@@ -1339,7 +1339,7 @@ export default {
     upFirstLetter,
     findRole: findRole,
     downloadFile: downloadFile,
-    getLongDateString: formatDate,
+    getLongDateString: getLongDateString,
     getShortDateString: getShortDateString,
     deleteMember(memeberId) {
       this.$confirm.require({
