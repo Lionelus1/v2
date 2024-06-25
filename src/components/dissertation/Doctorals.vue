@@ -1021,7 +1021,7 @@ import html2canvas from "html2canvas";
 import * as jsPDF from "jspdf";
 import { getLongDateString, getShortDateString } from "@/helpers/helper";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
-import { upFirstLetter } from "../../helpers/HelperUtil";
+import {formatDate, upFirstLetter} from "../../helpers/HelperUtil";
 import { DissertationService } from "@/service/dissertation.service";
 import AddMemberDialog from "@/components/dissertation/AddMemberDialog.vue";
 import { DocService } from "@/service/doc.service";
@@ -1339,7 +1339,7 @@ export default {
     upFirstLetter,
     findRole: findRole,
     downloadFile: downloadFile,
-    getLongDateString: getLongDateString,
+    getLongDateString: formatDate,
     getShortDateString: getShortDateString,
     deleteMember(memeberId) {
       this.$confirm.require({
