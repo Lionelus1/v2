@@ -125,7 +125,6 @@ export default {
               throw new Error(`HTTP error! status: ${response.status}`);
             }
             this.$router.push('/mailing');
-            return response.json();
           })
           .then(data => {
             console.log('Success:', data);

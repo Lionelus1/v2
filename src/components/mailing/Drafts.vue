@@ -12,7 +12,10 @@
       </Column>
       <Column field="categories" :header="$t('mailing.categories')">
         <template #body="slotProps">
-          <span v-for="role in slotProps.data.Roles" :key="role.id">{{ role.ru }}</span>
+          <span v-if="slotProps.data.Roles">
+            {{ slotProps.data.Roles.map(role => role.ru).join(', ') }}
+          </span>
+          <span v-else>-</span>
         </template>
       </Column>
       <Column field="author" :header="$t('mailing.author')">
