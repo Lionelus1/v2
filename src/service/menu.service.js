@@ -28,7 +28,7 @@ export class MenuService {
                     {
                         label: $t('educomplex.title'), 
                         icon: 'pi pi-fw pi-folder', 
-                        to: '/documents/catalog/educomplex'
+                        to: '/documents/catalog/educomplex/' + Enum.DocType.EduComplex
                     },
                     {
                         label: $t('course.certificate.title'),
@@ -39,6 +39,17 @@ export class MenuService {
                         label: $t('postaccmonrep.title'),
                         icon: 'pi pi-fw pi-folder',
                         to: '/documents/catalog/postaccmonrep'
+                    },                   
+                    {
+                        label: $t('workPlan.reports'),
+                        icon: 'pi pi-fw pi-chart-line',
+                        items: [
+                            {
+                                label: $t('common.sacReportMenuTitle'),
+                                icon: 'pi pi-fw pi-folder',
+                                to: '/documents/catalog/educomplex/' + Enum.DocType.StateAttestationCommission,
+                            },
+                        ]
                     },
                 ]
             },

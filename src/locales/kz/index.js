@@ -360,6 +360,7 @@ export default {
         deny: "Бас тарту",
         doYouWantApprove: "Сіз шынымен келісім-шартқа келіскіңіз келе ме?",
         changeApprovals: "Бекітуші тұлғаларды ауыстыру",
+        sacReportMenuTitle: 'Мемлекеттік аттестаттау комиссиясының есебі'
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -690,7 +691,9 @@ export default {
         modulname: "Модульдің коды және атауы:",
         eduprogram: "Білім беру бағдарламасының коды және атауы:",
         discipline: "Пәннің коды және атауы:",
-        logo: "Логотип"
+        logo: "Логотип",
+        academicyear: "Оқу жылы",
+        saceduprogram: "Білім беру бағдарламасының коды және атауы:",
     },
     ncasigner: {
         qrSinging: "Құжатқа \"eGov mobile\" мобильдік қосымшасының көмегімен төмендегі QR кодты сканерлеу арқылы да қол қоя аласыз:",
@@ -1961,5 +1964,6 @@ export default {
             enteredIncorrectly: 'Қате енгіздіңіз'
         },
 
-    }
+    },
+
 }

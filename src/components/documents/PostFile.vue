@@ -44,6 +44,14 @@
                 </template>
               </Dialog>
             </div>
+            <div v-else-if="param.name==='saceduprogram'">
+              <SpecialitySearch :style="'height:38px'" class="pt-1" :editMode="true"
+                :educationLevel="Enums.EducationLevel.Doctorate" v-model="param.value" id="speciality">
+              </SpecialitySearch>
+            </div>
+            <div  v-else-if="param.name==='academicyear'">
+              <PrimeCalendar v-model="param.value" selectionMode="range" dateFormat="yy"  view="year" :manualInput="false" />
+            </div>
             <InputText v-else  v-model="param.value" type="text" />
             <small class="p-error" v-if="validation.param">{{ $t("common.requiredField") }}</small>
           </div>
@@ -98,9 +106,11 @@ import Files from "@/components/documents/Files.vue"
 import {smartEnuApi, getHeader, getFileHeader, fileRoute} from "@/config/config";
 import DepartmentList from "../smartenu/DepartmentList.vue"
 import Enum from "@/enum/docstates/index";
+import SpecialitySearch from "../smartenu/speciality/specialitysearch/SpecialitySearch.vue";
+import Enums from "@/enum/docstates/index";
 
 export default {
-    components: {DepartmentList,Files},
+    components: {DepartmentList,Files, SpecialitySearch},
     data() {
       return {
         file: this.modelValue,
@@ -124,7 +134,8 @@ export default {
             approveDate: false,
             author: false,
             catalog: false,
-        }
+        },
+        Enums: Enums
       }
     },
     props: {
@@ -149,7 +160,32 @@ export default {
       updateValue,
     };
   },
+  watch: {
+    'file.params': {
+      handler(params) {
+        params.forEach(param => {
+          if (param.name === 'saceduprogram') {
+            this.selectedSpecialities = param.value;
+          }
+          if (param.name === 'academicyear') {
+            if (param && (param.value === undefined || param.value === null)) {
+              param.value = [new Date(new Date().getFullYear(), 0)];
+            }
+          }
+        });
+      },
+      deep: true,
+      immediate: true
+    },
+    selectedSpecialities(newVal) {
+      const param = this.file.params.find(p => p.name === 'saceduprogram');
+      if (param) {
+        param.value = newVal;
+      }
+    },
+  },
   methods: {
+
     notValid() {
       this.validation.namekz = this.file.namekz === null || this.file.namekz === ''
       this.validation.nameru = this.file.nameru === null || this.file.nameru === ''

@@ -1,7 +1,14 @@
 <template>
+  
   <ProgressBar v-if="loading" mode="indeterminate" class="progress-bar"/>
+  <div v-if="docType == eduComplexDocType">
     <h3 v-if="screen.isLarge">{{ $t("educomplex.title") }}</h3>
     <h3 v-else>{{ $t("educomplex.title") }}</h3>
+  </div>
+  <div v-if="docType == attestationDocReportType">
+    <TitleBlock :title="$t('common.sacReportMenuTitle')" :show-back-button="true" />
+  </div>
+   
   <BlockUI :blocked="loading" class="card">
     <div ref="outerDiv" class="flex flex-grow-1" :class="{ 'flex-column': !screen.isLarge }">
       <div :class="'flex flex-column' + getDepFlexGrow()">
@@ -252,11 +259,15 @@
           </template>
         </Dropdown>
       </div>
-      <div class="field">
+      <div class="field" v-if="docType == eduComplexDocType">
         <label>{{ $t('educomplex.years') }}</label>
         <PrimeCalendar v-model="filter.years" dateFormat="yy"
           selectionMode="multiple" view="year" :minDate="new Date(2020, 0)" 
           :maxDate="new Date(new Date().getFullYear() + 5, 0)"/>
+      </div>
+      <div class="field" v-if="docType == attestationDocReportType">
+        <label>{{ $t('educomplex.years') }}</label>
+        <PrimeCalendar v-model="filter.years" dateFormat="yy" selectionMode="range" view="year" />
       </div>
       <div class="field">
         <div class="flex align-items-center">
@@ -381,6 +392,9 @@ export default {
           value: "revision"
         }
       ],
+      docType: this.$route.params.docType,
+      eduComplexDocType: Enum.DocType.EduComplex,
+      attestationDocReportType: Enum.DocType.StateAttestationCommission
     }
   },
   computed: {
@@ -446,7 +460,19 @@ export default {
     this.$emit('apply-flex', false)
     window.removeEventListener('resize', this.checkScreenSize);
   },
+  watch: {
+    '$route.params.docType'(newDocType) {
+      this.docType = newDocType;
+      this.reloadPage()
+    },
+  },
   methods: {
+    reloadPage() {
+      if (this.$route.params.docType === undefined) {
+        this.docType = 2
+      }
+      this.getFiles()
+    },
     showMessage(msgtype, message, content) {
       this.$toast.add({
         severity: msgtype,
@@ -615,7 +641,8 @@ export default {
           }
       }];
 
-      this.stages = [
+      if(this.docType && this.docType == this.Enum.DocType.EduComplex){
+        this.stages = [
         {
           stage: 1,
           users: [this.loginedUser],
@@ -669,6 +696,39 @@ export default {
           },
         }
       ];
+      }
+      if(this.docType && this.docType == this.Enum.DocType.StateAttestationCommission){
+        this.stages = [
+        {
+          stage: 1,
+          users: null,
+          titleRu: "Председатель",
+          titleKz: "Төраға",
+          titleEn: "Chairman",
+          certificate: {
+            namekz: "Жеке тұлғаның сертификаты",
+            nameru: "Сертификат физического лица",
+            nameen: "Certificate of an individual",
+            value: "individual"
+          },
+        },
+        {
+          stage: 2,
+          users: null,
+          titleRu: "Декан",
+          titleKz: "Декан",
+          titleEn: "Dean",
+          certificate: {
+            namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+            nameru: "Для внутреннего документооборота (ГОСТ)",
+            nameen: "For internal document management (GOST)",
+            value: "internal"
+          },
+        }
+      ];
+      }
+
+     
     },
     clearNewFile(file) {
       if (file) {
@@ -683,8 +743,32 @@ export default {
 
         return
       }
+      if(this.docType && this.docType == this.Enum.DocType.StateAttestationCommission){
+          this.newFile = {
+          id: null,
+          namekz: "",
+          nameru: "",
+          nameen: "",
+          lang: {name:"kz", value: 0},
+          docType: this.Enum.DocType.StateAttestationCommission,
+          departmentID: this.currentDepartment.id,
+          params: [
+          {
+            name: "saceduprogram",
+            value: null,
+            description: "saceduprogram",
+          },
+          {
+            name: "academicyear",
+            value: null,
+            description: "academicyear",
+          },
+        ],
+        } 
 
-      this.newFile = {
+      }
+      if(this.docType && this.docType == this.Enum.DocType.EduComplex){
+        this.newFile = {
         id: null,
         namekz: "",
         nameru: "",
@@ -701,7 +785,7 @@ export default {
           {
             name: "eduprogram",
             value: null,
-            description: "білім беру баағдарламасы атауы",
+            description: "білім беру бағдарламасы атауы",
           },
           {
             name: "discipline",
@@ -709,7 +793,14 @@ export default {
             description: "discipline",
           },
         ],
+      
+    
+      } 
       }
+      
+
+
+
     },
     setDocFilter() {
       this.docFilter = {
@@ -813,13 +904,13 @@ export default {
 
         return
       }
-
+      this.loading = true
       this.fileTableLoading = true
 
       api.post('/documents', {
         page: this.filePage,
         rows: this.fileRows,
-        docType: this.Enum.DocType.EduComplex,
+        docType: parseInt(this.docType, 10),
         departmentId: this.filter.global ? null : this.currentDepartment.id,
         filter: this.docFilter,
       }, { 
@@ -830,6 +921,7 @@ export default {
         this.currentFile = null
 
         this.fileTableLoading = false
+        this.loading = false
       }).catch(err => {
         this.files = []
         this.totalFiles = 0
@@ -845,6 +937,7 @@ export default {
         }
 
         this.fileTableLoading = false
+        this.loading = false
       })
     },
     downloadFile(uuid, filepath) {

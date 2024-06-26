@@ -362,6 +362,7 @@ export default {
         deny: "Отказать",
         doYouWantApprove: "Вы действительно хотите согласовать договор?",
         changeApprovals: "Замена согласующих лиц",
+        sacReportMenuTitle: 'Отчеты Государственной аттестационной комиссии'
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -692,7 +693,9 @@ export default {
         modulname: "Код и наименование модуля:",
         eduprogram: "Код и наименование образовательной программы:",
         discipline: "Код и наименование дисциплины:",
-        logo: "Логотип"
+        logo: "Логотип",
+        academicyear: "Академический год",
+        saceduprogram: "Код и наименование образовательной программы:",
     },
     ncasigner: {
         chooseFile: "Выберите файл",
