@@ -7,6 +7,7 @@ import { smartEnuApi } from "@/config/config";
 import {useI18n} from "vue-i18n";
 import {useToast} from "primevue/usetoast";
 import {useRoute, useRouter} from "vue-router";
+import {MailingService} from "@/service/mailing.service";
 const {t, locale} = useI18n()
 
 // const menu = ref([]);
@@ -14,6 +15,7 @@ const route = useRoute()
 const router = useRouter()
 const description = ref("");
 const toast = useToast();
+const mailingService = new MailingService()
 let selectedCategories = ref()
 let emails = ref()
 let templateId = ref()
@@ -21,9 +23,10 @@ const mailingId = ref(route.params.id)
 
 onMounted(async () => {
   try {
-    const response = await axios.post(`${smartEnuApi}/mailing/getMailingByID`, {
-        mailingId: parseInt(route.params.id, 10),
-    });
+    const response = await mailingService.getMailingByID(parseInt(route.params.id, 10));
+    if (response.status !== 200) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     selectedCategories.value = Array.isArray(response.data.categoryIds) ? response.data.categoryIds : [];
     emails.value = JSON.parse(response.data.emails || '[]');
     description.value = response.data.description;
@@ -34,11 +37,12 @@ onMounted(async () => {
 });
 
 const categories = [
-  { id: 1, nameen: 'Контрагенты', namekz: 'білім алушы', nameru: 'Контрагенты' },
+  { id: 86, nameen: 'counterparty', namekz: 'Контрагенттер', nameru: 'Контрагенты' },
   { id: 19, nameen: 'personal', namekz: 'білім алушы', nameru: 'Сотрудники' },
   { id: 57, nameen: 'individual_entrepreneur', namekz: 'білім алушы', nameru: 'Частные лица' },
   { id: 20, nameen: 'student', namekz: 'білім алушы', nameru: 'Обучающиеся' },
   { id: 83, nameen: 'others', namekz: 'білім алушы', nameru: 'Другое' },
+  { id: 85, nameen: 'graduate', namekz: 'түлектер', nameru: 'Выпускники' },
 ];
 
 const menu = computed(() => {

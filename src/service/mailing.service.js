@@ -9,4 +9,8 @@ export class MailingService {
     getMailingTemplateByID(templateId) {
         return api.post("/mailing/getMailingTemplateByID", { templateID: templateId }, { headers: getHeader() });
     }
+
+    getMailingByID(mailingId) {
+        return api.post("/mailing/getMailingByID",{ mailingId: mailingId }, {headers: getHeader() });
+    }
 }
