@@ -983,7 +983,16 @@ export default {
         noLunch: "Түскі үзіліссіз",
         withoutWeekend: "Демалыссыз"
     },
-
+    mailing: {
+        title: "Атауы",
+        categories: "Санаттар",
+        author: "Автор",
+        dateAndTime: "Күні мен уақыты",
+        deletedSuccessfully: "Сәтті жойылды",
+        deleteFailed: "Жою сәтсіз аяқталды",
+        unknownSender: "Белгісіз жіберуші",
+        invalidSenderData: "Жіберушінің жарамсыз деректері",
+    },
     dissertation: {
         title: "Диссертациялық кеңес",
         council: {

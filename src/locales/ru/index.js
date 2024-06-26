@@ -914,7 +914,11 @@ export default {
         title: "Наименование",
         categories: "Категории",
         author: "Автор",
-        dateAndTIme: "Дата и время"
+        dateAndTIme: "Дата и время",
+        deletedSuccessfully: "Удалено успешно",
+        deleteFailed: "Удалить не удалось",
+        unknownSender: "Неизвестный отправитель",
+        invalidSenderData: "Неверные данные отправителя",
     },
     vaccination: {
         title: "Вакцинация",
