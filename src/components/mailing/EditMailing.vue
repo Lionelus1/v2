@@ -28,7 +28,7 @@ onMounted(async () => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     selectedCategories.value = Array.isArray(response.data.categoryIds) ? response.data.categoryIds : [];
-    emails.value = JSON.parse(response.data.emails || '[]');
+    emails.value = response.data.emails || [];
     description.value = response.data.description;
     templateId.value = response.data.templateId;
   } catch (error) {
@@ -39,10 +39,10 @@ onMounted(async () => {
 const categories = [
   { id: 86, nameen: 'counterparty', namekz: 'Контрагенттер', nameru: 'Контрагенты' },
   { id: 19, nameen: 'personal', namekz: 'Қызметкерлер', nameru: 'Сотрудники' },
-  { id: 57, nameen: 'individual_entrepreneur', namekz: 'білім алушы', nameru: 'Частные лица' },
-  { id: 20, nameen: 'student', namekz: 'білім алушы', nameru: 'Обучающиеся' },
+  { id: 57, nameen: 'individual_entrepreneur', namekz: 'Жеке тұлға', nameru: 'Частные лица' },
+  { id: 20, nameen: 'student', namekz: 'Білім алушы', nameru: 'Обучающиеся' },
   { id: 83, nameen: 'others', namekz: 'Басқа', nameru: 'Другое' },
-  { id: 85, nameen: 'graduate', namekz: 'түлектер', nameru: 'Выпускники' },
+  { id: 85, nameen: 'graduate', namekz: 'Түлектер', nameru: 'Выпускники' },
 ];
 
 const menu = computed(() => {
@@ -102,18 +102,12 @@ const sendMailing = (statusID) => {
     statusID: statusID
   };
 
-  fetch(`${smartEnuApi}/mailing`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(mailingData),
-  })
+  mailingService.mailing(mailingData)
       .then(response => {
-        if (!response.ok) {
+        if (!response.status === 200) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return response.text();
+        router.push('/mailing');
       })
       .then(text => {
         try {

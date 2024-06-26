@@ -37,7 +37,7 @@
         <template #body="slotProps">
           <span>
             {{
-              slotProps.data.Notification.createdDate
+              slotProps.data.Notification.updatedDate
             }}
           </span>
         </template>
@@ -87,12 +87,6 @@ export default {
             this.loading = false;
           })
           .catch((err) => {
-            this.$toast.add({
-              severity: "error",
-              detail: this.$t("roleControl.noResult"),
-              life: 3000,
-            });
-
             this.loading = false;
           });
     },
