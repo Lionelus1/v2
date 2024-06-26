@@ -83,6 +83,7 @@ export default {
         yourVoice: "Ваш голос: ",
         filterReset: 'Сбросить фильтр',
         graduate: "Выпускник",
+        graduates:"Выпускники",
         faculty: "Факультет",
         forStudentsAndGraduates: 'Для студентов и выпускников',
         cafedra: "Кафедра",
@@ -211,6 +212,8 @@ export default {
         myAddress: 'Адрес',
         creationAndEditing:'Создание и редактирование',
         users:'Пользователи',
+        group: 'Группа',
+        paymentForm: 'Форма оплаты',
         states: {
             submitted: "Подана",
             created: "создан",
@@ -1774,6 +1777,8 @@ export default {
         specialization: 'Специализация',
         groupEP: 'Группа образовательных программ',
         ssdfgsdfg: 'sdfgsdfg',
+        epg: 'Специальность/ГОП',
+        ep: 'Специализация/ОП'
     },
     helpDesk: {
         title: 'Мои заявки',

@@ -78,6 +78,7 @@ export default {
         voteKeyword: "Дауысты тексеру кілті",
         pdfFormat: "pdf форматында",
         graduate: "Түлек",
+        graduates: "Түлектер",
         faculty: "Факультет",
         forStudentsAndGraduates: 'Студенттер мен түлектерге',
         filterReset: 'Сүзгіні қайтару',
@@ -210,6 +211,8 @@ export default {
         myAddress: 'Мекенжайы',
         creationAndEditing:'Сақтау және өңдеу',
         users:'Пайдаланушылар',
+        group: 'Топ',
+        paymentForm: 'Төлем нысаны',
         states: {
             submitted: "Берілген",
             created: "Құрылды",
@@ -1790,6 +1793,8 @@ export default {
         specialization: 'Мамандандыру',
         groupEP: 'ББ тобы',
         ssdfgsdfg: 'sdfgsdfg',
+        epg: 'Мамандық/БББТ',
+        ep: 'Мамандану/БББ'
     },
     helpDesk: {
         title: 'Менің өтінімдерім',

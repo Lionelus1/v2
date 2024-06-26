@@ -5,20 +5,14 @@
   <h3 v-else-if="personType == 2">
   {{   $t("common.personal")  }}
   </h3>
-  <h3 v-else-if="personType == 3">  
+  <h3 v-else-if="personType == 3">
   {{ $t("common.students") }}
   </h3>
+  <h3 v-else-if="personType == 4">{{$t('common.graduates')}}</h3>
   <h3 v-else-if="!organization">{{ $t("common.individualEntrepreneur") }}</h3>
   <h3 v-else>{{ $t("contragent.orgEmployees", {"org": getOrganizationName(organization)}) }}</h3>
+  <ToolbarMenu class="m-0 pt-0 pb-0" :data="menu" @filter="toggle('filterOverlayPanel', $event)" :filter="true" :filtered="filtered"></ToolbarMenu>
   <div class="card">
-    <Menubar :model="menu" class="m-0 pt-0 pb-0">
-      <template #end>
-        <IconField iconPosition="left">
-          <InputIcon class="pi pi-search"> </InputIcon>
-          <InputText  @keyup.enter="getPersons" v-model="filter.name" :placeholder="$t('common.search')"/>
-        </IconField>
-      </template>
-    </Menubar>
     <DataTable :value="persons" dataKey="userID" :rows="rows" :totalRecords="total"
       :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
       :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading"
@@ -35,33 +29,183 @@
           </Button>
         </template>
       </Column>
-      <Column v-if="!organization" :header="$t('common.organization')" style="min-width: 250px;">
+      <Column v-if="!organization && personType != 3 && personType != 4" :header="$t('common.organization')" style="min-width: 250px;">
         <template #body="slotProps">
           {{ slotProps.data.mainPosition && slotProps.data.mainPosition.organization.id > 0 ?
             getOrganizationName(slotProps.data.mainPosition.organization) : '' }}
         </template>
       </Column>
-      <Column v-if="!organization" :header="$t('contact.position')" style="min-width: 150px;">
+      <Column v-if="!organization" :header="(personType == 3 || personType == 4) ? $t('web.degreeLevel') : $t('contact.position')" style="min-width: 250px;">
         <template #body="slotProps">
           {{ slotProps.data.mainPosition ? getPositionName(slotProps.data.mainPosition) : '' }}
         </template>
       </Column>
-      <Column field="IIN" :header="$t('contact.iin')" style="min-width: 100px;"></Column>
-      <Column field="email" :header="$t('contact.email')" style="min-width: 50px;"></Column>
+<!--      <Column v-if="personType == 3 || personType == 4" :header="$t('common.faculty')" style="min-width: 250px;">-->
+<!--        <template #body="slotProps">-->
+<!--          {{ slotProps.data.mainPosition ? getPositionName(slotProps.data.mainPosition.department?.parent) : '' }}-->
+<!--        </template>-->
+<!--      </Column>-->
+      <Column v-if="personType == 3 || personType == 4" :header="$t('educationalPrograms.epg')" style="min-width: 250px;">
+        <template #body="slotProps">
+          {{ slotProps.data.educational_program_group ? getEducationalProgramGroup(slotProps.data.educational_program_group) : '' }}
+        </template>
+      </Column>
+      <Column v-if="personType == 3 || personType == 4" :header="$t('educationalPrograms.ep')" style="min-width: 250px;">
+        <template #body="slotProps">
+          {{ slotProps.data.speciality ? localizeSpecialities(slotProps.data.speciality) : '' }}
+        </template>
+      </Column>
+      <Column v-if="personType != 3 && personType != 4" field="IIN" :header="$t('contact.iin')" style="min-width: 100px;"></Column>
+      <Column v-if="personType != 3 && personType != 4" field="email" :header="$t('contact.email')" style="min-width: 50px;"></Column>
     </DataTable>
   </div>
   <!-- personPage -->
   <Sidebar v-model:visible="visibility.personPage" position="right" style="width: 60%;" class="p-sidebar-lg">    
     <PersonPage :person="currentPerson" @personUpdated="personUpdated" :custom-type="customType" :personType="personType"></PersonPage>
   </Sidebar>
+
+  <OverlayPanel ref="filterOverlayPanel">
+    <div class="col-12 md:col-12 p-fluid">
+          <div class="grid formgrid">
+      <div class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+        <label>{{ $t('common.fullName') }}</label>
+        <InputText  @keyup.enter="getPersons" v-model="filter.name" :placeholder="$t('common.search')"/>
+      </div>
+      <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+        <label>{{ $t('web.degreeLevel') }}</label>
+        <Dropdown class="dropdown" v-model="academicDegree" :options="academicDegrees"
+                  :optionLabel="'name'+this.$i18n.locale" :placeholder="this.$t('common.select')"
+                  :filter="true" :showClear="true"
+                  dataKey="value" :emptyFilterMessage="this.$t('roleControl.noResult')"
+                  @filter="handleFilterDepartment"/>
+      </div>
+      <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+        <label>{{ $t('common.faculty') }}</label>
+        <Dropdown class="dropdown" v-model="selectedDepartment" :options="departments"
+                  :optionLabel="localizeDepartment" :placeholder="this.$t('common.select')"
+                  :filter="true" :showClear="true"
+                  dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"
+                  @filter="handleFilterDepartment" @change="handleSelectionChange"/>
+      </div>
+      <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+        <label>{{ $t('educationalPrograms.epg') }}</label>
+        <Dropdown class="dropdown" v-model="educationalProgramGroup" :options="educationalProgramGroups"
+                  :optionLabel="localizeEducationalProgramGroup" :placeholder="this.$t('common.select')"
+                  :filter="true" :showClear="true"
+                  dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"
+                  @filter="handleFilterGetEducationalProgramGroup" @change="handleEducationalProgramGroupChange"/>
+      </div>
+      <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+        <label>{{ $t('common.cafedra') }}</label>
+        <Dropdown class="dropdown" v-model="selectedDepartmentCafedra" :options="departmentsCafedra"
+                  :optionLabel="localizeDepartment" :placeholder="this.$t('common.select')"
+                  :filter="true" :showClear="true"
+                  dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"
+                  @filter="handleFilterDepartmentCafedra" @change="handleSelectionChange"/>
+      </div>
+      <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+        <label>{{ $t('educationalPrograms.ep') }}</label>
+        <Dropdown class="dropdown" v-model="specialist" :options="specialists"
+                  :optionLabel="localizeSpecialities" :placeholder="this.$t('common.select')"
+                  :filter="true" :showClear="true"
+                  dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"
+                  @filter="handleSelectionChange"/>
+      </div>
+<!--      <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">-->
+<!--        <label>{{ $t('common.group') }}</label>-->
+<!--        <Dropdown class="dropdown" v-model="selectedDepartmentGroup" :options="departmentsGroup"-->
+<!--                  optionLabel="name" :placeholder="this.$t('common.select')"-->
+<!--                  :filter="true" :showClear="true"-->
+<!--                  dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"-->
+<!--                  @filter="handleFilterDepartmentGroup"/>-->
+<!--      </div>-->
+      </div>
+      <hr>
+
+      <div v-if="personType == 3 || personType == 4" class="col-12 md:col-12 p-fluid">
+        <div class="grid formgrid">
+        <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+          <label>{{ $t('common.paymentForm') }}</label>
+          <Dropdown class="dropdown" v-model="paymentForm" :options="paymentForms"
+                    :optionLabel="'name'+this.$i18n.locale" :placeholder="this.$t('common.select')"
+                    :showClear="true" dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"/>
+        </div>
+        <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>GPA</label>
+            <div class="col-3 mb-2 pb-2 lg:col-3 mb-lg-0 flex justify-content-space-between">
+              <label class="mt-2">Min</label><InputNumber v-model="gpaMin" mode="decimal" :minFractionDigits="2" :maxFractionDigits="2" class="col-12 mb-lg-0"></InputNumber>
+              <label class="mt-2">Max</label><InputNumber v-model="gpaMax" mode="decimal" :minFractionDigits="2" :maxFractionDigits="2" class="col-12 lg:col-12 mb-lg-0"></InputNumber>
+          </div>
+        </div>
+          <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>Статус заполнения резюме</label>
+            <Dropdown class="dropdown" v-model="resumeView" :options="resumeViews"
+                      :optionLabel="'name'+this.$i18n.locale" :placeholder="this.$t('common.select')"
+                      :showClear="true" dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"/>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="personType == 3 || personType == 4">
+        <Checkbox v-model="checked" :binary="true" /> Люди с особыми потребностями
+      </div>
+
+      <div class="flex justify-content-end">
+          <div class="mb-2 mr-2">
+            <Button :label="$t('common.clear')" @click="clearFilter();toggle('filterOverlayPanel', $event)" class="mb-2 pb-2 p-button-outlined"/>
+          </div>
+          <div>
+            <Button :label="$t('common.search')" @click="saveFilter();toggle('filterOverlayPanel', $event)" class="mb-2 pb-2"/>
+          </div>
+      </div>
+        </div>
+  </OverlayPanel>
 </template>
 <script>
 import { ContragentService } from "@/service/contragent.service";
 import PersonPage from "@/components/contragent/v2/PersonPage";
+import {ref} from "vue";
+import api from "@/service/api";
+import {getHeader} from "@/config/config";
+import department from "@/components/smartenu/Department.vue";
+import SpecialitySearch from "@/components/smartenu/speciality/specialitysearch";
+import axios from "axios";
 
 export default {
   name: 'PersonsList',
-  components: { PersonPage },
+  computed: {
+    menu () { return [
+      {
+        icon: "pi pi-fw pi-refresh",
+        command: () => { this.getPersons(); }
+      },
+      {
+        label: this.$t("bank.card"),
+        icon: "pi pi-fw pi-id-card",
+        disabled: !this.currentPerson,
+        command: () => { this.open('personPage'); }
+      },
+      {
+        label: this.$t("contragent.menu.select"),
+        icon: "fa-regular fa-square-check",
+        disabled: () => !this.currentPerson,
+        visible: this.sidebar,
+        command: () => { this.$emit('personSelected', this.currentPerson); }
+      },
+      {
+        label: this.$t("common.createNew"),
+        icon: "pi pi-fw pi-plus",
+        command: () => {
+          this.addPerson()
+        },
+        visible: () => this.personType != 3
+      }
+    ]},
+    department() {
+      return department
+    }
+  },
+  components: {PersonPage },
   props: {
     organization: null,
     signers: {
@@ -98,37 +242,68 @@ export default {
 
       filter: {
         name: '',
+        departmentId: null,
+        facultyId: null,
+        cafedraId: null,
+        paymentFormId: null
       },
 
-      menu: [
-        {
-          icon: "pi pi-fw pi-refresh",
-          command: () => { this.getPersons(); }
-        }, 
-        {
-          label: this.$t("bank.card"),
-          icon: "pi pi-fw pi-id-card",
-          disabled: () => !this.currentPerson,
-          command: () => { this.open('personPage'); }
-        },
-        {
-          label: this.$t("contragent.menu.select"),
-          icon: "fa-regular fa-square-check",
-          disabled: () => !this.currentPerson,
-          visible: () => this.sidebar,
-          command: () => { this.$emit('personSelected', this.currentPerson); }
-        },
-        {
-          label: this.$t("common.createNew"),
-          icon: "pi pi-fw pi-plus",
-          command: () => {
-              this.addPerson()
-          },
-          visible: () => this.personType != 3
-        }
-      ],
       personType: null,
-      customType: ''
+      customType: '',
+      tempFilter: {
+        author: [],
+        departmentId: null,
+        departmentFacultyId: null,
+        departmentCafedraId: null,
+      },
+      filtered: false,
+      selectedDepartment: null,
+      selectedDepartmentParent: null,
+      selectedDepartmentCafedra: null,
+      selectedDepartmentGroup: null,
+      departments:[],
+      departmentsParent: [],
+      departmentsCafedra: [],
+      departmentsGroup: [],
+      searchText: null,
+      academicDegrees: [
+        {namekz: "Бакалавр", nameru:"Бакалавр",nameen:"Bachelor", value: 'Бакалавр'},
+        {namekz: 'Магистрант (бейіндік бағыт)', nameen: 'Master (specialized)', nameru: 'Магистрант (профильное направление)', value: 'Магистрант (профильное направление)'},
+        {namekz: 'Бакалавриат (ғылыми-педагогикалық бағыт)', nameen: 'Master (scientific-pedagogical)', nameru: 'Магистрант (научно-педагогическое направление)', value: 'Магистрант (научно-педагогическое направление)'},
+        {namekz: 'Докторант PhD', nameen: 'PhD student', nameru: 'Докторант PhD', value: 'Докторант PhD'},
+      ],
+      academicDegree: null,
+      specialitieFilter: {
+        searchText: null,
+        page: 0,
+        rows: 25,
+        educational_program_group_id: null
+      },
+      specialists: [],
+      specialist: null,
+      educationalProgramFilter: {
+        searchText: null,
+        page: 0,
+        rows: 25,
+        faculty_id: null,
+        cafedra_ids: []
+      },
+      educationalProgramGroups: [],
+      educationalProgramGroup: null,
+      paymentForms: [
+        {namekz:"Келісімшарт", nameru:"Договор", nameen:"Deal", id:1},
+        {namekz:"Мемлекеттік грант", nameru:"Государственный грант", nameen:"Government grant", id:2},
+        {namekz:"Алмасу бойынша", nameru:"По обмену", nameen:"By exchange", id:3},
+      ],
+      paymentForm: null,
+      gpaMin: null,
+      gpaMax: null,
+      resumeViews: [
+        {namekz:"Барлығы", nameru:"Все", nameen:"All", id:0},
+        {namekz:"Түйіндемені толтырды", nameru:"Заполнил резюме", nameen:"Filled out a CV", id:1},
+        {namekz:"Түйіндемені толтырған жоқ", nameru:"Не заполнил резюме", nameen:"Didn't fill out a CV", id:2},
+      ],
+      resumeView: null
     }
   },
   watch: {
@@ -143,8 +318,12 @@ export default {
     }
 
     this.personType = this.$route.params.type;
-    
     this.getPersons();
+    this.getFaculties();
+    this.getCafedras();
+    this.getGroups();
+    this.getSpecialities();
+    this.getEducationalProgramGroups()
   },
   beforeUnmount() {
     if (!this.sidebar) {
@@ -188,6 +367,9 @@ export default {
       return name
     },
     getPositionName(position) {
+      if (position === undefined || position === '') {
+        return ''
+      }
       if (this.$i18n.locale === 'kz' && this.validString(position.namekz)) {
         return position.namekz;
       } else if (this.$i18n.locale === 'ru' && this.validString(position.nameru)) {
@@ -234,8 +416,19 @@ export default {
       this.customType = 'viewUser'
       this.tableLoading = true;
 
-      const searchMode = this.personType == 1 ? "individual_entrepreneur" : this.personType == 2 ? "staff" : this.personType == 3 ? "student" : null;
+      const searchMode = this.personType == 1 ? "individual_entrepreneur" : this.personType == 2 ? "staff"
+          : this.personType == 3 ? "student" : this.personType == 4 ? "graduate" : null;
 
+      if (this.personType != 3 && this.personType != 4) {
+        this.filter = {
+          departmentId: null,
+          cafedraId: null,
+          facultyId: null,
+          name: this.filter?.name ?? '',
+        }
+      }
+
+      const ldap = (this.personType == 3 || this.personType == 2) && (this.filter?.name?.length > 3 ?? false);
       this.service.getPersons({
         page: this.page,
         rows: this.rows,
@@ -243,9 +436,20 @@ export default {
           orgId: this.organization ? this.organization.id : null,
           name: this.filter.name,
           signers: this.signers,
+          departmentId: this.filter.departmentId,
+          departmentParentId: this.filter.facultyId,
+          departmentCafedraId: this.filter.cafedraId,
+          positionName: this.academicDegree?.value,
+          educationProgramId: this.specialist?.id,
+          educationProgramGroupId: this.educationalProgramGroup?.id,
+          paymentFormId: this.filter.paymentFormId,
+          gpa_min: this.gpaMin,
+          gpa_max: this.gpaMax,
+          resumeView: this.resumeView?.id
         },
         searchMode: searchMode,
         searchCookie: this.searchCookie,
+        ldap: ldap,
       }).then(res => {
         this.persons = res.data.foundUsers;
         this.total = res.data.total;
@@ -337,19 +541,314 @@ export default {
       }
       this.visibility.personPage = true
       this.customType = 'createUser';
-    }
+    },
+    toggle(ref, event) {
+      if (ref === 'filterOverlayPanel') {
+        this.tempFilter = JSON.parse(JSON.stringify(this.filter));
+        this.tempFilter.createdFrom = this.tempFilter.createdFrom ? new Date(this.tempFilter.createdFrom) : null;
+        this.tempFilter.createdTo = this.tempFilter.createdTo ? new Date(this.tempFilter.createdTo) : null;
+      }
+
+      this.$refs[ref].toggle(event);
+    },
+    clearFilter() {
+      this.filter = {
+        name: null,
+        cafedraId: null,
+        departmentId: null,
+        departmentParentId: null,
+        departmentsGroup: null,
+      };
+
+      this.selectedDepartment = null
+      this.selectedDepartmentGroup = null
+      this.selectedDepartmentParent = null
+      this.selectedDepartmentCafedra = null
+      this.specialist = null
+      this.filtered = false;
+      this.specialitieFilter = {
+        searchText: null,
+        faculty_id: null,
+        cafedra_ids: [],
+      }
+      this.educationalProgramGroup = null
+      this.getPersons()
+    },
+    saveFilter() {
+
+      if (this.selectedDepartment) {
+          this.filter.facultyId = this.selectedDepartment?.id;
+      } else {
+        this.filter.facultyId = null
+      }
+
+
+      if (this.selectedDepartmentCafedra) {
+        this.filter.cafedraId = this.selectedDepartmentCafedra?.id;
+      } else {
+        this.filter.cafedraId = null
+      }
+
+      if (this.selectedDepartmentGroup) {
+        this.filter.departmentId = this.selectedDepartmentGroup?.id
+      } else {
+        this.filter.departmentId = null
+      }
+
+      if (this.paymentForm) {
+        this.filter.paymentFormId = this.paymentForm.id
+      } else {
+        this.filter.paymentFormId = null
+      }
+
+      this.getPersons()
+    },
+    localizeDepartment(department) {
+      const localizedText = this.$t(department['name'+this.capitalize(this.$i18n.locale)])
+      return localizedText
+    },
+    capitalize(str) {
+      if (typeof str !== 'string') return '';
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    },
+    handleFilterDepartment(event) {
+      if (event && event.length > 1) {
+        this.searchText = event
+        this.getFaculties()
+      } else {
+        this.searchText = null
+        this.getFaculties()
+      }
+    },
+    handleFilterDepartmentCafedra(event) {
+      if (event && event.length > 1) {
+        this.searchText = event
+        this.getCafedras()
+      } else {
+        this.searchText = null
+        this.getCafedras()
+      }
+    },
+    handleFilterDepartmentGroup(event) {
+      if (event && event.length > 1) {
+        this.searchText = event
+        this.getGroups()
+      } else {
+        this.searchText = null
+        this.getGroups()
+      }
+    },
+    getDepartments(type)  {
+      this.loading = true
+      const orgId = 1
+
+      const req = {
+        orgId: orgId,
+        searchText: this.searchText,
+        parentId: this.parentId,
+        cafedraId: this.cafedraId,
+        type: type,
+      }
+
+      api.post('/departments', req, {
+        headers: getHeader()
+      }).then(res => {
+
+        switch (type) {
+          case 'faculty':
+            this.departments = res.data.departments;
+            break;
+          case 'cafedra':
+            this.departmentsCafedra = res.data.departments;
+            break;
+          case 'group':
+            this.departmentsGroup = res.data.departments;
+            break;
+          default:
+            console.error(`Unknown type: ${type}`);
+        }
+
+        this.loading = false
+      }).catch(err => {
+        this.faculties = []
+
+        if (err.response && err.response.data && err.response.data.localized) {
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t(err.response.data.localizedPath),
+            life: 3000,
+          })
+        } else {
+          console.log(err)
+          this.$toast.add({
+            severity: "error",
+            summary: this.$t('common.message.actionError'),
+            life: this.$t('common.message.actionErrorContactAdmin'),
+          })
+        }
+
+        this.loading = false;
+      })
+    },
+    getFaculties() {
+      return this.getDepartments('faculty');
+    },
+    getCafedras() {
+      return this.getDepartments('cafedra');
+    },
+    getGroups() {
+      return this.getDepartments('group');
+    },
+    handleSelectionChange() {
+      if (this.selectedDepartment) {
+        this.parentId = this.selectedDepartment.id
+        this.cafedraId = null
+        this.selectedDepartmentGroup = null
+        if (this.selectedDepartmentCafedra && this.selectedDepartmentCafedra.parentId !== this.selectedDepartment.id) {
+          this.selectedDepartmentCafedra = null
+        }
+
+        this.getCafedras()
+        this.getGroups()
+
+        if (this.selectedDepartmentCafedra) {
+          this.specialitieFilter.cafedra_ids = []
+          this.educationalProgramFilter.cafedra_ids.push(this.selectedDepartmentCafedra.id)
+          this.educationalProgramFilter.faculty_id = null
+        } else {
+          this.educationalProgramFilter.cafedra_ids = []
+          this.educationalProgramFilter.faculty_id = this.selectedDepartment?.id
+        }
+
+        this.getEducationalProgramGroups()
+      } else {
+        this.parentId = null
+      }
+
+      if (this.selectedDepartmentCafedra) {
+        this.cafedraId = this.selectedDepartmentCafedra.id
+        this.selectedDepartmentGroup = null
+        this.getGroups()
+
+        if (!this.selectedDepartment) {
+          this.educationalProgramFilter.cafedra_ids = []
+          this.educationalProgramFilter.cafedra_ids.push(this.selectedDepartmentCafedra.id)
+          this.educationalProgramFilter.faculty_id = null
+          this.getEducationalProgramGroups()
+        }
+      } else {
+        this.cafedraId = null
+      }
+    },
+    getSpecialities() {
+      let url = "/getspecialities";
+      api.post(url, {
+            "name" : this.specialitieFilter?.searchText,
+            "level" : this.educationLevel,
+            "page": this.specialitieFilter?.page,
+            "rows": this.specialitieFilter?.rows,
+            "educational_program_group_id": this.specialitieFilter?.educational_program_group_id
+          },
+      )
+          .then(response=>{
+            this.specialists = response.data;
+            this.searchInProgres = false;
+          })
+          .catch((error) => {
+              this.$toast.add({
+                severity: "error",
+                summary: "getSpeciliatyListError:\n" + error,
+                life: 3000,
+              });
+              this.searchInProgres = false;
+              if (error.response.status === 404) {
+                this.foundSpecialists = null;
+              }
+          });
+    },
+    handleFilterSpecialities(event) {
+      if (event && event.length > 1) {
+        this.specialitieFilter.searchText = event
+        this.getSpecialities()
+      } else {
+        this.specialitieFilter.searchText = null
+        this.getSpecialities()
+      }
+    },
+    localizeSpecialities(specialist) {
+      const localizedText = this.$t(specialist['nameIn'+this.capitalize(this.$i18n.locale)])
+      return specialist?.code + " " + localizedText
+    },
+    getEducationalProgramGroups() {
+      let url = "/educational/program/group/get";
+      api.post(url, {
+            "id" : this.educationalProgramFilter?.searchText,
+            "searchText" : this.educationalProgramFilter.searchText,
+            "page": this.educationalProgramFilter?.page,
+            "rows": this.educationalProgramFilter?.rows,
+            "faculty_id": this.educationalProgramFilter.faculty_id,
+            "cafedra_ids": this.educationalProgramFilter.cafedra_ids
+          },
+      )
+          .then(response=>{
+            this.educationalProgramGroups = response.data.educational_program_groups;
+          })
+          .catch((error) => {
+            this.$toast.add({
+              severity: "error",
+              summary: error,
+              life: 3000,
+            });
+            this.searchInProgres = false;
+            if (error.response.status === 404) {
+              this.foundSpecialists = null;
+            }
+          });
+    },
+    handleFilterGetEducationalProgramGroup(event) {
+      if (event && event.length > 1) {
+        this.educationalProgramFilter.searchText = event
+        this.getEducationalProgramGroups()
+      } else {
+        this.educationalProgramFilter.searchText = null
+        this.getEducationalProgramGroups()
+      }
+    },
+    localizeEducationalProgramGroup(eduactionalProgramGroup) {
+      const localizedText = this.$t(eduactionalProgramGroup['name_'+(this.$i18n.locale)])
+      return eduactionalProgramGroup?.code + " " + localizedText
+    },
+    handleEducationalProgramGroupChange() {
+      if (this.educationalProgramGroup) {
+        this.specialitieFilter.educational_program_group_id = this.educationalProgramGroup?.id
+        this.specialist = null
+        this.getSpecialities()
+      } else {
+        this.specialist = null
+        this.specialitieFilter.educational_program_group_id = null
+        this.getSpecialities()
+      }
+    },
+    getEducationalProgramGroup(educationalProgramGroup) {
+      console.log("educationalProgramGroup: ", educationalProgramGroup)
+      if (educationalProgramGroup === undefined || educationalProgramGroup === '') {
+        return ''
+      }
+      if (this.$i18n.locale === 'kz' && this.validString(educationalProgramGroup.name_kz)) {
+        return educationalProgramGroup.code + " " + educationalProgramGroup.name_kz;
+      } else if (this.$i18n.locale === 'ru' && this.validString(educationalProgramGroup.name_ru)) {
+        return educationalProgramGroup.code + " " + educationalProgramGroup.name_ru;
+      } else if (this.$i18n.locale === 'en' && this.validString(educationalProgramGroup.name_en)) {
+        return educationalProgramGroup.code + " " + educationalProgramGroup.name_en;
+      }
+
+      return '';
+    },
   }
 }
 </script>
 <style scoped>
-.card {
-  flex-grow: 1;
-  background-color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  margin-bottom: 0px;
-}
+
 :deep(.p-datatable.p-datatable-scrollable > .p-datatable-wrapper > .p-datatable-table > .p-datatable-thead) {
   background: transparent;
 }

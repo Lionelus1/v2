@@ -103,6 +103,11 @@ export class MenuService {
                         label: $t('common.students'),
                         icon: 'fa-solid fa-graduation-cap',
                         to: '/contragent/persons/' + Enum.PersonType.Student
+                    },
+                    {
+                        label: $t('common.graduates'),
+                        icon: 'fa-solid fa-graduation-cap',
+                        to: '/contragent/persons/' + Enum.PersonType.Graduate
                     }
                 ]
             },

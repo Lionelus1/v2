@@ -8,13 +8,20 @@
       <div class="col-12 lg:col-9">
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.general')}} </em></b>
+          <Button v-if="!readonly" icon="pi pi-pencil" class="p-button-rounded p-button-outlined"
+                  :onclick="editGeneralInfo"></Button>
         </p>
         <hr>
         <span style="white-space: pre-line">
           <b>{{ $t('common.fullName') }}:</b> <em><b>{{ candidate.user.fullName + '\n' }}</b></em>
           <b>{{ $t('contact.birthday') }}:</b> <em>{{ candidate.user.birthday + '\n' }}</em>
-          <b>{{ $t('contact.email') }}:</b> <em>{{ candidate.user.email }}</em>
+          <b>{{ $t('contact.email') }}:</b> <em>{{ candidate.user.email + '\n'}}</em>
+          <b>{{ $t('contact.phone') }}:</b> <em>{{ candidate.user.phoneNumber + '\n\n' }}</em>
         </span>
+
+        <Checkbox v-model="candidate.isResumeVerified" :binary="true" /> Люди с особыми потребностями
+        <br>
+        <Checkbox v-model="candidate.hasSpecialNeeds" :binary="true" /> Ознакомлен и подтверждаю, что данные в моем персональном резюме корректные. Даю согласие на обработку предоставленных данных.
         <hr>
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.id') + ' '}}</em></b>
@@ -635,6 +642,9 @@ export default {
       this.exchange.section = this.section.info
       this.exchange.editMode = true
       this.exchange.title = this.titles.info
+    },
+    editGeneralInfo() {
+
     }
   }
 }

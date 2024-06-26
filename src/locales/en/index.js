@@ -86,6 +86,7 @@ export default {
         checkMyVoice: "Check my voice",
         yourVoice: "Your vote: ",
         graduate: "Graduate",
+        graduates: "Graduates",
         faculty: "Faculty",
         cafedra: "Academic department",
         choose: "Choose",
@@ -209,6 +210,8 @@ export default {
     myAddress: 'Address',
     creationAndEditing:'Creation and editing',
     users:'Users',
+    group: 'Group',
+    paymentForm: 'Payment Form',
     states: {
       submitted: "Submitted",
       approved: "Approved",
@@ -1776,6 +1779,8 @@ export default {
         specialization: 'Specialization',
         groupEP: 'Group of educational programs',
         ssdfgsdfg: 'sdfgsdfg',
+        epg: 'Profession/EPG',
+        ep: 'Specialization/EP'
     },
     helpDesk: {
         title: 'My applications',
