@@ -740,6 +740,8 @@ export default {
         mailingTitle: "Тарату",
         newsTitle: "Жаңалықтар",
         eventsTitle: "Іс-шаралар",
+        mailingCreateTitle: "Тарату жасау",
+        templateBuilder: "Конструктор үлгісі",
         newsNotFound: "Жаңалық табылмады",
         eventsNotFound: "Іс-шара табылмады",
         loadingNews: "Жаңалықтар жүктелуде. Өтініш, күте тұрыңыз.",
@@ -804,6 +806,8 @@ export default {
         posterImageKkInvalid: "Қазақша постер таңдалмады",
         posterImageRuInvalid: "Орысша постер таңдалмады",
         posterImageEnInvalid: "Ағылшынша постер таңдалмады",
+        mailings: "Таратулар",
+        drafts: "Қоқыстар",
     },
     vaccination: {
         title: "Вакциналау",

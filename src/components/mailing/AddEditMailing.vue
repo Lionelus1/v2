@@ -60,12 +60,12 @@ export default {
       templates: [],
       showOtherEmailField: false,
       categories: [
-        {id: 1, nameen: 'Контрагенты', namekz: 'білім алушы', nameru: 'Контрагенты'},
-        {id: 2, nameen: 'Сотрудники', namekz: 'білім алушы', nameru: 'Сотрудники'},
-        {id: 3, nameen: 'Частные лица', namekz: 'білім алушы', nameru: 'Частные лица'},
-        {id: 4, nameen: 'Обучающиеся', namekz: 'білім алушы', nameru: 'Обучающиеся'},
-        {id: 5, nameen: 'Выпускники', namekz: 'білім алушы', nameru: 'Выпускники'},
-        {id: 6, nameen: 'Другое', namekz: 'білім алушы', nameru: 'Другое'},
+        {id: 1, nameen: 'Contractors', namekz: 'Контрагенттер', nameru: 'Контрагенты'},
+        {id: 2, nameen: 'Employees', namekz: 'Қызметкерлер', nameru: 'Сотрудники'},
+        {id: 3, nameen: 'Private Individuals', namekz: 'Жеке тұлғалар', nameru: 'Частные лица'},
+        {id: 4, nameen: 'Students', namekz: 'Оқушылар', nameru: 'Обучающиеся'},
+        {id: 5, nameen: 'Graduates', namekz: 'Түлектер', nameru: 'Выпускники'},
+        {id: 6, nameen: 'Others', namekz: 'Басқа', nameru: 'Другое'},
       ],
       selectedCategories: [],
     };
