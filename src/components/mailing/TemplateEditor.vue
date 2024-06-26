@@ -44,10 +44,11 @@ import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import { FileService } from "@/service/file.service";
 
 const categories = [
-  { id: 1, nameen: 'Контрагенты', namekz: 'білім алушы', nameru: 'Контрагенты' },
+  { id: 1, nameen: 'counterparty', namekz: 'білім алушы', nameru: 'Контрагенты' },
   { id: 2, nameen: 'personal', namekz: 'білім алушы', nameru: 'Сотрудники' },
   { id: 3, nameen: 'individual_entrepreneur', namekz: 'білім алушы', nameru: 'Частные лица' },
   { id: 4, nameen: 'student', namekz: 'білім алушы', nameru: 'Обучающиеся' },
+  { id: 5, nameen: 'graduate', namekz: 'үлектер', nameru: 'Выпускники' },
   { id: 6, nameen: 'others', namekz: 'білім алушы', nameru: 'Другое' },
 ];
 
