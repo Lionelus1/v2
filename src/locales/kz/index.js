@@ -987,7 +987,7 @@ export default {
         title: "Атауы",
         categories: "Санаттар",
         author: "Автор",
-        dateAndTime: "Күні мен уақыты",
+        dateAndTIme: "Күні мен уақыты",
         deletedSuccessfully: "Сәтті жойылды",
         deleteFailed: "Жою сәтсіз аяқталды",
         unknownSender: "Белгісіз жіберуші",
