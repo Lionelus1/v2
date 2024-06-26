@@ -794,7 +794,14 @@ export default {
         posterImageEnInvalid: "The poster in English not selected",
     },
     mailing: {
-        title: "Наименование"
+        title: "Title",
+        categories: "Categories",
+        author: "Author",
+        dateAndTime: "Date and Time",
+        deletedSuccessfully: "Deleted Successfully",
+        deleteFailed: "Delete Failed",
+        unknownSender: "Unknown Sender",
+        invalidSenderData: "Invalid Sender Data",
     },
     vaccination: {
         title: "Vaccination",
