@@ -217,7 +217,7 @@ export default {
       rows: 100,   
       totalRecords: 100,        
       selectedQueue: null,
-      loading: true,
+      loading: false,
       userRoles: null,
       roles: {
         isAdmin: false,
@@ -244,8 +244,9 @@ export default {
   },
    
   methods: {    
-    getQueue(parentID, parent) {  
-      this.submitted = true 
+    getQueue(parentID, parent) {
+      this.loading = true
+      this.submitted = true
       this.lazyParams.parentID = parentID
       api
       .post("/queue/allQueues", this.lazyParams, {
@@ -271,6 +272,7 @@ export default {
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");
         }
+        this.loading = false;
       });
     },
     isOperator(queue) {

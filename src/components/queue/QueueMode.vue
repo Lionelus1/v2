@@ -15,6 +15,10 @@
             <PrimeCalendar v-model="workDays.end_time" timeOnly/>
           </div>
         </div>
+        <div>
+          <Checkbox class="mr-2" id="without_days_off" name="without_days_off" v-model="workDays.without_days_off" :binary="true"/>
+          <label for="without_days_off">{{$t('queue.withoutWeekend')}}</label>
+        </div>
         <span class="title">{{ $t('queue.lunch') }}</span>
         <div class="flex">
           <div>
@@ -23,6 +27,10 @@
           <div>
             <PrimeCalendar v-model="workDays.lunch_final_time" timeOnly/>
           </div>
+        </div>
+        <div>
+          <Checkbox class="mr-2" id="without_lunch" name="without_lunch" v-model="workDays.without_lunch" :binary="true"/>
+          <label for="without_lunch">{{$t('queue.noLunch')}}</label>
         </div>
         <span class="title">{{ $t('queue.interval') }}</span>
         <Dropdown v-model="workDays.appointment_duration" :options="intervals" :placeholder="$t('common.select')"/>
@@ -35,10 +43,11 @@
 <script setup>
 import {ref} from "vue";
 import api from "@/service/api";
-import {getHeader} from "@/config/config";
+import {getHeader, smartEnuApi} from "@/config/config";
 import {useRoute} from "vue-router";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
+import axios from "axios";
 
 const route = useRoute()
 const parentID = parseInt(route.params.id)
@@ -60,9 +69,39 @@ const workDays = ref({
   end_time: endTime,
   lunch_start_time: lunchStartTime,
   lunch_final_time: lunchEndTime,
+  without_days_off: false,
+  without_lunch: false
+
 })
 const submitted = ref(false)
+const loading = ref(false)
 
+const getWorkDays = () => {
+  loading.value = true
+  axios
+      .post(smartEnuApi + "/queue/getAvailableTimeInfo", {id: parentID}, {
+        headers: getHeader(),
+      })
+      .then((response) => {
+        const data = response.data.map(item => {
+          item.start_time = new Date(item.start_time.replace("0000-01-01", "2024-06-24").replace("Z", ""))
+          item.end_time = new Date(item.end_time.replace("0000-01-01", "2024-06-24").replace("Z", ""))
+          item.lunch_start_time = new Date(item.lunch_start_time.replace("0000-01-01", "2024-06-24").replace("Z", ""))
+          item.lunch_final_time = new Date(item.lunch_final_time.replace("0000-01-01", "2024-06-24").replace("Z", ""))
+          return {
+            ...item,
+            date: [new Date(item.start_date), new Date(item.end_date)]
+          };
+        });
+        workDays.value = data[0]
+        loading.value = false
+      })
+      .catch((error) => {
+        loading.value = false
+        console.log(error)
+      });
+}
+getWorkDays()
 const workDaysFunc = () => {
   workDays.value.queue_id = parentID
   submitted.value = true
@@ -78,6 +117,7 @@ const workDaysFunc = () => {
       .then((response) => {
         if (response.status === 200) {
           toast.add({severity: 'success', summary: t('common.success'), life: 3000});
+          getWorkDays()
         }
       })
       .catch((error) => {
