@@ -47,7 +47,7 @@ const categories = [
   { id: 1, nameen: 'counterparty', namekz: 'білім алушы', nameru: 'Контрагенты' },
   { id: 2, nameen: 'personal', namekz: 'Қызметкерлер', nameru: 'Сотрудники' },
   { id: 3, nameen: 'individual_entrepreneur', namekz: 'білім алушы', nameru: 'Частные лица' },
-  { id: 4, nameen: 'student', namekz: 'білім алушы', nameru: 'Обучающиеся' },
+  { id: 4, nameen: 'student', namekz: 'Білім алушы', nameru: 'Обучающиеся' },
   { id: 5, nameen: 'graduate', namekz: 'Түлектер', nameru: 'Выпускники' },
   { id: 6, nameen: 'others', namekz: 'Басқа', nameru: 'Другое' },
 ];
