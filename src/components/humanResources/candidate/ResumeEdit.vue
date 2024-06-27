@@ -246,7 +246,8 @@ export default {
         referee: 'referee',
         id: 'id',
         academicDetail: 'academicDetail',
-        info: 'info'
+        info: 'info',
+        generalInfo: 'generalInfo'
       }
     }
   },

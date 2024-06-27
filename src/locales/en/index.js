@@ -1810,6 +1810,9 @@ export default {
             applicationObjectives: 'Application objectives',
             enteredIncorrectly: 'Entered incorrectly'
         },
-
+    },
+    error: {
+        invalidEmail: "Invalid email address",
+        invalidPhoneNumber: "Invalid phone number. It should contain 11 digits"
     }
 }

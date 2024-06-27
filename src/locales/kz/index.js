@@ -1823,6 +1823,9 @@ export default {
             applicationObjectives: 'Өтінімнің мақсаттары',
             enteredIncorrectly: 'Қате енгіздіңіз'
         },
-
+    },
+    error: {
+        invalidEmail: "Электрондық поштаның мекенжайы дұрыс емес",
+        invalidPhoneNumber: "Телефон нөмірі дұрыс емес. Ол 11 саннан тұруы керек"
     }
 }

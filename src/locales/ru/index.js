@@ -1808,6 +1808,9 @@ export default {
             applicationObjectives: 'Цели заяки',
             enteredIncorrectly: 'Введен неправильно'
         },
-
+    },
+    error: {
+        invalidEmail: "Некорректный адрес электронной почты",
+        invalidPhoneNumber: "Некорректный номер телефона. Должен содержать 11 цифр"
     }
 }
