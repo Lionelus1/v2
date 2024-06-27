@@ -52,6 +52,13 @@
           </DataView>
         </TabPanel>
         <TabPanel v-bind:header="$t('smartenu.eventsTitle')">
+          <div class="calendar_buttons flex justify-content-end">
+      <span class="p-buttonset">
+    <Button class="p-button-outlined" icon="pi pi-th-large" @click="isCalendarBool(false)"/>
+    <Button class="p-button-outlined" icon="pi pi-calendar" @click="isCalendarBool(true)"/>
+      </span>
+          </div>
+          <div id="full_calendar"></div>
           <DataTable
               :value="allEvents"
               :paginator="true"
@@ -107,6 +114,11 @@ import {fileRoute} from "../config/config";
 import EventsView from "./events/EventsView";
 import {NewsService} from "@/service/news.service";
 import {EventsService} from "@/service/event.service";
+import {Calendar} from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import kkLocale from '@fullcalendar/core/locales/kk';
+import ruLocale from '@fullcalendar/core/locales/ru';
 
 export default {
   name: "Welcome",
@@ -134,6 +146,7 @@ export default {
       newsService: new NewsService(),
       eventService: new EventsService(),
       mobile: false,
+      isCalendarBool: false,
     };
   },
 
@@ -166,6 +179,7 @@ export default {
           let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
           e.imageUrl = smartEnuApi + fileRoute + fileUrl
         });
+        this.getCalendar()
         this.loading = false;
       }).catch((error) => {
         this.$toast.add({
@@ -175,17 +189,74 @@ export default {
         });
       });
     },
+    eventView(item) {
+      if(item.event){
+        this.selectedEvent = item.event.extendedProps;
+      }else {
+        this.selectedEvent = item;
+      }
+      this.eventViewVisible = true;
+    },
+    getCalendar() {
+          const calendarEl = document.getElementById('full_calendar');
+          this.allEvents.map(i => {
+                i.title = this.$i18n.locale === "kz" ? i.titleKz : this.$i18n.locale === "ru" ? i.titleRu : i.titleEn
+                i.start = this.formatDateCalendar(i.eventDate)
+              })
+          let kazakhLocale = {
+            code: 'kz',
+            week: {
+              dow: 1,
+              doy: 4
+            },
+            buttonText: {
+              prev: 'Алдыңғы',
+              next: 'Келесі',
+              today: 'Бүгін',
+              month: 'Ай',
+              week: 'Апта',
+              day: 'Күн',
+              list: 'Күн тәртібі'
+            },
+            weekText: 'Апта',
+            allDayText: 'Күні бойы',
+            moreLinkText: function(n) {
+              return '+ тағы ' + n;
+            },
+            noEventsText: 'Көрсету үшін оқиғалар жоқ',
+            months: ['Қаңтар', 'Ақпан', 'Наурыз', 'Сәуір', 'Мамыр', 'Маусым', 'Шілде', 'Тамыз', 'Қыркүйек', 'Қазан', 'Қараша', 'Желтоқсан'],
+            monthNamesShort: ['Қаң', 'Ақп', 'Нау', 'Сәу', 'Мам', 'Мау', 'Шіл', 'Там', 'Қыр', 'Қаз', 'Қар', 'Жел'],
+            dayNames: ['Жексенбі', 'Дүйсенбі', 'Сейсенбі', 'Сәрсенбі', 'Бейсенбі', 'Жұма', 'Сенбі'],
+            dayNamesShort: ['Жк', 'Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб']
+          };
+
+          const calendar = new Calendar(calendarEl, {
+
+            plugins: [dayGridPlugin, timeGridPlugin],
+            events: this.allEvents,
+            eventClick: this.eventView,
+            locales: [kkLocale, ruLocale],
+            initialView: 'dayGridMonth',
+            header: {
+              left: 'prev,next',
+              center: 'title',
+              right: ''
+            },
+            // dayHeaderContent: (arg) => locale.value === 'kz' ? customLocale.dayNamesShort[arg.date.getUTCDay()]: null,
+          });
+          calendar.render();
+    },
     formatDateMoment(date) {
       return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm")
+    },
+    formatDateCalendar(date) {
+      return moment(new Date(date)).utc().format("YYYY-MM-DD");
     },
     newsView(item) {
       this.selectedNews = item;
       this.newsViewVisible = true;
     },
-    eventView(item) {
-      this.selectedEvent = item;
-      this.eventViewVisible = true;
-    },
+
     onPage(event) {
       this.lazyParams = event
       this.getAllNews();
@@ -271,7 +342,26 @@ export default {
     }
   }
 }
+.calendar_buttons button {
+  padding: 8px;
+}
 
+.calendar_buttons button.active {
+  background: #1B78BD;
+  color: #fff;
+  border: 1px solid #1B78BD;
+}
+
+:deep(.fc.fc-theme-standard .fc-view-harness .fc-event.fc-daygrid-block-event) {
+  background: #1B78BD;
+  border: 1px solid #fff;
+}
+:deep(.fc.fc-theme-standard .fc-toolbar .fc-button) {
+  background: #1B78BD;
+}
+:deep(.fc-unthemed td.fc-today) {
+  background: #e9f7ff;
+}
 @media (max-width: 780px) {
   .skeletons, .post {
     width: 100%;
