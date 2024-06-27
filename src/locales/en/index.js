@@ -2013,7 +2013,7 @@ export default {
         createCategory: "Create a new category",
         application: {
             applicationName: "Applications",
-            requestReason: "Sending the Application",
+            requestReason: "Direction of application",
             description: "Description",
             contactNumber: "Contact number",
             categoryApplication: "Application category",

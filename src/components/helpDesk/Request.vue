@@ -43,7 +43,7 @@
       </Dialog>
 
       <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg">
-        <DocSignaturesInfo :docIdParam="request.doc.uuid"></DocSignaturesInfo>
+        <DocSignaturesInfo :docIdParam="camundaServiceInstance.docUUID"></DocSignaturesInfo>
       </Sidebar>
       <!-- <CourseRegistration
         :courseRequest="request"
@@ -459,10 +459,10 @@ const menu = computed(() => [
   {
     label: t("common.approvalList"),
     icon: "pi pi-user-edit",
-    disabled:
-      !request.value.doc ||
-      !request.value.doc.docHistory ||
-      request.value.doc.docHistory?.stateId < DocEnum.INAPPROVAL.ID,
+    disabled: !status.value || status.value == `created` || loading.value,
+    //   !request.value.doc ||
+    //   !request.value.doc.docHistory ||
+    //   request.value.doc.docHistory?.stateId < DocEnum.INAPPROVAL.ID,
     command: () => open("documentInfoSidebar"),
   },
 ]);
@@ -909,6 +909,7 @@ const tabChanged = () => {
 };
 
 const downloadContract = async () => {
+  camundaServiceInstance.docUUID = ""
   loading.value = true;
   // if (
   //     !request.value ||
@@ -917,10 +918,11 @@ const downloadContract = async () => {
   // )
   //     return;
 
-  if (pdf.value) {
-    return;
-  }
+  // if (pdf.value) {
+  //   return;
+  // }
   await camundaServiceInstance.setDocUUID();
+  if (!camundaServiceInstance.docUUID) return;
   docService
     .downloadDocumentV2({
       // uuid: uuid.value,

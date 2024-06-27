@@ -1941,7 +1941,7 @@ export default {
                 applicant: 'Өтініш беруші',
                 application: {
                         applicationName: 'Өтінімдер',
-                        requestReason: 'Өтінімді Жолдау',
+                        requestReason: 'Өтінім бағыты',
                         description: 'Сипаттама',
                         contactNumber: 'Байланыс нөмірі',
                         categoryApplication: 'Өтінім санаты',

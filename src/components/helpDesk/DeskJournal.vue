@@ -13,10 +13,10 @@
         <BlockUI :blocked="loading" class="card">
             <Dialog :header="t('helpDesk.application.applicationName')" v-model:visible="visibility.newPublicationDialog" :style="{ width: '450px' }" class="p-fluid">
                 <div class="field">
-                    <label>{{ t("helpDesk.application.requestReason") }}</label>
+                    <label>{{ t("helpDesk.application.categoryApplication") }}</label>
                     <Dropdown v-model="selectedDirection" :options="directions" :optionLabel="ALIAS[locale]" :placeholder="t('common.select')" />
                     <div style="margin-top: 15px" v-if="selectedDirection?.code === 'course_application'">
-                        <label>{{ t("doctemplate.templates") }}</label>
+                        <label>{{ t("helpDesk.application.requestReason") }}</label>
                         <Dropdown style="margin-top: 5px" v-model="selectedPosition" :options="position" :optionLabel="ALIAS[locale]" :placeholder="t('common.select')" />
                     </div>
                 </div>
