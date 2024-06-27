@@ -2,6 +2,7 @@ import api from "./api";
 import { getHeader } from "../config/config";
 
 export class MailingService {
+
     mailing(data) {
         return api.post("/mailing/mailing", data, { headers: getHeader() });
     }
