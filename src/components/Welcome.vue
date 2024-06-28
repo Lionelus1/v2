@@ -6,9 +6,43 @@
     <div class="card card_bottom">
       <TabView ref="templateView" v-model:activeIndex="active">
         <TabPanel v-bind:header="$t('smartenu.newsTitle')">
+          <div class="calendar_buttons flex justify-content-end mb-2">
+      <span class="p-buttonset">
+    <Button class="p-button-outlined calendar_btn_left" :class="{'active': isList}" icon="pi pi-th-large" @click="getAllNews(true)"/>
+    <Button class="p-button-outlined calendar_btn_right" :class="{'active': !isList}" icon="pi pi-list" @click="getAllNews(false)"/>
+      </span>
+          </div>
+          <template v-if="isList">
+            <div class="event_card grid">
+              <div
+                  v-for="(i, index) in allNews"
+                  :key="index"
+                  :class="getBlockClass(index)"
+              >
+                <div class="img">
+                  <img class="w-full" height="220" v-if="i?.imageUrl != null && i?.imageUrl !==''" :src="i?.imageUrl" alt="">
+                </div>
+                <div class="flex my-2">
+                  <Tag severity="info" class="mr-3" :value="i?.site_url"></Tag>
+                  <div class="date">{{ formatDateMoment(i?.publish_date) }}</div>
+                </div>
+                <strong>
+                  {{
+                    $i18n.locale === "kz"
+                        ? i?.titleKz
+                        : $i18n.locale === "ru"
+                            ? i?.titleRu
+                            : i?.titleEn
+                  }}
+                </strong>
+              </div>
+            </div>
+            <Paginator @page="onPage($event)" :rows="10" :totalRecords="total"></Paginator>
+          </template>
           <div v-if="allNews.length === 0">
             {{ $t("smartenu.newsNotFound") }}
           </div>
+          <template v-if="!isList">
           <div v-if="loading" class="skeletons">
             <div class="skeleton" :key="s" v-for="s of skeletons">
               <Skeleton class="skeleton_img"></Skeleton>
@@ -50,23 +84,34 @@
               </template>
             </template>
           </DataView>
+          </template>
         </TabPanel>
         <TabPanel v-bind:header="$t('smartenu.eventsTitle')">
-          <div class="calendar_buttons flex justify-content-end">
+          <div class="calendar_buttons flex justify-content-end mb-2">
       <span class="p-buttonset">
-    <Button class="p-button-outlined" icon="pi pi-th-large" @click="isCalendarBool(false)"/>
-    <Button class="p-button-outlined" icon="pi pi-calendar" @click="isCalendarBool(true)"/>
+    <Button class="p-button-outlined calendar_btn_left" :class="{'active': !isCalendar}" icon="pi pi-list" @click="getAllEvents(false)"/>
+    <Button class="p-button-outlined calendar_btn_right" :class="{'active': isCalendar}" icon="pi pi-calendar" @click="getAllEvents(true)"/>
       </span>
           </div>
-          <div id="full_calendar"></div>
+          <template v-if="isCalendar">
+            <div v-show="isCalendar" id="full_calendar"></div>
+            <div class="flex justify-content-center" v-if="loadingEvents">
+              <ProgressSpinner  class="progress-spinner" strokeWidth="2" style="width: 50px;"/>
+            </div>
+          </template>
           <DataTable
+              v-if="!isCalendar"
+              @page="onPageEvents($event)"
+              :totalRecords="totalEvents"
               :value="allEvents"
               :paginator="true"
+              :lazy="true"
               class="p-datatable-customers"
               :rows="10"
               dataKey="id"
               :rowHover="true"
-              :loading="loading"
+              :loading="loadingEvents"
+              :pageLinkSize="mobile? 3:5"
           >
             <template #empty>
               {{ $t("smartenu.eventsNotFound") }}
@@ -126,6 +171,7 @@ export default {
   data() {
     return {
       total: 0,
+      totalEvents: 0,
       layout: 'list',
       selectedNews: {},
       selectedEvent: {},
@@ -133,12 +179,22 @@ export default {
       eventViewVisible: false,
       skeletons: new Array(6),
       loading: false,
+      loadingEvents: false,
       lazyParams: {
         page: 0,
-        rows: 10,
+        rows: 7,
         searchText: null,
         sortField: "",
         sortOrder: 0
+      },
+      eventParams: {
+        page: 0,
+        rows: 10,
+        first: 0,
+        eventType: "publish",
+        sortField: "",
+        sortOrder: 0,
+        countMode: null
       },
       allNews: [],
       allEvents: [],
@@ -146,12 +202,19 @@ export default {
       newsService: new NewsService(),
       eventService: new EventsService(),
       mobile: false,
-      isCalendarBool: false,
+      isCalendar: false,
+      isList: false,
     };
   },
 
   methods: {
-    getAllNews() {
+    getAllNews(data) {
+      if(data) {
+        this.isList = data
+        this.lazyParams.rows = 7;
+      }else {
+        this.lazyParams.rows = 10;
+      }
       this.loading = true
       this.lazyParams.countMode = null;
       this.newsService.getWelcomeNews(this.lazyParams).then((response) => {
@@ -161,6 +224,7 @@ export default {
           e.imageUrl = smartEnuApi + fileRoute + fileUrl
           e.site_url = `${e.enu_slug.slug ? e.enu_slug.slug + "." : ""}enu.kz`
         });
+        console.log(this.allNews)
         this.total = response.data.total;
         this.loading = false;
       }).catch((error) => {
@@ -171,17 +235,30 @@ export default {
         });
       });
     },
-    getAllEvents() {
+    getAllEvents(data) {
+      this.isCalendar = data
       this.allEvents = [];
-      this.eventService.getPublishEvents().then((response) => {
-        this.allEvents = response.data;
+      this.loadingEvents = true
+      if(data) {
+        this.eventParams = {}
+        this.eventParams.eventType = "publish";
+        this.eventParams.rows = this.totalEvents;
+      }else {
+        this.eventParams.rows = 10;
+      }
+      this.eventService.getPublishEvents(this.eventParams).then((response) => {
+        this.allEvents = response.data.events;
         this.allEvents.map(e => {
           let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
           e.imageUrl = smartEnuApi + fileRoute + fileUrl
         });
-        this.getCalendar()
-        this.loading = false;
+        if(data){
+          this.getCalendar()
+        }
+        this.totalEvents = response.data.total;
+        this.loadingEvents = false;
       }).catch((error) => {
+        this.loadingEvents = false;
         this.$toast.add({
           severity: "error",
           summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
@@ -236,6 +313,7 @@ export default {
             events: this.allEvents,
             eventClick: this.eventView,
             locales: [kkLocale, ruLocale],
+            locale: this.$i18n.locale === "kz" ? 'kk' : this.$i18n.locale,
             initialView: 'dayGridMonth',
             header: {
               left: 'prev,next',
@@ -256,10 +334,17 @@ export default {
       this.selectedNews = item;
       this.newsViewVisible = true;
     },
-
+    getBlockClass(index) {
+      return index < 3 ? 'col-4' : 'col-3';
+    },
     onPage(event) {
       this.lazyParams = event
       this.getAllNews();
+    },
+    onPageEvents(event) {
+      this.eventParams.page = event.page
+      this.eventParams.first = event.first
+      this.getAllEvents();
     },
   },
   created() {
@@ -282,6 +367,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.event_card {
+  img{
+    object-fit: cover;
+  }
+}
 .skeletons {
   width: 80%;
 
@@ -343,25 +433,37 @@ export default {
   }
 }
 .calendar_buttons button {
-  padding: 8px;
+  border-radius: 10px;
+  padding: 7px 20px;
 }
-
+:deep(.fc-button-group button) {
+  border-radius: 10px;
+}
+.calendar_buttons .calendar_btn_left{
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.calendar_buttons .calendar_btn_right{
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
 .calendar_buttons button.active {
-  background: #1B78BD;
+  background: #007be5;
   color: #fff;
-  border: 1px solid #1B78BD;
+  border: 1px solid #007be5;
 }
 
-:deep(.fc.fc-theme-standard .fc-view-harness .fc-event.fc-daygrid-block-event) {
-  background: #1B78BD;
+:deep(.fc-button-primary) {
+  background: #007be5;
   border: 1px solid #fff;
-}
-:deep(.fc.fc-theme-standard .fc-toolbar .fc-button) {
-  background: #1B78BD;
 }
 :deep(.fc-unthemed td.fc-today) {
   background: #e9f7ff;
 }
+:deep(.fc-day-grid-event) {
+  cursor: pointer;
+}
+
 @media (max-width: 780px) {
   .skeletons, .post {
     width: 100%;
