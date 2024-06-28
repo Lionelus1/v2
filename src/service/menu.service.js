@@ -88,7 +88,12 @@ export class MenuService {
                         icon: 'fa-solid fa-rotate',
                         to: '/integrations',
                         visible: this.findRole("main_administrator")
-                    }
+                    },
+                    {
+                        label: $t('smartenu.mailingTitle'),
+                        icon: 'fa-solid fa-calendar-days',
+                        to: '/mailing'
+                    },
                 ]
             },
             {
@@ -138,11 +143,6 @@ export class MenuService {
                 label: $t('smartenu.eventsTitle'),
                 icon: 'fa-solid fa-calendar-days',
                 to: '/events'
-            },
-            {
-                label: $t('smartenu.mailingTitle'),
-                icon: 'fa-solid fa-calendar-days',
-                to: '/mailing'
             },
             // {
             //     label: $t('vaccination.title'),
