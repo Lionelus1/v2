@@ -176,7 +176,7 @@
               </div>
             </template>
           </Column>
-          <Column :header="$t('educomplex.columns.state')" style="min-width: 150px;">
+          <Column :header="statusColumnHeader" style="min-width: 150px;">
             <template #body="slotProps">
               <span :class="'customer-badge status-' + slotProps.data.docHistory.code">
                 {{ slotProps.data.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }} 
@@ -392,9 +392,9 @@ export default {
           value: "revision"
         }
       ],
-      docType: this.$route.params.docType,
-      eduComplexDocType: Enum.DocType.EduComplex,
-      attestationDocReportType: Enum.DocType.StateAttestationCommission
+      docType: parseInt(this.$route.params.docType),
+      eduComplexDocType: parseInt(Enum.DocType.EduComplex),
+      attestationDocReportType: parseInt(Enum.DocType.StateAttestationCommission)
     }
   },
   computed: {
@@ -444,7 +444,16 @@ export default {
               },
 
           ];
+      },
+    statusColumnHeader() {
+      if (this.docType === this.eduComplexDocType) {
+        return this.$t('educomplex.columns.state');
+      } else if (this.docType === this.attestationDocReportType) {
+        return this.$t('scienceWorks.columns.status');
       }
+      return this.$t('educomplex.columns.state');
+
+    }
   },
   created() {
     this.loginedUser = JSON.parse(localStorage.getItem("loginedUser"))
