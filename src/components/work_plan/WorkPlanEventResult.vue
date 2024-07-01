@@ -559,14 +559,19 @@ export default {
     findRole: findRole,
     getFirstMonthOfQuarter() {
       const currentDate = new Date();
-      //const currentMonth = currentDate.getMonth();
-      const currentMonth = currentDate.getMonth();
-      const currentQuarter = Math.floor(currentMonth / 3) + 1;
-      const firstMonthOfQuarter = (currentQuarter - 1) * 3;
-      if (firstMonthOfQuarter === 0){
-        //Eger firstMonthIndex "0" teng bolsa "Ақпан" - aiyn qaitarady
-        return 1
+      const currentMonth = currentDate.getMonth() + 1; //1-12
+      let firstMonthOfQuarter;
+
+      if (currentMonth >= 1 && currentMonth <= 3) { // 1, 2, 3
+        firstMonthOfQuarter = 1;
+      } else if (currentMonth >= 4 && currentMonth <= 6) { // 4, 5, 6
+        firstMonthOfQuarter = 4;
+      } else if (currentMonth >= 7 && currentMonth <= 9) { // 7, 8, 9
+        firstMonthOfQuarter = 7;
+      } else if (currentMonth >= 10 && currentMonth <= 12) { // 10, 11, 12
+        firstMonthOfQuarter = 10;
       }
+
       return firstMonthOfQuarter;
     },
     filterQuarters() {
@@ -574,7 +579,7 @@ export default {
       const currentMonth = currentDate.getMonth() + 1;
       const currentQuarter = Math.ceil(currentMonth / 3);
       const currentDay = currentDate.getDate();
-      if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter) {
+      if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter()) {
         // Agymdagy ai agymdagy toqsannyng birinshi aiy bolsa aldyngy toqsanga natije toltyra alady
         return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
       } else {
