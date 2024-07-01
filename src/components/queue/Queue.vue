@@ -66,7 +66,7 @@
             <Button 
             icon="pi pi-chart-line" 
             v-tooltip.bottom="$t('common.report')"  
-            v-if="slotProps.node.parentId ===null && slotProps.node.createdUserId === loginedUser.userID "
+            v-if="slotProps.node.parentId ===null && isOperator(slotProps.node)"
             class="p-button-rounded p-button-help mr-2"  
             @click="$router.push('/queue/queueReport/'+ slotProps.node.key )" />
             <Button
@@ -78,7 +78,7 @@
             <Button
               icon="pi pi-calendar-clock"
               v-tooltip.bottom="$t('queue.mode')"
-              v-if="slotProps.node.queue_mode === true && slotProps.node.createdUserId === loginedUser.userID"
+              v-if="slotProps.node.queue_mode === true && isOperator(slotProps.node)"
               class="p-button-rounded p-button-help mr-2"
               @click="$router.push('/queue/mode/'+ slotProps.node.key )" />
         </template>
