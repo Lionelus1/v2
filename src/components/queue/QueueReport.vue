@@ -1,4 +1,5 @@
 <template>
+
   <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
   <div class="flex align-items-center mt-4 mb-4">
     <label class="mr-2">{{ $t('queue.reservation') }}</label>
