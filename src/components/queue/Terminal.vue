@@ -133,7 +133,7 @@ export default {
       this.selectedQueue = queue
       this.loading = true      
       var req = {
-        queueID: queue.key, lang: this.selectedlanguage.code
+        parentID: parseInt(this.$route.params.id), queueID: queue.key, lang: this.selectedlanguage.code
       }
       api
       .post("/queue/registerService", req,  {
