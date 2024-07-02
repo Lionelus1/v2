@@ -1,4 +1,5 @@
 <template>
+
   <div class="card flex justify-content-end">
     <LanguageDropdown/>
   </div>
@@ -418,7 +419,7 @@ const registerQueue = async (queueId, queue) => {
     categoryName.value = JSON.parse(localStorage.getItem('queueCategory'))
     const phoneNumber = localStorage.getItem('phoneNumber')
     const req = {
-      queueID: queueId, lang: locale.value, phoneNumber: phoneNumber, queue_name: locale.value === "kz"
+      parentID: parentId.value ,queueID: queueId, lang: locale.value, phoneNumber: phoneNumber, queue_name: locale.value === "kz"
           ? categoryName.value.queueNamekz
           : locale.value === "ru"
               ? categoryName.value.queueNameru

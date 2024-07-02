@@ -1,4 +1,5 @@
 <template>
+
   <TitleBlock :title="$t('queue.title')"/>
   <ToolbarMenu :data="menu"/>
 	<div class="card">
