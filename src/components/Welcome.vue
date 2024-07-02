@@ -17,9 +17,10 @@
               <div
                   v-for="(i, index) in allNews"
                   :key="index"
+                  class="news_card cursor-pointer"
                   :class="getBlockClass(index)"
+                  @click="newsView(i)"
               >
-                <div class="news_card">
                 <div class="img">
                   <img class="w-full" height="220" v-if="i?.imageUrl != null && i?.imageUrl !==''" :src="i?.imageUrl" alt="">
                   <div class="news_tag">{{i?.site_url}}</div>
@@ -36,7 +37,6 @@
                             : i?.titleEn
                   }}
                 </strong>
-                </div>
               </div>
             </div>
             <Paginator @page="onPageGrid($event)" :rows="7" :totalRecords="total"></Paginator>
