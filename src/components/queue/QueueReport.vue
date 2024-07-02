@@ -200,6 +200,7 @@ export default {
       this.getTimes()
     },
     getTimes() {
+
       this.loadingTime = true
       this.reservParams.id = this.queueID
       //this.reservParams.date = this.selectDateReserve.toISOString().substring(0, 10) + 'T00:00:00Z'

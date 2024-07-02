@@ -542,6 +542,7 @@ const routes = [
             },
             {
                 path: '/queue/mode/:id',
+
                 name: '/queueMode',
                 component: load('queue/QueueMode'),
                 beforeEnter: ifAuthenticated,
