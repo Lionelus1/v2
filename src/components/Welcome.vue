@@ -8,22 +8,23 @@
         <TabPanel v-bind:header="$t('smartenu.newsTitle')">
           <div class="calendar_buttons flex justify-content-end mb-2">
       <span class="p-buttonset">
-    <Button class="p-button-outlined calendar_btn_left" :class="{'active': isList}" icon="pi pi-th-large" @click="getAllNews(true)"/>
-    <Button class="p-button-outlined calendar_btn_right" :class="{'active': !isList}" icon="pi pi-list" @click="getAllNews(false)"/>
+    <Button class="p-button-outlined calendar_btn_left" :class="{'active': isGrid}" icon="pi pi-th-large" @click="getAllNews(true)"/>
+    <Button class="p-button-outlined calendar_btn_right" :class="{'active': !isGrid}" icon="pi pi-list" @click="getAllNews(false)"/>
       </span>
           </div>
-          <template v-if="isList">
-            <div class="event_card grid">
+          <template v-if="isGrid">
+            <div class="news_cards grid">
               <div
                   v-for="(i, index) in allNews"
                   :key="index"
                   :class="getBlockClass(index)"
               >
+                <div class="news_card">
                 <div class="img">
                   <img class="w-full" height="220" v-if="i?.imageUrl != null && i?.imageUrl !==''" :src="i?.imageUrl" alt="">
+                  <div class="news_tag">{{i?.site_url}}</div>
                 </div>
-                <div class="flex my-2">
-                  <Tag severity="info" class="mr-3" :value="i?.site_url"></Tag>
+                <div class="my-2">
                   <div class="date">{{ formatDateMoment(i?.publish_date) }}</div>
                 </div>
                 <strong>
@@ -35,14 +36,15 @@
                             : i?.titleEn
                   }}
                 </strong>
+                </div>
               </div>
             </div>
-            <Paginator @page="onPage($event)" :rows="10" :totalRecords="total"></Paginator>
+            <Paginator @page="onPageGrid($event)" :rows="7" :totalRecords="total"></Paginator>
           </template>
           <div v-if="allNews.length === 0">
             {{ $t("smartenu.newsNotFound") }}
           </div>
-          <template v-if="!isList">
+          <template v-if="!isGrid">
           <div v-if="loading" class="skeletons">
             <div class="skeleton" :key="s" v-for="s of skeletons">
               <Skeleton class="skeleton_img"></Skeleton>
@@ -203,17 +205,18 @@ export default {
       eventService: new EventsService(),
       mobile: false,
       isCalendar: false,
-      isList: false,
+      isGrid: true,
     };
   },
 
   methods: {
     getAllNews(data) {
-      if(data) {
-        this.isList = data
-        this.lazyParams.rows = 7;
-      }else {
+      if(data === false) {
+        this.isGrid = false
         this.lazyParams.rows = 10;
+      }else {
+        this.isGrid = true
+        this.lazyParams.rows = 7;
       }
       this.loading = true
       this.lazyParams.countMode = null;
@@ -339,7 +342,11 @@ export default {
     },
     onPage(event) {
       this.lazyParams = event
-      this.getAllNews();
+      this.getAllNews(false);
+    },
+    onPageGrid(event) {
+      this.lazyParams = event
+      this.getAllNews(true);
     },
     onPageEvents(event) {
       this.eventParams.page = event.page
@@ -367,8 +374,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.event_card {
+.news_cards {
+  .news_card{
+    .img{
+      position: relative;
+      border-radius: 20px;
+    }
+    .news_tag{
+      background: #007be5;
+      color: #fff;
+      padding: 2px 5px;
+      position: absolute;
+      bottom: 14px;
+      left: 10px;
+      //border-radius: 5px;
+    }
+  }
   img{
+    //border-radius: 15px;
     object-fit: cover;
   }
 }
