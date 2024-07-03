@@ -17,18 +17,24 @@
               <div
                   v-for="(i, index) in allNews"
                   :key="index"
-                  class="news_card cursor-pointer"
+                  class="news_card_border"
                   :class="getBlockClass(index)"
                   @click="newsView(i)"
               >
+                <div class="news_card cursor-pointer">
                 <div class="img">
-                  <img class="w-full" height="220" v-if="i?.imageUrl != null && i?.imageUrl !==''" :src="i?.imageUrl" alt="">
+                  <img class="w-full" height="150" v-if="i?.imageUrl != null && i?.imageUrl !==''" :src="i?.imageUrl" alt="">
                   <div class="news_tag">{{i?.site_url}}</div>
                 </div>
-                <div class="my-2">
-                  <div class="date">{{ formatDateMoment(i?.publish_date) }}</div>
-                </div>
-                <strong>
+                  <div class="news_content">
+                  <div class="date text-gray-500 mb-2">{{ formatDateMoment(i?.publish_date) }}</div>
+                <strong class="news_title" :title="
+                    $i18n.locale === 'kz'
+                ? i?.titleKz
+                : $i18n.locale === 'ru'
+                ? i?.titleRu
+                : i?.titleEn
+                ">
                   {{
                     $i18n.locale === "kz"
                         ? i?.titleKz
@@ -37,6 +43,8 @@
                             : i?.titleEn
                   }}
                 </strong>
+              </div>
+              </div>
               </div>
             </div>
             <Paginator @page="onPageGrid($event)" :rows="7" :totalRecords="total"></Paginator>
@@ -376,6 +384,19 @@ export default {
 <style lang="scss" scoped>
 .news_cards {
   .news_card{
+    border: 1px solid #dee2e6;
+    border-radius: 15px;
+    .news_content{
+      padding: 15px;
+    }
+    .news_title{
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      display: -webkit-box;
+      display: -moz-box;
+      overflow: hidden;
+    }
     .img{
       position: relative;
       border-radius: 20px;
@@ -390,8 +411,12 @@ export default {
       //border-radius: 5px;
     }
   }
+  .news_card_border{
+
+  }
   img{
-    //border-radius: 15px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
     object-fit: cover;
   }
 }
