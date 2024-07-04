@@ -152,6 +152,8 @@
       total.value = res.data.total
       loading.value = false
     }).catch(err => {
+      courseHistories.value = []
+      total.value = 0
       loading.value=false
       // toast.add({severity: 'error', summary: t('common.error'), life: 3000})
     })
