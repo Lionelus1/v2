@@ -23,27 +23,27 @@
               >
                 <div class="news_card cursor-pointer">
                 <div class="img">
-                  <img class="w-full" height="150" v-if="i?.imageUrl != null && i?.imageUrl !==''" :src="i?.imageUrl" alt="">
-                  <div class="news_tag">{{i?.site_url}}</div>
-                </div>
+                  <img class="w-full" height="220" v-if="i?.imageUrl != null && i?.imageUrl !==''" :src="i?.imageUrl" alt="">
                   <div class="news_content">
-                  <div class="date text-gray-500 mb-2">{{ formatDateMoment(i?.publish_date) }}</div>
-                <strong class="news_title" :title="
+                    <div class="news_tag">{{i?.site_url}}</div>
+                    <div class="date my-2">{{ formatDateMoment(i?.publish_date) }}</div>
+                    <strong class="news_title" :title="
                     $i18n.locale === 'kz'
                 ? i?.titleKz
                 : $i18n.locale === 'ru'
                 ? i?.titleRu
                 : i?.titleEn
                 ">
-                  {{
-                    $i18n.locale === "kz"
-                        ? i?.titleKz
-                        : $i18n.locale === "ru"
-                            ? i?.titleRu
-                            : i?.titleEn
-                  }}
-                </strong>
-              </div>
+                      {{
+                        $i18n.locale === "kz"
+                            ? i?.titleKz
+                            : $i18n.locale === "ru"
+                                ? i?.titleRu
+                                : i?.titleEn
+                      }}
+                    </strong>
+                  </div>
+                </div>
               </div>
               </div>
             </div>
@@ -388,6 +388,12 @@ export default {
     border-radius: 15px;
     .news_content{
       padding: 15px;
+      position: absolute;
+      bottom: 0;
+      color: #fff;
+      .date{
+        color: #ccc;
+      }
     }
     .news_title{
       -webkit-line-clamp: 2;
@@ -399,24 +405,32 @@ export default {
     }
     .img{
       position: relative;
-      border-radius: 20px;
+      border-radius: 15px;
+      height: 220px;
+    }
+    .img:before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgb(41, 48, 66) 100%);
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
     }
     .news_tag{
       background: #007be5;
       color: #fff;
       padding: 2px 5px;
-      position: absolute;
       bottom: 14px;
       left: 10px;
-      //border-radius: 5px;
+      width: fit-content;
+      border-radius: 5px;
     }
   }
-  .news_card_border{
-
-  }
   img{
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
+    border-radius: 15px;
     object-fit: cover;
   }
 }
