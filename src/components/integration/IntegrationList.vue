@@ -7,6 +7,7 @@ import {IntegrationService} from "@/service/integration.service";
 import {useToast} from "primevue/usetoast";
 import {useRouter} from "vue-router";
 import {useConfirm} from "primevue/useconfirm";
+import Access from "@/pages/Access.vue";
 
 const {t, locale} = useI18n()
 const toast = useToast()
@@ -17,6 +18,7 @@ const service = new IntegrationService()
 const loading = ref(false)
 const list = ref()
 const formData = ref()
+const haveAccess = ref(true)
 
 const showDialog = ref(false)
 const isEdit = ref(false)
@@ -52,7 +54,11 @@ const getIntegrations = () => {
     list.value = res.data
     loading.value = false
   }).catch(error => {
-    toast.add({severity: 'error', summary: t('common.error'), detail: error, life: 3000})
+    if (error?.response?.status === 403) {
+      haveAccess.value = false;
+    } else {
+      toast.add({severity: 'error', summary: t('common.error'), detail: error, life: 3000})
+    }
     loading.value = false;
   })
 }
@@ -159,7 +165,7 @@ onMounted(() => {
       <Button @click="openDialog(null)" icon="pi pi-plus"
               class="p-button p-button-success" :label="$t('common.add')" />
     </div>-->
-
+    <BlockUI v-if="haveAccess" :blocked="loading" class="card">
     <div class="card">
       <DataTable :lazy="true" :value="list" dataKey="id" :loading="loading" responsiveLayout="scroll"
                  :rowHover="true">
@@ -184,6 +190,10 @@ onMounted(() => {
           </template>
         </Column>
       </DataTable>
+    </div>
+    </BlockUI>
+    <div v-else class="card">
+      <Access textMode="short" :showLogo="false" returnMode="back"></Access>
     </div>
   </div>
 

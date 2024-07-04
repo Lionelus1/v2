@@ -13,7 +13,7 @@
         <Card style="box-shadow: none">
             <template #header>
                 <div class="dialog_img">
-                    <img v-if="selectedEvent.imageBool" :src="selectedEvent.imageUrl" style="width: 100%; height: 100%"/>
+                    <img v-if="selectedEvent?.imageBool" :src="selectedEvent.imageUrl" style="width: 100%; height: 100%"/>
                 </div>
             </template>
             <template #title>

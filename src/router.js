@@ -105,7 +105,7 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/documents/catalog/educomplex',
+                path: '/documents/catalog/educomplex/:docType',
                 name: '/documents/catalog/educomplex',
                 component: load('documents/catalog/DisciplineEduMetComplex'),
                 beforeEnter: ifAuthenticated,
@@ -123,6 +123,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/catalog/acts/status',
+                name: '/documents/catalog/acts/status',
+                component: load('documents/catalog/StatusActsGPC'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/catalog/scienceWorks',
                 name: 'ScienceWorks',
                 component: load('documents/catalog/ScienceWorks'),
@@ -135,9 +141,9 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/documents/doctemplate',
-                name: '/documents/doctemplate',
-                component: load('documents/DocTemplate'),
+                path: '/documents/templates',
+                name: '/documents/templates',
+                component: load('documents/catalog/DocumentTemplates'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -268,6 +274,12 @@ const routes = [
                 path: '/educational-programs/bachelor/add/:degreeID',
                 name: 'addEducationalPrograms',
                 component: load('documents/onlinecourse/AddEducationalProgram'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/reports/sacreports',
+                name: 'sacReports',
+                component: load('documents/reports/SACReports'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -539,7 +551,13 @@ const routes = [
                 name: '/queueReport',
                 component: load('queue/QueueReport'),
                 beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/queue/mode/:id',
 
+                name: '/queueMode',
+                component: load('queue/QueueMode'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/reception',

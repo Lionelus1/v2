@@ -1,6 +1,5 @@
 <template>
     <h3>{{ $t("postaccmonrep.title") }}</h3>
-
     <ToolbarMenu :data="menu" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
 
     <div class="card">

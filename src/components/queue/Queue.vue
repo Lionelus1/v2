@@ -1,4 +1,5 @@
 <template>
+
   <TitleBlock :title="$t('queue.title')"/>
   <ToolbarMenu :data="menu"/>
 	<div class="card">
@@ -16,7 +17,13 @@
               <Chip class="mr-2 custom-chip" :label="responsible.fullName"/>
             </span>
           </div>
-
+        </template>
+      </Column>
+      <Column v-bind:header="$t('queue.queueType')">
+        <template #body="slotProps">
+          <span v-if="slotProps.node.reservation === true">
+            {{$t('queue.reservation')}}
+          </span>
         </template>
       </Column>
       <Column>
@@ -60,14 +67,21 @@
             <Button 
             icon="pi pi-chart-line" 
             v-tooltip.bottom="$t('common.report')"  
-            v-if="slotProps.node.parentId ===null && slotProps.node.createdUserId === loginedUser.userID "
+            v-if="slotProps.node.parentId ===null && isOperator(slotProps.node)"
             class="p-button-rounded p-button-help mr-2"  
             @click="$router.push('/queue/queueReport/'+ slotProps.node.key )" />
             <Button
               icon="pi pi-fw pi-qrcode"
               v-tooltip.bottom="'QR'"
+              v-if="slotProps.node.queue_qr === true"
               class="p-button-rounded p-button-info mr-2"
               @click="itemID(slotProps.node.key)" />
+            <Button
+              icon="pi pi-calendar-clock"
+              v-tooltip.bottom="$t('queue.mode')"
+              v-if="slotProps.node.queue_mode === true && isOperator(slotProps.node)"
+              class="p-button-rounded p-button-help mr-2"
+              @click="$router.push('/queue/mode/'+ slotProps.node.key )" />
         </template>
       </Column>              
     </TreeTable> 
@@ -107,7 +121,18 @@
           <FindUser v-model="queue.responsibles" :userType="2"></FindUser>
           <small class="p-error" v-if="!validation.responsibles && submitted">{{ $t("common.requiredField") }}</small>
       </div>
-              
+      <div v-if="currentNode && currentNode.parentId" class="field-checkbox mt-3">
+        <Checkbox id="landing" name="landing" v-model="queue.reservation" :binary="true"/>
+        <label for="landing">{{$t('queue.reservation')}}</label>
+      </div>
+      <div class="field-checkbox mt-3">
+        <Checkbox id="landing" name="landing" v-model="queue.queue_qr" :binary="true"/>
+        <label for="landing">QR</label>
+      </div>
+      <div class="field-checkbox mt-3">
+        <Checkbox id="landing" name="landing" v-model="queue.queue_mode" :binary="true"/>
+        <label for="landing">{{$t('queue.mode')}}</label>
+      </div>
       <template #footer>
         <Button
           v-bind:label="$t('common.save')"
@@ -193,7 +218,7 @@ export default {
       rows: 100,   
       totalRecords: 100,        
       selectedQueue: null,
-      loading: true,
+      loading: false,
       userRoles: null,
       roles: {
         isAdmin: false,
@@ -220,8 +245,9 @@ export default {
   },
    
   methods: {    
-    getQueue(parentID, parent) {  
-      this.submitted = true 
+    getQueue(parentID, parent) {
+      this.loading = true
+      this.submitted = true
       this.lazyParams.parentID = parentID
       api
       .post("/queue/allQueues", this.lazyParams, {
@@ -247,6 +273,7 @@ export default {
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");
         }
+        this.loading = false;
       });
     },
     isOperator(queue) {
@@ -303,6 +330,7 @@ export default {
 
     editQueue(node) {
       // alert(resId);
+      this.currentNode = node;
       this.queue = JSON.parse(JSON.stringify(node))
       this.editVisible = true;
       this.submitted = false;   
@@ -423,7 +451,7 @@ export default {
   },
   created() {
     this.loginedUser = this.$store.state.loginedUser;
-    this.getQueue(null, null); 
+    this.getQueue(null, null);
   },
 
 }

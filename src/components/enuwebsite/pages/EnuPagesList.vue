@@ -2,53 +2,57 @@
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <div class="col-12">
     <TitleBlock :title="$t('web.pageLink')"/>
-    <ToolbarMenu :data="toolbarMenus" @search="initSearch($event)" :search="true"/>
-    <div class="card" v-if="findRole(null, 'enu_web_admin')">
-      <SelectSiteSlug @onSelect="onSlugSelect"/>
-    </div>
-    <div class="card">
-      <TabView>
-        <TabPanel :header="$t('web.properties')">
-          <DataTable :value="pages" responsiveLayout="scroll" :lazy="true" dataKey="enu_page_id" :loading="loading"
-                     :rows="10" :rowHover="true" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
-            <template #empty>{{ this.$t("common.recordsNotFound") }}</template>
-            <template #loading>{{ this.$t("common.recordsLoading") }}</template>
-            <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
-              <template #body="{ data }">
-                {{
-                  $i18n.locale === 'kz' ? data.title_kz : $i18n.locale === 'ru' ? data.title_ru :
-                      data.title_en
-                }}
-              </template>
-            </Column>
-            <Column field="is_landing" header="Landing page" sortable>
-              <template #body="{ data }">
-                {{ data.is_landing ? 'Landing page' : '' }}
-              </template>
-            </Column>
-            <Column field="create_date" :header="$t('faq.createDate')" sortable>
-              <template #body="{ data }">
-                {{ formatDate(data.create_date) }}
-              </template>
-            </Column>
-            <!-- <Column field="faculty_name" :header="$t('web.facultyName')" sortable>
+    <BlockUI v-if="haveAccess" :blocked="loading">
+      <ToolbarMenu :data="toolbarMenus" @search="initSearch($event)" :search="true"/>
+      <div class="card" v-if="findRole(null, 'enu_web_admin')">
+        <SelectSiteSlug @onSelect="onSlugSelect"/>
+      </div>
+      <div class="card">
+        <TabView>
+          <TabPanel :header="$t('web.properties')">
+            <DataTable :value="pages" responsiveLayout="scroll" :lazy="true" dataKey="enu_page_id" :loading="loading"
+                       :rows="10" :rowHover="true" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
+              <template #empty>{{ this.$t("common.recordsNotFound") }}</template>
+              <template #loading>{{ this.$t("common.recordsLoading") }}</template>
+              <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
                 <template #body="{ data }">
-                    {{ $i18n.locale === 'kz' ? data.faculty_name.faculty_name_kz : $i18n.locale === 'ru' ? data.faculty_name.faculty_name_ru :
-                        data.faculty_name.faculty_name_en }}
+                  {{
+                    $i18n.locale === 'kz' ? data.title_kz : $i18n.locale === 'ru' ? data.title_ru :
+                        data.title_en
+                  }}
                 </template>
-            </Column> -->
-            <Column header="" style="text-align: right;">
-              <template #body="{ data }">
-                <ActionButton :show-label="true" :items="initItems" @toggle="toggle(data)"/>
-              </template>
-            </Column>
-          </DataTable>
-        </TabPanel>
-        <TabPanel :header="$t('web.history')" @click="getTableLogs()">
-          <WebLogs :TN="TN" :key="TN"/>
-        </TabPanel>
-      </TabView>
-
+              </Column>
+              <Column field="is_landing" header="Landing page" sortable>
+                <template #body="{ data }">
+                  {{ data.is_landing ? 'Landing page' : '' }}
+                </template>
+              </Column>
+              <Column field="create_date" :header="$t('faq.createDate')" sortable>
+                <template #body="{ data }">
+                  {{ formatDate(data.create_date) }}
+                </template>
+              </Column>
+              <!-- <Column field="faculty_name" :header="$t('web.facultyName')" sortable>
+                  <template #body="{ data }">
+                      {{ $i18n.locale === 'kz' ? data.faculty_name.faculty_name_kz : $i18n.locale === 'ru' ? data.faculty_name.faculty_name_ru :
+                          data.faculty_name.faculty_name_en }}
+                  </template>
+              </Column> -->
+              <Column header="" style="text-align: right;">
+                <template #body="{ data }">
+                  <ActionButton :show-label="true" :items="initItems" @toggle="toggle(data)"/>
+                </template>
+              </Column>
+            </DataTable>
+          </TabPanel>
+          <TabPanel :header="$t('web.history')" @click="getTableLogs()">
+            <WebLogs :TN="TN" :key="TN"/>
+          </TabPanel>
+        </TabView>
+      </div>
+    </BlockUI>
+    <div v-else class="card">
+      <Access textMode="short" :showLogo="false" returnMode="back"></Access>
     </div>
   </div>
 
@@ -70,10 +74,11 @@ import TitleBlock from "@/components/TitleBlock.vue";
 import SelectSiteSlug from "@/components/enuwebsite/SelectSiteSlug.vue";
 import ActionButton from "@/components/ActionButton.vue";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import Access from "@/pages/Access.vue";
 
 export default {
   name: "EnuPagesList",
-  components: {ToolbarMenu, ActionButton, SelectSiteSlug, TitleBlock, AddPage, PageView, WebLogs},
+  components: {Access, ToolbarMenu, ActionButton, SelectSiteSlug, TitleBlock, AddPage, PageView, WebLogs},
   data() {
     return {
       pages: [],
@@ -112,7 +117,8 @@ export default {
       total: 0,
       fileService: new FileService(),
       fileList: [],
-      actionsNode: null
+      actionsNode: null,
+      haveAccess: true
     }
   },
   created() {
@@ -151,7 +157,11 @@ export default {
         this.loading = false;
       }).catch(error => {
         this.loading = false;
-        this.$toast.add({severity: "error", summary: error, life: 3000});
+        if (error?.response?.status === 403) {
+          this.haveAccess = false
+        } else {
+          this.$toast.add({severity: "error", summary: error, life: 3000});
+        }
       });
     },
     onPage(event) {

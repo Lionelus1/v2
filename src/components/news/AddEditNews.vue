@@ -1,6 +1,8 @@
 <template>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <TitleBlock :title="$t(newsId === 0 ? 'smartenu.createNews' : 'smartenu.editNews')" :show-back-button="true"/>
+
+  <BlockUI v-if="haveAccess" :blocked="loading" class="card">
   <div class="grid" v-if="newsData">
     <div class="col-12 lg:col-9">
       <div class="card p-fluid">
@@ -161,6 +163,10 @@
       </div>
     </div>
   </div>
+  </BlockUI>
+  <div v-else class="card">
+    <Access textMode="short" :showLogo="false" returnMode="back"></Access>
+  </div>
 </template>
 
 <script>
@@ -171,10 +177,11 @@ import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "@/config/config"
 import Gallery from "@/components/Gallery.vue";
 import {FileService} from "@/service/file.service";
 import {EnuWebService} from "@/service/enu.web.service";
+import Access from "@/pages/Access.vue";
 
 export default {
   name: "AddEditNews",
-  components: {Gallery},
+  components: {Access, Gallery},
   data() {
     return {
       formValid: [],
@@ -208,7 +215,8 @@ export default {
         root: [],
       },
       categories: null,
-      publish_date: new Date()
+      publish_date: new Date(),
+      haveAccess: true
     }
   },
   created() {
@@ -250,12 +258,11 @@ export default {
           }
         }
       }).catch(error => {
-        console.log(error)
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
+        if (error?.response?.status === 403) {
+          this.haveAccess = false
+        } else {
+          this.toast.add({severity: "error", summary: error, life: 3000});
+        }
       })
     },
     generateImageUrl() {

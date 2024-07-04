@@ -30,7 +30,7 @@
             style="border: 1px solid #000; padding: 5px; margin: 5px;display: block;">
             <p>
               <b> {{ user.fullName }} </b>
-              <br/> {{ stage.usersApproved && stage.usersApproved[userInd] == 1 ? $t('ncasigner.approved') + ": " + new Date(stage.signatures[userInd].signDate).toLocaleDateString() + ", " + new Date(stage.signatures[userInd].signDate).toLocaleTimeString()  : $t('ncasigner.approvingExpected') }}
+              <br/> {{ stage.usersApproved && stage.usersApproved[userInd] == 1 ? $t('ncasigner.approved') + getStageSignaturesDate(stage.signatures, userInd) : $t('ncasigner.approvingExpected') }}
             </p>
             <div v-if="stage.signatures" style="width: 100%;text-align: left;">
               <qrcode-vue v-for="(i, ind) of stage.signatures[userInd].sign" :key="ind" size="300" render-as="svg" margin="2" :value="i"></qrcode-vue>
@@ -53,6 +53,15 @@ export default {
     signatures: null,
     approvalStages: null,
     showSign: null,
+  },
+  methods: {
+    getStageSignaturesDate(signatures, userInd) {
+      if (signatures) {
+        return ": " + new Date(signatures[userInd].signDate).toLocaleDateString() + ", " + new Date(signatures[userInd].signDate).toLocaleTimeString()
+      }
+
+      return ""
+    }
   }
 }
 </script>
