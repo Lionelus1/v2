@@ -289,6 +289,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/contragent/curriculumVitae',
+                name: 'CurriculumVitae',
+                component: load('contragent/СurriculumVitae'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/contragent/persons/:type',
                 name: 'PersonsList',
                 component: load('contragent/v2/PersonsList'),
@@ -300,7 +306,6 @@ const routes = [
                 component: () => import('./components/hdfs/HdfsMain.vue'),
                 beforeEnter: ifAuthenticated,
             },
-
             {
                 path: '/news',
                 name: 'NewsComponent',
