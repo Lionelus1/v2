@@ -1577,8 +1577,8 @@ export default {
         numberParticipants: "Қатысушылар саны",
         сompletedСourse: "Аяқталған курстар",
         moduleCredits: 'Кредиты',
-        potok: 'Потоктар'
-
+        potok: 'Потоктар',
+        onlineCourse:'Онлайн курс'
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',

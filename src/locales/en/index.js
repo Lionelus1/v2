@@ -1570,7 +1570,8 @@ export default {
         numberParticipants: "Number of participants",
         сompletedСourse: "Completed courses",
         moduleCredits: 'Credits',
-        potok: 'Flows'
+        potok: 'Flows',
+        onlineCourse:'Online course'
     },
     roleControl: {
         addSidebar: 'Adding new record',

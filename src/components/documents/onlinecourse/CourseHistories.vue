@@ -153,7 +153,7 @@
       loading.value = false
     }).catch(err => {
       loading.value=false
-      toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+      // toast.add({severity: 'error', summary: t('common.error'), life: 3000})
     })
 
   }

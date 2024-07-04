@@ -1567,7 +1567,8 @@ export default {
         numberParticipants: "Количество участников",
         completedCourse: "Завершенные курсы",
         moduleCredits: 'Кредиты',
-        potok: 'Потоки'
+        potok: 'Потоки',
+        onlineCourse:'Онлайн курс'
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',
