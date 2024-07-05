@@ -224,16 +224,16 @@ const toggleList = () => {
 const getFullName = (data) => {
   let fullName = "";
 
+  if (data.thirdName) {
+    fullName += data.thirdName + " ";
+  }
+
   if (data.firstName) {
     fullName += data.firstName + " ";
   }
 
   if (data.lastName) {
     fullName += data.lastName + " ";
-  }
-
-  if (data.thirdName) {
-    fullName += data.thirdName;
   }
 
   return fullName.trim();

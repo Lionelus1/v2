@@ -1,4 +1,5 @@
 <template>
+
   <div class="card flex justify-content-end">
     <LanguageDropdown/>
   </div>
@@ -9,6 +10,9 @@
       <Button class="justify-content-center p-button-lg" @click="queue(true)">{{ $t('queue.choiceTime') }}</Button>
     </div>
     <div :class="['flex', 'flex-column', 'm-auto', 'gap-2', {'text-center': !reservation, 'gap-4': !reservation,}]" v-if="currentStep === 2">
+      <div class="flex justify-content-end">
+        <Button class="p-button-outlined" :label="$t('educomplex.tooltip.previous')" @click="previous()" icon="pi pi-arrow-left" />
+      </div>
       <template v-if="reservation">
         <h4 class="m-0">{{ $t('contact.lname') }}</h4>
         <InputText class="p-inputtext-lg" v-model="lastName"/>
@@ -245,6 +249,7 @@ import moment from "moment";
 import io from "socket.io-client";
 import LanguageDropdown from "@/LanguageDropdown.vue";
 import {useToast} from "primevue/usetoast";
+import {useReCaptcha} from "vue-recaptcha-v3";
 
 const {t, locale} = useI18n()
 const toast = useToast()
@@ -290,6 +295,11 @@ const timeList = ref([]);
 const emailError = ref('');
 const queueId = ref();
 const loading = ref(false);
+const { executeRecaptcha, recaptchaLoaded } = useReCaptcha()
+const recaptcha = async () => {
+  await recaptchaLoaded();
+  return await executeRecaptcha("");
+};
 
 const validateEmail = () => {
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -304,26 +314,32 @@ const validateEmail = () => {
 };
 
 const getDays = (data) => {
+  loading.value = true
   axios
       .post(smartEnuApi + "/queue/getAvailableDays", {id: data}, {
         headers: getHeader(),
       })
       .then((response) => {
         daysList.value = response.data
+        loading.value = false
       })
       .catch((error) => {
+        loading.value = false
         console.log(error)
       });
 }
 const getTimes = (data,date) => {
+  loading.value = true
   axios
       .post(smartEnuApi + "/queue/getAvailableTimes", {id: data, date: date}, {
         headers: getHeader(),
       })
       .then((response) => {
         timeList.value = response.data
+        loading.value = false
       })
       .catch((error) => {
+        loading.value = false
         console.log(error)
       });
 }
@@ -392,7 +408,7 @@ const combineDateTime = (date, timeSlot) => {
   const datePart = date.split('T')[0];
   return `${datePart}T${timeSlot}Z`;
 }
-const registerQueue = (queueId, queue) => {
+const registerQueue = async (queueId, queue) => {
   loading.value = true
   disabledRezervation.value = true
   if (localStorage.getItem('phoneNumber')) {
@@ -403,7 +419,7 @@ const registerQueue = (queueId, queue) => {
     categoryName.value = JSON.parse(localStorage.getItem('queueCategory'))
     const phoneNumber = localStorage.getItem('phoneNumber')
     const req = {
-      queueID: queueId, lang: locale.value, phoneNumber: phoneNumber, queue_name: locale.value === "kz"
+      parentID: parentId.value ,queueID: queueId, lang: locale.value, phoneNumber: phoneNumber, queue_name: locale.value === "kz"
           ? categoryName.value.queueNamekz
           : locale.value === "ru"
               ? categoryName.value.queueNameru
@@ -421,7 +437,10 @@ const registerQueue = (queueId, queue) => {
     }
     axios
         .post(smartEnuApi + "/queue/registerService", req, {
-          headers: getHeader(),
+          headers: {
+            ...getHeader(),
+            ...{"G-Recaptcha-Response": await recaptcha()},
+          },
         })
         .then((response) => {
           getRegisterService(queueId)
@@ -528,6 +547,9 @@ const formatDay = (date) => {
 }
 const formatTime= (date) => {
   return date.time_slot.substring(0, 5);
+}
+const previous = () => {
+  currentStep.value = 1
 }
 onMounted(() => {
   if (parentId.value !== parseInt(localStorage.getItem('queueParentId'))) {
@@ -693,5 +715,4 @@ onMounted(() => {
 .p-inputtext::placeholder {
   color: #ced4da;
 }
-
 </style>

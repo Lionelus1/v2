@@ -1,5 +1,4 @@
 <template>
- 
     <div class="card">       
       <Sidebar  v-model:visible="visible" :baseZIndex="10000" :showCloseIcon="!findRole(null, 'queue_terminal')" position="full">
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em;" />
@@ -134,7 +133,7 @@ export default {
       this.selectedQueue = queue
       this.loading = true      
       var req = {
-        queueID: queue.key, lang: this.selectedlanguage.code
+        parentID: parseInt(this.$route.params.id), queueID: queue.key, lang: this.selectedlanguage.code
       }
       api
       .post("/queue/registerService", req,  {

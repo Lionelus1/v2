@@ -105,7 +105,7 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/documents/catalog/educomplex',
+                path: '/documents/catalog/educomplex/:docType',
                 name: '/documents/catalog/educomplex',
                 component: load('documents/catalog/DisciplineEduMetComplex'),
                 beforeEnter: ifAuthenticated,
@@ -274,6 +274,12 @@ const routes = [
                 path: '/educational-programs/bachelor/add/:degreeID',
                 name: 'addEducationalPrograms',
                 component: load('documents/onlinecourse/AddEducationalProgram'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/reports/sacreports',
+                name: 'sacReports',
+                component: load('documents/reports/SACReports'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -548,6 +554,7 @@ const routes = [
             },
             {
                 path: '/queue/mode/:id',
+
                 name: '/queueMode',
                 component: load('queue/QueueMode'),
                 beforeEnter: ifAuthenticated,
