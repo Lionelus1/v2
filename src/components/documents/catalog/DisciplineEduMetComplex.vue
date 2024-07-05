@@ -193,10 +193,10 @@
     </div>
   </BlockUI>
   <!-- addDocumentDialog -->
-  <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="visibility.addDocumentDialog" 
+  <Dialog :header="$t('hdfs.uploadTitle')" :docType="docType" v-model:visible="visibility.addDocumentDialog" 
     :style="{width: '60vw'}" :modal="true">
     <PostFile :fileUpload="true" :modelValue="newFile" directory="eduMetComplex"
-      @updated="close('addDocumentDialog');getFiles()" accept=".pdf"></PostFile>
+      @updated="close('addDocumentDialog');getFiles()" accept=".pdf" :docType="docType"></PostFile>
   </Dialog>
   <!-- documentInfoSidebar -->
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg"

@@ -26,6 +26,25 @@
           <InputText id="fodernameen" v-model="file.nameen" type="text" />
           <small class="p-error" v-if="validation.nameen">{{ $t("common.requiredField") }}</small>
         </div>
+        <div v-if="docType == attestationDocReportType" class="field">
+                <label for="filename" >{{$t('web.chooseDegree')}}</label>
+                <div class="flex flex-wrap gap-3">
+                    <div class="flex align-items-center">
+                        <RadioButton v-model="selectedEducationLevel" inputId="master" name="bachelor" :value="Enums.EducationLevel.Bachelor" />
+                        <label for="levelBachelor" class="ml-2">{{$t('educationalPrograms.bachelor')}}</label>
+                    </div>
+                    <div class="flex align-items-center">
+                        <RadioButton v-model="selectedEducationLevel" inputId="master" name="master" :value="Enums.EducationLevel.Magister" />
+                        <label for="levelMaster" class="ml-2">{{$t('educationalPrograms.master')}}</label>
+                    </div>
+                    <div class="flex align-items-center">
+                        <RadioButton v-model="selectedEducationLevel" inputId="doctorate" name="doctorate" :value="Enums.EducationLevel.Doctorate" />
+                        <label for="levelDoctoral" class="ml-2">{{$t('educationalPrograms.doctoral')}}</label>
+                    </div>
+                </div>
+                <small class="p-error" v-if="validation.academicLevel">{{ $t("common.requiredField") }}</small>
+        </div>
+
         <div  v-if="file.params != null && file.params != undefined ">
           <div class="field" v-for="(param,i) of file.params" :key="`${i}`" >
             <label>{{$t('hdfs.' + param.name)}}</label>
@@ -46,8 +65,9 @@
             </div>
             <div v-else-if="param.name==='saceduprogram'">
               <SpecialitySearch :style="'height:38px'" class="pt-1" :editMode="true"
-                :educationLevel="null" v-model="param.value" id="speciality">
+                :educationLevel="educationLevel" v-model="param.value" id="speciality">
               </SpecialitySearch>
+              <small class="p-error" v-if="validation.academicLevel">{{ $t('web.chooseDegree') }}</small>
             </div>
             <div  v-else-if="param.name==='academicyear'">
               <PrimeCalendar v-model="param.value" selectionMode="range" dateFormat="yy"  view="year" :manualInput="false" />
@@ -110,7 +130,7 @@ import SpecialitySearch from "../smartenu/speciality/specialitysearch/Speciality
 import Enums from "@/enum/docstates/index";
 
 export default {
-    components: {DepartmentList,Files, SpecialitySearch},
+    components: {DepartmentList, SpecialitySearch, Files},
     data() {
       return {
         file: this.modelValue,
@@ -134,8 +154,12 @@ export default {
             approveDate: false,
             author: false,
             catalog: false,
+            academicLevel:false,
+            eduProg:false,
         },
-        Enums: Enums
+        Enums: Enums,
+        selectedEducationLevel: null,
+        attestationDocReportType: parseInt(Enum.DocType.StateAttestationCommission),
       }
     },
     props: {
@@ -149,7 +173,8 @@ export default {
       },
       accept: {
         default: ".doc,.docx,.pdf"
-      }
+      },
+      docType: null
     },
     emits: ['updated'],
     setup(props, context) {
@@ -184,13 +209,28 @@ export default {
       }
     },
   },
-  methods: {
+  computed: {
+    educationLevel() {
+      return this.selectedEducationLevel;
+    },
 
+  },
+  methods: {
+    
+    levelValidate(){
+      let docType = parseInt(this.docType)
+      if (docType === this.attestationDocReportType){
+        this.validation.academicLevel = this.selectedEducationLevel === null;
+        return !this.validation.academicLevel;
+      }
+
+    },
     notValid() {
       this.validation.namekz = this.file.namekz === null || this.file.namekz === ''
       this.validation.nameru = this.file.nameru === null || this.file.nameru === ''
       this.validation.nameen = this.file.nameen === null || this.file.nameen === ''
       //this.validation.parent = this.file.parentID === null || this.file.parentID === undefined
+      this.levelValidate();
       this.validation.lang = (this.file.id === null && this.file.lang === null)
       this.validation.param =  false
       if (this.file.params != null) {
