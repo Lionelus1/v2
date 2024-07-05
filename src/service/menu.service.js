@@ -132,6 +132,11 @@ export class MenuService {
                 icon: 'fa-solid fa-calendar-days',
                 to: '/events'
             },
+            {
+                label: $t('smartenu.mailingTitle'),
+                icon: 'fa-solid fa-calendar-days',
+                to: '/mailing'
+            },
             // {
             //     label: $t('vaccination.title'),
             //     icon: 'pi pi-fw pi-check-circle',
@@ -296,15 +301,45 @@ export class MenuService {
                         label: $t('course.courses'),
                         icon: 'fa-solid fa-chalkboard',
                         to: '/categories-courses',
-
                     },
 
                 ]
             },
             {
+                label: $t('educationalPrograms.educationalProgramConstructor'), icon: 'fa-solid fa-diagram-project',
+                items: [
+                    {
+                        label: $t('educationalPrograms.bachelor'), to: '/educational-programs/bachelor',
+                    },
+                    {
+                        label: $t('educationalPrograms.master'), to: '/educational-programs/master',
+                    },
+                    {
+                        label: $t('educationalPrograms.doctoral'), to: '/educational-programs/doctoral',
+                    },
+                ]
+            },
+            {
+                label: 'Каталог услуг',
+                icon: 'fa-solid fa-briefcase',
+                to: '/service-catalog'
+            },
+            {
                 label: $t('helpDesk.title'),
                 icon: 'pi pi-spin pi-cog',
-                to: '/helpdesk',
+                items: [
+                    {
+                        label: $t('helpDesk.title'),
+                        icon: 'fa-solid fa-paperclip',
+                        to: '/helpdesk/deskJournal',
+                    },
+                    {
+                        label: $t('helpDesk.category'),
+                        icon: 'fa-solid fa-pen-nib',
+                        to: '/helpdesk/create',
+                        visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
+                    }
+                ]
             }
         ]
     }

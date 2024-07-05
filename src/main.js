@@ -135,6 +135,8 @@ import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
 import TitleBlock from "./components/TitleBlock";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import {getHeader, smartEnuApi, socketApi} from "@/config/config";
+import io from "socket.io-client";
 import {isMobile} from "@/helpers/HelperUtil";
 
 Date.prototype.toJSON = function(){
@@ -152,6 +154,23 @@ router.beforeEach(function(to, from, next) {
 const app = createApp(App);
 const emitter = mitt();
 app.provide('emitter', emitter);
+
+/*
+const headers = getHeader()
+export const socket = io(smartEnuApi, {
+    withCredentials: false
+   /!* transports: ['websocket'],
+    extraHeaders: {
+
+    }*!/
+})
+
+socket.on("connect", (s) => {
+    console.log(s)
+});
+*/
+
+
 
 /* eslint-disable */
 app.use(PrimeVue, {
@@ -390,5 +409,4 @@ app.component('ToolbarMenu', ToolbarMenu)
 app.component('ActionButton', ActionButton)
 
 interceptor(store,app);
-
 app.mount('#app');

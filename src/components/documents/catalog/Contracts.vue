@@ -59,6 +59,10 @@
               class="customer-badge status-status_signed" style="width: min-content;">
               {{ $t('contracts.contragentRequest') }}
             </span>
+            <span v-if="havePracticeLeaderRequest(slotProps.data)"
+                  class="customer-badge status-status_inapproval" style="width: min-content;">
+              {{ $t('contracts.practiceLeaderRequest') }}
+            </span>
           </div>
         </template>
       </Column>
@@ -468,6 +472,18 @@ export default {
 
       return false;
     },
+    havePracticeLeaderRequest(contract) {
+      if (contract.requests) {
+        for (let i = 0; i < contract.requests.length; i++) {
+          if (contract.requests[i].type === this.Enum.DocumentRequestType.PracticeLeaderRequest &&
+              contract.requests[i].status === 0) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
     deleteFile() {
       this.$confirm.require({
         message: this.$t("common.doYouWantDelete"),
@@ -601,7 +617,6 @@ export default {
           visible: (this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.CREATED.ID ||this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === this.actionsNode.creatorID,
           command: () => {this.currentDocument=this.actionsNode;this.deleteFile()},
         }
-
       ]
     },
   }

@@ -42,7 +42,8 @@
 import {useRoute} from "vue-router"
 
 import {MenuService} from "../service/menu.service";
-
+import {smartEnuApi, getHeader} from "@/config/config";
+import axios from 'axios';
 import AppTopBar from '../AppTopbar.vue';
 import AppProfile from '../AppProfile.vue';
 import AppMenu from '../AppMenu.vue';
@@ -85,10 +86,10 @@ export default {
     },
     fixedMenu(newVal, oldVal) {
       this.fixedMenu = newVal
-      if(this.fixedMenu){
+      if (this.fixedMenu) {
         this.menuWidth = 250
         this.hasClass = true
-      }else {
+      } else {
         this.menuWidth = 85
         this.hasClass = false
       }
@@ -174,6 +175,29 @@ export default {
       this.menuWidth = this.menuWidth === 85 ? 250 : 85;
       this.fixedMenu = !this.fixedMenu
       localStorage.setItem("fixedMenu", this.fixedMenu)
+
+      axios
+          .post(smartEnuApi + "/smartenu/settings/insert", {
+                fixed_menu: this.fixedMenu,
+              },
+              {
+                headers: getHeader()
+              },).then((res) => {
+
+      }).catch((err) => {
+        if (err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+
+        this.$toast.add({
+          severity: "error",
+          detail: this.$t("common.message.saveError"),
+          life: 3000,
+        });
+
+        this.loading = false;
+      });
+
     },
     expandMenu() {
       if (this.fixedMenu) return;
@@ -225,6 +249,43 @@ export default {
     applyFlexHandler(value) {
       this.applyFlex = value;
     },
+    loadMenuIcon() {
+
+      const fixedMenu = localStorage.getItem("fixedMenu");
+
+
+      const isValueMissing = fixedMenu === null || fixedMenu === undefined || fixedMenu === 'null' || fixedMenu === 'undefined';
+
+      if (isValueMissing) {
+
+        axios
+            .get(smartEnuApi + "/smartenu/settings/get", {
+              headers: getHeader()
+            })
+            .then((res) => {
+
+              if (res.data && res.data.enu_settings) {
+                localStorage.setItem("fixedMenu", res.data.enu_settings.fixed_menu);
+                this.fixedMenu = res.data.enu_settings.fixed_menu;
+              } else {
+                this.fixedMenu = false
+              }
+            })
+            .catch((err) => {
+
+              console.error('Ошибка при получении значения fixedMenu из бэкенда:', err);
+
+              this.fixedMenu = false;
+            });
+      } else {
+
+        this.fixedMenu = fixedMenu === 'true';
+      }
+    },
+
+    saveMenuIcon() {
+
+    },
     hideOverlay() {
       this.showOverlay = false;
       localStorage.setItem("show-hint", true);
@@ -257,16 +318,16 @@ export default {
   },
   created() {
     this.getLoginedUser();
-    if(this.fixedMenu){
+    if (this.fixedMenu) {
       this.menuWidth = 250
       this.hasClass = true
-    }else {
+    } else {
       this.menuWidth = 85
     }
 
   },
   mounted() {
-    if(!localStorage.getItem("show-hint")){
+    if (!localStorage.getItem("show-hint")) {
       this.showOverlay = true;
     }
     let showPositionsDialog = localStorage.getItem('showPositionsDialog');
@@ -279,6 +340,7 @@ export default {
     } else if (doNotShowAnymore) {
       localStorage.removeItem('showPositionsDialog');
     }
+    this.loadMenuIcon()
   },
   beforeUpdate() {
     if (this.mobileMenuActive)
@@ -375,7 +437,7 @@ export default {
 }
 
 
-.hint-popup{
+.hint-popup {
   width: 300px;
   top: 55px;
   right: 162px;
@@ -387,6 +449,7 @@ export default {
   border-radius: 5px;
   animation: jump 2s ease-in-out 2;
 }
+
 .hint-popup:before {
   content: "";
   border: solid transparent;
@@ -397,18 +460,25 @@ export default {
   border-width: 9px;
   margin-left: 0;
 }
+
 @media (max-width: 500px) {
-  .hint-popup{
+  .hint-popup {
     right: 2%;
   }
   .hint-popup:before {
     right: 53%;
   }
 }
+
 @keyframes jump {
-  0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-  40% {transform: translateY(-20px);}
-  60% {transform: translateY(-15px);
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-15px);
     box-shadow: rgb(33, 150, 243) 0 2px 10px;
   }
 }

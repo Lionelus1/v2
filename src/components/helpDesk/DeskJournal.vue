@@ -100,6 +100,7 @@
               </div>
             </template>
           </Column>
+
           <!--          <Column style="min-width: 50px;" v-if="!findRole(null, 'main_administrator')">-->
           <!--            <template #body="{ data }">-->
           <!--              <div class="flex flex-wrap column-gap-1 row-gap-1">-->
@@ -465,7 +466,7 @@ const getCategory = () => {
       })
       .then((res) => {
         currentDocument.value = null;
-        directions.value = res.data.category
+        directions.value = res.data.category.filter(category => category.is_active)
         request.value.category = res.data.category.id;
       })
       .catch((err) => {
@@ -487,7 +488,7 @@ const createHelpDesk = () => {
         router.push({name: 'Request', params: {uuid: uuid.value}});
         // router.push({ name: 'Request', params: { uuid: uuid.value, isCreated: 1}, query: {selectedPosition: JSON.stringify(selectedPosition.value.code)}});
       }).catch(err => {
-    if (err.response && err.response.status == 401) {
+    if (err.response && err.response.status == 401) {r
       store.dispatch("logLout");
     } else if (err.response && err.response.data && err.response.data.localized) {
       showMessage('error', t(err.response.data.localizedPath), null);

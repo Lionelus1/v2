@@ -347,7 +347,7 @@
 </template>
 
 <script>
-import ResumeService from "./ResumeService";
+import ResumeService from "@/service/resume.service";
 import ResumeEdit from "./ResumeEdit";
 import api from "@/service/api";
 import {getHeader} from "@/config/config";

@@ -1,17 +1,18 @@
-import { createStore } from "vuex"
+import {createStore} from "vuex"
 import createPersistedState from 'vuex-persistedstate'
 import axios from "axios";
-import { getHeader, smartEnuApi } from "@/config/config";
+import {getHeader, smartEnuApi} from "@/config/config";
 import router from '@/router';
 
 
 const store = createStore({
     plugins: [createPersistedState()],
     state: {
+        activeItem: "",
         selectedPosition: {},
         loginedUser: {},
         token: "",
-        attemptedUrl:"",
+        attemptedUrl: "",
         userSlug: {}
     },
     mutations: {
@@ -22,13 +23,13 @@ const store = createStore({
             state.token = JSON.parse(window.localStorage.getItem('authUser')).access_token;
 
         },
-        SOLVE_ATTEMPT(state,data){
-            state.attemptedUrl=data;
+        SOLVE_ATTEMPT(state, data) {
+            state.attemptedUrl = data;
         },
         LOG_OUT_SYSTEM(globalState) {
-            globalState.loginedUser={};
+            globalState.loginedUser = {};
             globalState.token = "";
-            axios.post(smartEnuApi + "/logoutsystem", {}, { headers: getHeader() })
+            axios.post(smartEnuApi + "/logoutsystem", {}, {headers: getHeader()})
                 .then(() => {
                     localStorage.removeItem('authUser');
                     localStorage.removeItem('loginedUser');
@@ -76,8 +77,11 @@ const store = createStore({
                 window.localStorage.setItem("loginedUser", JSON.stringify(response.data));
                 context.commit('SET_LOGINED_USER')
             }).catch(error => {
-                // router.push({name: 'Login'});
+                // this.$router.push({name: 'Login'});
             })
+        },
+        updateParentVariable(state, newValue) {
+            state.activeItem = newValue;
         },
         SET_SELECTED_POSITION_DESK(state, data) {
             state.selectedPosition = data
@@ -92,13 +96,13 @@ const store = createStore({
             context.commit("LOG_OUT_SYSTEM");
             context.commit("REMOVE_USER_SITE_SLUG")
         },
-        solveAttemptedUrl(context,data){
-            if(data.fullPath){
-                context.commit("SOLVE_ATTEMPT",data.fullPath);
-            }else{
-                context.commit("SOLVE_ATTEMPT","");
+        solveAttemptedUrl(context, data) {
+            if (data.fullPath) {
+                context.commit("SOLVE_ATTEMPT", data.fullPath);
+            } else {
+                context.commit("SOLVE_ATTEMPT", "");
             }
-            
+
         },
         setUserSiteSlug(context) {
             context.commit("USER_SITE_SLUG")
@@ -112,6 +116,9 @@ const store = createStore({
         setNewUserInfo(context) {
             context.commit('GET_USER_INFO')
         },
+        updateParentVariable({commit}, newValue) {
+            commit('updateParentVariable', newValue);
+        },
         setSelectedPositionDesk({commit}, newPosition){
           commit('setSelectedPositionDesk', newPosition)
         }
@@ -119,6 +126,9 @@ const store = createStore({
     getters: {
         isAuthenticated: state => !!state.token,
         isMainAdministrator: state => state.loginedUser && state.loginedUser.roles && state.loginedUser.roles.some(role => role.name === 'main_administrator'),
+        getParentVariable(state) {
+            return state.activeItem;
+        },
         getSelectedPositionDesk(state){
             return state.selectedPosition
         }

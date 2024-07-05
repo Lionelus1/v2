@@ -117,6 +117,7 @@ export default {
     ReferenceSalaryRequest: 'reference_salary_request',
     ScienceAdvisorApproval: 'science_advisor_approval',
     AccountantsExecutionRequest: 'accountants_execution_request',
+    PracticeLeaderRequest: 'practice_leader_request',
   },
 
   ScienceWorkType: {

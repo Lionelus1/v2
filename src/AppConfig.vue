@@ -54,51 +54,60 @@
 						}}
 					</button>
 				</div>
-				<Button class="p-button" @click="hideVi">Қалыпты нұсқа</Button>
+				<Button class="p-button" @click="hideVi">{{ $t("enuTopicSettings.normalVersion") }}</Button>
 			</div>
-			<h5 style="margin-top: 0">Input Style</h5>
+			<h5 style="margin-top: 0">{{ $t("enuTopicSettings.inputType") }}</h5>
 			<div class="p-formgroup-inline">
 				<div class="field-radiobutton">
 					<RadioButton id="input_outlined" name="inputstyle" value="outlined" :modelValue="inputStyle" @update:modelValue="changeInputStyle" />
-					<label for="input_outlined">Outlined</label>
+					<label for="input_outlined">{{ $t('enuTopicSettings.inputOutlined') }}</label>
 				</div>
 				<div class="field-radiobutton">
 					<RadioButton id="input_filled" name="inputstyle" value="filled" :modelValue="inputStyle" @update:modelValue="changeInputStyle" />
-					<label for="input_filled">Filled</label>
+					<label for="input_filled">{{ $t('enuTopicSettings.inputFilled') }}</label>
 				</div>
 			</div>
 
-			<h5>Ripple Effect</h5>
+			<h5>{{ $t("enuTopicSettings.rippleEffect") }}</h5>
 			<InputSwitch :modelValue="rippleActive" @update:modelValue="changeRipple" />
 
-			<h5>Menu Type</h5>
+			<!-- <h5>Menu Type</h5>
 			<div class="p-formgroup-inline">
 				<div class="field-radiobutton">
-					<RadioButton id="static" name="layoutMode" value="static" v-model="d_layoutMode" @change="changeLayout($event, 'static')" />
+					<RadioButton id="static" name="layoutMode" value="static" v-model="d_layoutMode" @change="changeLayout('static')" />
 					<label for="static">Static</label>
 				</div>
 				<div class="field-radiobutton">
-					<RadioButton id="overlay" name="layoutMode" value="overlay" v-model="d_layoutMode" @change="changeLayout($event, 'overlay')" />
+					<RadioButton id="overlay" name="layoutMode" value="overlay" v-model="d_layoutMode" @change="changeLayout('overlay')" />
 					<label for="overlay">Overlay</label>
+				</div>
+			</div> -->
+
+			<h5>{{ $t("enuTopicSettings.menuColor") }}</h5>
+			<div class="p-formgroup-inline">
+				<div class="field-radiobutton">
+					<RadioButton id="dark" name="layoutColorMode" value="dark" v-model="d_layoutColorMode" @change="changeLayoutColor('dark')" />
+					<label for="dark">{{ $t("enuTopicSettings.menuColorDark") }}</label>
+				</div>
+				<div class="field-radiobutton">
+					<RadioButton id="light" name="layoutColorMode" value="light" v-model="d_layoutColorMode" @change="changeLayoutColor('light')" />
+					<label for="light">{{ $t("enuTopicSettings.menuColorLight") }}</label>
 				</div>
 			</div>
 
-			<h5>Menu Color</h5>
-			<div class="p-formgroup-inline">
-				<div class="field-radiobutton">
-					<RadioButton id="dark" name="layoutColorMode" value="dark" v-model="d_layoutColorMode" @change="changeLayoutColor($event, 'dark')" />
-					<label for="dark">Dark</label>
-				</div>
-				<div class="field-radiobutton">
-					<RadioButton id="light" name="layoutColorMode" value="light" v-model="d_layoutColorMode" @change="changeLayoutColor($event, 'light')" />
-					<label for="light">Light</label>
-				</div>
+			<div>
+				<Button :label="$t('common.save')" icon="pi pi-check" @click=saveThemeStyles()
+								style="margin-top: 10px"/>
 			</div>
+
 		</div>
 	</div>
 </template>
 
 <script>
+import { smartEnuApi, getHeader } from "@/config/config";
+import axios from 'axios';
+
 	export default {
 		props: {
 			layoutMode: {
@@ -111,11 +120,11 @@
 			}
 		},
 		data() {
-			return {
+			return {				
 				active: false,
-				d_layoutMode: this.layoutMode,
 				d_layoutColorMode: this.layoutColorMode,
 				userTheme: "default-theme",
+				userFontSize: "default"
 			}
 		},
 		mounted() {
@@ -123,6 +132,13 @@
 			this.setTheme(initUserTheme);
 			const initUserFz = this.getFz();
 			this.setFz(initUserFz);
+			const initInputStyle = this.getInputStyle()
+			this.changeInputStyle(initInputStyle)
+			const initRippleActive = this.getRippleActive()
+			this.changeRipple(initRippleActive)
+			const initLayoutColorMode = this.getLayoutColorMode()
+			this.changeLayoutColor(initLayoutColorMode)
+			this.loadData()
 			},
 		watch: {
 			$route() {
@@ -131,9 +147,9 @@
 					this.unbindOutsideClickListener();
 				}
 			},
-			layoutMode(newValue) {
-				this.d_layoutMode = newValue;
-			},
+			// layoutMode(newValue) {
+			// 	this.d_layoutMode = newValue;
+			// },
 			layoutColorMode(newValue) {
 				this.d_layoutColorMode = newValue;
 			}
@@ -162,6 +178,7 @@
 			},
 			setFz(fontSize) {
 				localStorage.setItem("user-font-size", fontSize);
+				this.userFontSize = fontSize
 				document.documentElement.id = fontSize;
 			},
 			getFz() {
@@ -179,6 +196,12 @@
 			hideVi() {
 				this.setFz("default");
 				this.setTheme("default-theme");
+				this.changeInputStyle('outlined');
+				this.changeLayoutColor('dark');
+				this.changeRipple(true);
+				// this.changeLayout('static');
+				// this.saveThemeStyles()
+
 			},
 			toggleConfigurator(event) {
 				this.active = !this.active;
@@ -195,18 +218,33 @@
 				event.preventDefault();
 			},
 			changeInputStyle(value) {
+				localStorage.setItem("change-input", value);
 				this.$primevue.config.inputStyle = value;
 			},
+			getInputStyle(){
+				return localStorage.getItem("change-input")
+			},
 			changeRipple(value) {
+				localStorage.setItem("change-ripple", value);
 				this.$primevue.config.ripple = value;
 			},
-			changeLayout(event, layoutMode) {
-				this.$emit('layout-change', layoutMode);
-				event.preventDefault();
+			getRippleActive(){
+				return localStorage.getItem("change-ripple",)
 			},
-			changeLayoutColor(event, layoutColor) {
+			// changeLayout(layoutMode) {
+			// 	localStorage.setItem("layout-mode", layoutMode);
+			// 	this.$emit('layout-change', layoutMode);
+
+			// },
+			// getLayoutMode(){
+			// 	return localStorage.getItem("layout-mode")
+			// },
+			changeLayoutColor(layoutColor) {	
+				localStorage.setItem("layout-color", layoutColor);
 				this.$emit('layout-color-change', layoutColor);
-				event.preventDefault();
+			},
+			getLayoutColorMode(){
+				return localStorage.getItem("layout-color")
 			},
 			bindOutsideClickListener() {
 				if (!this.outsideClickListener) {
@@ -227,6 +265,91 @@
 			isOutsideClicked(event) {
 				return !(this.$el.isSameNode(event.target) || this.$el.contains(event.target));
 			},
+
+			loadData() {
+				const userTheme = localStorage.getItem("user-theme");
+				const userFontSize = localStorage.getItem("user-font-size");
+				const inputStyle = localStorage.getItem("change-input")
+				const ripple = localStorage.getItem("change-ripple")
+				const layoutModeColor = localStorage.getItem("layout-color")
+				
+				const anyValueMissing = [userTheme, userFontSize, inputStyle, ripple,layoutModeColor].some(value => value === null || value === undefined);
+
+				if (anyValueMissing) {
+					this.userTheme = userTheme;
+					this.userFontSize = userFontSize;
+					this.$primevue.config.inputStyle = inputStyle;
+					this.$primevue.config.ripple = ripple;
+					this.$emit('layout-color-change', layoutModeColor);
+
+				} else {
+					axios
+					.get(smartEnuApi + "/smartenu/settings/get", 
+						{
+							headers: getHeader()
+						},
+					)
+					.then((res) => {
+						if (res.data && res.data.enu_settings){
+							this.setTheme(res.data.enu_settings.user_theme)
+							this.setFz(res.data.enu_settings.user_font_size)
+							this.changeInputStyle(res.data.enu_settings.input_style)
+							this.changeRipple(res.data.enu_settings.change_ripple)
+						// this.changeLayoutColor(res.data.enu_settings.layout_mode)
+							this.changeLayoutColor(res.data.enu_settings.layout_color_mode) 
+						} else{
+							this.setFz("default");
+							this.setTheme("default-theme");
+							this.changeInputStyle('outlined');
+							this.changeRipple(true);
+							// this.changeLayout('static');
+							this.changeLayoutColor('dark')
+						}
+
+					})
+					.catch((err) => {
+						// Обрабатываем ошибку запроса
+						console.error("Error loading data:", err);
+						this.setFz("default");
+						this.setTheme("default-theme");
+						this.changeInputStyle('outlined');
+						this.changeRipple(true);
+						// this.changeLayout('static');
+						this.changeLayoutColor('dark');
+					});
+				}
+				},
+				
+			saveThemeStyles(){
+				axios
+					.post(smartEnuApi + "/smartenu/settings/insert",{
+
+						theme: this.userTheme,
+						font_size: this.userFontSize,
+						layout_color: this.d_layoutColorMode,
+						input_style: this.$primevue.config.inputStyle,
+						change_ripple: Boolean(this.$primevue.config.ripple),
+					},
+					{
+						headers: getHeader()
+					},).then((res) => {
+						
+					}).catch((err) => {
+						if (err.response.status == 401) {
+							this.$store.dispatch("logLout");
+						}
+
+						this.$toast.add({
+							severity: "error",
+							detail: this.$t("common.message.saveError"),
+							life: 3000,
+						});
+
+						this.loading = false;
+						});
+			},
+
+		
 		},
 		computed: {
 			containerClass() {
