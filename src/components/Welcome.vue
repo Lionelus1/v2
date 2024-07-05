@@ -7,11 +7,12 @@
       <TabView ref="templateView" v-model:activeIndex="active">
         <TabPanel v-bind:header="$t('smartenu.newsTitle')">
           <div class="calendar_buttons flex justify-content-end mb-2">
-      <span class="p-buttonset">
+      <span class="p-buttonset mb-2">
     <Button class="p-button-outlined calendar_btn_left" :class="{'active': isGrid}" icon="pi pi-th-large" @click="getAllNews(true)"/>
     <Button class="p-button-outlined calendar_btn_right" :class="{'active': !isGrid}" icon="pi pi-list" @click="getAllNews(false)"/>
       </span>
           </div>
+          <ProgressBar v-if="loading" mode="indeterminate" style="height: 6px"></ProgressBar>
           <template v-if="isGrid">
             <div class="news_cards grid">
               <div
@@ -19,8 +20,7 @@
                   :key="index"
                   class="news_card_border"
                   :class="getBlockClass(index)"
-                  @click="newsView(i)"
-              >
+                  @click="newsView(i)">
                 <div class="news_card cursor-pointer">
                 <div class="img">
                   <img class="w-full" height="220" v-if="i?.imageUrl != null && i?.imageUrl !==''" :src="i?.imageUrl" alt="">
@@ -47,7 +47,7 @@
               </div>
               </div>
             </div>
-            <Paginator @page="onPageGrid($event)" :rows="7" :totalRecords="total"></Paginator>
+            <Paginator @page="onPageGrid($event)" :rows="7" :totalRecords="total" :pageLinkSize="mobile? 3:5"></Paginator>
           </template>
           <div v-if="allNews.length === 0">
             {{ $t("smartenu.newsNotFound") }}
@@ -235,10 +235,10 @@ export default {
           e.imageUrl = smartEnuApi + fileRoute + fileUrl
           e.site_url = `${e.enu_slug.slug ? e.enu_slug.slug + "." : ""}enu.kz`
         });
-        console.log(this.allNews)
         this.total = response.data.total;
         this.loading = false;
       }).catch((error) => {
+        this.loading = false;
         this.$toast.add({
           severity: "error",
           summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
@@ -346,7 +346,11 @@ export default {
       this.newsViewVisible = true;
     },
     getBlockClass(index) {
-      return index < 3 ? 'col-4' : 'col-3';
+      if(this.mobile){
+        return index < 1 ? 'col-12' : 'col-6';
+      }else {
+        return index < 3 ? 'col-4' : 'col-3';
+      }
     },
     onPage(event) {
       this.lazyParams = event
@@ -577,6 +581,29 @@ export default {
   .card_title {
     font-size: 16px;
   }
+  .news_cards{
+    .col-6 {
+      .img, img{
+        height: 100px;
+      }
+    }
+  }
+  .news_content{
+    font-size: 11px;
+  }
 }
-
+@media only screen and (max-width: 1920px) and (min-width: 1535px) {
+  .news_cards{
+    .col-4 {
+      .img, img{
+        height: 280px;
+      }
+    }
+    .col-3 {
+      .img, img{
+        height: 250px;
+      }
+    }
+  }
+}
 </style>
