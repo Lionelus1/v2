@@ -64,6 +64,7 @@
 		"html2pdf.js": "^0.9.3",
 		"image-resize-compress": "^1.0.8",
 		"jspdf": "^1.4.1",
+		"jszip": "^3.10.1",
 		"lvovich": "^1.0.16",
 		"moment": "^2.29.4",
 		"moment-locale-fr": "^1.0.0",

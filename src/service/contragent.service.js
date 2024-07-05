@@ -40,4 +40,7 @@ export class ContragentService {
     getPersons(data, cancelToken) {
         return api.post("/getUser", data, {headers: getHeader(), cancelToken: cancelToken});
     }
+    getResume(id) {
+        return api.get('/user/resume/' + id,  {headers: getHeader()});
+    }
 }

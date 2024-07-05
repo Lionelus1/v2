@@ -170,6 +170,7 @@ import {getHeader} from "@/config/config";
 import department from "@/components/smartenu/Department.vue";
 import SpecialitySearch from "@/components/smartenu/speciality/specialitysearch";
 import axios from "axios";
+import JSZip from "jszip";
 
 export default {
   name: 'PersonsList',
@@ -883,9 +884,61 @@ export default {
         this.graduationYears.push(currentYear - i);
       }
     },
+    async downloadResume() {
+      if (!this.persons || this.persons.length === 0) {
+        this.showMessage('error', this.$t('common.noResults'), null);
+        return;
+      }
 
+      try {
+        // Асинхронная загрузка резюме
+        const resumePromises = this.persons.map(person => this.loadResume(person));
+        const resumeFiles = await Promise.all(resumePromises);
+
+        if (resumeFiles.length === 1) {
+          this.downloadFile(resumeFiles[0], this.getResumeFileName(this.persons[0]));
+        } else {
+          const zip = new JSZip();
+          resumeFiles.forEach((file, index) => {
+            zip.file(this.getResumeFileName(this.persons[index]), file);
+          });
+
+          const zipContent = await zip.generateAsync({ type: 'blob' });
+          this.downloadFile(zipContent, 'Резюме.zip');
+        }
+      } catch (error) {
+        console.error(error);
+        this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+      }
+    },
+
+    // Метод для загрузки резюме студента
+    loadResume(person) {
+      return this.service.getResume(person.id).then(response => response.data);
+    },
+
+    // Метод для получения имени файла резюме
+    getResumeFileName(person) {
+      if (this.filter.name) {
+        return `Резюме ${person.fullName}.pdf`;
+      }
+      return `Резюме Группа.pdf`;
+    },
+
+    // Метод для инициирования скачивания файла
+    downloadFile(fileContent, fileName) {
+      const url = window.URL.createObjectURL(fileContent);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }
   }
 }
+
 </script>
 <style scoped>
 
