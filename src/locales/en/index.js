@@ -212,6 +212,8 @@ export default {
     users:'Users',
     group: 'Group',
     paymentForm: 'Payment Form',
+    downloadResume: 'Download resume',
+    share:'Share',
     states: {
       submitted: "Submitted",
       approved: "Approved",

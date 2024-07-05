@@ -214,6 +214,8 @@ export default {
         users:'Пользователи',
         group: 'Группа',
         paymentForm: 'Форма оплаты',
+        downloadResume: 'Скачать резюме',
+        share:'Поделиться',
         states: {
             submitted: "Подана",
             created: "создан",

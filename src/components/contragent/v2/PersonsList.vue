@@ -79,7 +79,7 @@
                   dataKey="value" :emptyFilterMessage="this.$t('roleControl.noResult')"
                   @filter="handleFilterDepartment"/>
       </div>
-      <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+      <div v-if="personType == 3" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ $t('common.faculty') }}</label>
         <Dropdown class="dropdown" v-model="selectedDepartment" :options="departments"
                   :optionLabel="localizeDepartment" :placeholder="this.$t('common.select')"
@@ -95,7 +95,7 @@
                   dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"
                   @filter="handleFilterGetEducationalProgramGroup" @change="handleEducationalProgramGroupChange"/>
       </div>
-      <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+      <div v-if="personType == 3" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ $t('common.cafedra') }}</label>
         <Dropdown class="dropdown" v-model="selectedDepartmentCafedra" :options="departmentsCafedra"
                   :optionLabel="localizeDepartment" :placeholder="this.$t('common.select')"
@@ -111,14 +111,14 @@
                   dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"
                   @filter="handleSelectionChange"/>
       </div>
-<!--      <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">-->
-<!--        <label>{{ $t('common.group') }}</label>-->
-<!--        <Dropdown class="dropdown" v-model="selectedDepartmentGroup" :options="departmentsGroup"-->
-<!--                  optionLabel="name" :placeholder="this.$t('common.select')"-->
-<!--                  :filter="true" :showClear="true"-->
-<!--                  dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"-->
-<!--                  @filter="handleFilterDepartmentGroup"/>-->
-<!--      </div>-->
+          <div v-if="personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+              <label>{{ $t('hr.edu.receiptDate') }}</label>
+              <PrimeCalendar  v-model="filter.admissionYear" view="year" dateFormat="yy" />
+            </div>
+            <div v-if="personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+              <label>{{ $t('hr.edu.expirationDate') }}</label>
+              <PrimeCalendar v-model="filter.graduationYear" view="year" dateFormat="yy" />
+            </div>
       </div>
       <hr>
 
@@ -198,8 +198,26 @@ export default {
         command: () => {
           this.addPerson()
         },
-        visible: () => this.personType != 3
-      }
+        disabled: () => this.personType != 3
+      },
+      {
+        label: this.$t("common.downloadResume"),
+        icon: "pi pi-fw pi-download",
+        command: () => { this.downloadResume(); },
+        disabled: !(this.isVisible && !(this.personType === 3 || this.personType === 4))
+      },
+      {
+        label: this.$t("common.share"),
+        icon: "pi pi-fw pi-share-alt",
+        command: () => { this.shareResults(); },
+        disabled: !(this.isVisible && !(this.personType === 3 || this.personType === 4))
+      },
+      // {
+      //   label: this.$t("students.report")disabled,
+      //   icon: "pi pi-fw pi-file",
+      //   command: () => { this.generateReport(); },
+      //   visible: () => (this.personType == 3 || this.personType == 4)
+      // }
     ]},
     department() {
       return department
@@ -245,7 +263,9 @@ export default {
         departmentId: null,
         facultyId: null,
         cafedraId: null,
-        paymentFormId: null
+        paymentFormId: null,
+        graduationYear: null,
+        admissionYear: null,
       },
 
       personType: null,
@@ -303,7 +323,9 @@ export default {
         {namekz:"Түйіндемені толтырды", nameru:"Заполнил резюме", nameen:"Filled out a CV", id:1},
         {namekz:"Түйіндемені толтырған жоқ", nameru:"Не заполнил резюме", nameen:"Didn't fill out a CV", id:2},
       ],
-      resumeView: null
+      resumeView: null,
+      admissionYears: [],
+      isVisible: false,
     }
   },
   watch: {
@@ -329,6 +351,9 @@ export default {
     if (!this.sidebar) {
       this.$emit('apply-flex', false);
     }
+  },
+  created() {
+    this.fillYears();
   },
   methods: {
     showMessage(msgtype, message, content) {
@@ -428,6 +453,11 @@ export default {
         }
       }
 
+      if (this.personType != 4) {
+        this.filter.admissionYear = null
+        this.filter.graduationYear = null
+      }
+
       const ldap = (this.personType == 3 || this.personType == 2) && (this.filter?.name?.length > 3 ?? false);
       this.service.getPersons({
         page: this.page,
@@ -445,7 +475,9 @@ export default {
           paymentFormId: this.filter.paymentFormId,
           gpa_min: this.gpaMin,
           gpa_max: this.gpaMax,
-          resumeView: this.resumeView?.id
+          resumeView: this.resumeView?.id,
+          admissionYear: this.filter.admissionYear,
+          graduationYear: this.filter.graduationYear
         },
         searchMode: searchMode,
         searchCookie: this.searchCookie,
@@ -600,7 +632,7 @@ export default {
       } else {
         this.filter.paymentFormId = null
       }
-
+      this.isVisible = true
       this.getPersons()
     },
     localizeDepartment(department) {
@@ -844,6 +876,14 @@ export default {
 
       return '';
     },
+    fillYears() {
+      const currentYear = new Date().getFullYear();
+      for (let i = 0; i <= this.yearsRange; i++) {
+        this.admissionYears.push(currentYear - i);
+        this.graduationYears.push(currentYear - i);
+      }
+    },
+
   }
 }
 </script>

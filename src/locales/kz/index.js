@@ -213,6 +213,8 @@ export default {
         users:'Пайдаланушылар',
         group: 'Топ',
         paymentForm: 'Төлем нысаны',
+        downloadResume: 'Түйіндемені бастырып алу',
+        share:'Бөлісу',
         states: {
             submitted: "Берілген",
             created: "Құрылды",
