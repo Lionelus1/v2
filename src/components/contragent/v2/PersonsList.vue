@@ -166,7 +166,7 @@ import { ContragentService } from "@/service/contragent.service";
 import PersonPage from "@/components/contragent/v2/PersonPage";
 import {ref} from "vue";
 import api from "@/service/api";
-import {getHeader} from "@/config/config";
+import {findRole, getHeader} from "@/config/config";
 import department from "@/components/smartenu/Department.vue";
 import SpecialitySearch from "@/components/smartenu/speciality/specialitysearch";
 import axios from "axios";
