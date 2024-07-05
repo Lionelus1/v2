@@ -39,7 +39,8 @@
       </SelectButton>
     </div>
     <div v-if="selectedDocSourceType == Enum.DocSourceType.Template">
-      <DocTemplate ref="templateComponent" @languageChanged="templateLanguageChanged" v-model:currentLang="selectedDocLanguage" @onselect="createDocByTemplate($event)" selectMode="true" v-model:windowOpened="dialogOpenState.createDocDialog" :v-model="selectedTemplate"></DocTemplate>
+      <DocumentTemplates ref="templateComponent" mode="selection"
+                         @onselect="dialogOpenState.createDocDialog=false; createDocByTemplate($event)"></DocumentTemplates>
     </div>
     <Card v-else>
       <template #content>
@@ -52,14 +53,13 @@
 
   import { smartEnuApi, getHeader, findRole } from "@/config/config";
   import Enum from "@/enum/docstates/index";
-  
   import { DocService } from "@/service/doc.service";
-  import DocTemplate from "@/components/documents/DocTemplate.vue"
   import PostFile from "./PostFile.vue"
   import { AgreementService } from "@/service/agreement.service";
+  import DocumentTemplates from "@/components/documents/catalog/DocumentTemplates.vue";
 
   export default {
-    components: { PostFile, DocTemplate},
+    components: {DocumentTemplates, PostFile},
     data() {
       return {
         service: new DocService(),
@@ -110,9 +110,6 @@
       changeLanguage() {
         this.$refs.templateComponent.changeLanguage(this.selectedDocLanguage)
       },
-      templateLanguageChanged(lang) {
-        this.selectedDocLanguage = lang
-      },
       openForm(formName,node) {
         this.dialogOpenState[formName] = true;
         if (node != null) {
@@ -153,9 +150,9 @@
         this.saving = true;
 
         this.service.createDocumentV2({
-          templateId: event.value.id,
+          templateId: event.id,
           docType: Enum.DocType.Contract,
-          language: this.selectedDocLanguage == "kz" ? 0 : 1,
+          language: this.selectedDocLanguage === "kz" ? 0 : 1,
         }).then(res => {
           this.showMessage('success', this.$t('contracts.title'), this.$t('contracts.message.created'));
 

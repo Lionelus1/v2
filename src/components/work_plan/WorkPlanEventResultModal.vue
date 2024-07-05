@@ -185,7 +185,6 @@ export default {
       }
 
       this.planService.verifyEventResult(data).then(res => {
-        //console.log(res);
         this.toCorrectSidebar = false;
         this.eventResultModal = false;
         this.emitter.emit("workPlanResultVerified", true);

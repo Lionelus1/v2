@@ -134,7 +134,6 @@ export default {
   },
   computed: {
     isSciencePlan() {
-      console.log(this.plan.plan_type.code)
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
     }
   }

@@ -108,6 +108,7 @@ export default {
     References: 4,
     Accredation: 5,
     RelatedDocumentTemplates: 7,
+    Agreement: 8,
   },
 
   DocumentRequestType: {

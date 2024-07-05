@@ -159,7 +159,6 @@ export default {
     getRespUsers() {
       this.planService.getRespUsers(parseInt(this.work_plan_id)).then(res => {
         if (res.data) {
-          console.log(res.data);
           this.respUsers = res.data
           this.planCreator = this.plan.user.id
         }

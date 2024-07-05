@@ -350,7 +350,7 @@ export default {
       }
 
       api.post('/folders', {
-        folderType: Enum.FolderType.NormativeDocuments,
+        folderTypes: [Enum.FolderType.NormativeDocuments],
         page: null,
         rows: null,
         parentId: parent !== null ? parent.id : null,

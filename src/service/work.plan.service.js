@@ -176,5 +176,4 @@ export class WorkPlanService {
     updatePlanAttachments(data) {
         return api.post('/workPlan/updatePlanAttachments', data, {headers: getHeader()});
     }
-
 }

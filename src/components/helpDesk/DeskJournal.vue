@@ -122,7 +122,7 @@
       <div class="field">
         <label>{{ t('helpDesk.application.categoryApplication') }}</label>
         <Dropdown v-model="tempFilter.category"
-                  :options="directions"
+                  :options="filterDirections"
                   :optionLabel="locale === 'kz' ? 'name_kz' : locale === 'ru' ? 'name_ru' :
           'name_en'"/>
 
@@ -239,6 +239,7 @@ const selectedDirection = ref(null);
 const currentDocument = ref(null);
 const loading = ref(false);
 const directions = ref(null);
+const filterDirections = ref(null)
 const showModal = ref(false);
 const total = ref(0);
 const selectedPlanType = ref(null);
@@ -467,6 +468,7 @@ const getCategory = () => {
       .then((res) => {
         currentDocument.value = null;
         directions.value = res.data.category.filter(category => category.is_active)
+        filterDirections.value = res.data.category
         request.value.category = res.data.category.id;
       })
       .catch((err) => {

@@ -357,6 +357,7 @@ export default {
     this.fillYears();
   },
   methods: {
+    findRole: findRole,
     showMessage(msgtype, message, content) {
       this.$toast.add({
         severity: msgtype,

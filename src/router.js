@@ -129,6 +129,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/catalog/acts/status',
+                name: '/documents/catalog/acts/status',
+                component: load('documents/catalog/StatusActsGPC'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/catalog/scienceWorks',
                 name: 'ScienceWorks',
                 component: load('documents/catalog/ScienceWorks'),
@@ -141,9 +147,9 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/documents/doctemplate',
-                name: '/documents/doctemplate',
-                component: load('documents/DocTemplate'),
+                path: '/documents/templates',
+                name: '/documents/templates',
+                component: load('documents/catalog/DocumentTemplates'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -295,6 +301,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/contragent/curriculumVitae',
+                name: 'CurriculumVitae',
+                component: load('contragent/СurriculumVitae'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/contragent/persons/:type',
                 name: 'PersonsList',
                 component: load('contragent/v2/PersonsList'),
@@ -369,6 +381,12 @@ const routes = [
                         path: ':id',
                         name: 'EditNews',
                         component: load('news/AddEditNews'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: ':id',
+                        name: 'HistoryNews',
+                        component: load('news/HistoryNews'),
                         beforeEnter: ifAuthenticated,
                     },
                     {
@@ -590,6 +608,12 @@ const routes = [
                 path: '/queue/QueueReport/:id',
                 name: '/queueReport',
                 component: load('queue/QueueReport'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/queue/mode/:id',
+                name: '/queueMode',
+                component: load('queue/QueueMode'),
                 beforeEnter: ifAuthenticated,
 
             },
@@ -913,6 +937,11 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
         ]
+    },
+    {
+        path: '/queue/qr/:id',
+        name: '/queueQR',
+        component: load('queue/QueueQR'),
     },
 ];
 

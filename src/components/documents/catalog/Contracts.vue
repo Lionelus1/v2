@@ -59,9 +59,9 @@
               class="customer-badge status-status_signed" style="width: min-content;">
               {{ $t('contracts.contragentRequest') }}
             </span>
-            <span v-if="havePracticeLeaderRequest(slotProps.data)"
-                  class="customer-badge status-status_inapproval" style="width: min-content;">
-              {{ $t('contracts.practiceLeaderRequest') }}
+            <span v-if="agreementApprovalExpired(slotProps.data)"
+                  class="customer-badge status-status_revision" style="width: min-content">
+              {{ $t('contracts.expired') }}
             </span>
           </div>
         </template>
@@ -78,11 +78,11 @@
   <!-- filterOverlayPanel -->
   <OverlayPanel ref="filterOverlayPanel">
     <div class="p-fluid" style="min-width: 320px;">
-      <div class="field">
+      <div class="field" v-if="filterPage === 0">
         <label>{{ $t('contracts.filter.author') }}</label>
         <FindUser v-model="tempFilter.author" :max="1" :userType="3"></FindUser>
       </div>
-      <div class="field">
+      <div class="field" v-if="filterPage === 0">
         <label>{{ $t('contracts.filter.status') }}</label>
         <Dropdown v-model="tempFilter.status" :options="statuses" optionValue="id"
           class="p-column-filter" :showClear="true">
@@ -100,7 +100,7 @@
           </template>
         </Dropdown>
       </div>
-      <div class="field">
+      <div class="field" v-if="filterPage === 0">
         <label>{{ $t('contracts.filter.contractType.label') }}</label>
         <SelectButton v-model="tempFilter.sourceType" :options="docSourceType">
           <template #option="slotProps">
@@ -109,7 +109,7 @@
           </template>
         </SelectButton>
       </div>
-      <div class="field" v-if="tempFilter.sourceType === Enum.DocSourceType.Template">
+      <div class="field" v-if="filterPage === 0 && tempFilter.sourceType === Enum.DocSourceType.Template">
         <label>{{ $t('contracts.filter.templateType') }}</label>
         <Dropdown v-model="tempFilter.template" :options="templates" 
           :optionLabel="templateLabel" :showClear="true" dataKey="id"
@@ -119,25 +119,65 @@
           dataKey="id" :emptyFilterMessage="$t('common.noResult')"
           @filter="handleTemplateFilter"/> -->
       </div>
-      <div class="field" v-if="tempFilter.sourceType === Enum.DocSourceType.FilledDoc">
+      <div class="field" v-if="filterPage === 0 && tempFilter.sourceType === Enum.DocSourceType.FilledDoc">
         <label>{{ $t('contracts.filter.documentName') }}</label>
         <InputText type="text" v-model="tempFilter.name"/>
       </div>
-      <div class="field" v-if="tempFilter.sourceType === Enum.DocSourceType.FilledDoc">
+      <div class="field" v-if="filterPage === 0 && tempFilter.sourceType === Enum.DocSourceType.FilledDoc">
         <label>{{ $t('contracts.filter.folder') }}</label>
         <Dropdown v-model="tempFilter.folder" :options="folders" 
           :optionLabel="folderLabel" :showClear="true" dataKey="id"
           :filter="true" :emptyFilterMessage="$t('common.noResult')"/>
       </div>
-      <div class="field">
+      <div class="field" v-if="filterPage === 0">
         <label>{{ $t('contracts.filter.createdFrom') }}</label>
         <PrimeCalendar v-model="tempFilter.createdFrom" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field">
+      <div class="field" v-if="filterPage === 0">
         <label>{{ $t('contracts.filter.createdTo') }}</label>
         <PrimeCalendar v-model="tempFilter.createdTo" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
+      <div class="field" v-if="filterPage === 1">
+        <label>{{ $t('contracts.filter.signers') }}</label>
+        <FindUser v-model="tempFilter.signer" :max="1" :userType="3"></FindUser>
+      </div>
+      <div class="field" v-if="filterPage === 1">
+        <label>{{ $t('contracts.filter.contragent') }}</label>
+        <FindUser v-model="tempFilter.contragent" :max="1" :userType="3"></FindUser>
+      </div>
+      <div class="field" v-if="filterPage === 1">
+        <label>{{ $t('contracts.filter.irn') }}</label>
+        <InputText type="text" v-model="tempFilter.irn"/>
+      </div>
+      <div class="field" v-if="filterPage === 1">
+        <label>{{ $t('contracts.filter.theme') }}</label>
+        <InputText type="text" v-model="tempFilter.theme"/>
+      </div>
+      <div class="field" v-if="filterPage === 1">
+        <label>{{ $t('contracts.filter.financing_type') }}</label>
+        <Dropdown v-model="tempFilter.financingType" :options="financingTypes" class="w-full"
+                  :option-label="financingTypesLabel">
+        </Dropdown>
+      </div>
+      <div class="field" v-if="filterPage === 1">
+        <label>{{ $t('contracts.filter.priority') }}</label>
+        <InputText type="text" v-model="tempFilter.priority"/>
+      </div>
+      <div class="field" v-if="filterPage === 1">
+        <label>{{ $t('contracts.filter.subpriority') }}</label>
+        <InputText type="text" v-model="tempFilter.subpriority"/>
+      </div>
+      <div class="field" v-if="filterPage === 1">
+        <label>{{ $t('contracts.filter.mnvo') }}</label>
+        <InputText type="text" v-model="tempFilter.mnvo"/>
+      </div>
+      <div class="field" v-if="filterPage === 1">
+        <label>{{ $t('contracts.filter.sciadvisor') }}</label>
+        <FindUser v-model="tempFilter.sciadvisor" :max="1" :userType="3"></FindUser>
+      </div>
       <div class="field">
+        <Paginator v-model:first="filterPage" :rows="1" :totalRecords="2"
+          template="PrevPageLink NextPageLink"></Paginator>
         <Button :label="$t('common.clear')" @click="clearFilter();toggle('filterOverlayPanel', $event);getContracts()" class="mb-2 p-button-outlined"/>
         <Button :label="$t('common.search')" @click="saveFilter();toggle('filterOverlayPanel', $event);getContracts()" class="mt-2"/>
       </div>
@@ -187,6 +227,7 @@ export default {
       page: 0,
       rows: 10,
 
+      filterPage: 0,
       filter: {
         applied: false,
         status: null,
@@ -197,6 +238,15 @@ export default {
         template: null,
         name: null,
         folder: null,
+        signers: [],
+        contragent: [],
+        irn: null,
+        theme: null,
+        priority: null,
+        subpriority: null,
+        mnvo: null,
+        sciadvisor: [],
+        financingType: null,
       },
 
       tempFilter: {
@@ -209,6 +259,15 @@ export default {
         template: null,
         name: null,
         folder: null,
+        signers: [],
+        contragent: [],
+        irn: null,
+        theme: null,
+        priority: null,
+        subpriority: null,
+        mnvo: null,
+        sciadvisor: [],
+        financingType: null,
       },
 
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
@@ -222,6 +281,8 @@ export default {
       folders: [],
       filtered: false,
       actionsNode: {},
+
+      financingTypes: ['government', 'program_targeted', 'grant', 'company'],
     }
   },
   created() {
@@ -431,6 +492,15 @@ export default {
           author: this.filter.author.length > 0 && this.filter.author[0] ? this.filter.author[0].userID : null,
           createdFrom: this.filter.createdFrom,
           createdTo: this.filter.createdTo,
+          signers: this.filter.signers.length > 0 && this.filter.signers[0] ? this.filter.signers[0].userID : null,
+          contragent: this.filter.contragent.length > 0 && this.filter.contragent[0] ? this.filter.contragent[0].userID : null,
+          irn: this.filter.irn,
+          theme: this.filter.theme,
+          priority: this.filter.priority,
+          subpriority: this.filter.subpriority,
+          mnvo: this.filter.mnvo,
+          sciadvisor: this.filter.sciadvisor.length > 0 && this.filter.sciadvisor[0] ? this.filter.sciadvisor[0].userID : null,
+          financingType: this.filter.financingType,
         },
       }).then(res => {
         this.documents = res.data.documents
@@ -484,6 +554,21 @@ export default {
 
       return false;
     },
+    agreementApprovalExpired(contract) {
+      if (contract.folder && contract.folder.type === Enum.FolderType.Agreement) {
+        if (contract.docHistory && contract.docHistory.stateId === Enum.INAPPROVAL.ID &&
+            contract.docHistory.setDate) {
+            let date = new Date(contract.docHistory.setDate);
+            date.setDate(date.getDate() + 3);
+
+            if (date.getTime() < new Date().getTime()) {
+              return true
+            }
+        }
+      }
+
+      return false;
+    },
     deleteFile() {
       this.$confirm.require({
         message: this.$t("common.doYouWantDelete"),
@@ -532,6 +617,15 @@ export default {
         template: null,
         name: null,
         folder: null,
+        signers: [],
+        contragent: [],
+        irn: null,
+        theme: null,
+        priority: null,
+        subpriority: null,
+        mnvo: null,
+        sciadvisor: [],
+        financingType: null,
       };
       this.filtered = false;
     },
@@ -549,7 +643,9 @@ export default {
         page: 0,
         rows: 50,
         folderType: Enum.FolderType.Journals,
-        searchText: this.templateSearchText,
+        filter: {
+          name: this.templateSearchText,
+        },
       }).then(res => {
         this.templates = res.data.doctemplates
       }).catch(err => {
@@ -569,7 +665,7 @@ export default {
       this.service.getFoldersV2({
         page: 0,
         rows: 10,
-        folderType: Enum.FolderType.FilledDoc,
+        folderTypes: [Enum.FolderType.FilledDoc],
       }).then(res => {
         this.folders = res.data.folders
       }).catch(err => {
@@ -584,6 +680,9 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
+    },
+    financingTypesLabel(data) {
+      return this.$t('contracts.financingTypes.' + data);
     },
   },
   computed: {
@@ -660,6 +759,10 @@ export default {
 .status-status_revision {
   background: #ffcdd2;
   color: #c63737;
+}
+.status-status_rejected {
+  background: #fdfdfd;
+  color: #ff0000;
 }
 .signed {
   color: #42855B;

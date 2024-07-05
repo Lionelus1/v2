@@ -24,6 +24,9 @@
               </span>
             </p>
           </div>
+          <div class="md:col-6" v-if="contract.docHistory.stateId === DocEnum.REVISION.ID || contract.docHistory.stateId === DocEnum.REJECTED.ID">
+            <InlineMessage severity="error">{{ contract.docHistory.comment }}</InlineMessage>
+          </div>
           <div class="md:col-6" v-if="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID)">
             <p class="mb-0">{{ $t('contracts.contragentMessage') }}</p>
             <div class="p-inputgroup p-input-filled">
@@ -49,71 +52,130 @@
             </SelectButton>
           </div>
           <div class="flex-grow-1" style="overflow: scroll; height: 150px;" v-if="contractParams">
-            <div v-for="param in contractParams" :key="param.uuid">
+            <div v-for="(param, id) in contractParams" :key="param.uuid">
               <div class="p-fluid md:col-6 pb-0">
                 <template v-if="['number', 'date', 'ourside', 'contragent', 'individualEntrepreneur', 'student', 'period',
-                  'практика түрі', 'Вид практики', 'Білім беру бағдарламасы', 'Образовательные программы'].includes(param.description)">
+                  'практика түрі', 'Вид практики', 'Білім беру бағдарламасы', 'Образовательные программы',
+                  'sciadvisor', 'mnvo', 'agreement_end_date', 'project_position', 'irn', 'theme',
+                  'mnvo_agreement', 'agreement_sum', 'executor_work_place',
+                  'priority', 'subpriority', 'work_types', 'financing_type'].includes(param.description)">
                   <label v-if="['number', 'date', 'ourside', 'contragent', 'individualEntrepreneur', 'student', 'period'].includes(param.description)">{{ $t("doctemplate.editor." + param.name) }}</label>
                   <label v-else-if="['практика түрі', 'Вид практики'].includes(param.description)">{{ $t('doctemplate.editor.practiceType') }}</label>
                   <label v-else-if="['Білім беру бағдарламасы', 'Образовательные программы'].includes(param.description)">{{ $t('doctemplate.editor.educationProgram') }}</label>
+                  <label v-else>{{ $t('contracts.labels.' + param.description) }}</label>
                 </template>
                 <label v-else>{{ param.description }}</label>
               </div>
-              <div class="p-fluid md:col-6" v-if="['text', 'number'].includes(param.name)">
+              <div class="p-fluid md:col-6" v-if="['text', 'number'].includes(param.name) && param.description !== 'project_position'">
                 <InputText v-model="param.value" type="text" @input="input()"
                            :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
-                  contract.docHistory.stateId > DocEnum.CREATED.ID || param.name == 'number'"
+                              contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID
+                              || param.name == 'number'"
                            :placeholder="param.name == 'number' ? $t('contracts.autogenerate') : ''"></InputText>
               </div>
+              <div class="p-fluid md:col-6" v-if="['text', 'number'].includes(param.name) && param.description === 'project_position'">
+                <Dropdown v-model="param.value" :options="projectPositions" class="w-full" @change="input"
+                          :option-label="projectPositionsLabel" :disabled="contract.docHistory.stateId > DocEnum.CREATED.ID &&
+                          contract.docHistory.stateId != DocEnum.REVISION.ID">
+                </Dropdown>
+              </div>
               <div class="p-fluid md:col-6" v-if="param.name == 'date'">
-                <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" :disabled="true"
-                               :placeholder="$t('contracts.autogenerate')"></PrimeCalendar>
+                <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" :disabled="param.description === 'date' ||
+                                contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID"
+                               :placeholder="param.description === 'date' ? $t('contracts.autogenerate') : ''"></PrimeCalendar>
               </div>
               <div class="p-fluid md:col-6" v-if="param.name == 'period'">
                 <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" showIcon
                                selectionMode="range" :manualInput="false" @update:modelValue="input()"
                                :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
-                  contract.docHistory.stateId > DocEnum.CREATED.ID"></PrimeCalendar>
+                                  contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID">
+                </PrimeCalendar>
               </div>
               <div class="p-fluid md:col-6" v-if="['ourside', 'individualEntrepreneur'].includes(param.name)">
                 <ContragentSelectV2 :contragent="param.value" @contragentUpdated="(event) => contragentUpdated(event, param)"
                                     :disable="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
-                  contract.docHistory.stateId > DocEnum.CREATED.ID"></ContragentSelectV2>
+                  contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID"></ContragentSelectV2>
               </div>
               <div class="p-fluid md:col-6" v-if="['contragent'].includes(param.name)">
-                <div class="flex flex-wrap gap-3 mb-2" v-if="contract.sourceType === DocEnum.DocSourceType.Template">
+                <div class="flex flex-wrap gap-3 mb-2" v-if="contract.sourceType === DocEnum.DocSourceType.Template &&
+                  !(contract.folder && contract.folder.type === DocEnum.FolderType.Agreement)">
                   <div class="flex align-items-center">
                     <RadioButton v-model="contragentOption" value="email" @update:modelValue="contragentOptionChanged"
                                  :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
-                      contract.docHistory.stateId > DocEnum.CREATED.ID"></RadioButton>
+                      contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID"></RadioButton>
                     <label class="ml-2">{{ $t('contracts.contragentEmail') }}</label>
                   </div>
                   <div class="flex align-items-center">
                     <RadioButton v-model="contragentOption" value="organization" @update:modelValue="contragentOptionChanged"
                                  :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
-                      contract.docHistory.stateId > DocEnum.CREATED.ID"></RadioButton>
+                      contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID"></RadioButton>
                     <label class="ml-2">{{ $t('doctemplate.editor.contragent') }}</label>
                   </div>
                   <div class="flex align-items-center">
                     <RadioButton v-model="contragentOption" value="individual" @update:modelValue="contragentOptionChanged"
                                  :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
-                      contract.docHistory.stateId > DocEnum.CREATED.ID"></RadioButton>
+                      contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID"></RadioButton>
                     <label class="ml-2">{{ $t('doctemplate.editor.individualEntrepreneur') }}</label>
                   </div>
                 </div>
                 <InputText v-if="contragentOption === 'email'" v-model="contragentEmail"
                            :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
-                  contract.docHistory.stateId > DocEnum.CREATED.ID"></InputText>
+                  contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID"></InputText>
                 <ContragentSelectV2 v-else :contragent="param.value"
                                     @contragentUpdated="(event) => contragentUpdated(event, param)"
                                     :disable="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
-                  contract.docHistory.stateId > DocEnum.CREATED.ID"></ContragentSelectV2>
+                                    contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID"></ContragentSelectV2>
               </div>
               <div class="p-fluid md:col-6" v-if="param.name == 'student'">
                 <FindUser v-model:first="param.value" searchMode="ldap" :max="1" v-model="notused.users"
                           :disabled="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID) ||
-                  contract.docHistory.stateId > DocEnum.CREATED.ID"
+                  contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID"
                           :userType="1" @input="input()" @remove="input()"></FindUser>
+              </div>
+              <div class="p-fluid md:col-6" v-if="param.name === 'person'">
+                <ContragentSelectV2 :contragent="param.value" @contragentUpdated="(event) => contragentUpdated(event, param)"
+                                    :disable="contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID"></ContragentSelectV2>
+              </div>
+              <div class="col-12" v-if="param.description === 'work_types'">
+                <DataTable :value="param.value" class="p-datatable-small w-full" :editMode="contract.docHistory.stateId > DocEnum.CREATED.ID ? '' : 'cell'"
+                           :pt="{column: {bodycell: ({ state }) => ({ class: [{ 'pt-0 pb-0': state['d_editing'] }] })}}">
+                  <template v-if="contract.docHistory.stateId === DocEnum.CREATED.ID || contract.docHistory.stateId === DocEnum.REVISION.ID" #header>
+                    {{ $t('contracts.work_type_note') }}
+                  </template>
+                  <template v-if="contract.docHistory.stateId === DocEnum.CREATED.ID || contract.docHistory.stateId === DocEnum.REVISION.ID
+                      && (param.value === null || param.value.length < 12)" #footer>
+                    <Button :label="$t('contracts.newWork')" @click="newWork(id)" class="p-button-link" style="width: fit-content;" />
+                  </template>
+                  <Column v-for="col in param.properties.columns" :field="col"
+                          :header="$t('contracts.columns.'+col)" :key="col">
+                    <template #body="{ data, field }">
+                      <template v-if="['start_date', 'end_date'].includes(col)">
+                        {{ getShortDateString(data[field]) }}
+                      </template>
+                      <template v-else>
+                        {{ data[field] }}
+                      </template>
+                    </template>
+                    <template v-if="contract.docHistory.stateId === DocEnum.CREATED.ID || contract.docHistory.stateId === DocEnum.REVISION.ID"
+                              #editor="{ data, field, index}">
+                      <Textarea v-if="['task_code', 'work_name', 'result'].includes(col)"
+                                v-model="data[field]" autofocus autoResize rows="5" class="w-full"
+                                @update:model-value="param.value[index][field]=data[field]; input()"/>
+                      <PrimeCalendar v-if="['start_date', 'end_date'].includes(col)"
+                                     v-model="data[field]" dateFormat="dd.mm.yy"
+                                     @update:model-value="param.value[index][field]=data[field]; input()"></PrimeCalendar>
+                      <InputNumber v-if="['percentage'].includes(col)"
+                                   v-model="data[field]" :min="0" :max="100"
+                                   @update:model-value="param.value[index][field]=data[field]; input()"/>
+                    </template>
+                  </Column>
+                </DataTable>
+              </div>
+              <div class="p-fluid md:col-6" v-if="param.name === 'financing_type'">
+                <Dropdown v-model="param.value" :options="financingTypes" class="w-full" @change="input"
+                          :option-label="financingTypesLabel"
+                          :disabled="contract.docHistory.stateId > DocEnum.CREATED.ID && contract.docHistory.stateId != DocEnum.REVISION.ID">
+                </Dropdown>
               </div>
             </div>
           </div>
@@ -230,7 +292,8 @@ export default {
           label: this.$t("common.registration"),
           icon: "pi pi-fw pi-paperclip",
           disabled: () => (this.contragentRequest && this.contract.docHistory.stateId == this.DocEnum.CREATED.ID) ||
-              (this.contract && this.contract.docHistory.stateId > DocEnum.CREATED.ID),
+              (this.contract && this.contract.docHistory.stateId > DocEnum.CREATED.ID) ||
+              (this.contract && this.contract.folder && this.contract.folder.type === DocEnum.FolderType.Agreement),
           items: [
             {
               label: this.$t("contracts.setnumber"),
@@ -269,7 +332,7 @@ export default {
               icon: "fa-regular fa-handshake",
               visible: () => this.contract && (this.contract.sourceType === DocEnum.DocSourceType.FilledDoc ||
                       (this.contract.template && this.contract.template.needApproval)) &&
-                  this.contract.docHistory.stateId === DocEnum.CREATED.ID,
+                  (this.contract.docHistory.stateId === DocEnum.CREATED.ID || this.contract.docHistory.stateId === DocEnum.REVISION.ID),
               command: () => { this.sendToApprove() }
             },
             {
@@ -302,10 +365,11 @@ export default {
         {
           label: this.$t('contracts.menu.relatedDocument'),
           icon: "fa-solid fa-folder-tree",
-          disabled: () => this.contract && this.contract.docHistory.stateId !== this.DocEnum.SIGNED.ID,
-          visible: () => this.contract && this.contract.sourceType === this.DocEnum.DocSourceType.FilledDoc,
+          disabled: () => false && this.contract && this.contract.docHistory.stateId !== this.DocEnum.SIGNED.ID,
+          visible: () => this.contract && this.contract.folder && this.contract.folder.type === this.DocEnum.FolderType.Agreement,
           items: [
             {
+              disabled: () => true,
               label: this.$t('contracts.menu.newDocument'),
               command: () => { this.newAct() }
             },
@@ -315,6 +379,13 @@ export default {
             }
           ]
         }
+      ],
+
+      financingTypes: ['government', 'program_targeted', 'grant', 'company'],
+      projectPositions: [
+        'researcher', 'juniorResearcher', 'leadResearcher', 'chiefResearcher',
+        'support', 'researchAssistant', 'teacher', 'council', 'seniorResearcher',
+        'engineer', 'consultant', 'projectManager'
       ],
 
       notused: {
@@ -481,6 +552,11 @@ export default {
       param = this.contract.newParams['contragent'];
       if (param) {
         param.uuid = this.generateUUID();
+
+        if (this.contract.folder && this.contract.folder.type === DocEnum.FolderType.Agreement) {
+          param.value.type = this.DocEnum.ContragentType.Person;
+        }
+
         this.contractParams.push(param);
 
         if (this.contragentOption !== 'email' && !this.contragentRequest) {
@@ -530,6 +606,86 @@ export default {
           for (let i = 0; i < param.value.length; i++) {
             param.value[i] = param.value[i] ? new Date(param.value[i]) : null;
           }
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['sciadvisor'];
+      if (param) {
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['financing_type'];
+      if (param) {
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['mnvo'];
+      if (param) {
+        param.value = param.value ? new Date(param.value) : null;
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['mnvo_agreement'];
+      if (param) {
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['agreement_end_date'];
+      if (param) {
+        param.value = param.value ? new Date(param.value) : null;
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['project_position'];
+      if (param) {
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['irn'];
+      if (param) {
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['theme'];
+      if (param) {
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['agreement_sum'];
+      if (param) {
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['executor_work_place'];
+      if (param) {
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['priority'];
+      if (param) {
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['subpriority'];
+      if (param) {
+        param.uuid = this.generateUUID();
+        this.contractParams.push(param);
+      }
+
+      param = this.contract.newParams['work_types'];
+      if (param) {
         param.uuid = this.generateUUID();
         this.contractParams.push(param);
       }
@@ -824,6 +980,29 @@ export default {
         }
       }
 
+      if (this.contract && this.contract.folder && this.contract.folder.type === this.DocEnum.FolderType.Agreement) {
+        for (let pId in this.contractParams) {
+          let param = this.contractParams[pId];
+          if (param.description === 'work_types') {
+            let sum = 0;
+            for (let rId in param.value) {
+              let row = param.value[rId];
+              if (row.start_date > row.end_date) {
+                this.showMessage("warn", this.$t('contracts.warnStartBigEnd'), getShortDateString(row.start_date) + ' > ' + getShortDateString(row.end_date));
+                return false;
+              }
+
+              sum += row.percentage;
+            }
+
+            if (sum !== 100) {
+              this.showMessage("warn", this.$t('contracts.persentageNot100'), sum);
+              return false;
+            }
+          }
+        }
+      }
+
       return true;
     },
     isNull(param) {
@@ -946,6 +1125,33 @@ export default {
         }
       })
     },
+    newWork(id) {
+      if (!this.contractParams[id].value) {
+        this.contractParams[id].value = [];
+      }
+
+      let newWork = {};
+
+      for (let colId in this.contractParams[id].properties.columns) {
+        let prop = this.contractParams[id].properties.columns[colId];
+
+        if (['start_date', 'end_date', 'percentage'].includes(prop)) {
+          newWork[prop] = null
+        } else {
+          newWork[prop] = "null";
+        }
+      }
+
+      this.contractParams[id].value.push(newWork);
+
+      this.input();
+    },
+    financingTypesLabel(data) {
+      return this.$t('contracts.financingTypes.' + data);
+    },
+    projectPositionsLabel(data) {
+      return this.$t('contracts.projectPositions.' + data);
+    },
   }
 }
 </script>
@@ -994,6 +1200,10 @@ export default {
 .status-status_revision {
   background: #ffcdd2;
   color: #c63737;
+}
+.status-status_rejected {
+  background: #fdfdfd;
+  color: #ff0000;
 }
 :deep(.p-tabview-panels) {
   flex-grow: 1;

@@ -12,7 +12,7 @@ export class MenuService {
                     {
                         label: $t('contracts.template'),
                         icon: 'pi pi-fw pi-book',
-                        to: '/documents/doctemplate',
+                        to: '/documents/templates',
                         visible: this.isEnuWorker()
                     },
                     {
@@ -118,7 +118,8 @@ export class MenuService {
                     {
                         label: $t('smartenu.categories'),
                         icon: 'fa-solid fa-tags',
-                        to: '/newscategories/cattable'
+                        to: '/newscategories/cattable',
+                        visible: !this.findRole("student")
                     },
                     {
                         label: $t('smartenu.newsList'), 

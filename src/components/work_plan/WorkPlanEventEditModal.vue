@@ -141,7 +141,6 @@ export default {
         
       });
       if (this.plan && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science && this.editData.user) {
-        console.log()
         const roleMap = new Map();
 
         this.editData.user.forEach(item => {
