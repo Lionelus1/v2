@@ -49,7 +49,10 @@
       </div>
     </div>
     <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-      <FileUpload ref="form" mode="basic" class="mt-2" :customUpload="true"  accept=".pdf,.docx,.png, .jpeg, .jpg" :class="{'p-invalid': validation.file}" @uploader="upload($event)" :auto="true" v-bind:chooseLabel="$t('ncasigner.chooseFile')"/>
+      <FileUpload ref="form" mode="basic" class="mt-2" :customUpload="true"  accept=".pdf,.docx,.png, .jpeg, .jpg" :class="{'p-invalid': validation.file}" @uploader="upload($event)"  :auto="true" v-bind:chooseLabel="$t('ncasigner.chooseFile')"/>
+      <InlineMessage severity="info" class="mt-2" show v-if="telegram?.doc?.filePath">
+        {{ $t('ncasigner.chosenFile', {fn: telegram?.doc?.filePath  ? telegram?.doc?.filePath : ""}) }}
+      </InlineMessage>
       <InlineMessage severity="info" class="mt-2" show v-if="file">
         {{ $t('ncasigner.chosenFile', {fn: file ? file.name : ""}) }}
       </InlineMessage>
@@ -64,7 +67,7 @@ import { useI18n } from "vue-i18n";
 import { QuestionService } from "@/service/question.service";
 import { useToast } from "primevue/usetoast";
 import InputText from "primevue/inputtext";
-const { t, locale } = useI18n();
+const { t,  } = useI18n();
 const toast = useToast();
 
 const props = defineProps({

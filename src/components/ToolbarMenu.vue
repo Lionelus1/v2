@@ -61,6 +61,7 @@
                     type="search"
                     class="search_toolbar"
                     @search="searchClick()"
+                    @change="change"
                     v-model="searchModel"
                     :placeholder="$t('common.search')"
                 /></span>
@@ -74,7 +75,7 @@
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref} from "vue";
 
-const props = defineProps(['data', 'notShowLabel','search','filter','filtered','border','filterLabel'])
+const props = defineProps(['data', 'notShowLabel','search','filter','filtered','border','filterLabel', 'change'])
 const containerRef = ref(null);
 const scrollStep = 50;
 const isScrollable = ref(false);

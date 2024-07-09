@@ -2,27 +2,8 @@
   <div>
     <TitleBlock :title="t('telegram.question')"/>
     <div class="col-12">
-      <ToolbarMenu :data="menu2" @search="search" :search="true" @filter="toggleFilter($event)" :filter="true" :filtered="filtered"/>
-    </div>
-    <div class="mb-3">
-      <OverlayPanel ref="filter">
-        <div v-for="text in menu_radio_options" :key="text" class="flex align-items-center">
-          <div class="field-radiobutton">
-            <RadioButton :value="text.value"/>
-            <label :for="text" class="ml-2">{{ text.text }}</label>
+      <ToolbarMenu :data="menu2" @change="search" :search="true"/>
           </div>
-        </div>
-        <div class="p-fluid">
-          <div class="field">
-            <br/>
-            <Button icon="pi pi-trash" class="p-button-outlined ml-1" :label="$t('common.clear')" @click="filterClick(false)"/>
-          </div>
-          <div class="field">
-            <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="filterClick(true)"/>
-          </div>
-        </div>
-      </OverlayPanel>
-    </div>
     <div class="card">
       <TreeTable class="p-treetable-sm" :value="nodes" :lazy="true" :loading="loading" @nodeExpand="onExpand"
                  scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" show-gridlines columnResizeMode="fit"
@@ -68,7 +49,7 @@
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import Column from 'primevue/column';
 import TreeTable from 'primevue/treetable';
-import { inject, ref, computed, onMounted } from 'vue';
+import { inject, ref, computed, onMounted, watch } from 'vue';
 import { useI18n } from "vue-i18n";
 import { useToast } from "primevue/usetoast";
 import AddQuestions from './AddQuetions.vue';
@@ -78,20 +59,22 @@ import { downloadFile } from "@/config/config";
 const lazyParams = {
   page: 0,
   rows: 10,
-  searchText: null,
+  search_text: '',
   parent_id: null,
 };
 
-const questionService = new QuestionService();
+const filter = ref({
+  search_text: '',
+});
 
-const filtered = ref(false);
-const filter = ref();
+const questionService = new QuestionService();
 const node = ref(null);
-const question = ref(null)
+const question = ref(null);
 const emitter = inject("emitter");
 const nodes = ref([]);
 const toast = useToast();
 const { t, locale } = useI18n();
+
 const initItems = computed(() => [
   {
     label: t('common.add'),
@@ -116,21 +99,11 @@ const isView = ref({
 const total = ref(0);
 const loading = ref(false);
 
-
-const toggleFilter = (event) => {
-  filter.value.toggle(event);
-};
-
-const filterClick = (event) => {
-  filtered.value = event;
-};
-
 const deleteValue = (node) => {
   if (!node) {
     console.error('Node is undefined');
     return;
   }
-
   const req = {
     id: node.id,
   };
@@ -143,7 +116,8 @@ const deleteValue = (node) => {
         toast.add({ severity: "success", summary: t('common.success'), life: 3000 });
         emitter.emit('node', true);
         getQuestions();
-      }).catch(error => {
+      })
+      .catch(error => {
         toast.add({ severity: 'error', summary: t('common.error'), life: 3000 });
         loading.value = false;
       });
@@ -154,6 +128,13 @@ const update = (selectedNode) => {
     node.value = selectedNode;
     isView.value.node = true;
   }
+};
+
+const search = (data) => {
+  const searchText = data.target.value; // Получаем значение из поля ввода
+  lazyParams.search_text = searchText;
+  lazyParams.parent_id = null;
+  getQuestions();
 };
 
 const createQuestion = (parentNode = null) => {
@@ -186,24 +167,25 @@ const toggle = (data) => {
   node.value = data;
 };
 
-const getQuestions = (node) => {
+const getQuestions = (node = null) => {
   const req = {
     page: lazyParams.page,
     rows: lazyParams.rows,
     parent_id: lazyParams.parent_id,
+    search_text: lazyParams.search_text,
   };
 
   loading.value = true;
 
   questionService.getQuestions(req).then(res => {
-        if (node == null) {
-          nodes.value = res.data.questions
-          total.value = res.data.total
-        } else {
-          node.value.children = res.data.questions
-        }
-        loading.value = false;
-      })
+    if (node == null) {
+      nodes.value = res.data.questions;
+      total.value = res.data.total;
+    } else {
+      node.value.children = res.data.questions;
+    }
+    loading.value = false;
+  })
       .catch(err => {
         loading.value = false;
         toast.add({ severity: 'error', summary: t('common.error'), life: 3000 });
@@ -218,6 +200,7 @@ const menu2 = computed(() => [
   },
 ]);
 
+
 const onExpand = (data) => {
   lazyParams.parent_id = Number(data.id);
   lazyParams.is_child = true;
@@ -230,6 +213,10 @@ const onPage = (event) => {
   lazyParams.rows = event.rows;
   getQuestions();
 };
+
+watch(() => filter.value.search_text, (SearchText) => {
+  lazyParams.search_text = SearchText;
+});
 
 onMounted(() => {
   getQuestions();
