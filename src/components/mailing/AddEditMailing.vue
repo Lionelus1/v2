@@ -98,21 +98,23 @@ export default {
     },
     nextPage() {
       if (this.selectedCategories.length === 0) {
-        alert('Please select a category')
+        alert('Please select a category');
+        return; // Prevent navigation
       }
 
-      if (this.selectedTemplate) {
-        this.$router.push({
-          name: 'TemplateEditor2',
-          params: {
-            templateId: this.selectedTemplate,
-            selectedCategories: JSON.stringify(this.selectedCategories),
-            emails: JSON.stringify(this.emails),
-          },
-        });
-      } else {
+      if (!this.selectedTemplate) {
         alert('Please select a template');
+        return; // Prevent navigation
       }
+
+      this.$router.push({
+        name: 'TemplateEditor2',
+        params: {
+          templateId: this.selectedTemplate,
+          selectedCategories: JSON.stringify(this.selectedCategories),
+          emails: JSON.stringify(this.emails),
+        },
+      });
     },
     hideDialog() {
       this.emitter.emit('addEditMailingDialogHide', true);
