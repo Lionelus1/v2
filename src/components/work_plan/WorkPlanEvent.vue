@@ -63,7 +63,8 @@
             {{ node.plan_number }}
           </template>
         </Column>
-        <Column field="fact" :header="$t('common.fact')" v-if="isOperPlan">
+        <Column field="fact " :header="$t('common.fact')" v-if="isOperPlan">
+
           <template #body="{ node }">
             <span v-if="node.fact && isFactVisible" style="float: left;">{{ node.fact + " " }}</span>
             <div v-if="node.resp_person_id === loginedUserId">
@@ -476,7 +477,6 @@ export default {
       }
       this.planService.updateEventFact(data).then(res => {
         if (res.data) {
-          
           this.isFactVisible = true
           this.isFactInputVisible = false;
           this.$toast.add({
