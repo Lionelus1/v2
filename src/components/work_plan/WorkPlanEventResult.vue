@@ -108,6 +108,7 @@
               <div class="field" v-if="(plan && isOperPlan && isSummaryDepartmentUser && isVisibleWritableField)">
                 <label>{{ $t('common.fact') }}</label>
                   <InputText v-model="event.fact" @input="factChange"/>
+                  
               </div>
               <div class="field" v-if="isVisibleWritableField && isRespUser && (isOperPlan || isStandartPlan)">
                 <Dropdown v-model="selectedQuarter" :options="filteredQuarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full md:w-14rem" required @change="validate"/>
