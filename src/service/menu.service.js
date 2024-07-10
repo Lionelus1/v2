@@ -91,7 +91,7 @@ export class MenuService {
                     },
                     {
                         label: $t('smartenu.mailingTitle'),
-                        icon: 'fa-solid fa-calendar-days',
+                        icon: 'fa-regular fa-paper-plane',
                         to: '/mailing'
                     },
                 ]
