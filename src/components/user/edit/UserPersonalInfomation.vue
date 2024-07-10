@@ -3,8 +3,8 @@
     <div class="flex flex-col items-center justify-center">
       <!-- ФОТО -->
       <div>
-        <img class="round mr-2 card_img" v-if="user.photo != null && user.photo !=''" :src="'data:image/jpeg;base64,'+user.photo" />
-        <img class="round" v-else src="assets/layout/images/default-user.jpg" />
+        <img class="round sm:mr-3 mr-0" v-if="user.photo != null && user.photo !=''" :src="'data:image/jpeg;base64,'+user.photo" />
+        <img class="round sm:mr-3 mr-0" v-else src="assets/layout/images/default-user.jpg" />
         <FileUpload v-if="(userID === currentUser.userID || findRole(currentUser, 'main_administrator')) && findRole(currentUser, 'teacher')" ref="form" mode="basic" class="mt-2"
                     :customUpload="true" accept="image/*" :class="{'p-invalid': validation.file}"
                     @uploader="upload($event)" :auto="true" chooseLabel="Выберите фото"/>
@@ -17,7 +17,7 @@
   
       <div class="grid formgrid">
         <!-- ИМЯ -->
-        <div class="col-12 mt-2 mb-2 pb-2 lg:col-6 mb-lg-0">
+        <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ t('contact.fname') }}<span class="p-error" v-if="!readonly">*</span></label>
         <InputText class="mt-2" :placeholder="t('contact.fname')" v-model="user.firstName" :readonly="props.readonly" @input="updateUserData"></InputText>
         <small class="p-error" v-if="validation.firstName">{{ t("common.requiredField") }}</small>
@@ -94,7 +94,7 @@
 
         <div v-if="(user && user.academicDegree || user.academicTitle) || customType === 'scientists'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t('science.academicDegAndAcademicTit')}}</label>
-            <InputText class="mb-2 gray-background" :placeholder="t('science.academicDegAndAcademicTit')" :value="getCombinedDegreeAndTitle()" :readonly="true" @input="updateUserData"></InputText>
+            <InputText class="mt-2 gray-background" :placeholder="t('science.academicDegAndAcademicTit')" :value="getCombinedDegreeAndTitle()" :readonly="true" @input="updateUserData"></InputText>
         </div>
 
 
@@ -411,11 +411,13 @@
 </script>
 
 <style scoped>
-  .card_img{
-    width: 200px;
-    max-height: 200px;
-    height: auto;
-  }
+.round{
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #dfdfdf;
+}
   :deep(.p-dataview .p-dataview-content){
     background: transparent;
   }
