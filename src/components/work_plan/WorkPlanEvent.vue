@@ -476,6 +476,7 @@ export default {
       }
       this.planService.updateEventFact(data).then(res => {
         if (res.data) {
+          
           this.isFactVisible = true
           this.isFactInputVisible = false;
           this.$toast.add({
