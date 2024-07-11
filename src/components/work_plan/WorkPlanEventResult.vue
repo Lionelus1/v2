@@ -526,16 +526,6 @@ export default {
     },
     rejectHistory() {
       return this.resultData || {};
-    //     for (const item of this.resultData) {
-    //   // Check if the reject_history.message is not null
-    //   if (item.reject_history?.message !== null) {
-    //     // Return the non-null reject_history.message
-    //     this.rejectMessage = item.reject_history.message;
-    //     return
-    //   }
-    // }
-    // // If no non-null reject_history.message is found, return an empty string or handle it as per your requirement
-    // return '';
     },
     filteredQuarters() {
       return this.filterQuarters();
@@ -1259,20 +1249,6 @@ export default {
     showRejectMessageSidebar() {
       this.rejectMessageSidebar = true;
     },
-    // latestFact(factData) {
-    //   if (!factData || !Array.isArray(factData) || factData.length === 0) {
-    //     return null;
-    //   }
-    //   const sortedResults = factData.slice().sort((a, b) => {
-    //     const dateA = new Date(a.plan_event_result_history[0].create_date);
-    //     const dateB = new Date(b.plan_event_result_history[0].create_date);
-    //     return dateB - dateA;
-    //   });
-    //   let fact = sortedResults[0].fact
-    //   this.newFact = fact
-    //   return sortedResults[0].fact;
-    // },
-
   }
 }
 </script>

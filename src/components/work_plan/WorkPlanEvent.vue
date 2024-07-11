@@ -63,8 +63,7 @@
             {{ node.plan_number }}
           </template>
         </Column>
-        <Column field="fact " :header="$t('common.fact')" v-if="isOperPlan">
-
+        <Column field="fact" :header="$t('common.fact')" v-if="isOperPlan">
           <template #body="{ node }">
             <span v-if="node.fact && isFactVisible" style="float: left;">{{ node.fact + " " }}</span>
             <div v-if="node.resp_person_id === loginedUserId">
@@ -78,7 +77,6 @@
             <span v-if="selectedWorkPlanEvent && Object.keys(selectedWorkPlanEvent)[0] && node">
               <a v-if="parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id']) && isFactVisible" href="javascript:void(0)" @click="factValue=node.fact ;factVisiblity()"><i class="pi pi-pencil"></i></a>
             </span>
-            <!-- updateFact -->
             </div>
           </template>
         </Column>
@@ -114,7 +112,6 @@
           <template #body="{ node }">
             <div v-if="node.result && node.result.length > 100">
               {{ node.result_short }}
-              <!--              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-text" icon="fa-solid fa-eye" label="" />-->
               <a href="javascript:void(0);" @click="toggle('event-final-result', $event, node)">{{ $t('common.showMore').toLowerCase() }}</a>
               <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }" @hide="closeOverlay">
                 <div>{{ selectedEvent.result }}</div>
@@ -242,7 +239,6 @@ export default {
     WorkPlanEventEditModal,
     WorkPlanApprove,
     WorkPlanEventAdd,
-    // WorkPlanEventResultModal,
     DocSignaturesInfo,
     ActionButton
   },
@@ -1131,9 +1127,7 @@ export default {
       return signed
     },
   },
-  /*unmounted() {
-    localStorage.removeItem("workPlan");
-  }*/
+ 
   computed: {
     initItems() {
       return [
@@ -1193,24 +1187,6 @@ export default {
     isPlanUnderRevision() {
       return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
     },
-    // isGenerateActVisible(){
-    //   const currentMonth = new Date().getMonth() + 1;
-    //   let receivedDate = null;
-
-    //   if (this.planDoc && this.planDoc.docHistory) {
-    //     receivedDate = this.planDoc.docHistory?.setDate;
-    //   }
-    //   const newDate = receivedDate ? new Date(receivedDate) : null;
-    //   const receivedMonth = newDate ? newDate.getMonth() + 1 : null;
-    //   const isVisible = receivedMonth < currentMonth;
-
-    //   return (
-    //     this.planDoc &&
-    //     this.planDoc.docHistory &&
-    //     this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value &&
-    //     isVisible
-    //   );
-    // },
     toolbarMenus() {
       return [
         {
