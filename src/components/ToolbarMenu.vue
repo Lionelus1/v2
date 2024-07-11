@@ -45,6 +45,7 @@
               { button_purple: i.color === 'purple' },
               { button_yellow: i.color === 'yellow' },
               { button_red: i.color === 'red' },
+              { button_grey: i.color === 'grey' },
             ]"
             :icon="i.icon"
             :label="label(i.label)"
@@ -85,13 +86,6 @@
             :popup="true"
           />
         </template>
-        <OverlayPanel ref="op">
-          <div v-if="opValues.dropdown != null">
-            <Button v-for="(i, index) of opValues?.dropdown" :key="index" class="block w-full my-1" @click="opValues.command(index)">
-              {{ $t(i) }}
-            </Button>
-          </div>
-        </OverlayPanel>
       </div>
       <div class="flex" v-if="search || filter">
         <Button
@@ -148,14 +142,9 @@ const mobilemenu = ref();
 const subMenu = ref({});
 const actionList = computed(() => props.data);
 const op = ref({});
-const opValues = ref(null);
 
 const toggle = (event) => {
   op.value.toggle(event);
-};
-
-const setOpValues = (i) => {
-  opValues.value = i
 };
 
 const onClick = (event) => {
@@ -302,6 +291,13 @@ onBeforeUnmount(() => {
 }
 .button_red:hover {
   background: rgba(255, 0, 0, 0.3) !important;
+}
+.button_grey {
+  color: #000000 !important;
+  background: rgba(79, 83, 87, 0.15);
+}
+.button_grey:hover {
+  background: rgba(64, 66, 68, 0.30) !important;
 }
 @media (max-width: 960px) {
   .toolbar_bars {

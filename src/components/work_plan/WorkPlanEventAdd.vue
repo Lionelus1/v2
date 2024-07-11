@@ -1,16 +1,22 @@
 <template>
   <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
-      <div class="field">
+      <!-- mastersplan -->
+      <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
+        <label>{{$t("workPlan.content")}}</label>
+        <Textarea v-model="content" rows="3" style="resize: vertical"/>
+      </div>
+      <!-- mastersplan -->
+      <div class="field" v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
         <label>{{ plan?.plan_type?.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
         <InputText v-model="event_name" />
         <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
       </div>
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science">
+      <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Science || Enum.WorkPlanTypes.Masters">
         <label>{{ $t('common.startDate') }}</label>
         <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science">
+      <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Science || Enum.WorkPlanTypes.Masters">
         <label>{{ $t('common.endDate') }}</label>
         <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
@@ -54,6 +60,12 @@
           </p>
         </div>
       </template>
+      <!-- mastersplan -->
+      <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
+        <label>{{$t("workPlan.expectingResults")}}</label>
+        <Textarea v-model="expecting_results" rows="3" style="resize: vertical"/>
+      </div>
+      <!-- mastersplan -->
     </div>
     <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
       <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser" />
@@ -73,25 +85,6 @@
         <Textarea v-model="result" rows="3" style="resize: vertical"/>
       </div>
     </div>
-
-    <!-- mastersplan -->
-    <div class="p-fluid" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
-      <div class="field">
-        <label>{{$t("workPlan.content")}}</label>
-        <Textarea v-model="result" rows="3" style="resize: vertical"/>
-      </div>
-      <div class="field" v-if="plan?.event_type === 1">
-        <label>{{$t("common.startDate")}}</label>
-        <PrimeCalendar dateFormat="dd.mm.yy" showIcon
-                   :showButtonBar="true"></PrimeCalendar>
-      </div>
-      <div class="field" v-if="plan?.event_type === 1">
-        <label>{{$t("common.endDate")}}</label>
-        <PrimeCalendar  dateFormat="dd.mm.yy" showIcon
-                   :showButtonBar="true"></PrimeCalendar>
-      </div>
-    </div>
-    <!-- mastersplan -->
 
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
@@ -171,7 +164,8 @@ export default {
       inputSets: [{ selectedUsers: '', selectedRole: '' }],
       start_date: new Date,
       end_date: new Date(),
-      
+      content: null,
+      expecting_results: null
     }
   },
 
@@ -297,11 +291,14 @@ export default {
         data.supporting_docs = this.supporting_docs;
       }
 
-      if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
+      if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science || this.Enum.WorkPlanTypes.Masters) {
         data.start_date = this.start_date
         data.end_date = this.end_date
       }
-
+      if(this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters){
+        data.content = this.content
+        data.expecting_results = this.expecting_results
+      }
       this.planService.createEvent(data).then(res => {
         this.emitter.emit("workPlanEventIsAdded", {is_success: true, is_main: this.isMain});
         this.$toast.add({severity: 'success', detail: this.$t('workPlan.message.eventCreated'), life: 3000});
@@ -326,6 +323,9 @@ export default {
       this.parentItems.push(data);
     },
     validateForm() {
+      if(this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters){
+        return true
+      }
       this.formValid.event_name = !this.event_name;
       this.formValid.summaryUser = !this.summaryDepartment.length === 0;
       // this.formValid.users = this.selectedUsers.length === 0;

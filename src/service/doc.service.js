@@ -73,4 +73,10 @@ export class DocService {
     getDocParams(id){
         return api.get(`/doc/getDocParams/${id}`, {headers: getHeader()});
     }
+    addAdditionalInfo(data){
+        return api.post(`/doc/info`, data, {headers: getHeader()});
+    }
+    getAdditionalInfo(id){
+        return api.get(`/doc/info/${id}`, {headers: getHeader()});
+    }
 }

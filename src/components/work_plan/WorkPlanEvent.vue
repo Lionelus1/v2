@@ -38,17 +38,30 @@
                  @page="onPage($event)">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
-        <Column field="event_name" :header="$t('workPlan.eventName')" :expander="true" style="min-width:300px;width: 30%;">
+        <!-- mastersplan -->
+        <Column field="content" :header="$t('workPlan.content')" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
+          <template #body="{ node }">
+            {{ node.content }}
+          </template>
+        </Column>
+      
+        <Column field="expecting_results" :header="$t('workPlan.expectingResults')" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
+          <template #body="{ node }">
+            {{ node.expecting_results }}
+          </template>
+        </Column>
+        <!-- mastersplan -->
+        <Column field="event_name" :header="$t('workPlan.eventName')" :expander="true" style="min-width:300px;width: 30%;" v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
           <template #body="{ node }">
             <span><i class="fa-solid fa-folder"></i>&nbsp;{{ node.event_name }}</span>
           </template>
         </Column>
-        <Column field="start_date" :header="$t('common.startDate')" v-if="isSciencePlan" style="max-width: 100px">
+        <Column field="start_date" :header="$t('common.startDate')" v-if="isSciencePlan || plan?.plan_type?.code === Enum.WorkPlanTypes.Masters" style="max-width: 100px" >
           <template #body="{ node }">
             {{ formatDateMoment(node.start_date) }}
           </template>
         </Column>
-        <Column field="end_date" :header="$t('common.endDate')" v-if="isSciencePlan" style="max-width: 100px">
+        <Column field="end_date" :header="$t('common.endDate')" v-if="isSciencePlan || plan?.plan_type?.code === Enum.WorkPlanTypes.Masters" style="max-width: 100px">
           <template #body="{ node }">
             {{ formatDateMoment(node.end_date) }}
           </template>
@@ -68,7 +81,7 @@
             <span v-if="node.fact">{{ node.fact }}</span>
           </template>
         </Column>
-        <Column field="quarter" :header="$t('workPlan.quarter')" v-if="!isSciencePlan">
+        <Column field="quarter" :header="$t('workPlan.quarter')" v-if="!isSciencePlan && plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
           <template #body="{ node }">
             {{ initQuarter(node.quarter) }}
           </template>
@@ -78,7 +91,7 @@
             {{ node.responsible_executor }}
           </template>
         </Column>
-        <Column field="fullName" :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
+        <Column field="fullName" :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')" v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
           <template #body="{ node }">
             <div v-if="node.user && node.user.length > 2">
               <Button type="button" @click="showRespUsers($event, node)" class="p-button-text" icon="fa-solid fa-people-group fa-xl" label=""/>
@@ -96,7 +109,7 @@
             {{ node.supporting_docs }}
           </template>
         </Column>
-        <Column field="result" :header="isOperPlan ? $t('common.additionalInfo') : $t('common.result')" style="width: 15%;">
+        <Column field="result" :header="isOperPlan ? $t('common.additionalInfo') : $t('common.result')" style="width: 15%;" v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
           <template #body="{ node }">
             <div v-if="node.result && node.result.length > 100">
               {{ node.result_short }}
@@ -189,6 +202,7 @@
     </div>
   </OverlayPanel>
 
+  <add-info v-if="dialog.info.state" :visible="dialog.info.state" @hide="hideDialog(dialog.info)" :plan="plan"/>
   <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null"
                        :isMain="!!selectedEvent" :plan-data="plan" @hide="hideDialog(dialog.add)"/>
   <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :event="selectedEvent" @hide="hideDialog(dialog.edit)"/>
@@ -197,6 +211,8 @@
   <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state" :approval-stages="planApprovalStage" :plan="plan" :events="data"
                      @hide="hideDialog(dialog.planApprove)"
                      @isSent="planSentToApprove"></work-plan-approve>
+  
+  
 </template>
 
 <script>
@@ -366,6 +382,9 @@ export default {
         },
         showMastersEventType: {
           state: false
+        },
+        info: {
+          state: false
         }
       },
       planApprovalStage: null,
@@ -375,7 +394,6 @@ export default {
       DocState: DocState,
       filtered: false,
       stages: [],
-      mastersPlanEventType: null
     }
   },
   created() {
@@ -983,6 +1001,7 @@ export default {
     },
     showDialog(dialog) {
       dialog.state = true
+      console.log(this.dialog.info.state)
     },
     hideDialog(dialog) {
       this.selectedEvent = null
@@ -1166,10 +1185,7 @@ export default {
           icon: 'pi pi-plus',
           visible: (this.isPlanCreator || this.isEventsNull) && !this.isFinish,
           color: 'blue',
-          dropdown: this.plan?.plan_type?.code == "masters" ? ["workPlan.mastersThesisInfo", "workPlan.mastersThesisGeneralPlan"] : null,
-          command: (eventType) => {
-              this.mastersPlanEventType = eventType
-              this.plan = {...this.plan, ...{event_type: eventType}}
+          command: () => {
               this.showDialog(this.dialog.add)
           }
         },
@@ -1194,9 +1210,14 @@ export default {
         {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
-          visible: this.isFinish && this.planDoc && !(this.isCreatedPlan || this.isPlanUnderRevision),
+          color: this.isFinish ? "" : "green",
+          visible: this.plan?.plan_type?.code == Enum.WorkPlanTypes.Masters || this.isFinish && (this.planDoc && !(this.isCreatedPlan || this.isPlanUnderRevision)) ,
           command: () => {
-            this.showDialog(this.dialog.planView)
+            if (this.isFinish) {
+              this.showDialog(this.dialog.planView)
+            }else{
+              this.viewDoc()
+            }
           }
         },
         {
@@ -1243,6 +1264,15 @@ export default {
           icon: 'fa-solid fa-eye',
           command: () => {
             this.showDialog(this.dialog.uploadAdditionalFile)
+          }
+        },
+        {
+          label: this.$t('workPlan.mastersThesisInfo'),
+          icon: 'pi pi-file',
+          visible: (this.isPlanCreator) && !this.isFinish && this.plan?.plan_type?.code == Enum.WorkPlanTypes.Masters,
+          color: 'grey',
+          command: () => {
+              this.showDialog(this.dialog.info)
           }
         }
       ]

@@ -1280,7 +1280,20 @@ export default {
         topicOfMastersThesis: "Тема магистерской диссертации",
         mastersThesisInfo: "Информация о магистерской диссертации",
         mastersThesisGeneralPlan: "Общий план работы над магистерской диссертацией",
-        content: "Содержание"
+        content: "Содержание",
+        viewDoc: "Просмотр документа",
+        expectingResults: "Ожидаемые результаты",
+        relevance: "Актуальность",
+        goal: "Цель",
+        mainGoals: "Основные задачи",
+        theoreticalSignificance: "Теоретическая значимость",
+        scientificNovelty: "Научная новизна",
+        practicalSignificance: "Практическая значимость",
+        researchMetodology: "Методика исследования",
+        publications: "Публикации",
+        plannedTesting: "Планируемая апробация",
+        dissertationLanguage: "Язык диссертации",
+        conclusionOfDepartment: "Отметка о выполнении или заключение кафедры"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

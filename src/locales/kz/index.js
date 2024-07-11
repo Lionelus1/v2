@@ -1291,7 +1291,20 @@ export default {
         topicOfMastersThesis: "Магистрлік диссертация тақырыбы",
         mastersThesisInfo: "Магистрлік диссертация туралы мәлімет",
         mastersThesisGeneralPlan: "Магистрлік диссертациямен жұмыс істеудің жалпы жоспары",
-        content: "Мазмұны"
+        content: "Мазмұны",
+        viewDoc: "Документті көру",
+        expectingResults: "Күтілетін нәтижелер",
+        relevance: "Маңыздылығы",
+        goal: "Мақсат",
+        mainGoals: "Негізгі тапсырмалар",
+        theoreticalSignificance: "Теориялық маңызы",
+        scientificNovelty: "Ғылыми жаңалық",
+        practicalSignificance: "Практикалық маңыздылығы",
+        researchMetodology: "Зерттеу әдістемесі",
+        publications: "Жарияланымдар",
+        plannedTesting: "Жоспарлы тестілеу",
+        dissertationLanguage: "Диссертация тілі",
+        conclusionOfDepartment: "Кафедраны аяқтау немесе қорытындылау белгісі"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",

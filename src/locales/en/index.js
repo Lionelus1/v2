@@ -1250,7 +1250,20 @@ export default {
         topicOfMastersThesis: "Topic of master's thesis",
         mastersThesisInfo: "Information about the master's thesis",
         mastersThesisGeneralPlan: "General plan for working on a master's thesis",
-        content: "Content"
+        content: "Content",
+        viewDoc: "View document",
+        expectingResults: "Expecting results",
+        relevance: "Relevance",
+        goal: "Goal",
+        mainGoals: "Main goals",
+        theoreticalSignificance: "Theoretical significance",
+        scientificNovelty: "Scientific novelty",
+        practicalSignificance: "Practical Significance",
+        researchMetodology: "Research metodology",
+        publications: "Publications",
+        plannedTesting: "Planned testing",
+        dissertationLanguage: "Dissertation language",
+        conclusionOfDepartment: "Mark of completion or conclusion of the department"
     },
     queue: {
 
