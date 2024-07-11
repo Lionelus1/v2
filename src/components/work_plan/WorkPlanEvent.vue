@@ -75,7 +75,7 @@
                 </div>
             </div>
             <span v-if="selectedWorkPlanEvent && Object.keys(selectedWorkPlanEvent)[0] && node">
-              <a v-if="parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id']) && isFactVisible" href="javascript:void(0)" @click="factValue=node.fact ;factVisiblity()"><i class="pi pi-pencil"></i></a>
+              <a v-if="parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id']) && isFactVisible" href="javascript:void(0)" @click="factValue=node.fact ;factVisiblity()">&nbsp;&nbsp;<i class="pi pi-pencil" style="margin-top: 5px;"></i></a>
             </span>
             </div>
           </template>
