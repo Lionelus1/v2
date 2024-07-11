@@ -107,7 +107,8 @@
               </div>
               <div class="field" v-if="(plan && isOperPlan && isSummaryDepartmentUser && isVisibleWritableField)">
                 <label>{{ $t('common.fact') }}</label>
-                <InputText v-model="fact" @input="factChange"/>
+                  <InputText v-model="event.fact" @input="factChange"/>
+
               </div>
               <div class="field" v-if="isVisibleWritableField && isRespUser && (isOperPlan || isStandartPlan)">
                 <Dropdown v-model="selectedQuarter" :options="filteredQuarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full md:w-14rem" required @change="validate"/>
@@ -145,8 +146,7 @@
             </div>
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
               <div class="field" v-if="(plan && plan.plan_type.code === 'oper' && isSummaryDepartmentUser)">
-                <label class="bold">{{ $t('common.fact') }}: </label>
-                <div>{{ event.fact }}</div>
+                <label class="bold">{{ $t('common.fact') }}: </label><strong>{{ " " + event.fact }}</strong>
               </div>
               <!-- Start Editing -->
               <div class="field" v-if="plan && resultData">
@@ -155,11 +155,7 @@
                     <div class="flex justify-content-center align-items-center">
                       <div class="flex flex-column justify-content-center align-items-start">
                         <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.thirdName + " " + item.user.firstName }}</b></span>
-                        <!-- {{ item.result_text[0].quarter }} -->
-
-
                         <span class="pb-2"><strong>{{ getQuarter(item.result_text[0].quarter) }}</strong> | {{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
-
                       </div>
                       <div class="ml-3">
                         <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">
@@ -168,9 +164,6 @@
                           <Button v-if="item.plan_event_result_history[0]?.state_id === 6" class="p-button p-component p-button-icon-only p-button-text" style="height: 20px;font-size: 16px;" @click="showRejectMessageSidebar" icon="fa-solid fa-eye" link />
                         </span>
                       </div>
-                      <!-- <div class="ml-3">
-                        <span :class="'customer-badge value-' + item.result_text[0].quarter">{{ getQuarter(item.result_text[0].quarter) }}</span>
-                      </div> -->
                     </div>
                   </Divider>
                   <Inplace v-if="(item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
@@ -386,6 +379,7 @@ export default {
       files: [],
       newResult: null,
       fact: null,
+      //newFact: null,
       event_id: this.resultId,
       user_id: JSON.parse(localStorage.getItem("loginedUser")).userID,
       isAdmin: false,
@@ -451,6 +445,7 @@ export default {
       inputWordCount: 0
     }
   },
+
   computed: {
     getFilteredData(){
       return userID => this.resultData.filter(item => item.user_id === userID)
@@ -531,16 +526,6 @@ export default {
     },
     rejectHistory() {
       return this.resultData || {};
-    //     for (const item of this.resultData) {
-    //   // Check if the reject_history.message is not null
-    //   if (item.reject_history?.message !== null) {
-    //     // Return the non-null reject_history.message
-    //     this.rejectMessage = item.reject_history.message;
-    //     return
-    //   }
-    // }
-    // // If no non-null reject_history.message is found, return an empty string or handle it as per your requirement
-    // return '';
     },
     filteredQuarters() {
       return this.filterQuarters();
@@ -553,23 +538,18 @@ export default {
     }
     this.getEvent();
 
-
   },
+
   methods: {
     findRole: findRole,
     getFirstMonthOfQuarter() {
       const currentDate = new Date();
-      const currentMonth = currentDate.getMonth() + 1; //1-12
-      let firstMonthOfQuarter;
-
-      if (currentMonth >= 1 && currentMonth <= 3) { // 1, 2, 3
-        firstMonthOfQuarter = 1;
-      } else if (currentMonth >= 4 && currentMonth <= 6) { // 4, 5, 6
-        firstMonthOfQuarter = 4;
-      } else if (currentMonth >= 7 && currentMonth <= 9) { // 7, 8, 9
-        firstMonthOfQuarter = 7;
-      } else if (currentMonth >= 10 && currentMonth <= 12) { // 10, 11, 12
-        firstMonthOfQuarter = 10;
+      const currentMonth = currentDate.getMonth();
+      const currentQuarter = Math.floor(currentMonth / 3) + 1;
+      const firstMonthOfQuarter = (currentQuarter - 1) * 3;
+      if (firstMonthOfQuarter === 0){
+        //Eger firstMonthIndex "0" teng bolsa "Ақпан" - aiyn qaitarady
+        return 1
       }
 
       return firstMonthOfQuarter;
@@ -643,7 +623,6 @@ export default {
       });
     },
     getData() {
-
       const data = {
         event_id : this.event.work_plan_event_id,
         result_filter: JSON.parse(JSON.stringify(this.resultFilter))
@@ -653,13 +632,11 @@ export default {
         data.result_filter.responsiveUser = data.result_filter.responsiveUser[0]
       }
 
-      // if (this.resultFilter && this.resultFilter.faculty && this.resultFilter.faculty.id > 0) {
-      //   data.result_filter.department_id = this.resultFilter.faculty.id;
-      // }
-
       this.planService.getEventResult(data).then(res => {
         if (res.data) {
           this.resultData = res.data;
+          let factData = this.resultData[0].fact
+          this.fact = factData
 
           if (this.resultData.result_text != null) {
             this.resultData.result_text.map(e => {
@@ -784,6 +761,16 @@ export default {
       ];
     },
     saveResult() {
+      if ((!this.isOperPlan && this.result === null) || (this.isOperPlan && this.newResult === null)) {
+        this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
+        this.isDisabled = true;
+        setTimeout(() => {
+          window.location.reload();
+        }, 10000);
+
+        return
+      }
+
       if ((this.isOperPlan || this.isStandartPlan) && this.validate()) {
         this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
         return
@@ -811,7 +798,7 @@ export default {
       if (this.authUser?.mainPosition?.department &&
         !this.authUser.mainPosition.department.isFaculty &&
         this.isOperPlan) {
-        fd.append("fact", this.fact);
+        fd.append("fact", this.event.fact);
       }
 
       if (this.plan && this.isOperPlan && this.resultData)
@@ -1070,8 +1057,7 @@ export default {
 
 
       if (this.isFactChanged)
-        console.log("fact: ", this.fact);
-        fd.append("fact", this.fact)
+        fd.append("fact", this.event.fact)
       fd.append("text", item.result_text[0].text)
       if (this.files.length > 0) {
         for (let file of this.files) {
@@ -1264,7 +1250,6 @@ export default {
     showRejectMessageSidebar() {
       this.rejectMessageSidebar = true;
     },
-
   }
 }
 </script>
