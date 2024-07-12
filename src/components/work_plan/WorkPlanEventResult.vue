@@ -105,7 +105,7 @@
                 <label>{{ $t('workPlan.eventName') }}</label>
                 <InputText v-model="event.event_name" disabled/>
               </div>
-              <div class="field" v-if="(plan && isOperPlan && isSummaryDepartmentUser && isVisibleWritableField)">
+              <div class="field" v-if="(plan && isOperPlan && isSummaryDepartmentUser)">
                 <label>{{ $t('common.fact') }}</label>
                   <InputText v-model="event.fact" @input="factChange"/>
 
@@ -596,7 +596,7 @@ export default {
       return this.event.user.some(user => user.id === id)
     },
     summaryDepartmentExists(id){
-      return this.event.user.some(user => user.id === id && user.is_summary_department === true)
+      return this.event.user.some(user => user.id === id && user.is_summary_department)
     },
     getEvent() {
       this.planService.getEventById(this.event_id).then(res => {
