@@ -170,8 +170,8 @@ export class WorkPlanService {
         return api.get('/workPlan/types', {headers: getHeader()});
     }
 
-    getStudents() {
-        return api.get('/workPlan/students', {headers: getHeader()});
+    getStudents(planId) {
+        return api.post('/workPlan/students', {work_plan_id: planId},{headers: getHeader()});
     }
 
     getPracticeTypes() {

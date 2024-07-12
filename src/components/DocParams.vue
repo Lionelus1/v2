@@ -10,15 +10,60 @@
       <CustomFileUpload @upload="uploadFile($event, param?.name)" v-model="param.value" :multiple="false"
                         :button="true"/>
     </div>
-    <InputText v-if="!param.component" v-model="param.value"
-               :placeholder="param?.placeholder ? $t(param?.placeholder) : ''"/>
+
+    <!-- Рабочий план график   -->
+
+    <div v-if="param?.description === 'educationalPrograms.name'">
+      <Dropdown
+          v-model="param.value"
+          :options="eduProgByManagerId"
+          :optionLabel="'name_' + $i18n.locale"
+          :placeholder="$t('common.select')"
+      />
+    </div>
+    <div v-else-if="param?.description === 'doctemplate.editor.practiceType'">
+      <Dropdown
+          v-model="param.value"
+          :options="practiceType"
+          :optionLabel="'name_' + $i18n.locale"
+          :placeholder="$t('common.select')"
+      />
+    </div>
+    <div v-else>
+      <InputText
+          v-if="!param.component"
+          v-model="param.value"
+          :placeholder="param?.placeholder ? $t(param?.placeholder) : ''"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
+import {WorkPlanService} from "@/service/work.plan.service";
+import {onMounted, ref} from "vue";
 
+const planService = new WorkPlanService()
 const props = defineProps(['params'])
+const practiceType = ref([])
+const eduProgByManagerId = ref([])
+
+const getPracticeTypes = () => {
+  planService.getPracticeTypes().then(res => {
+    practiceType.value = res.data
+  }).catch(error => {
+    toast.add({severity: "error", summary: error, life: 3000});
+  })
+}
+
+const getEduProgByManagerId = () => {
+  planService.getEduProgByManagerId().then(res => {
+    eduProgByManagerId.value = res.data
+  }).catch(error => {
+    toast.add({severity: "error", summary: error, life: 3000});
+  })
+}
 
 const uploadFile = (event, name) => {
   props.params.forEach((param) => {
@@ -27,4 +72,9 @@ const uploadFile = (event, name) => {
     }
   })
 }
+
+onMounted(() => {
+  getPracticeTypes();
+  getEduProgByManagerId();
+})
 </script>

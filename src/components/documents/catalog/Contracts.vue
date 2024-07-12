@@ -414,6 +414,8 @@ export default {
     getContracts() {
       this.tableLoading = true;
 
+      console.log(this.filter);
+
       this.service.getDocumentsV2({
         page: this.page,
         rows: this.rows,
