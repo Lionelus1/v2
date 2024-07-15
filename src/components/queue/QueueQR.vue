@@ -10,9 +10,9 @@
       <Button class="justify-content-center p-button-lg" @click="queue(true)">{{ $t('queue.choiceTime') }}</Button>
     </div>
     <div :class="['flex', 'flex-column', 'm-auto', 'gap-2', {'text-center': !reservation, 'gap-4': !reservation,}]" v-if="currentStep === 2">
-      <div class="flex justify-content-end">
+<!--      <div class="flex justify-content-end">
         <Button class="p-button-outlined" :label="$t('educomplex.tooltip.previous')" @click="previous()" icon="pi pi-arrow-left" />
-      </div>
+      </div>-->
       <template v-if="reservation">
         <h4 class="m-0">{{ $t('contact.lname') }}</h4>
         <InputText class="p-inputtext-lg" v-model="lastName"/>
@@ -261,8 +261,8 @@ const phoneNumber = ref('');
 const isDisabled = ref(true);
 const queinfo = ref();
 const queuesWS = ref([]);
-const currentStep = ref(1);
-const reservation = ref(false);
+const currentStep = ref(2);
+const reservation = ref(true);
 const talonDate = ref('')
 const talonTime = ref('')
 const queueKey = ref()
@@ -452,7 +452,7 @@ const registerQueue = async (queueId, queue) => {
           toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
           loading.value = false
           timeList.value = []
-          currentStep.value = 1
+          currentStep.value = 2
           disabledRezervation.value = false
         });
   }
@@ -496,7 +496,7 @@ const getRegisterService = (queueId, queue) => {
           console.log(error)
           toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
           loading.value = false
-          currentStep.value = 1
+          currentStep.value = 2
           disabledRezervation.value = false
         });
   }
@@ -513,7 +513,7 @@ const refusal = () => {
       .then((response) => {
         refusalVisible.value = false
         localStorage.removeItem('queueKey')
-        currentStep.value = 1
+        currentStep.value = 2
         disabledRezervation.value = false
       })
       .catch((error) => {
@@ -567,7 +567,7 @@ onMounted(() => {
       currentStep.value = 4
     }
   } else if (localStorage.getItem('phoneNumber') !== null) {
-    currentStep.value = 1
+    currentStep.value = 2
   }
 })
 </script>

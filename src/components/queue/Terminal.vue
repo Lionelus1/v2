@@ -159,6 +159,7 @@ export default {
     });
     },
     getRegisterQueue(queue,id) {
+
       this.selectedQueue = queue
       this.loading = true
       var req = {
