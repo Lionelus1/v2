@@ -464,7 +464,10 @@ const menu = computed(() => [
     //   !request.value.doc ||
     //   !request.value.doc.docHistory ||
     //   request.value.doc.docHistory?.stateId < DocEnum.INAPPROVAL.ID,
-    command: () => open("documentInfoSidebar"),
+    command: async () => {
+      await initTicketInfo(uuid.value)
+      open("documentInfoSidebar")
+    },
   },
 ]);
 
@@ -886,6 +889,7 @@ const initTicketInfo = async (uuid) => {
     Page: 0
   })
   ticketInfo.value = response.data
+  camundaServiceInstance.docUUID = ticketInfo.value.ticket[0].doc.uuid
 }
 const initForm = async (
   camundaServiceInstance,
@@ -941,6 +945,7 @@ const downloadContract = async () => {
   // }
   // await camundaServiceInstance.setDocUUID();
   if (!ticketInfo.value.ticket[0].doc.uuid) return;
+  camundaServiceInstance.docUUID = ticketInfo.value.ticket[0].doc.uuid
   docService
     .downloadDocumentV2({
       // uuid: uuid.value,
