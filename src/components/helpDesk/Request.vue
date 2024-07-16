@@ -283,12 +283,13 @@ const currentUser = computed(() =>
 const finishSenderStep = (approval) => {
   loadingFinish(approval);
   status.value = "inapproval";
-  updateQueryStatus(status.value);
+  // updateQueryStatus(status.value);
   close("sendToApproveDialog");
 };
 const loadingFinish = async (approval) => {
   loading.value = true;
   await camundaSenderInstance.finishStep(approval);
+  await initTicketInfo(uuid.value)
   loading.value = false;
 };
 // const selectedPosition = ref(route.params.selectedPosition)
@@ -815,7 +816,15 @@ const isFilled = Object.values(userData.value).every((value) => value !== null);
 const status = ref(null);
 const uuid = ref(null);
 onMounted(async () => {
-  status.value = route.query.status;
+  uuid.value = route.params.uuid;
+  console.log("uuid.value:", uuid.value);
+  await initTicketInfo(uuid.value)
+  console.log("ticketInfo.value:", ticketInfo.value);
+  if (!ticketInfo.value.ticket[0].doc.docHistory) {
+    status.value = null
+  } else {
+    status.value = ticketInfo.value.ticket[0].doc.docHistory.stateEn;
+  }
   if (status.value == "created") isDocSaved.value = true;
   console.log("route:", route.params);
   console.log("route.params.id:", route.params.id);
@@ -823,7 +832,7 @@ onMounted(async () => {
   console.log("request:", request.value);
 
   // Update the requestId reactive variable
-  uuid.value = route.params.uuid;
+
   console.log("uuid.value:", uuid.value);
   if (
     camundaServiceInstance.processDefinitionKey == "" &&
@@ -869,6 +878,15 @@ const startSender = async () => {
   console.log("senderComponents:", senderComponents.value);
   open("sendToApproveDialog");
 };
+const ticketInfo = ref(null)
+const initTicketInfo = async (uuid) => {
+  const response = await service.helpDeskTicketGet({
+    uuid,
+    Rows: 10,
+    Page: 0
+  })
+  ticketInfo.value = response.data
+}
 const initForm = async (
   camundaServiceInstance,
   components,
@@ -921,12 +939,12 @@ const downloadContract = async () => {
   // if (pdf.value) {
   //   return;
   // }
-  await camundaServiceInstance.setDocUUID();
-  if (!camundaServiceInstance.docUUID) return;
+  // await camundaServiceInstance.setDocUUID();
+  if (!ticketInfo.value.ticket[0].doc.uuid) return;
   docService
     .downloadDocumentV2({
       // uuid: uuid.value,
-      uuid: camundaServiceInstance.docUUID,
+      uuid: ticketInfo.value.ticket[0].doc.uuid,
     })
     .then((res) => {
       pdf.value = b64toBlob(res.data);

@@ -10,23 +10,24 @@
                 </Button>
             </template>
         </ToolbarMenu>
-        <BlockUI :blocked="loading" class="card">
-            <Dialog :header="t('helpDesk.application.applicationName')" v-model:visible="visibility.newPublicationDialog" :style="{ width: '450px' }" class="p-fluid">
-                <div class="field">
-                    <label>{{ t("helpDesk.application.categoryApplication") }}</label>
-                    <Dropdown v-model="selectedDirection" :options="directions" :optionLabel="ALIAS[locale]" :placeholder="t('common.select')" />
-                    <div style="margin-top: 15px" v-if="selectedDirection?.code === 'course_application'">
-                        <label>{{ t("helpDesk.application.requestReason") }}</label>
-                        <Dropdown style="margin-top: 5px" v-model="selectedPosition" :options="position" :optionLabel="ALIAS[locale]" :placeholder="t('common.select')" />
-                    </div>
+        <!-- <BlockUI :blocked="loading" class="card"> -->
+        <Dialog :header="t('helpDesk.application.applicationName')" v-model:visible="visibility.newPublicationDialog" :style="{ width: '450px' }" class="p-fluid">
+            <div class="field">
+                <label>{{ t("helpDesk.application.categoryApplication") }}</label>
+                <Dropdown v-model="selectedDirection" :options="directions" :optionLabel="ALIAS[locale]" :placeholder="t('common.select')" />
+                <div style="margin-top: 15px" v-if="selectedDirection?.code === 'course_application'">
+                    <label>{{ t("helpDesk.application.requestReason") }}</label>
+                    <Dropdown style="margin-top: 5px" v-model="selectedPosition" :options="position" :optionLabel="ALIAS[locale]" :placeholder="t('common.select')" />
                 </div>
-                <template #footer>
-                    <Button :label="t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger" @click="close('newPublicationDialog')" />
-                    <Button :label="t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2" :disabled="!selectedDirection || !selectedPosition"
-                        @click="createHelpDesk" />
-                </template>
-            </Dialog>
-            <div>
+            </div>
+            <template #footer>
+                <Button :label="t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger" @click="close('newPublicationDialog')" />
+                <Button :label="t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2" :disabled="!selectedDirection || !selectedPosition"
+                    @click="createHelpDesk" />
+            </template>
+        </Dialog>
+        <div>
+            <BlockUI :blocked="loading" class="card">
                 <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true" filterDisplay="menu" :loading="loading"
                     responsiveLayout="scroll" :paginator="true" selectionMode="single" stripedRows :rows="10" :totalRecords="total" @page="onPage"
                     v-model:selection="currentDocument" scrollable scrollHeight="flex" @lazy="true">
@@ -38,14 +39,18 @@
 
                     <Column field="create_date" :header="t('helpDesk.creationTime')">
                         <template #body="{ data }">
-                            <a href="javascript:void(0)">{{
+                            {{
             formatDate(data.doc?.docHistory?.setDate)
                 ? formatDate(data.doc?.docHistory?.setDate)
                 : ""
-        }}</a>
+        }}
                         </template>
                     </Column>
-
+                    <!-- <a href="javascript:void(0)">{{
+            formatDate(data.doc?.docHistory?.setDate)
+                ? formatDate(data.doc?.docHistory?.setDate)
+                : ""
+        }}</a> -->
                     <Column field="status" :header="t('common.status')">
                         <template #body="{ data }">
                             <span :class="'customer-badge status-' + data.doc?.docHistory?.stateEn
@@ -57,15 +62,15 @@
 
                     <Column field="requestReason" :header="t('helpDesk.application.requestReason')">
                         <template #body="{ data }">
-                            <a href="javascript:void(0)">{{
+                            {{
             data.doc.newParams.selectedPosition.value[ALIAS[$i18n.locale]]
-        }}</a>
+        }}
                         </template>
                     </Column>
 
                     <Column field="category" :header="t('helpDesk.application.categoryApplication')">
                         <template #body="{ data }">
-                            <a href="javascript:void(0)">{{ data.category[ALIAS[$i18n.locale]] }}</a>
+                            {{ data.category[ALIAS[$i18n.locale]] }}
                         </template>
                     </Column>
 
@@ -98,8 +103,9 @@
                         </template>
                     </Column>
                 </DataTable>
-            </div>
-        </BlockUI>
+            </BlockUI>
+        </div>
+        <!-- </BlockUI> -->
     </div>
     <OverlayPanel ref="filterv2">
         <div class="p-fluid" style="min-width: 320px">
@@ -520,10 +526,10 @@ const openDocument = async () => {
             params: {
                 uuid: currentDocument.value.uuid,
             },
-            query: {
-                id: currentDocument.value.id,
-                status: currentDocument.value.doc.docHistory.stateEn,
-            },
+            // query: {
+            //     id: currentDocument.value.id,
+            //     status: currentDocument.value.doc.docHistory.stateEn,
+            // },
         });
     }
 };
@@ -585,9 +591,6 @@ const createHelpDesk = async () => {
     router.push({
         name: "Request",
         params: { uuid: camundaServiceInstance.uuid },
-        query: {
-            status: "",
-        },
     });
     // service
     //   .helpDeskTicketCreate(request.value)
