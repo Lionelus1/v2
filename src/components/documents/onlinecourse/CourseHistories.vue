@@ -31,7 +31,7 @@
 
     <Column>
       <template #body="slotProps">
-        <ActionButton v-if="isAdmin" :show-label="true" :items="initItems(slotProps).value" @toggle="toggle2(slotProps)"/>
+        <ActionButton :show-label="true" :items="initItems(slotProps).value" @toggle="toggle2(slotProps)"/>
       </template>
     </Column>
 
