@@ -1576,8 +1576,9 @@ export default {
         completeCourse: "Сіз курсты аяқтағыңыз келеді ме?",
         numberParticipants: "Қатысушылар саны",
         сompletedСourse: "Аяқталған курстар",
-        moduleCredits: 'Кредиты'
-
+        moduleCredits: 'Кредиты',
+        potok: 'Потоктар',
+        onlineCourse:'Онлайн курс'
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',

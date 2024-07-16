@@ -1,7 +1,6 @@
 <template>
   <ActionButton v-if="findRole(null,'online_course_administrator')" :show-label="true" :items="menu" @toggle="toggleAction(data)">
   </ActionButton>
-
   <DataTable :value="courseHistories" class="p-datatable-sm"
              :lazy="true" :totalRecords="total"
              @page="onPage($event)" :first="lazyParams.first"
@@ -20,10 +19,9 @@
         {{ formatDate(slotProps.data.startDate) }} - {{ formatDate(slotProps.data.finalDate) }}
       </template>
     </Column>
+    <Column v-if="findRole(null, 'online_course_administrator')"  field="studentCount" :header="t('course.numberParticipants')"></Column>
 
-    <Column v-if="findRole(null, 'online_course_administrator')" field="studentCount" :header="t('course.numberParticipants')"></Column>
-
-    <Column field="state.namekz" header="Статус"></Column>
+    <Column :field="'state.name'+$i18n.locale" :header="$t('common.state')"></Column>
 
     <Column :header="t('contracts.columns.author')">
       <template #body="slotProps">
@@ -33,9 +31,7 @@
 
     <Column>
       <template #body="slotProps">
-        <Button class="p-button-text p-1 mr-2"  @click="courseHistory=slotProps.data;openCourseHistoryStudentsDialog()">
-              <i class="fa-solid fa-eye fa-xl"></i>
-            </Button>
+        <ActionButton v-if="isAdmin" :show-label="true" :items="initItems(slotProps).value" @toggle="toggle2(slotProps)"/>
       </template>
     </Column>
 
@@ -66,14 +62,20 @@
   import ActionButton from "@/components/ActionButton.vue";
   import NewCourseFlow from "./NewCourseFlow.vue"
   import {useRoute, useRouter} from "vue-router";
+  import {useConfirm} from "primevue/useconfirm";
 
   const emitter = inject("emitter");
   const {t, locale} = useI18n()
   const toast = useToast()
+  const confirm = useConfirm()
   const loading = ref(false)
   const onlineCourseService = new OnlineCourseService
   const props = defineProps({
     courseHistoryID: {
+      type: Number,
+      default: 0,
+    },
+    courseID: {
       type: Number,
       default: 0,
     },
@@ -109,6 +111,28 @@
       command: () => openCourseDialog()
     },
   ])
+
+  const initItems = (slotProps) => computed(() => {
+    return [
+      {
+        label: t('common.show'),
+        icon: 'fa-solid fa-eye',
+        command: () => {
+          courseHistory.value = slotProps.data;
+          openCourseHistoryStudentsDialog();
+        }
+      },
+      {
+        label: t('common.delete'),
+        icon: 'fa-solid fa-trash',
+        visible: slotProps.data.state.code === "inactive" && slotProps.data.studentCount === 0,
+        command: () => {
+          deleteConfirm(slotProps.data.id)
+        }
+      },
+    ];
+  })
+
   const courseDialog = ref(false)
   const actionsNode = ref(null)
   const router = useRouter()
@@ -128,8 +152,10 @@
       total.value = res.data.total
       loading.value = false
     }).catch(err => {
+      courseHistories.value = []
+      total.value = 0
       loading.value=false
-      toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+      // toast.add({severity: 'error', summary: t('common.error'), life: 3000})
     })
 
   }
@@ -161,10 +187,52 @@
     actionsNode.value = node
   }
 
+  const toggle2 = (node) => {
+    actionsNode.value = node
+  }
+
   const closeCourseDialog = () => {
     courseDialog.value = false
     getCourseHistories()
   }
+
+  const deleteConfirm = (courseHistoryId) => {
+    confirm.require({
+      message: t('common.doYouWantDelete'),
+      header: t('common.delete'),
+      icon: 'pi pi-info-circle',
+      acceptClass: 'p-button-rounded p-button-success',
+      rejectClass: 'p-button-rounded p-button-danger',
+      accept: () => {
+        const params = {
+        course_history_id: courseHistoryId,
+        course_id: props.propsCourse?.id || 0,
+        page: lazyParams.value.page,
+        rows: lazyParams.value.rows
+      }
+        deleteCourseHistory(params)
+      },
+    });
+  }
+
+  const deleteCourseHistory = (params) => {
+    loading.value = true
+    onlineCourseService.deleteCourseHistory(params).then(res => {
+      if (res.data) {
+      toast.add({severity: "success", summary: t('common.success'), life: 3000});
+      } else {
+        toast.add({severity: "warn", summary: t('common.message.title.saveError'), life: 3000});
+        loading.value = false
+      }
+      getCourseHistories();
+    }).catch(error => {
+      loading.value = false
+      toast.add({severity: "error", summary: error, life: 3000});
+
+    });
+  }
+
+  const isAdmin = computed(() => findRole(null, 'online_course_administrator') || findRole(null, 'main_administrator'));
 
   onMounted(() => {
     getCourseHistories()

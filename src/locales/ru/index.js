@@ -1566,7 +1566,9 @@ export default {
         completeCourse: "Вы уверены, что хотите завершить курс?",
         numberParticipants: "Количество участников",
         completedCourse: "Завершенные курсы",
-        moduleCredits: 'Кредиты'
+        moduleCredits: 'Кредиты',
+        potok: 'Потоки',
+        onlineCourse:'Онлайн курс'
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',
