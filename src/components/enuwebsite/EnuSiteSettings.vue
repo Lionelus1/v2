@@ -148,9 +148,10 @@ const socialMediaIds = ref(
     instagram: null,
     youtube: null,
     telegram: null,
+    tiktok: null,
   }
 );
-const socialPlatforms = ['facebook', 'instagram', 'youtube', 'telegram'];
+const socialPlatforms = ['facebook', 'instagram', 'youtube', 'telegram', 'tiktok'];
 const iconClasses = (platform) => `pi pi-${platform}`;
 
 const facultySite = computed(() => {
