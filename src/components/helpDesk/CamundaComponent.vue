@@ -189,6 +189,9 @@ export default {
       requried: false,
       default: false,
     },
+    requestID: {
+      requried: false,
+    },
   },
   components: { ApprovalUsers },
   data() {
@@ -305,6 +308,12 @@ export default {
           },
         },
       ];
+      this.stages = [{
+        titleRu: "Институт непрерывного образования",
+        titleKz: "Үздіксіз білім беру институты",
+        titleEn: "The Institute of Continuing Education",
+        "stage": 1, "users": [{ "userID": 134205, "firstName": "Асем", "lastName": "Сериковна", "thirdName": "Ильясова", "firstnameEn": "Assem", "lastnameEn": "", "thirdnameEn": "Ilyassova", "gender": 2, "email": "ilyassova_as@enu.kz", "phoneNumber": "", "fullName": "Ильясова Асем Сериковна", "birthday": "1979-08-01T00:00:00Z", "mainPosition": { "id": 37292, "name": "начальник отдела", "namekz": "бөлім бастығы", "nameru": "начальник отдела", "nameen": "Head of the office", "department": { "id": 22166, "name": "Институт непрерывного образования", "nameKz": "Үздіксіз білім беру институты", "nameRu": "Институт непрерывного образования", "nameEn": "Institute of Continuing Education", "isFaculty": false, "organization": { "id": 0, "iin": "", "name": "", "nameru": "", "resident": 0, "bankaccount": null } }, "organization": { "id": 1, "iin": "010140003594", "name": "Л.Н.Гумилев атындағы Еуразия ұлттық университеті", "nameru": "Евразийский национальный университет имени Л.Н. Гумилева", "nameen": "Eurasian National University named after L.N. Gumilyov", "form": { "id": 27, "name": "Коммерциялық емес акционерлік қоғам", "namerus": "Некоммерческое акционерное общество", "nameen": null, "shortname": "КеАҚ", "shortnameru": "НАО", "shortnameen": "NJSC" }, "email": "enu@enu.kz", "phone": "8 (7172) 70-95-00, 70-94-57", "address": "Сәтпаев к., 2", "addressru": "ул. Сатпаева, 2", "postal": "Сәтпаев к, 2", "resident": 1, "bankaccount": "KZ948562203105904920", "bank": { "id": 6, "organization": null, "swift": "TEST", "corrswift": "TEST", "name": null, "namerus": null, "type": 0 } } }, "academicDegree": { "id": 1, "namekz": "ғылым кандидаты", "nameen": "Candidate of Science", "nameru": "кандидат наук" }, "platonusId": 9325, "IIN": "790801403830", "resident": 1 }], "certificate": { "namekz": "Ішкі құжат айналымы үшін (ГОСТ)", "nameru": "Для внутреннего документооборота (ГОСТ)", "nameen": "For internal document management (GOST)", "value": "internal" }
+      }];
       //   } else {
       //     stages = [
       //       {
