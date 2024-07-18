@@ -301,9 +301,9 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/contragent/curriculumVitae',
+                path: '/user/cv/:uuid',
                 name: 'CurriculumVitae',
-                component: load('contragent/СurriculumVitae'),
+                component: load('contragent/CurriculumVitae'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -345,7 +345,9 @@ const routes = [
                     {
                         path: '/template/:templateId&:selectedCategories&:emails',
                         name: 'TemplateEditor2',
-                        props: true,
+                        props: (route) => ({
+                            value: route.query.value
+                        }),
                         component: load('mailing/TemplateEditor'),
                         beforeEnter: ifAuthenticated,
                     },

@@ -7,8 +7,8 @@ export class MailingService {
         return api.post("/mailing/mailing", data, { headers: getHeader() });
     }
 
-    getMailingTemplateByID(templateId) {
-        return api.post("/mailing/getMailingTemplateByID", { templateID: templateId }, { headers: getHeader() });
+    getMailingTemplateByID(templateId, value) {
+        return api.post("/mailing/getMailingTemplateByID", { templateID: templateId, value: value }, { headers: getHeader() });
     }
 
     getMailingByID(mailingId) {

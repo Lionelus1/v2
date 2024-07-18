@@ -64,6 +64,10 @@
     <PersonPage :person="currentPerson" @personUpdated="personUpdated" :custom-type="customType" :personType="personType"></PersonPage>
   </Sidebar>
 
+  <div v-if="visibility.shareResume">
+    <AddEditMailing :isVisible="visibility.shareResume" :value="shareData"></AddEditMailing>
+  </div>
+
   <OverlayPanel ref="filterOverlayPanel">
     <div class="col-12 md:col-12 p-fluid">
           <div class="grid formgrid">
@@ -160,17 +164,18 @@
       </div>
         </div>
   </OverlayPanel>
+
 </template>
 <script>
 import { ContragentService } from "@/service/contragent.service";
 import PersonPage from "@/components/contragent/v2/PersonPage";
-import {ref} from "vue";
 import api from "@/service/api";
 import {findRole, getHeader} from "@/config/config";
 import department from "@/components/smartenu/Department.vue";
-import SpecialitySearch from "@/components/smartenu/speciality/specialitysearch";
-import axios from "axios";
 import JSZip from "jszip";
+import { saveAs } from 'file-saver';
+import AddEditMailing from "@/components/mailing/AddEditMailing.vue";
+import CryptoJS from 'crypto-js';
 
 export default {
   name: 'PersonsList',
@@ -224,7 +229,7 @@ export default {
       return department
     }
   },
-  components: {PersonPage },
+  components: {AddEditMailing, PersonPage },
   props: {
     organization: null,
     signers: {
@@ -249,6 +254,7 @@ export default {
 
       visibility: {
         personPage: false,
+        shareResume: false,
       },
 
       tableLoading: false,
@@ -326,7 +332,10 @@ export default {
       ],
       resumeView: null,
       admissionYears: [],
+      graduationYears: [],
       isVisible: false,
+      resumeContainer: null,
+      shareData: null,
     }
   },
   watch: {
@@ -339,6 +348,10 @@ export default {
     if (!this.sidebar) {
       this.$emit('apply-flex', true);
     }
+
+    this.emitter.on('addEditMailingDialogHide', data => {
+      this.visibility.shareResume = false
+    });
 
     this.personType = this.$route.params.type;
     this.getPersons();
@@ -885,45 +898,110 @@ export default {
         this.graduationYears.push(currentYear - i);
       }
     },
+
     async downloadResume() {
-      if (!this.persons || this.persons.length === 0) {
-        this.showMessage('error', this.$t('common.noResults'), null);
-        return;
-      }
+      const selectedPersons = this.persons.filter(person => person.userID);
 
-      try {
-        // Асинхронная загрузка резюме
-        const resumePromises = this.persons.map(person => this.loadResume(person));
-        const resumeFiles = await Promise.all(resumePromises);
+      if (selectedPersons.length === 1) {
+        const studentId = selectedPersons[0].userID;
+        try {
+          const pdfBase64 = await this.getResume(studentId);
+          const pdfData = atob(pdfBase64.split(',')[1]);
 
-        if (resumeFiles.length === 1) {
-          this.downloadFile(resumeFiles[0], this.getResumeFileName(this.persons[0]));
-        } else {
-          const zip = new JSZip();
-          resumeFiles.forEach((file, index) => {
-            zip.file(this.getResumeFileName(this.persons[index]), file);
-          });
+          const arrayBuffer = new ArrayBuffer(pdfData.length);
+          const uint8Array = new Uint8Array(arrayBuffer);
+          for (let i = 0; i < pdfData.length; i++) {
+            uint8Array[i] = pdfData.charCodeAt(i);
+          }
+          const pdfBlob = new Blob([uint8Array], { type: 'application/pdf' });
 
-          const zipContent = await zip.generateAsync({ type: 'blob' });
-          this.downloadFile(zipContent, 'Резюме.zip');
+          saveAs(pdfBlob, `${selectedPersons[0].fullName}.pdf`);
+        } catch (error) {
+          console.error('Failed to download resume:', error);
         }
+      } else if (selectedPersons.length > 1) {
+        const zip = new JSZip();
+
+        for (const person of selectedPersons) {
+          const studentId = person.userID;
+          try {
+            const pdfBase64 = await this.getResume(studentId);
+            const pdfData = atob(pdfBase64.split(',')[1]);
+
+            // Convert base64 to Blob
+            const arrayBuffer = new ArrayBuffer(pdfData.length);
+            const uint8Array = new Uint8Array(arrayBuffer);
+            for (let i = 0; i < pdfData.length; i++) {
+              uint8Array[i] = pdfData.charCodeAt(i);
+            }
+            const pdfBlob = new Blob([uint8Array], { type: 'application/pdf' });
+
+            zip.file(`${person.fullName}.pdf`, pdfBlob);
+          } catch (error) {
+            console.error(`Failed to download resume for ${person.name}:`, error);
+          }
+        }
+
+        const content = await zip.generateAsync({ type: "blob" });
+        saveAs(content, "resumes.zip");
+      }
+    },
+
+    async getResume(studentId) {
+      try {
+        const response = await this.service.getResume({ userID: studentId });
+        if (!response.data) {
+          throw new Error('Пустой ответ от сервера');
+        }
+
+        const base64Data = `data:application/pdf;base64,${response.data}`;
+
+        return base64Data;
       } catch (error) {
-        console.error(error);
-        this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+        console.error('Ошибка при загрузке резюме:', error);
+        throw error;
       }
     },
 
-    // Метод для загрузки резюме студента
-    loadResume(person) {
-      return this.service.getResume(person.id).then(response => response.data);
+    shareResults() {
+      console.log(this.persons);
+
+      this.shareData = '<div>';
+
+      this.persons.forEach(async person => {
+        const result = await this.service.checkResume({ userID: person.userID });
+        console.log('result: ', result);
+        if (result?.data === true) {
+          const hashedUserId = this.hashUserId(person.userID.toString());
+
+          this.shareData += `
+          <p>
+            <a href="localhost:8080/#/user/cv/${hashedUserId}">${person.fullName}</a>
+          </p>
+        `;
+        }
+      });
+
+      this.shareData += '</div>';
+
+      this.visibility.shareResume = true;
     },
 
-    // Метод для получения имени файла резюме
-    getResumeFileName(person) {
-      if (this.filter.name) {
-        return `Резюме ${person.fullName}.pdf`;
-      }
-      return `Резюме Группа.pdf`;
+    hashUserId(userId) {
+      const secretKey = 'secretKey';
+      const encrypted = CryptoJS.AES.encrypt(userId, secretKey).toString();
+      return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(encrypted));
+    },
+
+    encode(str) {
+      return Buffer.from(str, 'utf8').toString('base64');
+    },
+
+    decode(encodedStr) {
+      return Buffer.from(encodedStr, 'base64').toString('utf8');
+    },
+
+    hideDialog() {
     },
 
     // Метод для инициирования скачивания файла

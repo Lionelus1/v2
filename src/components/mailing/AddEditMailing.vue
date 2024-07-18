@@ -49,7 +49,7 @@ import 'primeicons/primeicons.css'
 
 export default {
   name: "AddEditMailing",
-  props: ['isVisible'],
+  props: ['isVisible', 'value'],
   data() {
     return {
       editVisible: this.isVisible,
@@ -68,6 +68,7 @@ export default {
         {id: 6, nameen: 'Others', namekz: 'Басқа', nameru: 'Другое'},
       ],
       selectedCategories: [],
+      data: this.value,
     };
   },
   methods: {
@@ -79,7 +80,6 @@ export default {
         });
         const data = await response.json();
         this.templates = data;
-        console.log(this.templates);
       } catch (error) {
         console.error('Error fetching templates:', error);
       }
@@ -99,6 +99,7 @@ export default {
     nextPage() {
       if (this.selectedCategories.length === 0) {
         alert('Please select a category')
+        return
       }
 
       if (this.selectedTemplate) {
@@ -107,9 +108,13 @@ export default {
           params: {
             templateId: this.selectedTemplate,
             selectedCategories: JSON.stringify(this.selectedCategories),
-            emails: JSON.stringify(this.emails),
+            emails: JSON.stringify(this.emails)
           },
+          query: {
+            value: this.value
+          }
         });
+        this.editVisible = false
       } else {
         alert('Please select a template');
       }

@@ -54,6 +54,7 @@ const categories = [
 
 export default {
   components: { ToolbarMenu },
+  props: ['value'],
   data() {
     return {
       additionalFileId: 0,
@@ -71,6 +72,7 @@ export default {
       main_image_file_url: '',
       main_image_id: 0,
       mailingService: new MailingService(),
+      data: this.value
     };
   },
   methods: {
@@ -168,7 +170,6 @@ export default {
   mounted() {
     this.selectedCategories = JSON.parse(this.$route.params.selectedCategories || '[]');
     this.emails = JSON.parse(this.$route.params.emails || '[]');
-
     const templateId = parseInt(this.$route.params.templateId, 10);
     this.mailingService.getMailingTemplateByID(templateId)
         .then(response => {
