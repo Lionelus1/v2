@@ -206,7 +206,8 @@ export default {
         quarter: this.report.report_type === 2 ? this.report.quarter : null,
         halfYearType: this.report.report_type === 3 ? this.report.halfYearType : null,
         department_id: this.report.department_id ? this.report.department_id : null,
-        report_id: this.report_id
+        report_id: this.report_id,
+        is_report: true
       };
       this.planService.getWorkPlanData(data).then(res => {
         this.source = `data:application/pdf;base64,${res.data}`;

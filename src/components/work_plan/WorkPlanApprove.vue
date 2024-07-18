@@ -127,6 +127,7 @@ export default {
     getWorkPlanContentData() {
       let data = {
         work_plan_id: parseInt(this.data.work_plan_id),
+        is_report: false
       };
       this.planService.getWorkPlanData(data).then(res => {
         this.file = this.b64toBlob(res.data);

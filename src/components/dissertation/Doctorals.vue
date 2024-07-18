@@ -92,7 +92,7 @@
         </Column>
         <Column field="meetingTime" :sortable="true" :header="$t('dissertation.meetingTime')">
           <template #body="slotProps">
-            {{ (slotProps.data.meetingTime != null ? getLongDateString(slotProps.data.meetingTime) : "") }}
+            {{ (slotProps.data.meetingTime != null ? getLongDateString(slotProps.data.meetingTime, false) : "") }}
           </template>
         </Column>
         <Column field="dissertation.language" :header="$t('dissertation.defenseLang')">
@@ -1021,7 +1021,7 @@ import html2canvas from "html2canvas";
 import * as jsPDF from "jspdf";
 import { getLongDateString, getShortDateString } from "@/helpers/helper";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
-import { upFirstLetter } from "../../helpers/HelperUtil";
+import {formatDate, upFirstLetter} from "../../helpers/HelperUtil";
 import { DissertationService } from "@/service/dissertation.service";
 import AddMemberDialog from "@/components/dissertation/AddMemberDialog.vue";
 import { DocService } from "@/service/doc.service";

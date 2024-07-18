@@ -1,4 +1,5 @@
 <template>
+
   <ConfirmPopup group="came"></ConfirmPopup>
   <div>
     <div style="overflow: hidden;">
@@ -18,6 +19,7 @@
               <Column field="email" :header="$t('contact.email')"></Column>
               <Column field="action" header="">
                 <template #body="{data}">
+                  <Button :label="$t('queue.notCome')" class="p-button-danger mr-2" @click="confirm(3,null, data.id)"></Button>
                   <Button :label="$t('queue.came')" class="p-button-success" @click="confirm(1,null, data.id)"></Button>
                 </template>
               </Column>

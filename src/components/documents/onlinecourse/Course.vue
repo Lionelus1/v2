@@ -3,7 +3,7 @@
 
       <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
 
-      <TitleBlock class="content_title" :title="$t('Онлайн курс')" :show-back-button="true"/>
+      <TitleBlock class="content_title" :title="$t('course.onlineCourse')" :show-back-button="true"/>
         <div class="course_card block sm:flex p-4">
           <div class="text text-white">
             <div class="flex mb-4">
@@ -34,7 +34,7 @@
 <!--        <TabPanel :header="$t('course.users')">-->
 <!--          <CourseStudents  :props-course="course" :get-course="getCourse" @update-course="getCourse" />-->
 <!--        </TabPanel>-->
-        <TabPanel  header="Потоки">
+        <TabPanel  :header="$t('course.potok')">
           <CourseHistories  :props-course="course" :get-course="getCourse" @update-course="getCourse" :courseID="course.id"></CourseHistories>
         </TabPanel>
         <!--  КУРС МОДУЛІ  -->

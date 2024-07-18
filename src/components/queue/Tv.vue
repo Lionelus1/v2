@@ -1,6 +1,5 @@
 <template>
     <div class="card">
-  
       <Sidebar  v-model:visible="visible" :baseZIndex="10000" :showCloseIcon="!findRole(null, 'queue_tv')" position="full" style="background-color: grey; overflow: hidden;" >
       <div>
         <div class="text-center" style="margin-top: 0;margin-bottom: 20px;">          
@@ -42,6 +41,7 @@
       </div>
     </div>
 </template>
+
 
 <script>
 import {authHeader, getHeader, smartEnuApi, socketApi, findRole, b64toBlob, queueApi, header, serverUrl} from "@/config/config";
@@ -104,7 +104,7 @@ export default {
       })
     },
     audioEnded() {
-      this.$refs.audioq.style.display = "none";
+      //this.$refs.audioq.style.display = "none";
       this.audioSrc = null;
     },
 

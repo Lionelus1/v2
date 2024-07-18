@@ -138,4 +138,8 @@ export class OnlineCourseService {
         return api.post("/onlinecourse/course/histories", data, { headers: getHeader() })
     }
 
+    deleteCourseHistory(data){
+        return api.post("/onlinecourse/course/deleteCourseHistory", data, { headers: getHeader() })
+    }
+
 }

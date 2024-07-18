@@ -8,12 +8,12 @@ export function getShortDateString(date) {
     return moment(new Date(date)).utc(true).format("DD.MM.YYYY")
 }
 
-export function getLongDateString(date) {
+export function getLongDateString(date, isLocal = true) {
     if (!date) {
         return ""
     }
     
-    return moment(new Date(date)).utc(true).format("DD.MM.YYYY HH:mm")
+    return moment(new Date(date)).utc(isLocal).format("DD.MM.YYYY HH:mm")
 }
 
 export function isMobile() {

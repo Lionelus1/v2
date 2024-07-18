@@ -66,7 +66,8 @@ export default {
     ScienceWorksList: 13,
     ActCompletedWorks: 14,
     RequestList: 15,
-    DT_Request:16
+    DT_Request:16,
+    StateAttestationCommission:19
   },
 
   ContragentType: {

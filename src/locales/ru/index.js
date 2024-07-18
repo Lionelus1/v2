@@ -372,6 +372,8 @@ export default {
         deny: "Отказать",
         doYouWantApprove: "Вы действительно хотите согласовать договор?",
         changeApprovals: "Замена согласующих лиц",
+        sacReportMenuTitle: 'Отчеты Государственной аттестационной комиссии',
+        socialMediaIds: 'Социальные медиа'
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -705,7 +707,9 @@ export default {
         modulname: "Код и наименование модуля:",
         eduprogram: "Код и наименование образовательной программы:",
         discipline: "Код и наименование дисциплины:",
-        logo: "Логотип"
+        logo: "Логотип",
+        academicyear: "Академический год",
+        saceduprogram: "Код и наименование образовательной программы:",
     },
     ncasigner: {
         chooseFile: "Выберите файл",
@@ -983,7 +987,7 @@ export default {
         mode: "Режим работы",
         emailReq: "Требуется адрес электронной почты",
         emailInvalid: "Неверный адрес электронной почты",
-        emailMsg: "Сделайте скриншот информации или покажите информацию отправленную на почту к оператору!",
+        emailMsg: "Сделайте скриншот информации или покажите оператору информацию, отправленную вам на почту!",
         workingDays: "Рабочие дни",
         workingHours: "Режим работы",
         lunch: "Обед",
@@ -991,9 +995,12 @@ export default {
         day: "День",
         time: "Время",
         came: "Пришел",
+        notCome: "Не пришел",
         liveQueue: "Живая очередь",
         choiceTime: "По выбору времени",
-        errorFreeOperators: "Уже нельзя на это время записаться, выберите другую время!"
+        errorFreeOperators: "Уже нельзя на это время записаться, выберите другую время!",
+        noLunch: "Без перерыва на обед",
+        withoutWeekend: "Без выходных"
     },
     dissertation: {
         title: "Диссертационный совет",
@@ -1592,7 +1599,9 @@ export default {
         completeCourse: "Вы уверены, что хотите завершить курс?",
         numberParticipants: "Количество участников",
         completedCourse: "Завершенные курсы",
-        moduleCredits: 'Кредиты'
+        moduleCredits: 'Кредиты',
+        potok: 'Потоки',
+        onlineCourse:'Онлайн курс'
     },
     roleControl: {
         addSidebar: 'Добавление новой записи',
@@ -1887,6 +1896,8 @@ export default {
         publicationCategories: {
             beforeMastersThesis: "Научные труды, опубликованные до защиты магистерской диссертации",
             afterMastersThesis: "Научные труды, опубликованные после защиты магистерской диссертации",
+            afterScientificWorks: "Научные труды опубликованные после получения ученого звания “ассоциированный профессор (доцент)”, “профессор”",
+            others: "Иные"
         },
         buttons: {
             card: "Карта",

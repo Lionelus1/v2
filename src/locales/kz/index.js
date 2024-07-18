@@ -370,6 +370,8 @@ export default {
         deny: "Бас тарту",
         doYouWantApprove: "Сіз шынымен келісім-шартқа келіскіңіз келе ме?",
         changeApprovals: "Бекітуші тұлғаларды ауыстыру",
+        sacReportMenuTitle: 'Мемлекеттік аттестаттау комиссиясының есебі',
+        socialMediaIds: 'Әлеуметтік медиа'
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -703,7 +705,9 @@ export default {
         modulname: "Модульдің коды және атауы:",
         eduprogram: "Білім беру бағдарламасының коды және атауы:",
         discipline: "Пәннің коды және атауы:",
-        logo: "Логотип"
+        logo: "Логотип",
+        academicyear: "Оқу жылы",
+        saceduprogram: "Білім беру бағдарламасының коды және атауы:",
     },
     ncasigner: {
         qrSinging: "Құжатқа \"eGov mobile\" мобильдік қосымшасының көмегімен төмендегі QR кодты сканерлеу арқылы да қол қоя аласыз:",
@@ -987,9 +991,12 @@ export default {
         day: "Күні",
         time: "Уақыты",
         came: "Келді",
+        notCome: "Келмеді",
         liveQueue: "Кәдімгі кезек",
         choiceTime: "Уақыт таңдау бойынша",
-        errorFreeOperators: "Бұл уақытқа орын қалған жоқ басқа уақытты таңдаңыз!"
+        errorFreeOperators: "Бұл уақытқа орын қалған жоқ басқа уақытты таңдаңыз!",
+        noLunch: "Түскі үзіліссіз",
+        withoutWeekend: "Демалыссыз"
     },
     mailing: {
         title: "Атауы",
@@ -1599,8 +1606,9 @@ export default {
         completeCourse: "Сіз курсты аяқтағыңыз келеді ме?",
         numberParticipants: "Қатысушылар саны",
         сompletedСourse: "Аяқталған курстар",
-        moduleCredits: 'Кредиты'
-
+        moduleCredits: 'Кредиты',
+        potok: 'Потоктар',
+        onlineCourse:'Онлайн курс'
     },
     roleControl:{
         addSidebar: 'Жаңа жазбаны қосу',
@@ -1778,6 +1786,93 @@ export default {
 
 
     },
+    personalData: 'Жеке ақпарат',
+    yearPeriod:'Период годов',
+    scienceWorks: {
+        title: "Ғылыми жұмыстар",
+        titleList: "Ғылыми жұмыстар тізімі",
+        publicationType: "Ғылыми жұмыс түрі",
+        editionTypes: {
+            digital: "Электрондық",
+            printed: "Баспа",
+        },
+        publicationCategories: {
+            beforeMastersThesis: "Магистрлік диссертация қорғауға дейін жарияланған ғылыми жұмыстар",
+            afterMastersThesis: "Магистрлік диссертация қорғағаннан кейін жарияланған ғылыми жұмыстар",
+            afterScientificWorks: "Қауымдастырылған профессор (доцент)\" ғылыми атағын алғаннан кейін жарияланған ғылыми еңбектері",
+            others: "Өзге"
+        },
+        buttons: {
+            card: "Карта",
+            newPublication: "Ғылыми жұмыс қосу",
+            generateListDialog: "Ғылыми жұмыстар тізімі",
+            filter: "Фильтр",
+            clear: "Тазарту",
+            search: "Іздеу",
+            koksnvo: "ҒЖБССҚК",
+            newList: "Жаңа тізім",
+        },
+        menu: {
+            newArticle: "Жаңасын қосу",
+            importFromPlatonus: "Platonus",
+            importFromScopus: "Scopus",
+            newPublicationsKoksnvo: "Жаңа ҒЖБССҚК ұсынған ғылыми басылым қосуға сұраныс",
+            publicationsKoksnvo: "ҒЖБССҚК ұсынған ғылыми басылымдар",
+            myRequests: "Менің өтініштерім",
+            import: "Импорт",
+        },
+        columns: {
+            name: "Жарияланым атауы",
+            type: "Жарияланым түрі",
+            author: "Автор",
+            year: "Жылы",
+            status: "Статус",
+        },
+        filter: {
+            documentName: "Жарияланым атауы",
+            author: "Автор",
+            status: "Статус",
+            years: "Жылдар",
+        },
+        types: {
+            article: "Мақала",
+            monograph: "Монография",
+            scopus_article: "Scopus-тағы жарияланымдар",
+            publication_koksnvo: "ҒЖБССҚК ұсынған ғылыми басылым",
+            textbooks: "Оқулықтар / Оқыту құралдары / Оқыту құралдары / Семинарлар",
+            free: "Ғылыми еңбектер",
+        },
+        messages: {
+            successImport: "Импорттау сұрауы сәтті жіберілді",
+            successPlatonus: "Platonus-тан ғылыми еңбектер импорты жүзеге асырылуда. Нәтижелер кейінірек пайда болады!",
+            successScopus: "Scopus-тан ғылыми еңбектер импорты жүзеге асырылуда. Нәтижелер кейінірек пайда болады!",
+        },
+        labels: {
+            publicationName: "Жарияланым атауы",
+            publicationDate: "Жарияланған жылы",
+            editionType: "Баспа типі",
+            editionFullName: "Басылым (атауы, жылы, бет нөмірі) / Авторлық куәліктің, патенттің нөмірі",
+            editionName: "Басылым атауы",
+            editionNumber: "Басылым нөмірі",
+            editionYear: "Басылым жылы",
+            editionPages: "Басылымдағы бет нөмірлері",
+            issn: "ISSN",
+            isbn: "ISBN",
+            koksnvo: "ҒЖБССҚК ұсынған ғылыми басылым",
+            link: "Жарияланымға сілтеме",
+            printedPages: "Баспа табақтар",
+            recommendedBy: "Ұсынған (Университеттің ғылыми кеңесі)",
+            coauthorsInternal: "Ішкі авторлар, аты-жөні",
+            coauthorsExternal: "Сыртқы авторлар, аты-жөні",
+            attachments: "Қосымшалар",
+            publicationCategory: "Жарияланым санаты",
+            publicationType: "Жарияланым түрі",
+            participationInGroup: "Авторлар ұжымына қатысу",
+            subtypeDescription: "Документ типі"
+        }
+    },
+    supportingDocument: "Растайтын құжат",
+    documentScan: 'Құжатты сканерлеу',
     fieldEducation: {
         title: 'Білім беру саласы',
         courseAuthor: 'Курс авторы',
@@ -2020,6 +2115,7 @@ export default {
             applicationObjectives: 'Өтінімнің мақсаттары',
             enteredIncorrectly: 'Қате енгіздіңіз'
         },
+
     },
     error: {
         invalidEmail: "Электрондық поштаның мекенжайы дұрыс емес",

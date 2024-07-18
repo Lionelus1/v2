@@ -1,7 +1,6 @@
 <template>
   <div class="col-12">
     <TitleBlock :title="plan?.work_plan_name" :show-back-button="true"/>
-
     <div class="card" v-if="plan && planDoc && isRejected">
       <div class="p-fluid">
         <div class="field">
@@ -34,7 +33,7 @@
     </div>
     <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
     <div class="card" v-if="plan && planDoc">
-      <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
+      <TreeTable ref="workplantreetable" class="p-treetable-sm" v-model:selectionKeys="selectedWorkPlanEvent" selectionMode="single" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total"
                  @page="onPage($event)">
         <template #empty> {{ $t('common.noData') }}</template>
@@ -66,7 +65,19 @@
         </Column>
         <Column field="fact" :header="$t('common.fact')" v-if="isOperPlan">
           <template #body="{ node }">
-            <span v-if="node.fact">{{ node.fact }}</span>
+            <span v-if="node.fact && isFactVisible" style="float: left;">{{ node.fact + " " }}</span>
+            <div v-if="node.resp_person_id === loginedUserId">
+              <div v-if="isFactInputVisible && parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id'])" style="min-width: 150px;">
+                <div class="inline-container">
+                  <InputText type="text" v-model="factValue" />
+                  <Button @click="updateFact(node.work_plan_event_id, factValue)" icon="pi pi-check" text rounded aria-label="Update" />
+                  <Button @click="cancelFact()" icon="pi pi-times" severity="danger" text rounded aria-label="Cancel" />
+                </div>
+            </div>
+            <span v-if="selectedWorkPlanEvent && Object.keys(selectedWorkPlanEvent)[0] && node">
+              <a v-if="parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id']) && isFactVisible" href="javascript:void(0)" @click="factValue=node.fact ;factVisiblity()">&nbsp;&nbsp;<i class="pi pi-pencil" style="margin-top: 5px;"></i></a>
+            </span>
+            </div>
           </template>
         </Column>
         <Column field="quarter" :header="$t('workPlan.quarter')" v-if="!isSciencePlan">
@@ -101,7 +112,6 @@
           <template #body="{ node }">
             <div v-if="node.result && node.result.length > 100">
               {{ node.result_short }}
-              <!--              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-text" icon="fa-solid fa-eye" label="" />-->
               <a href="javascript:void(0);" @click="toggle('event-final-result', $event, node)">{{ $t('common.showMore').toLowerCase() }}</a>
               <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }" @hide="closeOverlay">
                 <div>{{ selectedEvent.result }}</div>
@@ -229,7 +239,6 @@ export default {
     WorkPlanEventEditModal,
     WorkPlanApprove,
     WorkPlanEventAdd,
-    // WorkPlanEventResultModal,
     DocSignaturesInfo,
     ActionButton
   },
@@ -372,7 +381,11 @@ export default {
       service: new DocService(),
       DocState: DocState,
       filtered: false,
-      stages: []
+      stages: [],
+      isFactVisible: true,
+      isFactInputVisible:false,
+      factValue: null,
+      selectedWorkPlanEvent:null
     }
   },
   created() {
@@ -439,9 +452,47 @@ export default {
         this.getEventsTree(this.parentNode);
       }
     });
+    this.getEventsTree;
+
   },
   methods: {
     findRole: findRole,
+    factVisiblity(){
+      this.isFactVisible = false;
+      this.isFactInputVisible = true;
+      
+    },
+    cancelFact(){
+      this.isFactInputVisible = false;
+      this.isFactVisible = true;
+    },
+    updateFact(eventId, fact){
+      let data = {
+        event_id: eventId,
+        fact: fact
+      }
+      this.planService.updateEventFact(data).then(res => {
+        if (res.data) {
+          this.isFactVisible = true
+          this.isFactInputVisible = false;
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t("common.success"),
+            life: 3000,
+          });
+          this.getEventsTree();
+          
+        
+        }
+      }).catch(error => {
+        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      });
+    },
     signView(node) {
       this.showReportDoc = true;
     },
@@ -1076,9 +1127,7 @@ export default {
       return signed
     },
   },
-  /*unmounted() {
-    localStorage.removeItem("workPlan");
-  }*/
+ 
   computed: {
     initItems() {
       return [
@@ -1138,24 +1187,6 @@ export default {
     isPlanUnderRevision() {
       return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
     },
-    // isGenerateActVisible(){
-    //   const currentMonth = new Date().getMonth() + 1;
-    //   let receivedDate = null;
-
-    //   if (this.planDoc && this.planDoc.docHistory) {
-    //     receivedDate = this.planDoc.docHistory?.setDate;
-    //   }
-    //   const newDate = receivedDate ? new Date(receivedDate) : null;
-    //   const receivedMonth = newDate ? newDate.getMonth() + 1 : null;
-    //   const isVisible = receivedMonth < currentMonth;
-
-    //   return (
-    //     this.planDoc &&
-    //     this.planDoc.docHistory &&
-    //     this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value &&
-    //     isVisible
-    //   );
-    // },
     toolbarMenus() {
       return [
         {
@@ -1290,6 +1321,11 @@ export default {
   &.status-2 {
     background: #C8E6C9;
     color: #256029;
+  }
+  .inline-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 }
 </style>
