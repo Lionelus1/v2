@@ -360,7 +360,8 @@ export default {
         deny: "Бас тарту",
         doYouWantApprove: "Сіз шынымен келісім-шартқа келіскіңіз келе ме?",
         changeApprovals: "Бекітуші тұлғаларды ауыстыру",
-        sacReportMenuTitle: 'Мемлекеттік аттестаттау комиссиясының есебі'
+        sacReportMenuTitle: 'Мемлекеттік аттестаттау комиссиясының есебі',
+        socialMediaIds: 'Әлеуметтік медиа'
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',

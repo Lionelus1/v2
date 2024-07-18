@@ -361,7 +361,8 @@ export default {
         deny: "Refuse",
         doYouWantApprove: "Do you really want to agree to a contract?",
         changeApprovals: "Replacement of approving persons",
-        sacReportMenuTitle: 'Report of the State Attestation Commission'
+        sacReportMenuTitle: 'Report of the State Attestation Commission',
+        socialMediaIds: 'Social Media'
     },
     positions: {
         menuTitle: 'Change position',

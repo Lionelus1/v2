@@ -362,7 +362,8 @@ export default {
         deny: "Отказать",
         doYouWantApprove: "Вы действительно хотите согласовать договор?",
         changeApprovals: "Замена согласующих лиц",
-        sacReportMenuTitle: 'Отчеты Государственной аттестационной комиссии'
+        sacReportMenuTitle: 'Отчеты Государственной аттестационной комиссии',
+        socialMediaIds: 'Социальные медиа'
     },
     positions: {
         menuTitle: 'Поменять позицию',
