@@ -183,8 +183,17 @@ const getSettings = () => {
       formData.value = res.data.settings;
       infoData.value = res.data.site_info || {}
       formData.value.is_closed = infoData.value.is_closed
-      if (infoData.value.social_media_ids !== null){
+      if (infoData.value !== null && infoData.value.social_media_ids !== null){
         socialMediaIds.value = JSON.parse(infoData.value.social_media_ids)
+      }else {
+        infoData.value.social_media_ids = {
+          facebook: '',
+          instagram: '',
+          youtube: '',
+          telegram: '',
+          tiktok: ''
+        };
+
       }
       
       TN.value = res.data.tn_res
