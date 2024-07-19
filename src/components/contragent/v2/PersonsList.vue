@@ -170,7 +170,7 @@
 import { ContragentService } from "@/service/contragent.service";
 import PersonPage from "@/components/contragent/v2/PersonPage";
 import api from "@/service/api";
-import {findRole, getHeader} from "@/config/config";
+import {apiDomain, findRole, getHeader, smartEnuApi} from "@/config/config";
 import department from "@/components/smartenu/Department.vue";
 import JSZip from "jszip";
 import { saveAs } from 'file-saver';
@@ -973,10 +973,9 @@ export default {
         console.log('result: ', result);
         if (result?.data === true) {
           const hashedUserId = this.hashUserId(person.userID.toString());
-
           this.shareData += `
           <p>
-            <a href="localhost:8080/#/user/cv/${hashedUserId}">${person.fullName}</a>
+            <a href="${apiDomain}/user/cv/${hashedUserId}">${person.fullName}</a>
           </p>
         `;
         }
