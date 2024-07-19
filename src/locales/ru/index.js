@@ -1795,6 +1795,9 @@ export default {
             publication_koksnvo: "Издание, рекомендуемое КОКСНВО",
             textbooks: "Учебники / Учебные пособия / Учебно-методические пособия / Практикумы",
             free: "Научные труды",
+            scientific_recommendations:"Научные рекомендации",
+            thesis:"Тезисы(конференция)",
+            training_manual: "Учебное пособие"
         },
         messages: {
             successImport: "Запрос на импорт успешно отправлен",

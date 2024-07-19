@@ -1797,6 +1797,9 @@ export default {
             publication_koksnvo: "Publication recommended by QACFSHE",
             textbooks: "Textbooks / Teaching aids / Teaching aids / Workshops",
             free: "Scientific works",
+            scientific_recommendations:"Scientific recommendations",
+            thesis:"Thesis(conference)",
+            training_manual: "Training manual"
         },
         messages: {
             successImport: "Import request sent successfully",
