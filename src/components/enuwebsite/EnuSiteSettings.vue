@@ -125,7 +125,9 @@ import InputGroupAddon from 'primevue/inputgroupaddon';
 
 const store = useStore()
 const formData = ref({})
-const infoData = ref({})
+const infoData = ref({
+
+})
 const isClosed = ref()
 const i18n = useI18n()
 const enuService = new EnuWebService()
@@ -144,11 +146,11 @@ const bgImg = ref(null)
 const haveAccess = ref(true)
 const socialMediaIds = ref(
   {
-    facebook: '',
-    instagram: '',
-    youtube: '',
-    telegram: '',
-    tiktok: '',
+    facebook: null,
+    instagram: null,
+    youtube: null,
+    telegram: null,
+    tiktok: null,
   }
 );
 const socialPlatforms = ['facebook', 'instagram', 'youtube', 'telegram', 'tiktok'];
@@ -183,17 +185,8 @@ const getSettings = () => {
       formData.value = res.data.settings;
       infoData.value = res.data.site_info || {}
       formData.value.is_closed = infoData.value.is_closed
-      if (infoData.value !== null && infoData.value.social_media_ids !== null){
-        socialMediaIds.value = JSON.parse(infoData.value.social_media_ids)
-      }else {
-        infoData.value.social_media_ids = {
-          facebook: '',
-          instagram: '',
-          youtube: '',
-          telegram: '',
-          tiktok: ''
-        };
-
+      if (res.data?.site_info?.social_media_ids){
+        socialMediaIds.value = JSON.parse(res.data?.site_info?.social_media_ids)
       }
       
       TN.value = res.data.tn_res
