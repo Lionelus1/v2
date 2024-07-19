@@ -171,7 +171,7 @@ export default {
     this.selectedCategories = JSON.parse(this.$route.params.selectedCategories || '[]');
     this.emails = JSON.parse(this.$route.params.emails || '[]');
     const templateId = parseInt(this.$route.params.templateId, 10);
-    this.mailingService.getMailingTemplateByID(templateId)
+    this.mailingService.getMailingTemplateByID(templateId, this.value)
         .then(response => {
           return response.data
         })

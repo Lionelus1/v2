@@ -49,7 +49,7 @@ import 'primeicons/primeicons.css'
 
 export default {
   name: "AddEditMailing",
-  props: ['isVisible', 'value'],
+  props: ['isVisible','value'],
   data() {
     return {
       editVisible: this.isVisible,
