@@ -144,11 +144,11 @@ const bgImg = ref(null)
 const haveAccess = ref(true)
 const socialMediaIds = ref(
   {
-    facebook: null,
-    instagram: null,
-    youtube: null,
-    telegram: null,
-    tiktok: null,
+    facebook: '',
+    instagram: '',
+    youtube: '',
+    telegram: '',
+    tiktok: '',
   }
 );
 const socialPlatforms = ['facebook', 'instagram', 'youtube', 'telegram', 'tiktok'];
@@ -183,7 +183,10 @@ const getSettings = () => {
       formData.value = res.data.settings;
       infoData.value = res.data.site_info || {}
       formData.value.is_closed = infoData.value.is_closed
-      socialMediaIds.value = JSON.parse(infoData.value.social_media_ids)
+      if (infoData.value.social_media_ids !== null){
+        socialMediaIds.value = JSON.parse(infoData.value.social_media_ids)
+      }
+      
       TN.value = res.data.tn_res
 
       initMourning(formData.value)
