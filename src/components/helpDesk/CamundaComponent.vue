@@ -206,7 +206,6 @@ export default {
   mounted() {
     this.initAlias()
     this.currentUser = getUser();
-    console.log("this.currentUser:", this.currentUser);
     if (
       this.components[0] &&
       this.components[0].properties &&
@@ -216,7 +215,6 @@ export default {
       // this.components[0].value["value"] = this.stages;
       this.$emit("addStagestoValue", this.stages);
 
-      console.log("INIT STAGES");
     }
   },
   watch: {
@@ -224,11 +222,7 @@ export default {
       /* eslint-disable */
       handler(newVal, oldVal) {
         if (!this.isComponentsInitialized) {
-          console.log("components changed:", newVal);
           for (var i = 0; i < this.components.length; i++) {
-            console.log("*********************");
-            console.log(this.components[i].value[this.components[i].key]);
-            console.log(this.components[i].defaultValue);
             if (this.components[i].defaultValue) {
               this.components[i].value[this.components[i].key] =
                 this.accessProperty(
@@ -237,7 +231,6 @@ export default {
                 );
             }
 
-            console.log("*********************");
           }
         }
         this.isComponentsInitialized = true;
@@ -333,8 +326,6 @@ export default {
       //   }
     },
     checkBoxSelect(data, component, key) {
-      console.log("key:", key);
-      console.log("component:", component);
       if (component.value[key] == undefined) component.value[key] = [];
       if (data.checked && !component.value[key].includes(data)) {
         component.value[key].push(data);
@@ -344,8 +335,6 @@ export default {
         );
       }
 
-      console.log("data:", data);
-      console.log("componentkey:", component.value[key]);
     },
     isExist(obj, key, value) {
       // Check if the key exists in the object

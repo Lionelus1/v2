@@ -117,7 +117,6 @@ function updateQueryStatus(newStatus) {
 }
 const getDocStatus = (code) => {
   const foundStatus = docStatus.value.find((status) => status.code === code);
-  console.log("foundStatus:", foundStatus);
   if (foundStatus) {
     switch (locale.value) {
       case "kz":
@@ -145,11 +144,6 @@ const products = [
 ];
 
 const addStagestoValue = (stages) => {
-  console.log("HERE:", stages);
-  console.log(
-    "senderComponents.value[0].value:",
-    senderComponents.value[0].value
-  );
   senderComponents.value[0].value = stages;
 };
 
@@ -184,7 +178,6 @@ const visibility = ref({
   sendToApproveDialog: false,
 });
 const temp = (columns) => {
-  console.log(columns);
   return columns;
 };
 const docStatus = ref([
@@ -300,13 +293,8 @@ const activeTab = ref(0);
 // });
 const isAdmin = ref(false);
 const saveDoc = async () => {
-  console.log(camundaServiceInstance.currentSchema.components);
   // isDataValid();
   var isValid = true;
-  console.log(
-    "CHECK FOR VALIDATION STARTED:",
-    camundaServiceInstance.currentSchema.components.length
-  );
   for (
     var i = 0;
     i < camundaServiceInstance.currentSchema.components.length;
@@ -318,22 +306,6 @@ const saveDoc = async () => {
     if (camundaServiceInstance.currentSchema.components[i].properties && `validate` in camundaServiceInstance.currentSchema.components[i].properties && camundaServiceInstance.currentSchema.components[i].properties.validate) {
       camundaServiceInstance.currentSchema.components[i].validate = { required: true }
     }
-    console.log("********************", i);
-    console.log("camundaServiceInstance.currentSchema.components[i]:", camundaServiceInstance.currentSchema.components[i]);
-    console.log(
-      "camundaServiceInstance.currentSchema.components[i].key:",
-      camundaServiceInstance.currentSchema.components[i].key
-    );
-    console.log(
-      "VALUE FULL:",
-      camundaServiceInstance.currentSchema.components[i].value[
-      camundaServiceInstance.currentSchema.components[i].key
-      ]
-    );
-    console.log(
-      "VALUE:",
-      camundaServiceInstance.currentSchema.components[i].value
-    );
     // if(`validate` in camundaServiceInstance.currentSchema.components[i])
     if (
       (`validate` in camundaServiceInstance.currentSchema.components[i] &&
@@ -354,28 +326,15 @@ const saveDoc = async () => {
       // const regex = '/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/';
       camundaServiceInstance.currentSchema.components[i].incorrect.value = true;
       isValid = false;
-      console.log("INCORRECT DATA");
       return;
     } else {
       camundaServiceInstance.currentSchema.components[
         i
       ].incorrect.value = false;
     }
-    console.log("********************", i);
   }
-  console.log("VALIDATION ENDED SUCCESSFULLY");
 
   if (isValid) {
-    // route.query.status = status.value;
-
-    console.log(
-      "camundaServiceInstance.currentSchema.components:",
-      camundaServiceInstance.currentSchema.components
-    );
-    console.log(
-      "camundaServiceInstance.currentSchema.components.length:",
-      camundaServiceInstance.currentSchema.components.length
-    );
 
     const variables = {};
     for (
@@ -399,15 +358,11 @@ const saveDoc = async () => {
         camundaServiceInstance.currentSchema.components[i].key
         ];
     }
-    console.log("*******************************");
-    console.log("variables:", variables);
-    console.log("*******************************");
     loading.value = true;
     await camundaServiceInstance.finishStep(variables);
     loading.value = false;
     isDocSaved.value = true;
     status.value = "created";
-    console.log("STATUS UPDATED:", status.value);
     updateQueryStatus("created");
   }
 };
@@ -472,8 +427,6 @@ const menu = computed(() => [
 ]);
 
 const isFormDisabled = () => {
-  console.log("here:", status.value in ["inapproval", "approved"]);
-  console.log("status.value:", status.value);
   return ["inapproval", "approved"].includes(status.value);
 }
 
@@ -519,13 +472,13 @@ const validate = (pattern, str) => {
   if (!pattern && str) {
     return true;
   }
-  console.log("INSIDE VALI");
-  console.log("patter:", pattern);
-  console.log("STR:", str);
+
+
+
 
   // Convert the string into a regular expression
   let regex = new RegExp(pattern);
-  console.log("regex.test(str):", regex.test(str));
+
   // Now you can use this regex with test(), match(), etc.
   return regex.test(str);
 };
@@ -625,14 +578,6 @@ const sendToApprove = (approvalUsers) => {
 
 const isDataValid = () => {
   if (camundaServiceInstance.currentSchema.components) {
-    console.log(
-      "camundaServiceInstance.currentSchema.components[0]:",
-      camundaServiceInstance.currentSchema.components
-    );
-    console.log(
-      "camundaServiceInstance.currentSchema.components[0]:",
-      camundaServiceInstance.currentSchema.components[1].value
-    );
     return true;
   }
   return false;
@@ -685,7 +630,6 @@ const saveDocument = () => {
     request.value.doc.newParams.lang.value = lang.value;
     request.value.doc.newParams.selectedPosition = selectedPosition.value;
     request.value.is_saved = 1;
-    console.log("request.value:", request.value);
     service
       .helpDeskTicketCreate(request.value)
       .then((res) => {
@@ -820,23 +764,16 @@ const status = ref(null);
 const uuid = ref(null);
 onMounted(async () => {
   uuid.value = route.params.uuid;
-  console.log("uuid.value:", uuid.value);
   await initTicketInfo(uuid.value)
-  console.log("ticketInfo.value:", ticketInfo.value);
   if (!ticketInfo.value.ticket[0].doc.docHistory) {
     status.value = null
   } else {
     status.value = ticketInfo.value.ticket[0].doc.docHistory.stateEn;
   }
   if (status.value == "created") isDocSaved.value = true;
-  console.log("route:", route.params);
-  console.log("route.params.id:", route.params.id);
-  console.log("status.value:", status.value);
-  console.log("request:", request.value);
 
   // Update the requestId reactive variable
 
-  console.log("uuid.value:", uuid.value);
   if (
     camundaServiceInstance.processDefinitionKey == "" &&
     camundaServiceInstance.processInstanceKey == ""
@@ -845,9 +782,7 @@ onMounted(async () => {
     camundaServiceInstance.uuid = uuid.value;
     await camundaServiceInstance.initBasics();
   }
-  console.log("uuid.value:", uuid.value);
   initForm(camundaServiceInstance, components, 0);
-  console.log("MOUNTED:");
   switch (locale) {
     case "kz":
       request.value.local = 1;
@@ -870,7 +805,6 @@ onMounted(async () => {
 });
 let camundaSenderInstance;
 const startSender = async () => {
-  console.log("HEREEEE");
   camundaSenderInstance = new CamundaService();
   camundaSenderInstance.processInstanceKey =
     camundaServiceInstance.processInstanceKey;
@@ -878,7 +812,6 @@ const startSender = async () => {
     camundaServiceInstance.processDefinitionKey;
 
   await initForm(camundaSenderInstance, senderComponents);
-  console.log("senderComponents:", senderComponents.value);
   open("sendToApproveDialog");
 };
 const ticketInfo = ref(null)
@@ -903,8 +836,6 @@ const initForm = async (
   if (!camundaServiceInstance.isEdit) return;
   const variables = await camundaServiceInstance.getProcessVariable();
   if (variables == undefined) return;
-  console.log("variables:", variables);
-  console.log("*****************");
   for (var i = 0; i < components.value.length; i++) {
     if (components.value[i].type == "datetime") {
       components.value[i].value[components.value[i].key] = new Date(variables[components.value[i].key])
@@ -913,11 +844,9 @@ const initForm = async (
     components.value[i].value[components.value[i].key] =
       variables[components.value[i].key];
   }
-  console.log("*****************");
 };
 const tabChanged = () => {
   if (activeTab.value === 1) {
-    console.log("activaTab:", 1);
     // if (
     // !request.value ||
     // !request.value.doc ||
@@ -925,7 +854,6 @@ const tabChanged = () => {
     !isDocSaved.value;
     // )
     //   return;
-    console.log("DOWNLOADING contract");
     downloadContract();
   }
 };

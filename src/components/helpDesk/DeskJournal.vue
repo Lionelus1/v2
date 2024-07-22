@@ -395,7 +395,6 @@ const mainMenu = computed(() => [
 ]);
 var user = {};
 onMounted(() => {
-    console.log("getUser:", getUser());
     getTicket();
     getCategory();
     requstLocal();
