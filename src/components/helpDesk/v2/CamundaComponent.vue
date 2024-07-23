@@ -174,7 +174,7 @@
 </div>
 </template>
 <script>
-import camundaServiceInstance from "../../service/helpdesk.service";
+import camundaServiceInstance from "../../../service/helpdesk.service";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import { findRole, getUser } from "@/config/config";
 // const { t, locale } = useI18n();
