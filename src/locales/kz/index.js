@@ -408,6 +408,7 @@ export default {
             validEmail: "Дұрыс email адрес көрсетіңіз",
         },
         nameInLatin: "Аты-жөні латынша",
+        officePhone: "Ішкі телефоны"
     },
     cafedra: {
         practiceResponsibles: "Практикаға жауаптылар",

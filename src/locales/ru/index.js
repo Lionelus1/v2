@@ -410,6 +410,7 @@ export default {
             validEmail: "Введите корректный email адрес",
         },
         nameInLatin: "ФИО на латинице",
+        officePhone: "Внутренний телефон"
     },
     cafedra: {
         practiceResponsibles: "Ответственные за практику",

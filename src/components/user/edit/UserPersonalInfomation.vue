@@ -130,7 +130,13 @@
         <div v-if="customType === 'myAccount' || customType === 'viewUser' || customType === 'createUser'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t('contact.phone') }}</label>
             <InputText class="mt-2" :placeholder="t('contact.phone')" v-model="user.phoneNumber" :readonly="props.readonly" @input="updateUserData"></InputText>
-            <small class="p-error" v-if="validation.address">{{ t("common.requiredField") }}</small>
+        </div>
+
+        <!-- Внутренний телефон -->
+        <div v-if="customType === 'myAccount' || customType === 'viewUser' || customType === 'createUser'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
+          <label>{{ t('contact.officePhone') }}</label>
+          <InputText class="mt-2" :placeholder="t('contact.officePhone')" v-model="user.internalPhone" :readonly="props.readonly" @input="updateUserData"></InputText>
+          <small class="p-error" v-if="validation.officePhone">{{ t("common.requiredField") }}</small>
         </div>
         
           <!-- Пол -->
@@ -213,7 +219,8 @@
     thirdNameEn: false,
     birthday: false,
     email: false,
-    address: false
+    address: false,
+    officePhone: false,
   })
   const gender = [
     { id: 1, kz: "еркек", ru: "мужчина", en: "Male" },

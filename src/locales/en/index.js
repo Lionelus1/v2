@@ -409,6 +409,7 @@ export default {
             validEmail: "Please enter a valid email address",
         },
         nameInLatin: "Name in latin",
+        officePhone: "Internal phone"
     },
     cafedra: {
         practiceResponsibles: "Responsible for the practice",
