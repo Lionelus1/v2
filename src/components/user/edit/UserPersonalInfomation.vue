@@ -135,7 +135,7 @@
         <!-- Внутренний телефон -->
         <div v-if="customType === 'myAccount' || customType === 'viewUser' || customType === 'createUser'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
           <label>{{ t('contact.officePhone') }}</label>
-          <InputText class="mt-2" :placeholder="t('contact.officePhone')" v-model="user.internalPhone" :readonly="props.readonly" @input="updateUserData"></InputText>
+          <InputText maxlength="5" class="mt-2" :placeholder="t('contact.officePhone')" v-model="user.internalPhone" :readonly="props.readonly" @input="updateUserData"></InputText>
           <small class="p-error" v-if="validation.officePhone">{{ t("common.requiredField") }}</small>
         </div>
         
