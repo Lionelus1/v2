@@ -408,6 +408,7 @@ export default {
             validEmail: "Дұрыс email адрес көрсетіңіз",
         },
         nameInLatin: "Аты-жөні латынша",
+        officePhone: "Ішкі телефоны"
     },
     cafedra: {
         practiceResponsibles: "Практикаға жауаптылар",
@@ -1810,6 +1811,9 @@ export default {
             publication_koksnvo: "ҒЖБССҚК ұсынған ғылыми басылым",
             textbooks: "Оқулықтар / Оқыту құралдары / Оқыту құралдары / Семинарлар",
             free: "Ғылыми еңбектер",
+            scientific_recommendations:"Ғылыми ұсыныстар",
+            thesis:"Тезистер(конференция)",
+            training_manual: "Оқу құралы"
         },
         messages: {
             successImport: "Импорттау сұрауы сәтті жіберілді",

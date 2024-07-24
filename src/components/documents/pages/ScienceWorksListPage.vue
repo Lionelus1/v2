@@ -170,7 +170,7 @@ export default {
             {
               label: this.$t("common.tosign"),
               icon: "pi pi-user-edit",
-              visible: () => this.currentDocument && (this.currentDocument.docHistory.stateId === DocEnum.CREATED.ID ||
+              visible: () => this.currentDocument && (!this.changed && this.ids.length > 0 && this.currentDocument.docHistory.stateId === DocEnum.CREATED.ID ||
                   this.currentDocument.docHistory.stateId === DocEnum.REVISION.ID),
               command: () => { this.open('sendToApproveDialog') }
             },
