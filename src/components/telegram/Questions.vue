@@ -34,7 +34,7 @@
         </Column>
         <Column headerStyle="width: 10rem">
           <template #body="{node}">
-            <ActionButton :show-label="true" :items="initItems" @toggle="toggle(node)"/>
+            <ActionButton :show-label="true" :items="getItemsForNode(node)" @toggle="toggle(node)"/>
           </template>
         </Column>
       </TreeTable>
@@ -74,22 +74,26 @@ const emitter = inject("emitter");
 const nodes = ref([]);
 const toast = useToast();
 const { t, locale } = useI18n();
+const userRoles = ref(['telegram']);
 
 const initItems = computed(() => [
   {
     label: t('common.add'),
     icon: 'fa-solid fa-plus',
     command: () => createQuestion(node.value, node.value.id),
+    roles: ['telegram'],
   },
   {
     label: t('common.edit'),
     icon: 'fa-solid fa-pen',
     command: () => update(node.value),
+    roles: ['telegram'],
   },
   {
     label: t('common.delete'),
     icon: 'fa-solid fa-trash',
     command: () => deleteValue(node.value),
+    roles: ['telegram'],
   },
 ]);
 
@@ -131,7 +135,7 @@ const update = (selectedNode) => {
 };
 
 const search = (data) => {
-  const searchText = data.target.value; // Получаем значение из поля ввода
+  const searchText = data.target.value;
   lazyParams.search_text = searchText;
   lazyParams.parent_id = null;
   getQuestions();
@@ -230,4 +234,10 @@ onMounted(() => {
     }
   });
 });
+const hasTelegramRole = computed(() => {
+  return userRoles.value.includes('telegram');
+});
+const getItemsForNode = () => {
+  return hasTelegramRole.value ? initItems.value : [];
+};
 </script>

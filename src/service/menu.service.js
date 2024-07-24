@@ -306,6 +306,7 @@ export class MenuService {
                 label: $t('Telegram'),
                 icon: 'fa-brands fa-telegram',
                 to: '/telegram',
+                visible: this.findRole('telegram') || this.findRole('main_administrator')
             }
         ]
     }
