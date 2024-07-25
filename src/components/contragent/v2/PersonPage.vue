@@ -357,13 +357,13 @@ export default {
       this.validation.internalPhone = !this.per.internalPhone || !/^\d{5}$/.test(this.per.internalPhone);
       this.validation.email = !this.per.email || this.per.email.length < 1;
 
-      if (this.per.internalPhone.length === 0) {
+      if (this.per?.internalPhone === undefined || this.per?.internalPhone?.length === 0) {
         this.validation.internalPhone = false
       }
 
       return (this.validation.iin || this.validation.firstname || this.validation.lastname ||
         this.validation.email || this.validation.firstnameEn ||
-        this.validation.lastnameEn) || this.validation.internalPhone;
+        this.validation.lastnameEn || this.validation.internalPhone);
     },
     handlePersonalInformationUpdate(updatedData) {
       if (updatedData != null) {
