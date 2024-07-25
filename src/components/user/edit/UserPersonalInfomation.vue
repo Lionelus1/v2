@@ -7,7 +7,7 @@
         <img class="round" v-else src="assets/layout/images/default-user.jpg" />
         <FileUpload v-if="(userID === currentUser.userID || findRole(currentUser, 'main_administrator')) && findRole(currentUser, 'teacher')" ref="form" mode="basic" class="mt-2"
                     :customUpload="true" accept="image/*" :class="{'p-invalid': validation.file}"
-                    @uploader="upload($event)" :auto="true" chooseLabel="Выберите фото"/>
+                    @uploader="upload($event)" :auto="true" :chooseLabel="t('common.selectPhoto')"/>
 
         <InlineMessage severity="info" style="font-size: 10px;" class="mt-2" show
                        v-if="file">

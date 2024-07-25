@@ -211,6 +211,8 @@ export default {
         myAddress: 'Адрес',
         creationAndEditing:'Создание и редактирование',
         users:'Пользователи',
+        selectPhoto:'Выберите фото',
+        scanCopy:'Скан копия',
         states: {
             submitted: "Подана",
             created: "создан",
@@ -1849,7 +1851,8 @@ export default {
         addCourse: 'Добавление курса',
         online: 'Онлайн',
         offline: 'Оффлайн',
-        mixed: 'Смешанный'
+        mixed: 'Смешанный',
+        scienceSchool: 'Научная школа'
     },
     educationalPrograms:{
         name: 'Образовательная программа',
@@ -1961,5 +1964,9 @@ export default {
             enteredIncorrectly: 'Введен неправильно'
         },
 
+    },
+    error: {
+        invalidEmail: "Некорректный адрес электронной почты",
+        invalidPhoneNumber: "Некорректный номер телефона. Должен содержать 11 цифр"
     }
 }

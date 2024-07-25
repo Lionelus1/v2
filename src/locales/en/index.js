@@ -209,6 +209,8 @@ export default {
         myAddress: 'Address',
         creationAndEditing: 'Creation and editing',
         users: 'Users',
+        selectPhoto:'Select Photo',
+        scanCopy:'Scan copy',
         states: {
             submitted: "Submitted",
             approved: "Approved",
@@ -1851,7 +1853,8 @@ export default {
         addCourse: 'Adding a course',
         online: 'Online',
         offline: 'Offline',
-        mixed: 'Mixed'
+        mixed: 'Mixed',
+        scienceSchool: 'Scientific school'
     },
     educationalPrograms: {
         name: 'Educational program',
@@ -1962,5 +1965,9 @@ export default {
             enteredIncorrectly: 'Entered incorrectly'
         },
 
+    },
+    error: {
+        invalidEmail: "Invalid email address",
+        invalidPhoneNumber: "Invalid phone number. It should contain 11 digits"
     }
 }
