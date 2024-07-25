@@ -1796,7 +1796,6 @@ export default {
     },
     telegram: {
         author: 'author',
-
         question: 'Question',
         anwers: 'Anwers',
         questionkz: 'Enter a question in Kazakh',

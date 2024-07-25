@@ -1808,10 +1808,9 @@ export default {
 
     },
     telegram: {
-        question: 'Сұрактар',
+        question: 'Сұрақтар',
         anwers: 'Жауаптар',
         author: 'Сұрақтың авторы',
-
         questionkz: 'Cұрақты қазақша еңгізіңіз',
         questionen: 'Cұрақты ағылшынша еңгізіңіз',
         questionru: 'Cұрақты орысша еңгізіңіз',
