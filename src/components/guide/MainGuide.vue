@@ -57,8 +57,7 @@
 <script>
 import api from "@/service/api";
 import {findRole} from "../../config/config";
-import {getHeader, smartEnuApi} from "@/config/config";
-import {resizeImages} from "../../helpers/HelperUtil";
+import {getHeader} from "@/config/config";
 import EditGuide from "./EditGuide";
 import AddGuide from "./AddGuide";
 import {MenuService} from "../../service/menu.service";
@@ -277,10 +276,10 @@ export default {
       });
     },
     generateRandomString(length) {
-      var result = '';
-      var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      var charactersLength = characters.length;
-      for (var i = 0; i < length; i++) {
+      let result = '';
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      const charactersLength = characters.length;
+      for (let i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
       }
       return result;
@@ -317,6 +316,11 @@ export default {
 .text_guide {
   ::v-deep .ql-align-center {
     text-align: center;
+  }
+  ::v-deep img{
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ccc;
   }
 }
 
