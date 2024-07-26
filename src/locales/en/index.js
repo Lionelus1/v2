@@ -1803,6 +1803,8 @@ export default {
         questionru: 'Enter a question in Russian',
         anwerskz: 'Enter a anwers in Kazakh',
         anwersen: 'Enter a anwers in English',
-        anwersru: 'Enter a anwers in Russian'
+        anwersru: 'Enter a anwers in Russian',
+        crAndUpdEdu: 'Creating and editing a question and answer'
+
     } 
 }
