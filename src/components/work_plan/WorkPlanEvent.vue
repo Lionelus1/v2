@@ -102,8 +102,8 @@
             <div v-else>
               <p v-for="item in node.user" :key="item.id">{{ item.user.fullName }}</p>
             </div>
-            <Button v-if="isAdmin && isPlanCreator && isPlanApproved" icon="pi pi-pencil" severity="info" text rounded @click="openRespPersonDialog(node)" />
-            <Dialog v-if="isAdmin && isPlanCreator" :closable="false" v-model:visible="respPersonDialog" modal :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
+            <Button v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" icon="pi pi-pencil" severity="info" text rounded @click="openRespPersonDialog(node)" />
+            <Dialog v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" :closable="false" v-model:visible="respPersonDialog" modal :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
               <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
                   <label>{{ $t('workPlan.summaryDepartment') }}</label>
                   <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
