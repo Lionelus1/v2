@@ -86,6 +86,7 @@
           </template>
         </Column>
         <Column field="responsible_executor" :header="$t('workPlan.respExecutor')" v-if="isOperPlan">
+         
           <template #body="{ node }">
             {{ node.responsible_executor }}
           </template>
@@ -101,6 +102,44 @@
             <div v-else>
               <p v-for="item in node.user" :key="item.id">{{ item.user.fullName }}</p>
             </div>
+            <Button v-if="isAdmin && isPlanCreator && isPlanApproved" icon="pi pi-pencil" severity="info" text rounded @click="openRespPersonDialog(node)" />
+            <Dialog v-if="isAdmin && isPlanCreator" :closable="false" v-model:visible="respPersonDialog" modal :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
+              <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+                  <label>{{ $t('workPlan.summaryDepartment') }}</label>
+                  <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
+                  <small class="p-error" v-if="submitted && !summaryDepartment?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+              </div>
+              <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
+                <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
+                <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
+                <small class="p-error" v-if="submitted && !selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+              </div>
+              <template v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science && inputSets">
+                <div v-for="(inputSet, index) in inputSets" :key="index">
+                  <div class="field">
+                    <label>{{ $t('workPlan.scienceParticipants') }}</label>
+                    <FindUser class="select_wp" v-model="inputSet.selectedUsers" :editMode="true" :user-type="3"></FindUser>
+                    <small class="p-error" v-if="submitted && !inputSet.selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+                  </div>
+                  <div class="field">
+                    <label for="name">{{ $t('common.role') }}</label>
+                    <RolesByName class="select_wp" v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
+                    <small class="p-error" v-if="submitted && !inputSet?.selectedRole">{{ $t('workPlan.errors.approvalUserError') }}</small>
+                  </div>
+                  <p style="text-align: right;" class="mb-3">
+                      <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined"  @click="removeInputSet(index)" outlined />
+                    </p>
+                </div>
+              </template>
+              <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
+                <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5 select_wp" @click="addNewUser" />
+              </div>
+
+                <div class="flex justify-content-end gap-2">
+                    <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeRespPersonDialog"></Button>
+                    <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="updateResponsivePersons"></Button>
+                </div>
+            </Dialog>
           </template>
         </Column>
         <Column field="supporting_docs" v-if="plan && isOperPlan" :header="$t('common.suppDocs')">
@@ -199,7 +238,6 @@
       </div>
     </div>
   </OverlayPanel>
-
   <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null"
                        :isMain="!!selectedEvent" :plan-data="plan" @hide="hideDialog(dialog.add)"/>
   <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :event="selectedEvent" @hide="hideDialog(dialog.edit)"/>
@@ -228,6 +266,7 @@ import ActionButton from "@/components/ActionButton.vue";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import DocState from "@/enum/docstates/index";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import RolesByName from "@/components/smartenu/RolesByName.vue";
 
 export default {
   name: "WorkPlanEvent",
@@ -240,7 +279,8 @@ export default {
     WorkPlanApprove,
     WorkPlanEventAdd,
     DocSignaturesInfo,
-    ActionButton
+    ActionButton,
+    RolesByName
   },
   data() {
     return {
@@ -385,7 +425,13 @@ export default {
       isFactVisible: true,
       isFactInputVisible:false,
       factValue: null,
-      selectedWorkPlanEvent:null
+      selectedWorkPlanEvent:null,
+      respPersonDialog: false,
+      editData: null,
+      summaryDepartment:[],
+      inputSets: null,
+      submitted: false,
+      selectedUsers: [],
     }
   },
   created() {
@@ -454,9 +500,136 @@ export default {
     });
     this.getEventsTree;
 
+
+  },
+  watch: {
+    summaryDepartment: {
+      handler(newVal) {
+        if (newVal.length === 0 && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Oper) {
+        this.selectedUsers.shift();
+        } else {
+          this.selectedUsers.unshift(...newVal);
+        }
+      },
+      deep: true,
+    },
   },
   methods: {
     findRole: findRole,
+    updateResponsivePersons() {
+      this.submitted = true;
+
+      if (
+        (this.selectedUsers?.length === 0 && 
+        this.plan?.plan_type?.code !== this.Enum.WorkPlanTypes.Science) ||
+        (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Science && 
+        !this.validate()) ||
+        (this.summaryDepartment?.length === 0 && 
+        this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Oper)
+      ) {
+        return false;
+      }
+      
+      let userIds = [];
+      if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
+        userIds = this.inputSets.reduce((acc, inputSet) => {
+          inputSet.selectedUsers.forEach(user => {
+            if (user !== null){
+              acc.push({
+              user: user,
+              role: inputSet.selectedRole,
+            });
+            }
+
+          });
+          return acc;
+        }, []);
+      } else {
+        userIds = [];
+        this.selectedUsers.forEach(e => {
+          if(e !== null){
+            userIds.push({ user: e, role: null })
+          }
+          
+        });
+      }
+      let resp_person_id;
+      if (this.summaryDepartment && this.summaryDepartment[0]?.userID) {
+          resp_person_id = this.summaryDepartment[0].userID;
+      } else {
+          resp_person_id = null;
+      }
+      this.editData.resp_person_id = resp_person_id;
+      this.editData.resp_person_ids = userIds;
+
+      this.planService.editEvent(this.editData).then(res => {
+        if (res.data.is_success) {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t('workPlan.message.eventChanged'),
+            life: 3000,
+          });
+          this.respPersonDialog = false;
+          this.getEventsTree();
+          this.closeBasic();
+          this.submitted = false;
+        }
+      }).catch(error => {
+        this.submitted = false;
+        if (error && error.error === 'summaryDepartmentadded') {
+          this.$toast.add({ severity: "warn", summary: this.$t('workPlan.warnAddingsummaryDepartment'), life: 4000 });
+        }
+        
+      });
+    },
+    validate() {
+      return this.inputSets.every(inputSet => 
+        inputSet?.selectedUsers?.length > 0 && inputSet?.selectedRole !== null
+      );
+    },
+    addNewUser() {
+      this.inputSets.push({ selectedUsers: null, selectedRole: null })
+    },
+    removeInputSet(index) {
+      this.inputSets.splice(index, 1);
+    },
+    openRespPersonDialog(node){
+      if (node !== null){
+        this.selectedUsers = []
+        this.summaryDepartment = []
+        this.editData = node
+          this.respPersonDialog = true
+          if (this.editData !== null) {
+            this.editData.user.forEach(e => {
+              this.selectedUsers.push(e.user);
+              if(e.is_summary_department && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Oper){
+                  this.summaryDepartment.push(e.user);
+                  this.selectedUsers.pop(e.user);
+              }
+              
+            });
+            if (this.plan && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science && this.editData.user) {
+              const roleMap = new Map();
+              this.editData.user.forEach(item => {
+                if (item.role && item.user) {
+                  const { role, user } = item;
+                  if (roleMap.has(role.id)) {
+                    roleMap.get(role.id).selectedUsers.push(user);
+                  } else {
+                    roleMap.set(role.id, { selectedRole: role, selectedUsers: [user] });
+                  }
+                }
+              });
+              this.inputSets = Array.from(roleMap.values());
+            }
+          }
+      }
+    },
+    closeRespPersonDialog(){
+      this.selectedUsers = [];
+      this.respPersonDialog = false;
+      this.getEventsTree();
+    },
     factVisiblity(){
       this.isFactVisible = false;
       this.isFactInputVisible = true;
@@ -1025,7 +1198,6 @@ export default {
       URL.revokeObjectURL(link.href);
     },
     actionsToggle(node) {
-      console.log(node)
       this.isCreator = node.creator_id === this.loginedUserId
       this.selectedEvent = node
     },
@@ -1327,5 +1499,6 @@ export default {
     align-items: center;
     gap: 10px;
   }
+  
 }
 </style>

@@ -131,7 +131,6 @@ export default {
       this.editData.end_date = this.editData.end_date ? new Date(this.editData.end_date) : null
       this.selectedUsers = [];
       this.editData.quarter = parseInt(this.editData.quarter);
-      
       this.editData.user.forEach(e => {
         this.selectedUsers.push(e.user);
         if(e.is_summary_department){
@@ -217,6 +216,7 @@ export default {
           });
           this.closeBasic();
           this.submitted = false;
+          
         }
       }).catch(error => {
         this.submitted = false;
