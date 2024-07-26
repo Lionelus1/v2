@@ -118,7 +118,7 @@
                 <div v-for="(inputSet, index) in inputSets" :key="index">
                   <div class="field">
                     <label>{{ $t('workPlan.scienceParticipants') }}</label>
-                    <FindUser class="select_wp" v-model="inputSet.selectedUsers" :editMode="true" :user-type="3"></FindUser>
+                    <FindUser class="select_wp" v-model="inputSet.selectedUsers" :editMode="true" :user-type="3" :max="1"></FindUser>
                     <small class="p-error" v-if="submitted && !inputSet.selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
                   </div>
                   <div class="field">
