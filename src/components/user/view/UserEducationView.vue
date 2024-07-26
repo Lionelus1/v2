@@ -77,7 +77,7 @@
           </Column>
 
           <!-- Скан копия -->
-          <Column  header="Скан копия">
+          <Column  :header="t('common.scanCopy')">
             <template #body="slotProps">
               <Button v-if="slotProps.data.file_path !== null" icon="pi pi-download" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="showFile(slotProps.data.file_path)"></Button>
             </template>
@@ -96,7 +96,7 @@
       <AccordionTab v-if="customType !== 'createUser' && findRole(null, 'teacher')">
         <template #header>
           <div class="uppercase">
-            {{ "Научная школа" }}
+            {{ t('fieldEducation.scienceSchool') }}
           </div>
         </template>
 
@@ -108,7 +108,7 @@
         <DataTable :style="{ width: '75vw' }" maximizable modal :contentStyle="{ height: '300px' }"  selectionMode="single" v-model="scienceSchool" :lazy="true" :value="scienceSchools" :loading="loading" v-model:selection="scienceSchool"
                    :paginator="true" :rows="10" :totalRecords="totalRecordsSchools" @page="onPageChange">
           <!-- Учебное заведение -->
-          <Column header="Научная школа">
+          <Column :header="t('fieldEducation.scienceSchool')">
             <template #body="slotProps">
               <p><b>{{ t(slotProps.data['name_'+locale]) }}</b></p>
             </template>

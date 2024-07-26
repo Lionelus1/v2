@@ -210,6 +210,8 @@ export default {
         myAddress: 'Мекенжайы',
         creationAndEditing:'Сақтау және өңдеу',
         users:'Пайдаланушылар',
+        selectPhoto:'Фотосуретті таңдаңыз',
+        scanCopy:'Скан копия',
         states: {
             submitted: "Берілген",
             created: "Құрылды",
@@ -1864,7 +1866,8 @@ export default {
         addCourse: 'Курсты құру',
         online: 'Онлайн',
         offline: 'Оффлайн',
-        mixed: 'Аралас'
+        mixed: 'Аралас',
+        scienceSchool: 'Ғылыми мектеп'
     },
     educationalPrograms:{
         name: 'Білім бағдарламасы',
@@ -1977,4 +1980,8 @@ export default {
 
     },
 
+    error: {
+        invalidEmail: "Электрондық поштаның мекенжайы дұрыс емес",
+        invalidPhoneNumber: "Телефон нөмірі дұрыс емес. Ол 11 саннан тұруы керек"
+    }
 }
