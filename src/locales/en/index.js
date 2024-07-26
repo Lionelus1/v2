@@ -1968,6 +1968,7 @@ export default {
     },
     error: {
         invalidEmail: "Invalid email address",
-        invalidPhoneNumber: "Invalid phone number. It should contain 11 digits"
+        invalidPhoneNumber: "Invalid phone number. It should contain 11 digits",
+        applicationRequirement: "To apply for the position, it is necessary to provide a valid email address or phone number.",
     }
 }

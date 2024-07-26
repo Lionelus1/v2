@@ -653,7 +653,19 @@ export default {
      * *********************** ПОДАЧА ЗАЯВКИ НА УЧАСТИЕ В КОНКУРСЕ
      */
     apply() {
-      this.relation.signWay = this.signWay
+
+      if ((!this.candidate.email || this.candidate.email.length < 1) &&
+          (!this.candidate.phoneNumber || this.candidate.phoneNumber.length < 1)) {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t('error.applicationRequirement'),
+          life: 3000,
+        });
+        return;
+      }
+
+
+       this.relation.signWay = this.signWay
       const fd = new FormData();
       fd.append("rel", JSON.stringify(this.relation))
       fd.append("ml", this.file);
