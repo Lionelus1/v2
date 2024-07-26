@@ -616,7 +616,7 @@ const routes = [
                         beforeEnter: ifAuthenticated,
                     },
                     {
-                        path: '/request/:uuid',
+                        path: '/request/v2/:uuid',
                         name: 'Request2',
                         component: load('helpDesk/v2/Request'),
                         beforeEnter: ifAuthenticated,

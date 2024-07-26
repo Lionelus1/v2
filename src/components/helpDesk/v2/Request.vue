@@ -472,7 +472,8 @@ const validate = (pattern, str) => {
   if (!pattern && str) {
     return true;
   }
-
+  console.log("str:", str);
+  console.log(pattern);
 
 
 

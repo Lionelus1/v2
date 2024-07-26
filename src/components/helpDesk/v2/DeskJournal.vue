@@ -521,7 +521,7 @@ const openDocument = async () => {
     camundaServiceInstance.processInstanceKey = "";
     if (currentDocument.value) {
         router.push({
-            name: "Request",
+            name: "Request2",
             params: {
                 uuid: currentDocument.value.uuid,
             },
@@ -588,7 +588,7 @@ const createHelpDesk = async () => {
     request.value.category = selectedDirection.value;
     close("newPublicationDialog");
     router.push({
-        name: "Request",
+        name: "Request2",
         params: { uuid: camundaServiceInstance.uuid },
     });
     // service

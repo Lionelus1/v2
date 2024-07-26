@@ -46,7 +46,16 @@
         style="font-size: 20px; color: red"
         >*</span
       >
+      <InputMask
+      v-if="component.key == `phonenumber`"
+      placeholder="+7-(777)-777-77-77" mask="+7-(999)-999-99-99"
+        :disabled="disabled"
+        :invalid="component.incorrect"
+        class="mt-2"
+        v-model="component.value[component.key]"
+      />
       <InputText
+      v-else
         :disabled="disabled"
         :invalid="component.incorrect"
         class="mt-2"
