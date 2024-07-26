@@ -102,44 +102,8 @@
             <div v-else>
               <p v-for="item in node.user" :key="item.id">{{ item.user.fullName }}</p>
             </div>
-            <Button v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" icon="pi pi-pencil" severity="info" text rounded @click="openRespPersonDialog(node)" />
-            <Dialog v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" :closable="false" v-model:visible="respPersonDialog" modal :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
-              <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
-                  <label>{{ $t('workPlan.summaryDepartment') }}</label>
-                  <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
-                  <small class="p-error" v-if="submitted && !summaryDepartment?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
-              </div>
-              <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
-                <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
-                <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
-                <small class="p-error" v-if="submitted && !selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
-              </div>
-              <template v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science && inputSets">
-                <div v-for="(inputSet, index) in inputSets" :key="index">
-                  <div class="field">
-                    <label>{{ $t('workPlan.scienceParticipants') }}</label>
-                    <FindUser class="select_wp" v-model="inputSet.selectedUsers" :editMode="true" :user-type="3" :max="1"></FindUser>
-                    <small class="p-error" v-if="submitted && !inputSet.selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
-                  </div>
-                  <div class="field">
-                    <label for="name">{{ $t('common.role') }}</label>
-                    <RolesByName class="select_wp" v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
-                    <small class="p-error" v-if="submitted && !inputSet?.selectedRole">{{ $t('workPlan.errors.approvalUserError') }}</small>
-                  </div>
-                  <p style="text-align: right;" class="mb-3">
-                      <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined"  @click="removeInputSet(index)" outlined />
-                    </p>
-                </div>
-              </template>
-              <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
-                <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5 select_wp" @click="addNewUser" />
-              </div>
+            <!-- <Button v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" icon="pi pi-pencil" severity="info" text rounded @click="openRespPersonDialog(node)" /> -->
 
-                <div class="flex justify-content-end gap-2">
-                    <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeRespPersonDialog"></Button>
-                    <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="updateResponsivePersons"></Button>
-                </div>
-            </Dialog>
           </template>
         </Column>
         <Column field="supporting_docs" v-if="plan && isOperPlan" :header="$t('common.suppDocs')">
@@ -199,6 +163,44 @@
       <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-text" @click="uploadRelatedDocs"/>
     </template>
   </Dialog>
+
+  <Dialog v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" :closable="false" v-model:visible="respPersonDialog" modal :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
+              <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+                  <label>{{ $t('workPlan.summaryDepartment') }}</label>
+                  <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
+                  <small class="p-error" v-if="submitted && !summaryDepartment?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+              </div>
+              <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
+                <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
+                <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
+                <small class="p-error" v-if="submitted && !selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+              </div>
+              <template v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science && inputSets">
+                <div v-for="(inputSet, index) in inputSets" :key="index">
+                  <div class="field">
+                    <label>{{ $t('workPlan.scienceParticipants') }}</label>
+                    <FindUser class="select_wp" v-model="inputSet.selectedUsers" :editMode="true" :user-type="3" :max="1"></FindUser>
+                    <small class="p-error" v-if="submitted && !inputSet.selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+                  </div>
+                  <div class="field">
+                    <label for="name">{{ $t('common.role') }}</label>
+                    <RolesByName class="select_wp" v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
+                    <small class="p-error" v-if="submitted && !inputSet?.selectedRole">{{ $t('workPlan.errors.approvalUserError') }}</small>
+                  </div>
+                  <p style="text-align: right;" class="mb-3">
+                      <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined"  @click="removeInputSet(index)" outlined />
+                    </p>
+                </div>
+              </template>
+              <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
+                <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5 select_wp" @click="addNewUser" />
+              </div>
+
+                <div class="flex justify-content-end gap-2">
+                    <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeRespPersonDialog"></Button>
+                    <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="updateResponsivePersons"></Button>
+                </div>
+            </Dialog>
 
   <OverlayPanel ref="global-filter">
     <div class="p-fluid">
@@ -1326,6 +1328,15 @@ export default {
           icon: 'fa-solid fa-pen',
           disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
           visible: !this.isFinish,
+          command: () => {
+            this.showDialog(this.dialog.edit)
+          }
+        },
+        {
+          label: this.$t('workPlan.editRespUser'),
+          icon: 'fa-solid fa-pen',
+          disabled: !((this.isPlanCreator || this.isAdmin) && this.isPlanApproved),
+          visible: this.isPlanApproved && (this.isPlanCreator || this.isAdmin),
           command: () => {
             this.showDialog(this.dialog.edit)
           }
