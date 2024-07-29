@@ -183,7 +183,7 @@ export default {
       });
     },
     updateMenu() {
-      this.menu[0].disabled = !(this.languageDate.nameKz && this.languageDate.nameRu && this.languageDate.nameEn);
+      this.menu[0].disabled = !(this.languageDate?.nameKz && this.languageDate?.nameRu && this.languageDate?.nameEn);
     },
   }
 }
