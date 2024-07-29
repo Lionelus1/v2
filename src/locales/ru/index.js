@@ -1256,6 +1256,7 @@ export default {
             request: 'Подать заявку'
         },
         vacancies: "Вакансии",
+        archiveVacancies: "Архивы",
         responsibilitiesLabel: "Функциональные обязанности",
         educationLabel: "Образование",
         qualificationLabel: "Квалификация по специальности",

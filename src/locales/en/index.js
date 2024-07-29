@@ -1249,6 +1249,7 @@ export default {
             request: "Submit an application",
         },
         vacancies: "Vacancies",
+        archiveVacancies: "Аrchives",
         responsibilitiesLabel: "Functional responsibilities",
         educationLabel: "Education",
         qualificationLabel: "Qualification in the specialty",
