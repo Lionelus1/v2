@@ -115,7 +115,7 @@
 import { ref, onMounted, computed } from 'vue';
 import { useI18n } from "vue-i18n";
 import axios from 'axios';
-import { HelpDeskService } from "../../service/helpdesk.service";
+import { HelpDeskService } from "../../../service/helpdesk.service";
 import { getHeader, smartEnuApi, findRole } from "@/config/config";
 import { useToast } from "primevue/usetoast";
 import { useStore } from "vuex";

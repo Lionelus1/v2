@@ -10,7 +10,7 @@ const messages = {
     en: en,
     kz: kz,
     ru: ru,
-  }
+}
 
 export default new createI18n({
     locale: localStorage.getItem("lang") || "kz",
