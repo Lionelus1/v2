@@ -31,7 +31,7 @@
                 @click="selectTemplate(template.id)"
             >
               <h4>{{ template.template_name }}</h4>
-              <div v-html="template.template_content_ru.String"></div>
+              <div v-html="template.template_content_en.String" class="template-content"></div>
             </div>
           </div>
         </div>
@@ -81,7 +81,7 @@ export default {
         this.templates = data;
         console.log(this.templates);
       } catch (error) {
-        console.error('Error fetching templates:', error);
+        console.error('Ошибка при получении шаблонов:', error);
       }
     },
     handleCategoryChange(categoryId) {
@@ -98,13 +98,13 @@ export default {
     },
     nextPage() {
       if (this.selectedCategories.length === 0) {
-        alert('Please select a category');
-        return; // Prevent navigation
+        alert('Пожалуйста, выберите категорию');
+        return; // Предотвращает переход на следующую страницу
       }
 
       if (!this.selectedTemplate) {
-        alert('Please select a template');
-        return; // Prevent navigation
+        alert('Пожалуйста, выберите шаблон');
+        return; // Предотвращает переход на следующую страницу
       }
 
       this.$router.push({
@@ -127,10 +127,6 @@ export default {
 </script>
 
 <style>
-.category-option input[type="checkbox"] {
-  margin-right: 5px;
-}
-
 .template-selection-container {
   margin-top: 20px;
 }
@@ -138,13 +134,32 @@ export default {
 .templates-grid {
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between; /* Обеспечивает равномерное распределение */
 }
 
 .template-card {
+  flex: 1 1 calc(25% - 20px); /* Подгоняет размер карточки под 4 карточки в ряд с учетом отступов */
   border: 1px solid #ccc;
   padding: 20px;
   cursor: pointer;
   transition: transform 0.2s;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.template-card h4 {
+  margin: 0 0 10px;
+}
+
+.template-card .template-content {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
 }
 
 .template-card:hover {
