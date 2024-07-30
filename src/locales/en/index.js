@@ -1209,6 +1209,7 @@ export default {
             approvalUserError: "Select the responsible persons",
             quarterError: "Select a quarter",
             langError: "Choose language",
+            pleaseChoose: "Choose"
         },
         message: {
             eventCreated: "Event created successfully",
@@ -1263,7 +1264,8 @@ export default {
         publications: "Publications",
         plannedTesting: "Planned testing",
         dissertationLanguage: "Dissertation language",
-        conclusionOfDepartment: "Mark of completion or conclusion of the department"
+        conclusionOfDepartment: "Mark of completion or conclusion of the department",
+        semester: "Semester"
     },
     queue: {
 

@@ -3,8 +3,13 @@
     <div class="p-fluid">
       <!-- mastersplan -->
       <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
+        <label>{{$t("educationalPrograms.semester")}}</label>
+        <Dropdown v-model="semester" :options="semesters" optionLabel="name" optionValue="id" :placeholder="$t('educationalPrograms.semester')"/>
+        <small class="p-error" v-if="submitted && formValid.semester">{{ $t('workPlan.errors.pleaseChoose') }}</small>
+      </div>
+      <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
         <label>{{$t("workPlan.content")}}</label>
-        <Textarea v-model="content" rows="3" style="resize: vertical"/>
+        <Textarea v-model="event_name" rows="3" style="resize: vertical"/>
       </div>
       <!-- mastersplan -->
       <div class="field" v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
@@ -63,7 +68,7 @@
       <!-- mastersplan -->
       <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
         <label>{{$t("workPlan.expectingResults")}}</label>
-        <Textarea v-model="expecting_results" rows="3" style="resize: vertical"/>
+        <Textarea v-model="result" rows="3" style="resize: vertical"/>
       </div>
       <!-- mastersplan -->
     </div>
@@ -150,6 +155,7 @@ export default {
         summaryUser: false,
         users: false,
         quarter: false,
+        semester: false
       },
       submitted: false,
       newQuarters: [],
@@ -164,8 +170,25 @@ export default {
       inputSets: [{ selectedUsers: '', selectedRole: '' }],
       start_date: new Date,
       end_date: new Date(),
-      content: null,
-      expecting_results: null
+      semester: null,
+      semesters: [
+        { 
+          id: 1,
+          name: '1'
+        },
+        {
+          id: 2,
+          name: '2'
+        },
+        {
+          id: 3,
+          name: '3'
+        },
+        {
+          id: 4,
+          name: '4'
+        },
+      ],
     }
   },
 
@@ -296,8 +319,9 @@ export default {
         data.end_date = this.end_date
       }
       if(this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters){
-        data.content = this.content
-        data.expecting_results = this.expecting_results
+        data.event_name = this.event_name
+        data.result = this.result
+        data.semester = this.semester
       }
       this.planService.createEvent(data).then(res => {
         this.emitter.emit("workPlanEventIsAdded", {is_success: true, is_main: this.isMain});
@@ -324,7 +348,12 @@ export default {
     },
     validateForm() {
       if(this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters){
-        return true
+        if (this.semester != null){
+          this.formValid.semester == false
+          return true
+        }
+        this.formValid.semester = true
+        return false
       }
       this.formValid.event_name = !this.event_name;
       this.formValid.summaryUser = !this.summaryDepartment.length === 0;

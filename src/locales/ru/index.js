@@ -1239,6 +1239,7 @@ export default {
             approvalUserError: "Выберите ответственных лиц",
             quarterError: "Выберите квартал",
             langError: "Выберите язык",
+            pleaseChoose: "Выберите"
         },
         message: {
             eventCreated: "Мероприятие успешно создано",
@@ -1293,7 +1294,8 @@ export default {
         publications: "Публикации",
         plannedTesting: "Планируемая апробация",
         dissertationLanguage: "Язык диссертации",
-        conclusionOfDepartment: "Отметка о выполнении или заключение кафедры"
+        conclusionOfDepartment: "Отметка о выполнении или заключение кафедры",
+        semester: "Семестр"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

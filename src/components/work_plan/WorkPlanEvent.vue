@@ -39,15 +39,20 @@
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
         <!-- mastersplan -->
+        <Column field="content" :header="$t('workPlan.semester')" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
+          <template #body="{ node }">
+            {{ node.semester }}
+          </template>
+        </Column>
         <Column field="content" :header="$t('workPlan.content')" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
           <template #body="{ node }">
-            {{ node.content }}
+            {{ node.event_name }}
           </template>
         </Column>
       
         <Column field="expecting_results" :header="$t('workPlan.expectingResults')" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
           <template #body="{ node }">
-            {{ node.expecting_results }}
+            {{ node.result }}
           </template>
         </Column>
         <!-- mastersplan -->
@@ -496,6 +501,9 @@ export default {
 
       this.planService.getEventsTree(this.lazyParams).then(res => {
         if (parent == null) {
+          if(res.data?.items){
+            res.data.items.sort(function(a, b){return a.semester-b.semester})
+          }
           this.data = res.data.items;
           this.total = res.data.total;
           if (this.data) {
@@ -630,6 +638,62 @@ export default {
           ];
           this.getRelatedFiles()
           this.getWorkPlanApprovalUsers(this.work_plan_id)
+        }
+        if(this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters){
+           this.planApprovalStage = [
+          {
+            stage: 1,
+            users: null,
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            },
+            titleRu: "Cтудент",
+            titleKz: "Cтудент",
+            titleEn: "Student",
+          },
+          {
+            stage: 2,
+            users: null,
+            titleRu: "Научный руководитель",
+            titleKz: "Ғылыми жетекші",
+            titleEn: "Scientific adviser",
+            certificate: {
+              namekz: "Жеке тұлғаның сертификаты",
+              nameru: "Сертификат физического лица",
+              nameen: "Certificate of an individual",
+              value: "individual"
+            },
+          },
+          {
+            stage: 3,
+            users: null,
+            titleRu: "Заведующий кафедры",
+            titleKz: "Кафедра меңгерушісі",
+            titleEn: "Head of Department",
+            certificate: {
+              namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+              nameru: "Для внутреннего документооборота (ГОСТ)",
+              nameen: "For internal document management (GOST)",
+              value: "internal"
+            },
+          },
+          {
+            stage: 4,
+            users: null,
+            titleRu: "Декан факультета",
+            titleKz: "Факультет деканы",
+            titleEn: "Dean of the Faculty",
+            certificate: {
+              namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+              nameru: "Для внутреннего документооборота (ГОСТ)",
+              nameen: "For internal document management (GOST)",
+              value: "internal"
+            },
+          },
+        ]
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -995,13 +1059,11 @@ export default {
       URL.revokeObjectURL(link.href);
     },
     actionsToggle(node) {
-      console.log(node)
       this.isCreator = node.creator_id === this.loginedUserId
       this.selectedEvent = node
     },
     showDialog(dialog) {
       dialog.state = true
-      console.log(this.dialog.info.state)
     },
     hideDialog(dialog) {
       this.selectedEvent = null
@@ -1211,7 +1273,7 @@ export default {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
           color: this.isFinish ? "" : "green",
-          visible: this.plan?.plan_type?.code == Enum.WorkPlanTypes.Masters || this.isFinish && (this.planDoc && !(this.isCreatedPlan || this.isPlanUnderRevision)) ,
+          visible: (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters && (!this.isFinish || this.isApproval)) || this.isFinish && (this.planDoc && !(this.isCreatedPlan || this.isPlanUnderRevision)) ,
           command: () => {
             if (this.isFinish) {
               this.showDialog(this.dialog.planView)
@@ -1230,7 +1292,7 @@ export default {
         },
         {
           label: this.$t('workPlan.reports'),
-          visible: this.isFinish && !this.isSciencePlan && (this.isApproval || this.isPlanCreator || this.isAdmin),
+          visible: this.isFinish && (!this.isSciencePlan && (this.isApproval || this.isPlanCreator || this.isAdmin)) ,
           command: () => {
             this.navigateToReports()
           }

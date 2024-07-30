@@ -1250,6 +1250,7 @@ export default {
             approvalUserError: "Жауапты тұлғаларды таңдаңыз",
             quarterError: "Тоқсан таңдаңыз",
             langError: "Тіл таңдаңыз",
+            pleaseChoose: "Таңдаңыз"
         },
         message: {
             eventCreated: "Іс-шара сәтті құрылды",
@@ -1304,7 +1305,8 @@ export default {
         publications: "Жарияланымдар",
         plannedTesting: "Жоспарлы тестілеу",
         dissertationLanguage: "Диссертация тілі",
-        conclusionOfDepartment: "Кафедраны аяқтау немесе қорытындылау белгісі"
+        conclusionOfDepartment: "Кафедраны аяқтау немесе қорытындылау белгісі",
+        semester: "Семестр"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
