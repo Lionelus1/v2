@@ -1801,9 +1801,9 @@ export default {
         questionkz: 'Enter a question in Kazakh',
         questionen: 'Enter a question in English',
         questionru: 'Enter a question in Russian',
-        anwerskz: 'Enter a anwers in Kazakh',
-        anwersen: 'Enter a anwers in English',
-        anwersru: 'Enter a anwers in Russian',
+        anwerskz: 'Enter a answer in Kazakh',
+        anwersen: 'Enter a answer in English',
+        anwersru: 'Enter a answer in Russian',
         crAndUpdEdu: 'Creating and editing a question and answer'
 
     } 
