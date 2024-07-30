@@ -124,7 +124,7 @@ export class MenuService {
             visible: !this.findRole("student"),
           },
           {
-            label: $t("smartenu.newsList"),
+            label: $t('smartenu.newsList'),
             icon: "fa-solid fa-rss",
             to: "/news",
           },
