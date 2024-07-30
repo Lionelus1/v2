@@ -109,11 +109,11 @@ function updateQueryStatus(newStatus) {
   currentQuery.status = newStatus;
 
   // Replace the route with the updated query parameters
-  router.replace({
-    name: "Request",
-    params: { uuid: uuid.value },
-    query: currentQuery,
-  });
+  // router.replace({
+  //   name: "Request",
+  //   params: { uuid: uuid.value },
+  //   query: currentQuery,
+  // });
 }
 const getDocStatus = (code) => {
   const foundStatus = docStatus.value.find((status) => status.code === code);
@@ -363,7 +363,7 @@ const saveDoc = async () => {
     loading.value = false;
     isDocSaved.value = true;
     status.value = "created";
-    updateQueryStatus("created");
+    // updateQueryStatus("created");
   }
 };
 // const loading = ref();
