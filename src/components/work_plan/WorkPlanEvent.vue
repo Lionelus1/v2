@@ -34,178 +34,110 @@
     </div>
     <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true"
                  :filtered="filtered"/>
-    <TabView v-model:activeIndex="active">
-      <TabPanel :header="isWorkSchedule ? $t('common.tasks') : ''">
-        <div class="card" v-if="plan && planDoc">
-          <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
-                     @nodeExpand="onExpand" scrollHeight="flex"
-                     responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
-                     :paginator="true" :rows="10" :total-records="total"
-                     @page="onPage($event)">
-            <template #empty> {{ $t('common.noData') }}</template>
-            <template #loading> {{ $t('common.loading') }}</template>
-            <Column field="event_name" :header="$t('workPlan.worksByWeek')" :expander="true" v-if="isWorkSchedule"
-                    style="min-width:300px;width: 30%;text-align: center;">
-              <template #body="{ node }">
-                <span style="display: block;text-align: left;">{{ node.event_name }}</span>
-              </template>
-            </Column>
-            <Column field="start_date" :header="$t('common.startDate') + '(' + $t('workPlan.week') + ')'"
-                    v-if="isWorkSchedule" style="max-width: 150px;text-align: center;">
-              <template #body="{ node }">
-                {{ formatDateMoment(node.start_date) }}
-              </template>
-            </Column>
-            <Column field="end_date" :header="$t('common.endDate') + '(' + $t('workPlan.week') + ')'"
-                    v-if="isWorkSchedule" style="max-width: 150px;text-align: center;">
-              <template #body="{ node }">
-                {{ formatDateMoment(node.end_date) }}
-              </template>
-            </Column>
-            <Column field="plan_number" :header="$t('web.note')" v-if="isWorkSchedule"
-                    style="max-width:100px;text-align: center;">
-              <template #body="{ node }">
-                {{ node.comment }}
-              </template>
-            </Column>
-
-
-            <Column field="event_name" :header="$t('workPlan.eventName')" :expander="true"
-                    v-if="!isWorkSchedule && !isWorkSchedule" style="min-width:300px;width: 30%;">
-              <template #body="{ node }">
-                <span><i class="fa-solid fa-folder"></i>&nbsp;{{ node.event_name }}</span>
-              </template>
-            </Column>
-            <Column field="start_date" :header="$t('common.startDate')" v-if="isSciencePlan" style="max-width: 100px">
-              <template #body="{ node }">
-                {{ formatDateMoment(node.start_date) }}
-              </template>
-            </Column>
-            <Column field="end_date" :header="$t('common.endDate')" v-if="isSciencePlan" style="max-width: 100px">
-              <template #body="{ node }">
-                {{ formatDateMoment(node.end_date) }}
-              </template>
-            </Column>
-            <Column field="unit" :header="$t('common.unit')" v-if="isOperPlan" style="max-width: 100px">
-              <template #body="{ node }">
-                {{ node.unit }}
-              </template>
-            </Column>
-            <Column field="plan_number" :header="$t('common.planNumber')" v-if="isOperPlan" style="max-width:100px">
-              <template #body="{ node }">
-                {{ node.plan_number }}
-              </template>
-            </Column>
-            <Column field="fact" :header="$t('common.fact')" v-if="isOperPlan">
-              <template #body="{ node }">
-                <span v-if="node.fact">{{ node.fact }}</span>
-              </template>
-            </Column>
-            <Column field="quarter" :header="$t('workPlan.quarter')" v-if="!isSciencePlan && !isWorkSchedule">
-              <template #body="{ node }">
-                {{ initQuarter(node.quarter) }}
-              </template>
-            </Column>
-            <Column field="responsible_executor" :header="$t('workPlan.respExecutor')" v-if="isOperPlan">
-              <template #body="{ node }">
-                {{ node.responsible_executor }}
-              </template>
-            </Column>
-            <Column field="fullName" :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')"
-                    v-if="!isWorkSchedule">
-              <template #body="{ node }">
-                <div v-if="node.user && node.user.length > 2">
-                  <Button type="button" @click="showRespUsers($event, node)" class="p-button-text"
-                          icon="fa-solid fa-people-group fa-xl" label=""/>
-                  <OverlayPanel ref="op" @hide="closeOverlay">
-                    <p v-for="item in selectedEvent.user" :key="item.id">{{ item.user.fullName }}</p>
-                  </OverlayPanel>
-                </div>
-                <div v-else>
-                  <p v-for="item in node.user" :key="item.id">{{ item.user.fullName }}</p>
-                </div>
-              </template>
-            </Column>
-            <Column field="supporting_docs" v-if="plan && isOperPlan" :header="$t('common.suppDocs')">
-              <template #body="{ node }">
-                {{ node.supporting_docs }}
-              </template>
-            </Column>
-            <Column field="result" :header="isOperPlan ? $t('common.additionalInfo') : $t('common.result')"
-                    style="width: 15%;" v-if="!isWorkSchedule">
-              <template #body="{ node }">
-                <div v-if="node.result && node.result.length > 100">
-                  {{ node.result_short }}
-                  <!--              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-text" icon="fa-solid fa-eye" label="" />-->
-                  <a href="javascript:void(0);"
-                     @click="toggle('event-final-result', $event, node)">{{ $t('common.showMore').toLowerCase() }}</a>
-                  <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px"
-                                :breakpoints="{ '960px': '75vw' }" @hide="closeOverlay">
-                    <div>{{ selectedEvent.result }}</div>
-                  </OverlayPanel>
-                </div>
-                <div v-else>
-                  {{ node.result }}
-                </div>
-              </template>
-            </Column>
-            <Column field="status" :header="$t('common.status')" style="text-align: center;">
-              <template #body="{ node }">
+    <div class="card" v-if="plan && planDoc && !isWorkSchedule">
+      <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
+                 @nodeExpand="onExpand" scrollHeight="flex"
+                 responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
+                 :paginator="true" :rows="10" :total-records="total"
+                 @page="onPage($event)">
+        <template #empty> {{ $t('common.noData') }}</template>
+        <template #loading> {{ $t('common.loading') }}</template>
+        <Column field="event_name" :header="$t('workPlan.eventName')" :expander="true" style="min-width:300px;width: 30%;">
+          <template #body="{ node }">
+            <span><i class="fa-solid fa-folder"></i>&nbsp;{{ node.event_name }}</span>
+          </template>
+        </Column>
+        <Column field="start_date" :header="$t('common.startDate')" v-if="isSciencePlan" style="max-width: 100px">
+          <template #body="{ node }">
+            {{ formatDateMoment(node.start_date) }}
+          </template>
+        </Column>
+        <Column field="end_date" :header="$t('common.endDate')" v-if="isSciencePlan" style="max-width: 100px">
+          <template #body="{ node }">
+            {{ formatDateMoment(node.end_date) }}
+          </template>
+        </Column>
+        <Column field="unit" :header="$t('common.unit')" v-if="isOperPlan" style="max-width: 100px">
+          <template #body="{ node }">
+            {{ node.unit }}
+          </template>
+        </Column>
+        <Column field="plan_number" :header="$t('common.planNumber')" v-if="isOperPlan" style="max-width:100px">
+          <template #body="{ node }">
+            {{ node.plan_number }}
+          </template>
+        </Column>
+        <Column field="fact" :header="$t('common.fact')" v-if="isOperPlan">
+          <template #body="{ node }">
+            <span v-if="node.fact">{{ node.fact }}</span>
+          </template>
+        </Column>
+        <Column field="quarter" :header="$t('workPlan.quarter')" v-if="!isSciencePlan">
+          <template #body="{ node }">
+            {{ initQuarter(node.quarter) }}
+          </template>
+        </Column>
+        <Column field="responsible_executor" :header="$t('workPlan.respExecutor')" v-if="isOperPlan">
+          <template #body="{ node }">
+            {{ node.responsible_executor }}
+          </template>
+        </Column>
+        <Column field="fullName" :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
+          <template #body="{ node }">
+            <div v-if="node.user && node.user.length > 2">
+              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text"
+                      icon="fa-solid fa-people-group fa-xl" label=""/>
+              <OverlayPanel ref="op" @hide="closeOverlay">
+                <p v-for="item in selectedEvent.user" :key="item.id">{{ item.user.fullName }}</p>
+              </OverlayPanel>
+            </div>
+            <div v-else>
+              <p v-for="item in node.user" :key="item.id">{{ item.user.fullName }}</p>
+            </div>
+          </template>
+        </Column>
+        <Column field="supporting_docs" v-if="plan && isOperPlan" :header="$t('common.suppDocs')">
+          <template #body="{ node }">
+            {{ node.supporting_docs }}
+          </template>
+        </Column>
+        <Column field="result" :header="isOperPlan ? $t('common.additionalInfo') : $t('common.result')"
+                style="width: 15%;">
+          <template #body="{ node }">
+            <div v-if="node.result && node.result.length > 100">
+              {{ node.result_short }}
+              <!--              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-text" icon="fa-solid fa-eye" label="" />-->
+              <a href="javascript:void(0);"
+                 @click="toggle('event-final-result', $event, node)">{{ $t('common.showMore').toLowerCase() }}</a>
+              <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px"
+                            :breakpoints="{ '960px': '75vw' }" @hide="closeOverlay">
+                <div>{{ selectedEvent.result }}</div>
+              </OverlayPanel>
+            </div>
+            <div v-else>
+              {{ node.result }}
+            </div>
+          </template>
+        </Column>
+        <Column field="status" :header="$t('common.status')" style="text-align: center;">
+          <template #body="{ node }">
             <span :class="'customer-badge status-' + node.status.work_plan_event_status_id">{{
                 $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru :
                     node.status.name_en
               }}</span>
 
-              </template>
-            </Column>
-            <Column field="actions" header="" style="text-align: center;">
-              <template #body="{ node }">
-                <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
-              </template>
-            </Column>
-          </TreeTable>
-        </div>
-      </TabPanel>
-      <TabPanel :header="$t('common.members')" v-if="isWorkSchedule">
-        <div class="card" v-if="members">
-          <div class="flex justify-end">
-            <div style="margin-bottom: 10px; width: 100%;"/>
-
-            <IconField>
-              <InputIcon class="pi pi-search"/>
-              <InputText v-model="searchQuery" @input="filterData" :placeholder="$t('common.search')"/>
-            </IconField>
-          </div>
-
-
-          <TreeTable :value="filteredMembers"
-                     scrollHeight="flex"
-                     responsiveLayout="scroll"
-                     :resizableColumns="true"
-                     columnResizeMode="fit"
-                     showGridlines
-                     :paginator="true"
-                     :rows="10"
-                     :rowsPerPageOptions="[5, 10, 25]">
-            <template #empty> {{ $t('common.noData') }}</template>
-            <template #loading> {{ $t('common.loading') }}</template>
-
-            <Column field="fullName" :header="$t('common.fullName')" style="text-align: center; width: 40%;" sortable>
-              <template #body="{ node }">
-                <div style="text-align: left;">
-                  <p>{{ node.user.fullName }}</p>
-                </div>
-              </template>
-            </Column>
-            <Column field="actions" header="" style="text-align: center;">
-              <template #body="{ node }">
-                <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
-              </template>
-            </Column>
-          </TreeTable>
-        </div>
-      </TabPanel>
-    </TabView>
+          </template>
+        </Column>
+        <Column field="actions" header="" style="text-align: center;">
+          <template #body="{ node }">
+            <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
+          </template>
+        </Column>
+      </TreeTable>
+    </div>
+    <WorkPlanScheduleEventTree v-if="plan && planDoc && isWorkSchedule && members" :data="data" :loading="loading" :members="members"
+      :menus="initItems" :total="total" :isPlanCreator="isPlanCreator"
+    @expand="onExpand" @onToggle="actionsToggle" @onPage="onPage" />
 
   </div>
 
@@ -312,10 +244,12 @@ import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import DocState from "@/enum/docstates/index";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import WorkPlanAdd from "@/components/work_plan/WorkPlanAdd.vue";
+import WorkPlanScheduleEventTree from "@/components/work_plan/ table/WorkPlanScheduleEventTree.vue";
 
 export default {
   name: "WorkPlanEvent",
   components: {
+    WorkPlanScheduleEventTree,
     ToolbarMenu,
     CustomFileUpload,
     WorkPlanReportApprove,
@@ -864,6 +798,9 @@ export default {
     navigateToReports() {
       this.$router.push({name: 'WorkPlanReport', params: {id: this.work_plan_id}});
     },
+    navigateToJournalReports() {
+      this.$router.push({name: 'WorkPlanJournalReport', params: {id: this.work_plan_id, userId: this.loginedUserId}});
+    },
     isUserApproval(data) {
       let userApproval = false;
       data.user.forEach(e => {
@@ -1325,6 +1262,7 @@ export default {
     // },
     toolbarMenus() {
       return [
+
         {
           label: this.$t('common.addMember'),
           icon: 'pi pi-plus',
@@ -1379,7 +1317,7 @@ export default {
         },
         {
           label: this.$t('workPlan.reports'),
-          visible: this.isFinish && !this.isSciencePlan && (this.isApproval || this.isPlanCreator || this.isAdmin),
+          visible: this.isFinish && this.isWorkSchedule && !this.isSciencePlan && (this.isApproval || this.isPlanCreator || this.isAdmin),
           command: () => {
             this.navigateToReports()
           }
@@ -1389,6 +1327,14 @@ export default {
           visible: this.isFinish && this.isPlanCreator && this.isPlanApproved && this.isSciencePlan,
           command: () => {
             this.confirmGenerateScienceReport()
+          }
+        },
+        {
+          label: this.$t('workPlan.journalReports'),
+          // icon: 'pi pi-plus',
+          visible: this.isFinish && this.isWorkSchedule && this.isPlanApproved,
+          command: () => {
+            this.navigateToJournalReports()
           }
         },
         {
