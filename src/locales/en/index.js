@@ -2054,5 +2054,17 @@ export default {
         invalidEmail: "Invalid email address",
         invalidPhoneNumber: "Invalid phone number. It should contain 11 digits",
         applicationRequirement: "To apply for the position, it is necessary to provide a valid email address or phone number.",
+    },
+    telegram: {
+        author: 'author',
+        question: 'Question',
+        anwers: 'Anwers',
+        questionkz: 'Enter a question in Kazakh',
+        questionen: 'Enter a question in English',
+        questionru: 'Enter a question in Russian',
+        anwerskz: 'Enter a answer in Kazakh',
+        anwersen: 'Enter a answer in English',
+        anwersru: 'Enter a answer in Russian',
+        crAndUpdEdu: 'Creating and editing a question and answer'
     }
 }

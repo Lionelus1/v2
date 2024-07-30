@@ -42,6 +42,24 @@ const ifMainAdministrator = (to, from, next) => {
     }
 }
 
+const ifUserRoles = (to, from, next) => {
+    if (store.getters.isAuthenticated) {
+        const roles = to.meta.roles;
+        if (roles.some(role => store.getters.userRoles.includes(role))) {
+            next();
+            return;
+        } else {
+            next('/access');
+            return;
+        }
+    } else {
+        store.dispatch("solveAttemptedUrl", to);
+        next('/login');
+        return;
+    }
+}
+
+
 const routes = [
     {
         path: '/login',
@@ -589,6 +607,14 @@ const routes = [
                 component: load('documents/certificates/Template'),
                 beforeEnter: ifAuthenticated,
             },
+            {
+                path: '/telegram',
+                name: 'CertificateTemplate',
+                component: load('telegram/Questions'),
+                beforeEnter: ifUserRoles,
+                meta: { roles: ['telegram', 'main_administrator'] } // Здесь указываем роли
+            },
+            
 
             {
                 path: '/helpdesk',
