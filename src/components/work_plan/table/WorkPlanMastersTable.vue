@@ -54,7 +54,7 @@
 import ActionButton from "@/components/ActionButton.vue";
 import moment from "moment";
 
-const props = defineProps(['data', 'items'])
+const props = defineProps(['data', 'items', 'total', 'loading'])
 const emit = defineEmits('onToggle', 'onPage', 'onExpand')
 
 function formatDateMoment(date, showHour) {

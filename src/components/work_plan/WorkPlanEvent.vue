@@ -34,7 +34,7 @@
     <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
 
 
-    <WorkPlanMastersTable v-if="plan && planDoc && isMastersPlan" :data="data" :items="initItems" @onPage="onPage" @onExpand="onExpand" @onToggle="actionsToggle" />
+    <WorkPlanMastersTable v-if="plan && planDoc && isMastersPlan" :data="data" :items="initItems" @onPage="onPage" @onExpand="onExpand" @onToggle="actionsToggle" :total="total" :loading="loading"/>
   </div>
 
   <Sidebar v-model:visible="dialog.planView.state" position="right" class="w-6" style="overflow-y: scroll" @hide="hideDialog(dialog.planView)">
