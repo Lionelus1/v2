@@ -16,7 +16,13 @@
               <Chip class="mr-2 custom-chip" :label="responsible.fullName"/>
             </span>
           </div>
-
+        </template>
+      </Column>
+      <Column v-bind:header="$t('queue.queueType')">
+        <template #body="slotProps">
+          <span v-if="slotProps.node.reservation === true">
+            {{$t('queue.reservation')}}
+          </span>
         </template>
       </Column>
       <Column>
@@ -66,8 +72,15 @@
             <Button
               icon="pi pi-fw pi-qrcode"
               v-tooltip.bottom="'QR'"
+              v-if="slotProps.node.queue_qr === true"
               class="p-button-rounded p-button-info mr-2"
               @click="itemID(slotProps.node.key)" />
+            <Button
+              icon="pi pi-calendar-clock"
+              v-tooltip.bottom="$t('queue.mode')"
+              v-if="slotProps.node.queue_mode === true && slotProps.node.createdUserId === loginedUser.userID"
+              class="p-button-rounded p-button-help mr-2"
+              @click="$router.push('/queue/mode/'+ slotProps.node.key )" />
         </template>
       </Column>              
     </TreeTable> 
@@ -107,7 +120,18 @@
           <FindUser v-model="queue.responsibles" :userType="2"></FindUser>
           <small class="p-error" v-if="!validation.responsibles && submitted">{{ $t("common.requiredField") }}</small>
       </div>
-              
+      <div v-if="currentNode && currentNode.parentId" class="field-checkbox mt-3">
+        <Checkbox id="landing" name="landing" v-model="queue.reservation" :binary="true"/>
+        <label for="landing">{{$t('queue.reservation')}}</label>
+      </div>
+      <div class="field-checkbox mt-3">
+        <Checkbox id="landing" name="landing" v-model="queue.queue_qr" :binary="true"/>
+        <label for="landing">QR</label>
+      </div>
+      <div class="field-checkbox mt-3">
+        <Checkbox id="landing" name="landing" v-model="queue.queue_mode" :binary="true"/>
+        <label for="landing">{{$t('queue.mode')}}</label>
+      </div>
       <template #footer>
         <Button
           v-bind:label="$t('common.save')"
@@ -303,6 +327,7 @@ export default {
 
     editQueue(node) {
       // alert(resId);
+      this.currentNode = node;
       this.queue = JSON.parse(JSON.stringify(node))
       this.editVisible = true;
       this.submitted = false;   
@@ -423,7 +448,7 @@ export default {
   },
   created() {
     this.loginedUser = this.$store.state.loginedUser;
-    this.getQueue(null, null); 
+    this.getQueue(null, null);
   },
 
 }

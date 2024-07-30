@@ -5,7 +5,7 @@ export function getShortDateString(date) {
         return ""
     }
 
-    return moment(new Date(date)).utc().format("DD.MM.YYYY")
+    return moment(new Date(date)).utc(true).format("DD.MM.YYYY")
 }
 
 export function getLongDateString(date) {
@@ -13,5 +13,5 @@ export function getLongDateString(date) {
         return ""
     }
     
-    return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm")
+    return moment(new Date(date)).utc(true).format("DD.MM.YYYY HH:mm")
 }

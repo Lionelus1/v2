@@ -12,7 +12,7 @@ export class MenuService {
           {
             label: $t("contracts.template"),
             icon: "pi pi-fw pi-book",
-            to: "/documents/doctemplate",
+            to: "/documents/templates",
             visible: this.isEnuWorker(),
           },
           {

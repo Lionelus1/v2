@@ -178,7 +178,7 @@ export default {
       this.folderTableLoading = true
 
       api.post('/folders', {
-        folderType: Enum.FolderType.References,
+        folderTypes: [Enum.FolderType.References],
         page: this.folderPage,
         rows: this.folderRows,
         parentId: this.parentFolder ? this.parentFolder.id : null,

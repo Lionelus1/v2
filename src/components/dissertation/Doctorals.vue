@@ -16,7 +16,7 @@
         <template #end>
           <Button v-if="findRole(null, 'dissertation_council_secretary')" isSecretary icon="pi pi-plus"
             class="p-button-success mr-2" @click="showAddCouncilDialog()" />
-          <Button v-if="isMainAdministrator" :disabled="!selectedDoctoral" icon="pi pi-sync" class="mr-2"
+          <Button v-if="isMainAdministrator || isDissertationChief" :disabled="!selectedDoctoral" icon="pi pi-sync" class="mr-2"
             severity="help" @click="showDialog(dialog.editDissertation)" v-tooltip.top="$t('common.edit')" />
           <Button v-if="canShowUpdateDoctoral" :disabled="!selectedDoctoral" icon="pi pi-pencil" class="mr-2"
             @click="showDialog(dialog.updateDoctoral)" v-tooltip.top="$t('common.edit')" />
@@ -805,7 +805,8 @@
               @input="validateVideoLink" v-model="selectedDoctoral.dissertation.video_link" />
             <span v-if="!isValidYoutubeLink" style="color: red;">Please enter a valid YouTube video link.</span>
           </div>
-          <div class="col-12 pb-2 lg:col-12 md:col-6 mb-lg-0" v-if="(selectedDoctoral?.dissertation?.html_kz !== null && selectedDoctoral?.dissertation?.html_kz.length > 0 && selectedDoctoral?.dissertation?.event_id !== null) || (selectedDoctoral?.dissertation?.html_ru !== null && selectedDoctoral?.dissertation?.html_ru.length > 0 && selectedDoctoral?.dissertation?.event_id !== null) || (selectedDoctoral?.dissertation?.html_en !== null && selectedDoctoral?.dissertation?.html_en.length > 0 && selectedDoctoral?.dissertation?.event_id !== null)">
+          <div v-if="isMainAdministrator">
+            <div class="col-12 pb-2 lg:col-12 md:col-6 mb-lg-0" v-if="(selectedDoctoral?.dissertation?.html_kz !== null && selectedDoctoral?.dissertation?.html_kz.length > 0 && selectedDoctoral?.dissertation?.event_id !== null) || (selectedDoctoral?.dissertation?.html_ru !== null && selectedDoctoral?.dissertation?.html_ru.length > 0 && selectedDoctoral?.dissertation?.event_id !== null) || (selectedDoctoral?.dissertation?.html_en !== null && selectedDoctoral?.dissertation?.html_en.length > 0 && selectedDoctoral?.dissertation?.event_id !== null)">
             <TabView>
               <TabPanel :header="$t('dissertation.event') + ' ' + $t('common.language.kz')">
                 <Textarea v-model="selectedDoctoral.dissertation.html_kz" rows="10" />
@@ -818,6 +819,8 @@
               </TabPanel>
             </TabView>
           </div>
+          </div>
+
           <Fieldset :legend="$t('workPlan.attachments')" class="col-12" toggleable>
             <div v-if="hasAttachments">
             <div class="field" v-if="selectedDoctoral?.dissertation?.abstract && selectedDoctoral?.dissertation?.abstract.length > 0 && selectedDoctoral?.dissertation?.abstractFileID && selectedDoctoral?.dissertation?.abstractFileID.length > 0">
@@ -2102,16 +2105,16 @@ export default {
     hasAttachments() {
       const dissertation = this.selectedDoctoral?.dissertation || {};
       return (
-        (dissertation.state === 0 && (
-          (dissertation.abstract && dissertation.abstract.length > 0 && dissertation.abstractFileID && dissertation.abstractFileID.length > 0) ||
+        
+          ((dissertation.abstract && dissertation.abstract.length > 0 && dissertation.abstractFileID && dissertation.abstractFileID.length > 0) ||
           (dissertation.disFile && dissertation.disFile.length > 0 && dissertation.disFileID && dissertation.disFileID.length > 0) ||
           (dissertation.swListFile && dissertation.swListFile.length > 0 && dissertation.swListFileID && dissertation.swListFileID.length > 0) ||
           (dissertation.scientificConsultantFile && dissertation.scientificConsultantFile.length > 0 && dissertation.scientificConsultantFileID && dissertation.scientificConsultantFileID.length > 0) ||
           (dissertation.foreignConsultantFile && dissertation.foreignConsultantFile.length > 0 && dissertation.foreignConsultantFileID && dissertation.foreignConsultantFileID.length > 0) ||
           (dissertation.commissionConclusionFile && dissertation.commissionConclusionFile.length > 0 && dissertation.commissionConclusionFileID && dissertation.commissionConclusionFileID.length > 0)
-        )) ||
+        ) ||
         (dissertation.state === 6 && dissertation.councilConclusionFile && dissertation.councilConclusionFile.length > 0 && dissertation.councilConclusionFileID && dissertation.councilConclusionFileID.length > 0) ||
-        (dissertation.state === 1 && (
+        (dissertation.state !== 0 && (
           (dissertation.reviewer1CommentFile && dissertation.reviewer1CommentFile.length > 0 && dissertation.reviewer1CommentFileID && dissertation.reviewer1CommentFileID.length > 0) ||
           (dissertation.reviewer2CommentFile && dissertation.reviewer2CommentFile.length > 0 && dissertation.reviewer2CommentFileID && dissertation.reviewer2CommentFileID.length > 0)
         ))

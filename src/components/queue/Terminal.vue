@@ -141,18 +141,11 @@ export default {
           headers: getHeader(),
         })
       .then(response => {
-        this.printVisibleStartedTime = Date.now()
-        this.queinfob64 = response.data
-        this.queinfo = this.b64toBlob(response.data)
-        this.ticketVisible = true
-        this.loading = false
-        setTimeout(() => {
-					if (this.ticketVisible && Date.now() - this.printVisibleStartedTime > 29000) {
-            this.ticketVisible = false;
-            this.selectDefaultParams()
-					}
-				}, 30000);
-      })      
+        const id = response.data.id
+        if(queue){
+          this.getRegisterQueue(queue,id)
+        }
+      })
       .catch((error) => {
         alert(error)
         this.loading = false;
@@ -166,7 +159,42 @@ export default {
         }
     });
     },
-    
+    getRegisterQueue(queue,id) {
+      this.selectedQueue = queue
+      this.loading = true
+      var req = {
+        queueID: queue.key, lang: this.selectedlanguage.code, id: id
+      }
+      api
+          .post("/queue/getRegisterService", req,  {
+            headers: getHeader(),
+          })
+          .then(response => {
+            this.printVisibleStartedTime = Date.now()
+            this.queinfob64 = response.data
+            this.queinfo = this.b64toBlob(response.data)
+            this.ticketVisible = true
+            this.loading = false
+            setTimeout(() => {
+              if (this.ticketVisible && Date.now() - this.printVisibleStartedTime > 29000) {
+                this.ticketVisible = false;
+                this.selectDefaultParams()
+              }
+            }, 30000);
+          })
+          .catch((error) => {
+            alert(error)
+            this.loading = false;
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadError") + ":\n" + error,
+              life: 3000,
+            });
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            }
+          });
+    },
   },
   created(){
     var parentID = parseInt(this.$route.params.id) ;      

@@ -28,7 +28,15 @@
 
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId == 2 || docInfo.docHistory.stateId == 6)" :disabled="hideDocSign" :header="$t('ncasigner.sign')">
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
+              && docInfo.docType === Enum.DocType.Contract" :header="$t('ncasigner.sign')">
+        <div class="flex justify-content-center">
+          <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve" :label="$t('common.action.approve')" :loading="loading" :disabled="hideDocApprove" />
+        </div>
+      </TabPanel>
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2  && !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
+                && docInfo.docType === Enum.DocType.Contract) || docInfo && docInfo.docHistory.stateId == 6" :disabled="hideDocSign"
+                :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel v-if="!$isMobile">
             <template #header>
@@ -71,7 +79,8 @@
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && ((docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
-        (docInfo.docType && (docInfo.docType === Enum.DocType.Contract))) || docInfo.docType === Enum.DocType.WorkPlan)" :header="$t('common.revision')"
+        (docInfo.docType && (docInfo.docType === Enum.DocType.Contract))) || docInfo.docType === Enum.DocType.WorkPlan
+        || docInfo.docType === Enum.DocType.DocTemplate)" :header="$t('common.revision')"
         :disabled="hideDocRevision">
         <div class="card">
           <label> {{ this.$t('common.comment') }} </label>
@@ -79,6 +88,28 @@
           <div class="flex justify-content-center">
             <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="revision" :label="$t('common.revision')" :loading="loading" />
           </div>
+        </div>
+      </TabPanel>
+      <TabPanel v-if="docInfo && (docInfo.docHistory.stateId == 2 || docInfo.docHistory.stateId == 6)
+                && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement &&
+                isSciadvisor()" :header="$t('common.deny')">
+        <label> {{ this.$t('common.comment') }} </label>
+        <InputText v-model="denyComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
+        <div class="flex justify-content-center">
+          <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="deny" :label="$t('common.deny')" :loading="loading" />
+        </div>
+      </TabPanel>
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2
+                && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement &&
+                isSciadvisor()" :header="$t('common.changeApprovals')"
+                :disabled="currentApprovalUsersLoading">
+        <div class="p-fluid mb-3">
+          <FindUser :userType="0" searchMode="local" v-model="currentApprovalUsers"></FindUser>
+        </div>
+        <div class="flex justify-content-center">
+          <Button icon="fa-solid fa-user-check" class="p-button-success md:col-3"
+                  @click="changeApprovals" :label="$t('common.change')" :loading="loading"
+                  :disabled="currentApprovalUsers.length < 1"/>
         </div>
       </TabPanel>
     </TabView>
@@ -154,9 +185,15 @@ export default {
       RolesEnum: RolesEnum,
 
       hideDocRevision: true,
+      hideDocApprove: true,
       revisionComment: null,
+      denyComment: null,
       mobileApp: null,
-      isIndivid: null
+      isIndivid: null,
+
+      currentApprovalStage: -1,
+      currentApprovalUsers: [],
+      currentApprovalUsersLoading: true,
     }
   },
   created() {
@@ -335,7 +372,7 @@ export default {
             this.isShow = true
           }
 
-          if (this.docInfo.docType === this.Enum.DocType.ScienceWorks) {
+          if (this.docInfo.docType === this.Enum.DocType.ScienceWorks || this.docInfo.folder && this.docInfo.folder.type === Enum.FolderType.Agreement) {
             this.getDocNew();
           }
         }
@@ -534,6 +571,17 @@ export default {
       }).then(res => {
         if (res.data.approvalStages) {
           for (let element of res.data.approvalStages) {
+            if (this.hideDocApprove) {
+              for (let i = 0; i < element.users.length; i++) {
+                if (element.users[i].userID === this.loginedUserId && element.usersApproved[i] == 0) {
+                  this.hideDocApprove = false;
+                  break;
+                }
+              }
+            }
+          }
+
+          for (let element of res.data.approvalStages) {
             console.log(element)
             if (!element.signatures) {
               continue;
@@ -542,7 +590,46 @@ export default {
             if (this.hideDocRevision) {
               this.hideDocRevision = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
             }
+
+            if (!element.users) {
+              continue;
+            }
+
+            if (this.hideDocRevision) {
+              for (let i = 0; i < element.users.length; i++) {
+                if (element.users[i].userID === this.loginedUserId && element.usersApproved[i] == 0) {
+                  this.hideDocRevision = false;
+                  break;
+                }
+              }
+            }
           }
+
+          for (let element of res.data.approvalStages) {
+            let allUsersApproved = true;
+
+            for (let appr of element.usersApproved) {
+              if (appr === 0) {
+                allUsersApproved = false;
+                break;
+              }
+            }
+
+            if (allUsersApproved) {
+              continue;
+            }
+
+            for (let i = 0; i < element.usersApproved.length; i++) {
+              if (element.usersApproved[i] === 0) {
+                this.currentApprovalUsers.push(element.users[i]);
+              }
+            }
+
+            this.currentApprovalStage = element.stage;
+            break;
+          }
+
+          this.currentApprovalUsersLoading = false;
         }
 
         this.loading = false;
@@ -558,7 +645,116 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       });
-    }
+    },
+    approve() {
+      this.$confirm.require({
+        message: this.$t("common.doYouWantApprove"),
+        header: this.$t("common.confirm"),
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'p-button p-button-success',
+        rejectClass: 'p-button p-button-danger',
+        accept: () => {
+          this.loading = true;
+
+          this.service.documentApproveV2({
+            uuid: this.docInfo.uuid,
+          }).then(res => {
+            this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+            location.reload()
+
+            this.loading = false;
+          }).catch(err => {
+            if (err.response && err.response.status == 401) {
+              this.$store.dispatch("logLout")
+            } else if (err.response && err.response.data && err.response.data.localized) {
+              this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+            } else {
+              console.log(err)
+              this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+            }
+
+            this.loading = false;
+          })
+        },
+      });
+    },
+    deny() {
+      if (this.denyComment === null || this.denyComment.length < 1) {
+        this.$toast.add({
+          severity: "error",
+          detail: this.$t("common.noComment"),
+          life: 3000,
+        })
+        return
+      }
+
+      this.loading = true
+      this.service.documentDenyV2({
+        comment: this.denyComment,
+        uuid: this.docInfo.uuid,
+      }).then(res => {
+        this.loading = false
+        // this.$emit('sentToRevision', this.revisionComment)
+        location.reload()
+      }).catch(err => {
+        if (err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+
+        this.$toast.add({
+          severity: "error",
+          detail: this.$t("common.message.saveError"),
+          life: 3000,
+        })
+
+        this.loading = false
+      })
+    },
+    isSciadvisor() {
+      for (let id in this.docInfo.params) {
+        let param = this.docInfo.params[id]
+        if (param.description === 'sciadvisor') {
+          if (param.value && param.value.data && param.value.data.userID === this.loginedUserId) {
+            return true
+          }
+          break
+        }
+      }
+      return false
+    },
+    changeApprovals() {
+      if (this.currentApprovalUsers.length < 1) {
+        return
+      }
+
+      let users = [];
+      for (let i = 0; i < this.currentApprovalUsers.length; i++) {
+        users.push(this.currentApprovalUsers[i].userID)
+      }
+
+      this.loading = true;
+
+      this.service.changeCurrentStageApprovals({
+        uuid: this.docInfo.uuid,
+        stage: this.currentApprovalStage,
+        users: users,
+      }).then(res => {
+        this.loading = false;
+
+        location.reload();
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath));
+        } else {
+          console.log(err)
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      });
+    },
   }
 }
 </script>

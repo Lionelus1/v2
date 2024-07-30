@@ -3,14 +3,20 @@
     <LanguageDropdown/>
   </div>
   <div class="card talon_bg">
-    <div :class="['flex', 'flex-column', 'm-auto', 'gap-2', {'text-center': !reservation, 'gap-4': !reservation,}]" v-if="currentStep === 1">
+    <Toast />
+    <div class="text-center flex flex-column gap-4 m-auto" v-if="currentStep === 1">
+      <Button class="justify-content-center p-button-lg" @click="queue(false)">{{ $t('queue.liveQueue') }}</Button>
+      <Button class="justify-content-center p-button-lg" @click="queue(true)">{{ $t('queue.choiceTime') }}</Button>
+    </div>
+    <div :class="['flex', 'flex-column', 'm-auto', 'gap-2', {'text-center': !reservation, 'gap-4': !reservation,}]" v-if="currentStep === 2">
       <template v-if="reservation">
         <h4 class="m-0">{{ $t('contact.lname') }}</h4>
         <InputText class="p-inputtext-lg" v-model="lastName"/>
         <h4 class="m-0">{{ $t('common.name') }}</h4>
         <InputText class="p-inputtext-lg" v-model="name"/>
         <h4 class="m-0">Email</h4>
-        <InputText class="p-inputtext-lg" v-model="email"/>
+        <InputText class="p-inputtext-lg" v-model="email" @input="validateEmail" type="email"/>
+        <span v-if="emailError" style="color: red">{{ emailError }}</span>
       </template>
       <h4 class="m-0">{{ $t('contact.phone') }}</h4>
       <InputMask class="p-inputtext-lg" v-model="phoneNumber"
@@ -19,22 +25,10 @@
         {{ $t('common.continue') }}
       </Button>
     </div>
-    <template v-if="currentStep === 4">
-      <div class="card">
-        <Dropdown @change="changeQueues" v-model="selectedQueue" :options="queues" option-label="queueNamekz" :placeholder="$t('common.select')"
-                  class="p-inputtext-lg w-full mb-4"/>
-        <Dropdown v-if="selectDayBool" @change="changeDay" v-model="selectedDay" :options="futureDays" optionLabel="date" placeholder="Күн"
-                  class="p-inputtext-lg w-full mb-4"/>
-        <Dropdown v-if="selectTimeBool" @change="changeTime" v-model="selectedTime" :options="hoursList" placeholder="Уақыт"
-                  class="p-inputtext-lg w-full mb-4"/>
-        <Button v-if="reservationBtn" class="justify-content-center p-button-lg w-full"
-                @click="registerQueue(selectedItem.value.key, selectedItem.value)">{{ $t('Брондау') }}
-        </Button>
-      </div>
-    </template>
-    <div class="m-auto flex flex-column gap-3" v-if="currentStep === 2">
+
+    <div class="m-auto flex flex-column gap-3" v-if="currentStep === 3">
       <template v-if="!reservation">
-        <Button class="p-button-lg text-left p-3" style="width: 100%" v-for="i of queues" :key="i" @click="registerQueue(i.key,i)">
+        <Button :disabled="disabledRezervation" class="p-button-lg text-left p-3" style="width: 100%" v-for="i of queues" :key="i" @click="registerQueue(i.key,i)">
           {{
             $i18n.locale === "kz"
                 ? i.queueNamekz
@@ -44,9 +38,27 @@
           }}
         </Button>
       </template>
-
+      <template v-if="reservation">
+        <Dropdown @change="changeQueues" v-model="selectedQueue" :options="queues"
+                  :option-label="$i18n.locale === 'kz'
+        ? 'queueNamekz'
+        : $i18n.locale === 'ru'
+        ? 'queueNameru'
+        : 'queueNameen'" :placeholder="$t('common.select')"
+                  class="p-inputtext-lg w-full mb-4"/>
+        <Dropdown v-if="selectDayBool" @change="changeDay" v-model="selectedDay" :options="daysList" :option-label="formatDay" :placeholder="$t('queue.day')"
+                  class="p-inputtext-lg w-full mb-4"/>
+        <Dropdown v-if="selectTimeBool" @change="changeTime" v-model="selectedTime" :options="timeList" :option-label="formatTime" :placeholder="$t('queue.time')"
+                  class="p-inputtext-lg w-full mb-4"/>
+        <Button v-if="reservationBtn" class="justify-content-center p-button-lg w-full"
+                @click="registerQueue(selectedItem.value.key, selectedItem.value)" :disabled="disabledRezervation">{{ $t('queue.reserve') }}
+        </Button>
+      </template>
     </div>
-    <div v-if="currentStep === 3">
+    <div class="flex justify-content-center">
+      <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="2" style="width: 50px;"/>
+    </div>
+    <div v-if="currentStep === 4">
       <div class="relative">
         <div class="talon">
           <template v-if="queinfo">
@@ -139,23 +151,29 @@
                 <div class="dashed text-left">
                   <span v-if="locale === 'kz'">Құрметті </span>
                   <span v-if="locale === 'ru'">Уважаемый(-ая) </span>
-                  <span v-if="locale === 'en'"> </span>
-                  <b>{{ lastName + ' ' + name }} </b>
+                  <span v-if="locale === 'en'">Dear </span>
+                  <b>{{ queinfo.last_name + ' ' + queinfo.first_name }} </b>
                   <span v-if="locale === 'kz'">, сіз кезекке сәтті жазылдыңыз!</span>
                   <span v-if="locale === 'ru'">, вы успешно записались!</span>
-                  <span v-if="locale === 'en'"> </span>
+                  <span v-if="locale === 'en'">, you have successfully registered! </span>
                 </div>
                 <div class="dashed text-left">
                   <span v-if="locale === 'kz'">Күні: </span>
                   <span v-if="locale === 'ru'">Дата: </span>
                   <span v-if="locale === 'en'">Day: </span>
-                  <b>{{ selectedDay }}</b>
+                  <b>{{ queinfo.day }}</b>
                 </div>
                 <div class="dashed text-left">
                   <span v-if="locale === 'kz'">Уақыты: </span>
                   <span v-if="locale === 'ru'">Время: </span>
                   <span v-if="locale === 'en'">Time: </span>
-                  <b>{{ selectedTime }}</b>
+                  <b>{{ queinfo.time }}</b>
+                </div>
+                <div class="dashed text-left">
+                  <span v-if="locale === 'kz'">Қабылдайтын оператор: </span>
+                  <span v-if="locale === 'ru'">Принимающий оператор: </span>
+                  <span v-if="locale === 'en'">Receiving operator: </span>
+                  <b>{{ queinfo.queueName }}</b>
                 </div>
                 <!--                <div class="flex justify-content-between font-bold">
                                   <div>{{ talonDate }}</div>
@@ -165,10 +183,10 @@
             </template>
             <div class="dots"></div>
           </template>
-          <ProgressSpinner v-else class="progress-spinner" strokeWidth="2" style="width: 50px;"/>
+          <div v-if="!queinfo">{{ t('common.noData') }}</div>
         </div>
-        <div class="talon_list">
-          <div v-if="!reservation" class="flex justify-content-between ml-5 mb-2">
+        <div class="talon_list" v-if="!reservation">
+          <div class="flex justify-content-between ml-5 mb-2">
             <div>№</div>
             <div v-if="locale === 'kz'">Терезе</div>
             <div v-if="locale === 'ru'">Окно</div>
@@ -189,7 +207,10 @@
             </div>
           </template>
         </div>
-        <div style="width: 90%; margin: auto">
+        <div style="width: 90%; margin: auto"  v-if="reservation">
+        <InlineMessage class="mb-4" severity="info">{{ $t('queue.emailMsg') }}</InlineMessage>
+        </div>
+          <div style="width: 90%; margin: auto">
           <Button v-if="!called" class="p-button-lg p-button-outlined justify-content-center w-full" style="border-radius: 8px;color: red !important;
     background: rgba(255, 0, 0, 0.15);"
                   @click="refusalVisible = true">
@@ -215,7 +236,7 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref, watch} from "vue";
+import {onMounted, ref, watch} from "vue";
 import axios from "axios";
 import {getHeader, serverUrl, smartEnuApi} from "@/config/config";
 import {useRoute} from "vue-router";
@@ -223,9 +244,10 @@ import {useI18n} from "vue-i18n";
 import moment from "moment";
 import io from "socket.io-client";
 import LanguageDropdown from "@/LanguageDropdown.vue";
-//import {socket} from "@/main";
+import {useToast} from "primevue/usetoast";
 
 const {t, locale} = useI18n()
+const toast = useToast()
 const route = useRoute()
 const parentId = ref(parseInt(route.params.id))
 const queues = ref();
@@ -233,7 +255,6 @@ const called = ref(false);
 const phoneNumber = ref('');
 const isDisabled = ref(true);
 const queinfo = ref();
-const queError = ref();
 const queuesWS = ref([]);
 const currentStep = ref(1);
 const reservation = ref(false);
@@ -248,15 +269,16 @@ const categoryName = ref()
 const name = ref('');
 const lastName = ref('');
 const email = ref('');
+const emailBool = ref(false);
 const selectedQueue = ref();
 const selectedDay = ref('');
 const selectDayBool = ref(false);
 const selectedTime = ref('');
 const selectTimeBool = ref(false);
 const reservationBtn = ref(false);
+const disabledRezervation = ref(false);
 const selectedItem = ref();
-const daysOfWeek = ['ВС', 'ПН', 'ВТ', 'СР', 'ЧТ', 'ПТ', 'СБ'];
-const futureDays = ref([]);
+const daysList = ref([]);
 let options = {}
 let url = smartEnuApi
 if (process.env.NODE_ENV === 'production') {
@@ -264,76 +286,66 @@ if (process.env.NODE_ENV === 'production') {
   options.path = "/api/socket.io"
 }
 const socket = io(url, options)
+const timeList = ref([]);
+const emailError = ref('');
+const queueId = ref();
+const loading = ref(false);
+
+const validateEmail = () => {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email.value) {
+    emailError.value = t('queue.emailReq');
+  } else if (!emailPattern.test(email.value)) {
+    emailError.value = t('queue.emailInvalid');
+  } else {
+    emailBool.value = true
+    emailError.value = '';
+  }
+};
 
 const getDays = (data) => {
   axios
-      .post(smartEnuApi + "/queue/queueAvailability", {id: data}, {
+      .post(smartEnuApi + "/queue/getAvailableDays", {id: data}, {
         headers: getHeader(),
       })
       .then((response) => {
-        console.log(response.data)
-        futureDays.value = response.data
-        //queues.value = response.data.queues
+        daysList.value = response.data
+      })
+      .catch((error) => {
+        console.log(error)
+      });
+}
+const getTimes = (data,date) => {
+  axios
+      .post(smartEnuApi + "/queue/getAvailableTimes", {id: data, date: date}, {
+        headers: getHeader(),
+      })
+      .then((response) => {
+        timeList.value = response.data
       })
       .catch((error) => {
         console.log(error)
       });
 }
 const changeQueues = (event) => {
-  console.log(event)
+  queueId.value = event.value.key
   getDays(event.value.key)
   selectDayBool.value = true
-  //selectedItem.value = event
+  selectedItem.value = event
 }
-const changeDay = () => {
+const changeDay = (event) => {
   selectTimeBool.value = true
+  getTimes(queueId.value,event.value)
 }
 
 const changeTime = () => {
   reservationBtn.value = true
 }
-const formatDate = (date) => {
-  const dayOfWeek = daysOfWeek[date.getDay()];
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${dayOfWeek}, ${day}.${month}.${year}`;
-};
-
-const calculateFutureDays = () => {
-  const currentDate = new Date();
-  const days = [];
-  for (let i = 0; i < 7; i++) {
-    const futureDate = new Date(currentDate);
-    futureDate.setDate(currentDate.getDate() + i);
-    days.push(formatDate(futureDate));
-  }
-  futureDays.value = days;
-};
-
-//calculateFutureDays();
-
-const hoursList = ref([]);
-
-const generateHoursList = computed(() => {
-  const hours = [];
-  for (let hour = 9; hour <= 18; hour++) {
-    hours.push(`${hour}:00`);
-    hours.push(`${hour}:20`);
-  }
-  return hours;
-});
-
-const updateHoursList = () => {
-  hoursList.value = generateHoursList.value;
-};
-
-updateHoursList();
 
 const validatePhoneNumber = (val) => {
   const phoneNumberRegex = /^\+7-\(\d{3}\)-\d{3}-\d{2}-\d{2}$/;
   if (reservation.value) {
-    if (name.value.trim() !== '' && lastName.value.trim() !== '') {
+    if (name.value.trim() !== '' && lastName.value.trim() !== '' && emailBool.value) {
       isDisabled.value = !phoneNumberRegex.test(val)
     }
   } else {
@@ -349,7 +361,7 @@ const sendNumber = () => {
   if (phoneNumber.value) {
     localStorage.setItem('phoneNumber', phoneNumber.value);
     localStorage.setItem('queueParentId', parentId.value);
-    currentStep.value = 2
+    currentStep.value = 3
   }
 }
 
@@ -376,54 +388,58 @@ watch(() => currentTicketWS.value, (newValue, oldValue) => {
   }
 });
 
-const splitDateTime = (dateTimeString) => {
-  const dateTime = moment(dateTimeString);
-
-  const formattedDate = dateTime.format('DD.MM.YYYY');
-  const formattedTime = dateTime.utc().format('HH:mm');
-
-  talonDate.value = formattedDate;
-  talonTime.value = formattedTime;
-  return talonTime.value
-};
+const combineDateTime = (date, timeSlot) => {
+  const datePart = date.split('T')[0];
+  return `${datePart}T${timeSlot}Z`;
+}
 const registerQueue = (queueId, queue) => {
+  loading.value = true
+  disabledRezervation.value = true
   if (localStorage.getItem('phoneNumber')) {
     localStorage.setItem('queueKey', queueId);
     if (queue) {
       localStorage.setItem('queueCategory', JSON.stringify(queue));
     }
-
     categoryName.value = JSON.parse(localStorage.getItem('queueCategory'))
     const phoneNumber = localStorage.getItem('phoneNumber')
     const req = {
-      queueID: queueId, lang: locale.value, phoneNumber: phoneNumber
+      queueID: queueId, lang: locale.value, phoneNumber: phoneNumber, queue_name: locale.value === "kz"
+          ? categoryName.value.queueNamekz
+          : locale.value === "ru"
+              ? categoryName.value.queueNameru
+              : categoryName.value.queueNameen
     }
-    if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && selectedDay.value && selectedTime.value) {
-      req.lastName = lastName.value
-      req.firstName = name.value
-      req.email = name.value
-      req.day = selectedDay.value
-      req.time = selectedTime.value
+    if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && email.value && selectedDay.value && selectedTime.value) {
+      if (queue) {
+        queue.reserveBool = true
+        localStorage.setItem('queueCategory', JSON.stringify(queue));
+      }
+      req.last_name = lastName.value
+      req.first_name = name.value
+      req.email = email.value
+      req.reservision_time = combineDateTime(selectedDay.value, selectedTime.value.time_slot)
     }
     axios
         .post(smartEnuApi + "/queue/registerService", req, {
           headers: getHeader(),
         })
         .then((response) => {
-          queinfo.value = response.data
-          currentTicketAPI.value = queinfo.value.queueNumber
-          const numMin = response.data.averageTime / 60
-          queinfo.value.averageTime = numMin.toFixed(0);
-          //splitDateTime(response.data.queueDate)
-          //getRegisterService()
-          currentStep.value = 3
+          getRegisterService(queueId)
+          loading.value = false
+          currentStep.value = 4
         })
         .catch((error) => {
           console.log(error)
+          toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
+          loading.value = false
+          timeList.value = []
+          currentStep.value = 1
+          disabledRezervation.value = false
         });
   }
 }
 const getRegisterService = (queueId, queue) => {
+  loading.value = true
   if (localStorage.getItem('phoneNumber')) {
     localStorage.setItem('queueKey', queueId);
     if (queue) {
@@ -435,27 +451,34 @@ const getRegisterService = (queueId, queue) => {
     const req = {
       phoneNumber: phoneNumber
     }
-    if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && selectedDay.value && selectedTime.value) {
+    if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && email.value && selectedDay.value && selectedTime.value) {
+      req.queueID = queueId
       req.lastName = lastName.value
       req.firstName = name.value
-      req.email = name.value
-      req.day = selectedDay.value
-      req.time = selectedTime.value
+      req.email = email.value
+      req.reservision_time = combineDateTime(selectedDay.value, selectedTime.value.time_slot)
     }
     axios
         .post(smartEnuApi + "/queue/getRegisterService", req, {
           headers: getHeader(),
         })
         .then((response) => {
+          response.data.time = new Date(response.data.reservation_time).toISOString().substring(11, 16);
+          response.data.day = new Date(response.data.reservation_time).toISOString().substring(0, 10);
           queinfo.value = response.data
           currentTicketAPI.value = queinfo.value.queueNumber
           const numMin = response.data.averageTime / 60
           queinfo.value.averageTime = numMin.toFixed(0);
           //splitDateTime(response.data.queueDate)
-          currentStep.value = 3
+          loading.value = false
+          currentStep.value = 4
         })
         .catch((error) => {
           console.log(error)
+          toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
+          loading.value = false
+          currentStep.value = 1
+          disabledRezervation.value = false
         });
   }
 }
@@ -472,6 +495,7 @@ const refusal = () => {
         refusalVisible.value = false
         localStorage.removeItem('queueKey')
         currentStep.value = 1
+        disabledRezervation.value = false
       })
       .catch((error) => {
         console.log(error)
@@ -499,15 +523,27 @@ const connected = () => {
   },500)
 }
 connected()
-
+const formatDay = (date) => {
+  return moment(new Date(date)).utc().format("YYYY-MM-DD");
+}
+const formatTime= (date) => {
+  return date.time_slot.substring(0, 5);
+}
 onMounted(() => {
   if (parentId.value !== parseInt(localStorage.getItem('queueParentId'))) {
     localStorage.removeItem('phoneNumber')
   }
   if (localStorage.getItem('phoneNumber') !== null && localStorage.getItem('queueKey') !== null && (parentId.value === parseInt(localStorage.getItem('queueParentId')))) {
-    registerQueue(parseInt(localStorage.getItem('queueKey')), event)
-    //getRegisterService(parseInt(localStorage.getItem('queueKey')), event)
-    currentStep.value = 3
+    //registerQueue(parseInt(localStorage.getItem('queueKey')), event)
+    getRegisterService(parseInt(localStorage.getItem('queueKey')), event)
+    const reserveStr = localStorage.getItem('queueCategory')
+    const reserveObj = JSON.parse(reserveStr);
+    if (reserveStr && reserveObj.reserveBool){
+      reservation.value = true
+      currentStep.value = 4
+    }else {
+      currentStep.value = 4
+    }
   } else if (localStorage.getItem('phoneNumber') !== null) {
     currentStep.value = 1
   }
@@ -515,12 +551,6 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.talon_bg {
-
-  //height: 100vh;
-  //padding-top: 3em;
-}
-
 .talon {
   min-height: 300px;
   position: relative;
@@ -544,7 +574,6 @@ onMounted(() => {
 
   .dots {
     margin: 20px 0;
-    //border-bottom: 4px dotted #000e39;
     position: relative;
     bottom: 170px;
   }
@@ -556,7 +585,6 @@ onMounted(() => {
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    //background: #000e39;
     padding: 5px;
     font-weight: 600;
   }
@@ -569,7 +597,6 @@ onMounted(() => {
   .bg {
     margin-top: 20px;
     background: #2cc511;
-    //border: 2px solid #ccc;
     box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px, rgba(0, 0, 0, 0.24) 0 1px 2px;
     border-radius: 8px;
     padding-bottom: 30px;
@@ -602,7 +629,6 @@ onMounted(() => {
 .dashed {
   margin: 10px 0;
   padding: 5px 0;
-  //border-bottom: 2px dashed #ccc;
 }
 
 .talon_list {
@@ -616,7 +642,6 @@ onMounted(() => {
     font-size: 20px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
-    //box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   }
 
   .blinking {
