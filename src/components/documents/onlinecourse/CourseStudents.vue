@@ -798,8 +798,8 @@
       loading.value = false
     }).catch(err => {
       loading.value=false
-      if (err.response.status === 404) {
-        toast.add({severity: 'error', summary: t(err.response.data.localizedPath), life: 3000})
+      if (err?.response?.status === 404) {
+        toast.add({severity: 'error', summary: t(err?.response?.data.localizedPath), life: 3000})
       } else {
         toast.add({severity: 'error', summary: t('common.error'), life: 3000})
       }
