@@ -609,10 +609,10 @@ const routes = [
             },
             {
                 path: '/telegram',
-                name: 'CertificateTemplate',
+                name: 'TelegramComponent',
                 component: load('telegram/Questions'),
                 beforeEnter: ifUserRoles,
-                meta: { roles: ['telegram', 'main_administrator'] } // Здесь указываем роли
+                meta: { roles: ['telegram'] } // Здесь указываем роли
             },
             
 
