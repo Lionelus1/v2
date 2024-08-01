@@ -333,6 +333,9 @@ export default {
       this.formValid = [];
       this.getGuide();
       this.role = this.findRole(null, "manual_moderator")
+    },
+    '$i18n.locale'(newLocale, oldLocale) {
+      this.getGuide();
     }
   }
 
