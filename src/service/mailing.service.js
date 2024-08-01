@@ -15,3 +15,7 @@ export class MailingService {
         return api.post("/mailing/getMailingByID",{ mailingId: mailingId }, {headers: getHeader() });
     }
 }
+
+// display: flex;
+// flex-direction: column;
+// align-items: center;
