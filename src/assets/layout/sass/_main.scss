@@ -108,6 +108,11 @@ a {
             cursor: pointer;
         }
     }
+    .accordion_icon.rotate {
+        svg{
+            transform: rotate(180deg);
+        }
+    }
 }
 .customer-badge {
     border-radius: 2px;
