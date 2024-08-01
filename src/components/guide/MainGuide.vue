@@ -296,6 +296,7 @@ export default {
       return result;
     },
     openAccordion(event) {
+
       let accordionNode = event.target.closest('accordion');
       if (accordionNode) {
         let bodyNode = accordionNode.querySelector('.body');
