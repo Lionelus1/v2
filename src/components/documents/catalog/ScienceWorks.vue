@@ -362,6 +362,7 @@ export default {
         Enum.ScienceWorkType.AuthorizedBodyPublications,
         Enum.ScienceWorkType.ConferenceProceedings,
         Enum.ScienceWorkType.AuthorCertificatesPatents,
+        Enum.ScienceWorkType.PublicationKOKSNVO,
         Enum.ScienceWorkType.Free],
 
       koksnvo: {

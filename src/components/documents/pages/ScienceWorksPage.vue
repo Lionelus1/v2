@@ -30,7 +30,7 @@
 
             <template v-if="'publicationCategory' === param.description">
               <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input"
-                        :option-label="publicationCategoriesLabel" :option-value="publicationCategoriesLabel"
+                        :option-label="publicationCategoriesLabel" :option-value="publicationCategoriesValue"
                         :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
               </Dropdown>
             </template>
@@ -597,6 +597,9 @@ export default {
     },
     publicationCategoriesLabel(data) {
       return this.$t('scienceWorks.publicationCategories.' + data);
+    },
+    publicationCategoriesValue(data) {
+      return data;
     },
   }
 }
