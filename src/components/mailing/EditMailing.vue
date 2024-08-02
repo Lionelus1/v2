@@ -139,7 +139,7 @@ const sendMailing = (statusID) => {
     <ToolbarMenu :data="menu" />
     <div class="editor-body">
       <div class="rich-text-editor">
-        <TinyEditor v-model="description" :height="300" />
+        <TinyEditor v-model="description" :height="700" />
       </div>
     </div>
   </div>

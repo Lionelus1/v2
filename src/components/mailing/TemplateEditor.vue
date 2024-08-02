@@ -3,7 +3,7 @@
     <ToolbarMenu :data="menu" />
     <div class="editor-body">
       <div class="rich-text-editor">
-        <TinyEditor v-model="templateContent" :height="300" @click="handleEditorClick" />
+        <TinyEditor ref="editor" v-model="templateContent" :height="700" @click="handleEditorClick" />
       </div>
     </div>
     <div class="field">
@@ -37,6 +37,7 @@
 </template>
 
 <script>
+import Editor from '@tinymce/tinymce-vue'
 import {fileRoute, smartEnuApi} from "@/config/config";
 import {MailingService} from "@/service/mailing.service"
 import { useToast } from "primevue/usetoast";
@@ -71,6 +72,7 @@ export default {
       main_image_file_url: '',
       main_image_id: 0,
       mailingService: new MailingService(),
+      isContentChanged: false,
     };
   },
   methods: {
@@ -117,6 +119,7 @@ export default {
         AdditionalFileID: this.additionalFileId,
         MainImagePath: this.main_image_file_url,
         AdditionalFilePath: this.additional_file_path,
+        isContentChanged: this.isContentChanged
       };
 
       this.mailingService.mailing(mailingData)
