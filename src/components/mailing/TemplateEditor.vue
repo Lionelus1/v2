@@ -43,6 +43,7 @@ import {MailingService} from "@/service/mailing.service"
 import { useToast } from "primevue/usetoast";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import { FileService } from "@/service/file.service";
+import tinyEditor from "@/components/TinyEditor.vue";
 
 const categories = [
   { id: 1, nameen: 'counterparty', namekz: 'білім алушы', nameru: 'Контрагенты' },
@@ -151,7 +152,7 @@ export default {
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(this.templateContent, 'text/html');
-        const mainContent = doc.querySelector('p:nth-of-type(2)'); // выбираем второй параграф как основной текст
+        const mainContent = doc.getElementById('main-content');
         if (mainContent) {
           mainContent.innerHTML = '';
           this.templateContent = doc.documentElement.outerHTML;
