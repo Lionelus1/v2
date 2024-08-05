@@ -300,6 +300,18 @@ export class MenuService {
                 label: $t('helpDesk.title'),
                 icon: 'pi pi-spin pi-cog',
                 to: '/helpdesk',
+            
+            },
+            {
+                label: $t('Telegram'),
+                icon: 'fa-brands fa-telegram',
+                to: '/telegram',
+                visible: this.findRole('telegram') || this.findRole('main_administrator')
+            },
+            {
+                label: $t('Hitvision'),
+                icon: 'fa-brands fa-telegram',
+                to: '/Hitvision',
             }
         ]
     }

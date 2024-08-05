@@ -1793,5 +1793,18 @@ export default {
             enteredIncorrectly: 'Entered incorrectly'
         },
 
-    }
+    },
+    telegram: {
+        author: 'author',
+        question: 'Question',
+        anwers: 'Answer',
+        questionkz: 'Enter a question in Kazakh',
+        questionen: 'Enter a question in English',
+        questionru: 'Enter a question in Russian',
+        anwerskz: 'Enter a answer in Kazakh',
+        anwersen: 'Enter a answer in English',
+        anwersru: 'Enter a answer in Russian',
+        crAndUpdEdu: 'Creating and editing a question and answer'
+
+    } 
 }

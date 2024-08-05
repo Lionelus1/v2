@@ -565,6 +565,19 @@ const routes = [
                 component: load('documents/certificates/Template'),
                 beforeEnter: ifAuthenticated,
             },
+            {
+                path: '/telegram',
+                name: 'TelegramComponent',
+                component: load('telegram/Questions'),
+                beforeEnter: ifUserRoles,
+                meta: { roles: ['telegram', 'main_administrator'] } // Здесь указываем роли
+            },
+            {
+                path: '/hitvision',
+                name: 'HitvisionTemplate',
+                component: load('hitvision/Hitvision'),
+                beforeEnter: ifAuthenticated,
+            },
 
             {
                 path: '/helpdesk',
