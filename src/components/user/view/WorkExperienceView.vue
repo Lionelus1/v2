@@ -1,3 +1,4 @@
+
 <template>
     
     <div v-if="isView.check">  
@@ -8,14 +9,14 @@
         <span >
             <DataTable selectionMode="single" v-model="laborActivity" :lazy="true" :value="laborActivities" :loading="loading" v-model:selection="laborActivity"
             :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange"> 
-            
-                <Column :field="'organizationName_'+locale()" :header="$t('common.organizationName')">
+                {{$i18n.locale}}
+                <Column :field="'organizationName_'+$i18n.locale" :header="$t('common.organizationName')">
                 </Column>
 
-                <Column  :field="'position_'+locale()" :header="$t('contact.position')">
+                <Column  :field="'position_'+$i18n.locale" :header="$t('contact.position')">
                 </Column>
 
-                <Column  :field="'responsibilities_'+locale()" :header="$t('hr.we.responsibilities')">
+                <Column  :field="'responsibilities_'+$i18n.locale" :header="$t('hr.we.responsibilities')">
                 </Column>
 
                 <Column  :header="$t('yearPeriod')">
@@ -54,9 +55,8 @@
     import {ScienceService} from "@/service/science.service";
     import ExperienceEdit from "@/components/humanResources/candidate/subedits/ExperienceEdit"
     import {useConfirm} from "primevue/useconfirm";
-    import {locale} from "moment";
 
-    const { t } = useI18n()
+    const { t, locale } = useI18n()
     const toast = useToast()
 
     const laborActivities = ref([])
