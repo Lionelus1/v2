@@ -1773,7 +1773,9 @@ export default {
             beforeMastersThesis: "Магистрлік диссертация қорғауға дейін жарияланған ғылыми жұмыстар",
             afterMastersThesis: "Магистрлік диссертация қорғағаннан кейін жарияланған ғылыми жұмыстар",
             afterScientificWorks: "Қауымдастырылған профессор (доцент)\" ғылыми атағын алғаннан кейін жарияланған ғылыми еңбектері",
-            others: "Өзге"
+            others: "Өзге",
+            beforeDoctoralDissertation: "Докторлық диссертация қорғағанға дейін басылған ғылыми еңбектер",
+            afterDoctoralDissertation: "Докторлық диссертация қорғағаннан кейін басылған ғылыми еңбектер"
         },
         buttons: {
             card: "Карта",
@@ -1808,15 +1810,18 @@ export default {
             years: "Жылдар",
         },
         types: {
-            article: "Мақала",
+            article: "Web of Science Core Collection халықаралық рецензияланатын журналындағы мақалалар",
             monograph: "Монография",
             scopus_article: "Scopus-тағы жарияланымдар",
             publication_koksnvo: "ҒЖБССҚК ұсынған ғылыми басылым",
             textbooks: "Оқулықтар / Оқыту құралдары / Оқыту құралдары / Семинарлар",
-            free: "Ғылыми еңбектер",
+            free: "Өзге",
             scientific_recommendations: "Ғылыми ұсыныстар",
             thesis: "Тезистер(конференция)",
-            training_manual: "Оқу құралы"
+            training_manual: "Оқу құралы",
+            author_certificates_patents: "Авторлық куәліктер, паттентер",
+            conference_proceedings: "Халықаралық ғылыми-практикалық конференциялар жинақтарында",
+            authorized_body_publications: "Уәкілетті орган ұсынған басылымдарда"
         },
         messages: {
             successImport: "Импорттау сұрауы сәтті жіберілді",
@@ -1843,7 +1848,7 @@ export default {
             attachments: "Қосымшалар",
             publicationCategory: "Жарияланым санаты",
             publicationType: "Жарияланым түрі",
-            participationInGroup: "Авторлар ұжымына қатысу",
+            participationInGroup: "Автордың үлесі (Баспа табақтар)",
             subtypeDescription: "Документ типі"
         }
     },
