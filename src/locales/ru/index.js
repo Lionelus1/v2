@@ -1758,7 +1758,10 @@ export default {
             beforeMastersThesis: "Научные труды, опубликованные до защиты магистерской диссертации",
             afterMastersThesis: "Научные труды, опубликованные после защиты магистерской диссертации",
             afterScientificWorks: "Научные труды опубликованные после получения ученого звания “ассоциированный профессор (доцент)”, “профессор”",
-            others: "Иные"
+            others: "Иные",
+            beforeDoctoralDissertation: "Научные труды, опубликованные до защиты докторской диссертации",
+            afterDoctoralDissertation: "Научные труды, опубликованные после защиты докторской диссертации"
+
         },
         buttons: {
             card: "Карта",
@@ -1793,15 +1796,19 @@ export default {
             years: "Годы",
         },
         types: {
-            article: "Статья",
+            article: "Статьи в международном рецензируемом журнале Web of Science Core Collection",
             monograph: "Монография",
             scopus_article: "Публикации в Scopus",
             publication_koksnvo: "Издание, рекомендуемое КОКСНВО",
             textbooks: "Учебники / Учебные пособия / Учебно-методические пособия / Практикумы",
-            free: "Научные труды",
+            free: "Иные",
             scientific_recommendations: "Научные рекомендации",
             thesis: "Тезисы(конференция)",
-            training_manual: "Учебное пособие"
+            training_manual: "Учебное пособие",
+            author_certificates_patents: "Авторские свидетельства, патенты",
+            conference_proceedings: "В сборниках международных научно-практических конференций",
+            authorized_body_publications: "В изданиях, рекомендуемых уполномоченным органом"
+
         },
         messages: {
             successImport: "Запрос на импорт успешно отправлен",
@@ -1828,7 +1835,7 @@ export default {
             attachments: "Вложения",
             publicationCategory: "Категория публикации",
             publicationType: "Тип публикации",
-            participationInGroup: "Участие в коллективе авторов",
+            participationInGroup: "Вклад автора(Количество печатных листов)",
             subtypeDescription: "Тип документа"
         }
     },

@@ -127,6 +127,9 @@ export default {
     PublicationKOKSNVO: 'publication_koksnvo',
     Textbooks: 'textbooks',
     Free: 'free',
+    AuthorCertificatesPatents: 'author_certificates_patents',
+    ConferenceProceedings: 'conference_proceedings',
+    AuthorizedBodyPublications: "authorized_body_publications"
   },
 
   StatusesArray: {

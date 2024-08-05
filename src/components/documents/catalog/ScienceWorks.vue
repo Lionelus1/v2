@@ -357,8 +357,13 @@ export default {
       ],
 
       newPublicationType: null,
-      pubTypes: [Enum.ScienceWorkType.Free, Enum.ScienceWorkType.Article, Enum.ScienceWorkType.Textbooks,
-        Enum.ScienceWorkType.Monograph, Enum.ScienceWorkType.PublicationKOKSNVO],
+      pubTypes: [Enum.ScienceWorkType.Textbooks,
+        Enum.ScienceWorkType.Monograph, Enum.ScienceWorkType.Article,
+        Enum.ScienceWorkType.AuthorizedBodyPublications,
+        Enum.ScienceWorkType.ConferenceProceedings,
+        Enum.ScienceWorkType.AuthorCertificatesPatents,
+        Enum.ScienceWorkType.PublicationKOKSNVO,
+        Enum.ScienceWorkType.Free],
 
       koksnvo: {
         loading: false,

@@ -1828,7 +1828,9 @@ export default {
             beforeMastersThesis: "Scientific works published before the defense of the master's thesis",
             afterMastersThesis: "Scientific works published after the defense of the master's thesis",
             afterScientificWorks: "Scientific works published after obtaining the academic title of Associate Professor (Docent) or Professor",
-            others: "Others"
+            others: "Others",
+            beforeDoctoralDissertation: "Scientific papers published before the defense of the doctoral dissertation",
+            afterDoctoralDissertation: "Scientific papers published after the defense of the doctoral dissertation"
         },
         buttons: {
             card: "Card",
@@ -1864,15 +1866,18 @@ export default {
             years: "Years",
         },
         types: {
-            article: "Article",
+            article: "Articles in an international peer-reviewed journal indexed in the Web of Science Core Collection",
             monograph: "Monograph",
             scopus_article: "Publications in Scopus",
             publication_koksnvo: "Publication recommended by QACFSHE",
             textbooks: "Textbooks / Teaching aids / Teaching aids / Workshops",
-            free: "Scientific works",
+            free: "Others",
             scientific_recommendations:"Scientific recommendations",
             thesis:"Thesis(conference)",
-            training_manual: "Training manual"
+            training_manual: "Training manual",
+            author_certificates_patents: "Author certificates, patents",
+            conference_proceedings: "Proceedings of international scientific and practical conferences",
+            authorized_body_publications: "Publications recommended by the authorized body"
         },
         messages: {
             successImport: "Import request sent successfully",
@@ -1902,7 +1907,7 @@ export default {
             attachments: "Attachments",
             publicationCategory: "Publication category",
             publicationType: "Publication type",
-            participationInGroup: "Participation in the team of authors",
+            participationInGroup: "Author's contribution (Number of printed sheets)",
             subtypeDescription: "Document type",
         },
     },
