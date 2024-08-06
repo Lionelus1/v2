@@ -70,8 +70,8 @@
 
   <OverlayPanel ref="filterOverlayPanel">
     <div class="col-12 md:col-12 p-fluid">
-          <div class="grid formgrid">
-      <div class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+        <div class="grid formgrid">
+        <div :class="(personType != 3 && personType != 4) ? 'col-12' : 'col-6 mb-2 pb-2 lg:col-6 mb-lg-0'">
         <label>{{ $t('common.fullName') }}</label>
         <InputText  @keyup.enter="getPersons" v-model="filter.name" :placeholder="$t('common.search')"/>
       </div>
@@ -204,7 +204,7 @@ export default {
         command: () => {
           this.addPerson()
         },
-        disabled: () => this.personType != 3
+        disabled: !(this.personType != 3 && this.personType != 4 && this.personType != 2)
       },
       {
         label: this.$t("common.downloadResume"),
