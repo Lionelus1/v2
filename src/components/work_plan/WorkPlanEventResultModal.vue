@@ -1,11 +1,11 @@
 <template>
-  
+
   <div>
     <Button type="button" icon="fa-solid fa-eye" class="p-button p-button-info ml-1 mb-1" label=""
-      @click="openModal"></Button>
+            @click="openModal"></Button>
   </div>
   <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')"
-    backgroundColor="rgba(0, 0, 0, 0.4)" />
+                       backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <Sidebar v-model:visible="eventResultModal" position="right" class="p-sidebar-lg " style="overflow-y: scroll">
     <div class="col-12">
       <h3>{{ $t('common.result') }}</h3>
@@ -14,7 +14,7 @@
       v-if="loginedUserId === planData.user.id && event && event.status.work_plan_event_status_id === 5">
       <div>
         <Menubar :model="menu" :key="active"
-          style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+                 style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
       </div>
     </div>
     <div class="p-col p-fluid">
@@ -27,7 +27,7 @@
         <label class="bold">{{ $t('workPlan.attachments') }}</label>
         <div>
           <Button icon="pi pi-download" class="p-button-rounded p-button-success mr-2"
-            @click="downloadFile(data.event_result_file)" />
+                  @click="downloadFile(data.event_result_file)"/>
         </div>
       </div>
       <div class="field" v-else-if="data.result_files">
@@ -38,8 +38,9 @@
             
           <ul style="padding-inline-start: 0;">
             <li v-for="(item, index) of data.result_files" :key="index" style="list-style: none;" class="mb-2"><span
-                @click="downloadFile(item)" > <i class="fa-solid fa-file-arrow-down download-link"
-                  ></i></span>&nbsp;&nbsp;&nbsp;{{ item.file_name }}</li>
+                @click="downloadFile(item)"> <i class="fa-solid fa-file-arrow-down download-link"
+            ></i></span>&nbsp;&nbsp;&nbsp;{{ item.file_name }}
+            </li>
           </ul>
         </div>
       </div>
@@ -53,7 +54,7 @@
 
       <div>
         <Menubar :model="rejectMenu" :key="active"
-          style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+                 style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
       </div>
     </div>
     <div class="p-fluid">
@@ -64,17 +65,17 @@
     </div>
   </Sidebar>
   <Sidebar v-model:visible="showOperPlanExecute" position="right" class="p-sidebar-lg"
-    style="overflow-y: scroll; width: 50%;" v-if="event" @hide="sideBarClosed">
-    <WorkPlanEventResult :result-id="event.work_plan_event_id" />
+           style="overflow-y: scroll; width: 50%;" v-if="event" @hide="sideBarClosed">
+    <WorkPlanEventResult :result-id="event.work_plan_event_id"/>
 
   </Sidebar>
 </template>
 
 <script>
-import axios from "axios";
-import { getHeader, smartEnuApi } from "@/config/config";
+import {getHeader, smartEnuApi} from "@/config/config";
 import WorkPlanEventResult from "./WorkPlanEventResult";
-import { WorkPlanService } from "@/service/work.plan.service";
+import {WorkPlanService} from "@/service/work.plan.service";
+import {FileService} from "../../service/file.service";
 
 export default {
   name: "WorkPlanEventResultModal",
@@ -118,7 +119,8 @@ export default {
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       rejectComment: null,
       isBlockUI: false,
-      planService: new WorkPlanService()
+      planService: new WorkPlanService(),
+      fileService: new FileService()
     }
   },
   methods: {
@@ -145,31 +147,27 @@ export default {
         filePath = item.event_result_file;
       }
       this.isBlockUI = true;
-      fetch(smartEnuApi + `/serve?path=${filePath}`, {
-        method: 'GET',
-        headers: getHeader()
-      }).then(response => response.blob())
-        .then(blob => {
-          let url = window.URL.createObjectURL(blob);
-          let a = document.createElement('a');
-          a.href = url;
-          a.download = item && item.file_name ? item.file_name : filePath;
-          document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
-          a.click();
-          a.remove();
-          this.isBlockUI = false;
-        }).catch(error => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          }
-          this.isBlockUI = false;
-        });
+      this.fileService.serve(filePath).then(response => response.blob()).then(blob => {
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = url;
+        a.download = item && item.file_name ? item.file_name : filePath;
+        document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+        a.click();
+        a.remove();
+        this.isBlockUI = false;
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+        this.isBlockUI = false;
+      });
     },
     showToCorrectSidebar() {
       this.toCorrectSidebar = true;
@@ -187,7 +185,6 @@ export default {
       }
 
       this.planService.verifyEventResult(data).then(res => {
-        //console.log(res);
         this.toCorrectSidebar = false;
         this.eventResultModal = false;
         this.emitter.emit("workPlanResultVerified", true);
@@ -226,8 +223,9 @@ export default {
   font-size: 25px;
   color: #689F38;
   text-decoration: none;
-  
+
 }
+
 .download-link:hover {
   color: #3B82F6;
   cursor: pointer;

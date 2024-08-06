@@ -1,46 +1,50 @@
 <template>
   <div class="col-12">
-    <TitleBlock :title="$t('blog.title')" />
-    <div v-if="!isFacultyWebAdmin && isWebAdmin" class="card">
-      <Button :label="$t('common.add')" @click="openDialog"/>
-    </div>
-    <div class="card">
-      <TabView>
-        <TabPanel :header="$t('web.properties')">
-          <DataTable :lazy="true" :value="blogList" dataKey="id" :loading="loading" responsiveLayout="scroll"
-                     :rowHover="true">
-            <template #empty>{{ $t("common.noData") }}</template>
-            <template #loading>{{ $t("common.loading") }}</template>
-            <Column :field="'name_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
-              <template #body="{ data }">
-                <a href="javascript:void(0)" @click="navigateToView(data)">
-                  {{ data['name_' + $i18n.locale] }}
-                </a>
-              </template>
-            </Column>
-            <Column :header="$t('cafedra.responsible')">
-              <template #body="{ data }">
+    <TitleBlock :title="$t('blog.title')"/>
+
+    <BlockUI v-if="haveAccess" :blocked="loading">
+      <ToolbarMenu v-if="isWebAdmin || mainAdmin" :data="toolbarMenus"/>
+      <div class="card">
+        <TabView>
+          <TabPanel :header="$t('web.properties')">
+            <DataTable :lazy="true" :value="blogList" dataKey="id" :loading="loading" responsiveLayout="scroll"
+                       :rowHover="true">
+              <template #empty>{{ $t("common.noData") }}</template>
+              <template #loading>{{ $t("common.loading") }}</template>
+              <Column :field="'name_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
+                <template #body="{ data }">
+                  <a href="javascript:void(0)" @click="navigateToView(data)">
+                    {{ data['name_' + $i18n.locale] }}
+                  </a>
+                </template>
+              </Column>
+              <Column :header="$t('cafedra.responsible')">
+                <template #body="{ data }">
                                 <span v-if="data.owner_id !== null">
                                     {{ data.ownedBy.fullName }}
                                 </span>
-                <span v-else>
+                  <span v-else>
                                     User is not defined
                                 </span>
-              </template>
-            </Column>
-            <Column class="text-right">
-              <template #body="{ data }">
-                  <ActionButton :show-label="true" :items="initItems" @toggle="toggle(data)" />
-              </template>
-            </Column>
-          </DataTable>
+                </template>
+              </Column>
+              <Column class="text-right">
+                <template #body="{ data }">
+                  <ActionButton :show-label="true" :items="initItems" @toggle="toggle(data)"/>
+                </template>
+              </Column>
+            </DataTable>
 
-        </TabPanel>
-        <TabPanel :header="$t('web.history')" v-if="!isFacultyWebAdmin">
-          <WebLogs :TN="TN" :key="TN"/>
-        </TabPanel>
-      </TabView>
+          </TabPanel>
+          <TabPanel :header="$t('web.history')" v-if="!isFacultyWebAdmin">
+            <WebLogs :TN="TN" :key="TN"/>
+          </TabPanel>
+        </TabView>
 
+      </div>
+    </BlockUI>
+    <div v-else class="card">
+      <Access textMode="short" :showLogo="false" returnMode="back"></Access>
     </div>
   </div>
 
@@ -78,7 +82,7 @@
 
     <div class="field">
       <label>{{ $t('cafedra.responsible') }}</label>
-      <FindUser v-model="formData.user" :max="1" :editMode="false"/>
+      <FindUser v-model="formData.user" :max="1" :user-type="3" :editMode="false"/>
       <small class="p-error" v-if="formData.user && submitted">{{ $t("common.requiredField") }}</small>
     </div>
     <div class="field">
@@ -120,30 +124,33 @@ import {fileRoute, findRole, smartEnuApi} from "@/config/config";
 import {FileService} from "@/service/file.service";
 import TitleBlock from "@/components/TitleBlock.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import Access from "@/pages/Access.vue";
 
 const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
 const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_web_fac_admin"))
 const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
+const mainAdmin = computed(() => findRole(authUser.value, "main_administrator"))
+const haveAccess = ref(true)
 const actionsNode = ref(null)
-const initItems = computed(() =>
-    {
-        return [
-            {
-                label: i18n.t('common.edit'),
-                icon: 'fa-solid fa-pen',
-                command: () => {
-                    openEdit(actionsNode.value)
-                }
-            },
-            {
-                label: i18n.t('common.delete'),
-                icon: 'fa-solid fa-trash',
-                visible: isWebAdmin.value,
-                command: () => {
-                    deleteConfirm(actionsNode.value)
-                }
-            },
-        ];
+const initItems = computed(() => {
+      return [
+        {
+          label: i18n.t('common.edit'),
+          icon: 'fa-solid fa-pen',
+          command: () => {
+            openEdit(actionsNode.value)
+          }
+        },
+        {
+          label: i18n.t('common.delete'),
+          icon: 'fa-solid fa-trash',
+          visible: isWebAdmin.value,
+          command: () => {
+            deleteConfirm(actionsNode.value)
+          }
+        },
+      ];
     }
 )
 const i18n = useI18n()
@@ -164,6 +171,18 @@ const total = ref(0)
 const responsible = ref()
 const thumbFile = ref(null)
 const bgImg = ref(null)
+
+const toolbarMenus = computed(() => {
+  return [
+    {
+      label: i18n.t('common.add'),
+      icon: "pi pi-plus",
+      command: () => {
+        openDialog()
+      }
+    }
+  ]
+})
 
 
 const lazyParams = ref({
@@ -188,8 +207,12 @@ const getBlogs = () => {
     }
     loading.value = false
   }).catch(error => {
-    loading.value = false
-    toast.add({severity: "error", summary: error, life: 3000});
+    if (error?.response?.status === 403) {
+      haveAccess.value = false
+    } else {
+      loading.value = false
+      toast.add({severity: "error", summary: error, life: 3000});
+    }
   });
 }
 getBlogs()
@@ -348,7 +371,7 @@ const isValid = () => {
   return errors.length === 0
 }
 const toggle = (node) => {
-    actionsNode.value = node
+  actionsNode.value = node
 }
 
 // const toggle = (event, data) => {

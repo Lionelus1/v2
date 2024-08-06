@@ -78,7 +78,7 @@
     <Dialog @hide="responsible=null" :header="$t('common.sendToResponsible')" v-model:visible="sendDialog" :modal="true" :style="{width: '75vw'}">
       <div class="field">
         <label>{{ this.$t("queue.responsible") }}</label>
-        <FindUser v-model="responsible" :max="1" style="width:100%" :editMode="false"/>
+        <FindUser v-model="responsible" :max="1" style="width:100%" :editMode="false" :user-type="3"/>
       </div>
       <template #footer>
         <Button :label="$t('common.cancel')" @click="sendDialog=false"/>

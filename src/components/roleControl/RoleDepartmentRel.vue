@@ -9,7 +9,6 @@
                 v-on:click="giveNewRole"
         />
             <span class="p-input-icon-left">
-                <i class="pi pi-search"/>
                 <InputText type="search"
                         v-model="lazyParams.searchText"
                         :placeholder="$t('common.search')"

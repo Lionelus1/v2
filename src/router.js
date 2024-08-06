@@ -1,4 +1,4 @@
-import {createRouter, createWebHashHistory} from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import Full from './components/Full.vue';
 import store from '@/store/store';
 
@@ -18,9 +18,9 @@ const ifAuthenticated = (to, from, next) => {
     if (store.getters.isAuthenticated) {
         next()
         return
-    }else{
+    } else {
         console.log(to)
-        store.dispatch("solveAttemptedUrl",to);
+        store.dispatch("solveAttemptedUrl", to);
         next('/login')
         return
     }
@@ -42,16 +42,34 @@ const ifMainAdministrator = (to, from, next) => {
     }
 }
 
+const ifUserRoles = (to, from, next) => {
+    if (store.getters.isAuthenticated) {
+        const roles = to.meta.roles;
+        if (roles.some(role => store.getters.userRoles.includes(role))) {
+            next();
+            return;
+        } else {
+            next('/access');
+            return;
+        }
+    } else {
+        store.dispatch("solveAttemptedUrl", to);
+        next('/login');
+        return;
+    }
+}
+
+
 const routes = [
     {
-        path:'/login',
-        name:'Login',
+        path: '/login',
+        name: 'Login',
         component: load('Login'),
         beforeEnter: ifNotAuthenticated
     },
     {
-        path:'/outqr',
-        name:'OutQr',
+        path: '/outqr',
+        name: 'OutQr',
         component: load('OutQr'),
     },
     {
@@ -82,13 +100,13 @@ const routes = [
     },
     {
         path: '/login',
-        redirect:'/login',
+        redirect: '/login',
         name: '/login',
         component: Full,
-        children:[
+        children: [
             {
-                path:'/',
-                name:'Welcome',
+                path: '/',
+                name: 'Welcome',
                 component: load('Welcome'),
                 beforeEnter: ifAuthenticated,
             },
@@ -105,7 +123,7 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/documents/catalog/educomplex',
+                path: '/documents/catalog/educomplex/:docType',
                 name: '/documents/catalog/educomplex',
                 component: load('documents/catalog/DisciplineEduMetComplex'),
                 beforeEnter: ifAuthenticated,
@@ -123,6 +141,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/catalog/acts/status',
+                name: '/documents/catalog/acts/status',
+                component: load('documents/catalog/StatusActsGPC'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/catalog/scienceWorks',
                 name: 'ScienceWorks',
                 component: load('documents/catalog/ScienceWorks'),
@@ -135,9 +159,9 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/documents/doctemplate',
-                name: '/documents/doctemplate',
-                component: load('documents/DocTemplate'),
+                path: '/documents/templates',
+                name: '/documents/templates',
+                component: load('documents/catalog/DocumentTemplates'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -271,6 +295,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/reports/sacreports',
+                name: 'sacReports',
+                component: load('documents/reports/SACReports'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/contragent/banks',
                 name: '/contragent/banks',
                 component: load('contragent/Banks'),
@@ -284,8 +314,8 @@ const routes = [
             },
             {
                 path: '/contragent/persons/:type',
-                name: 'persons',
-                component: load('contragent/Persons'),
+                name: 'PersonsList',
+                component: load('contragent/v2/PersonsList'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -311,6 +341,12 @@ const routes = [
                         path: ':id',
                         name: 'EditNews',
                         component: load('news/AddEditNews'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: ':id',
+                        name: 'HistoryNews',
+                        component: load('news/HistoryNews'),
                         beforeEnter: ifAuthenticated,
                     },
                     {
@@ -488,8 +524,8 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path:'/references',
-                name:'References',
+                path: '/references',
+                name: 'References',
                 component: load('references/References'),
                 beforeEnter: ifAuthenticated,
             },
@@ -533,7 +569,13 @@ const routes = [
                 name: '/queueReport',
                 component: load('queue/QueueReport'),
                 beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/queue/mode/:id',
 
+                name: '/queueMode',
+                component: load('queue/QueueMode'),
+                beforeEnter: ifAuthenticated,
             },
             {
                 path: '/reception',
@@ -594,6 +636,26 @@ const routes = [
                         path: '/request/:uuid',
                         name: 'Request',
                         component: load('helpDesk/Request'),
+                        beforeEnter: ifAuthenticated,
+                    }
+                ]
+            },
+            {
+                path: '/helpdesk/v2',
+                name: 'HelpDeskComponent2',
+                component: load('helpDesk/v2/HelpDeskComponent'),
+                beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'DeskJournal2',
+                        component: load('helpDesk/v2/DeskJournal'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/request/v2/:uuid',
+                        name: 'Request2',
+                        component: load('helpDesk/v2/Request'),
                         beforeEnter: ifAuthenticated,
                     }
                 ]
@@ -806,13 +868,13 @@ const routes = [
             },
             {
                 path: '/science/scientists',
-                name:'ScientistsList',
+                name: 'ScientistsList',
                 component: load('science/ScientistsList'),
                 beforeEnter: ifAuthenticated,
             },
             {
                 path: '/science/scientists/:id',
-                name:'ScientistsProfile',
+                name: 'ScientistsProfile',
                 component: load('science/ScientistsProfile'),
                 beforeEnter: ifAuthenticated,
             },
@@ -832,12 +894,17 @@ const routes = [
         beforeEnter: ifAuthenticated,
         children: [
             {
-                path:':id',
-                name:'MainGuide',
+                path: ':id',
+                name: 'MainGuide',
                 component: load('guide/MainGuide'),
                 beforeEnter: ifAuthenticated,
             },
         ]
+    },
+    {
+        path: '/queue/qr/:id',
+        name: '/queueQR',
+        component: load('queue/QueueQR'),
     },
 ];
 

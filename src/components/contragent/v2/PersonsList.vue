@@ -1,13 +1,22 @@
 <template>
-  <h3 v-if="!organization">{{ $t("common.individualEntrepreneur") }}</h3>
+  <h3 v-if="personType == 1">
+    {{$t("common.individualEntrepreneur")}}
+  </h3>
+  <h3 v-else-if="personType == 2">
+  {{   $t("common.personal")  }}
+  </h3>
+  <h3 v-else-if="personType == 3">  
+  {{ $t("common.students") }}
+  </h3>
+  <h3 v-else-if="!organization">{{ $t("common.individualEntrepreneur") }}</h3>
   <h3 v-else>{{ $t("contragent.orgEmployees", {"org": getOrganizationName(organization)}) }}</h3>
   <div class="card">
     <Menubar :model="menu" class="m-0 pt-0 pb-0">
       <template #end>
-        <span class="p-input-icon-left">
-          <i class="pi pi-search"/>
-          <InputText @keyup.enter="getPersons" v-model="filter.name" :placeholder="$t('common.search')"></InputText>
-        </span>
+        <IconField iconPosition="left">
+          <InputIcon class="pi pi-search"> </InputIcon>
+          <InputText  @keyup.enter="getPersons" v-model="filter.name" :placeholder="$t('common.search')"/>
+        </IconField>
       </template>
     </Menubar>
     <DataTable :value="persons" dataKey="userID" :rows="rows" :totalRecords="total"
@@ -37,18 +46,20 @@
           {{ slotProps.data.mainPosition ? getPositionName(slotProps.data.mainPosition) : '' }}
         </template>
       </Column>
-      <Column field="IIN" :header="$t('contact.iin')" style="min-width: 100px;"></Column>
+      <Column v-if="findRole(null, 'main_administrator')" field="IIN" :header="$t('contact.iin')" style="min-width: 100px;"></Column>
       <Column field="email" :header="$t('contact.email')" style="min-width: 50px;"></Column>
     </DataTable>
   </div>
   <!-- personPage -->
-  <Sidebar v-model:visible="visibility.personPage" position="right" class="p-sidebar-lg">
-    <PersonPage :person="currentPerson" @personUpdated="personUpdated" custom-type="viewUser"></PersonPage>
+  <Sidebar v-model:visible="visibility.personPage" position="right" style="width: 60%;" class="p-sidebar-lg">    
+    <PersonPage :person="currentPerson" @personUpdated="personUpdated" :custom-type="customType" :personType="personType"></PersonPage>
   </Sidebar>
 </template>
 <script>
 import { ContragentService } from "@/service/contragent.service";
 import PersonPage from "@/components/contragent/v2/PersonPage";
+import { findRole } from "@/config/config";
+
 
 export default {
   name: 'PersonsList',
@@ -108,15 +119,33 @@ export default {
           disabled: () => !this.currentPerson,
           visible: () => this.sidebar,
           command: () => { this.$emit('personSelected', this.currentPerson); }
+        },
+        {
+          label: this.$t("common.createNew"),
+          icon: "pi pi-fw pi-plus",
+          command: () => {
+              this.addPerson()
+          },
+          visible: () => this.personType != 3
         }
       ],
+      personType: null,
+      customType: ''
     }
+  },
+  watch: {
+    "$route.params.type": function (type) {
+      this.personType = type;
+      this.getPersons();
+    },
   },
   mounted() {
     if (!this.sidebar) {
       this.$emit('apply-flex', true);
     }
 
+    this.personType = this.$route.params.type;
+    
     this.getPersons();
   },
   beforeUnmount() {
@@ -125,6 +154,7 @@ export default {
     }
   },
   methods: {
+    findRole: findRole,
     showMessage(msgtype, message, content) {
       this.$toast.add({
         severity: msgtype,
@@ -204,7 +234,10 @@ export default {
       this.getPersons();
     },
     getPersons() {
+      this.customType = 'viewUser'
       this.tableLoading = true;
+
+      const searchMode = this.personType == 1 ? "individual_entrepreneur" : this.personType == 2 ? "staff" : this.personType == 3 ? "student" : null;
 
       this.service.getPersons({
         page: this.page,
@@ -213,11 +246,14 @@ export default {
           orgId: this.organization ? this.organization.id : null,
           name: this.filter.name,
           signers: this.signers,
-        }
+        },
+        searchMode: searchMode,
+        searchCookie: this.searchCookie,
       }).then(res => {
         this.persons = res.data.foundUsers;
         this.total = res.data.total;
         this.currentPerson = null;
+        this.searchCookie = res.data.searchCookie;
 
         this.tableLoading = false;
       }).catch(err => {
@@ -239,14 +275,17 @@ export default {
     },
     personSelected() {
       if (!this.sidebar) {
+        this.customType = 'viewUser'
         this.open('personPage');
         return;
       }
 
       if (this.validString(this.currentPerson.firstName) && this.validString(this.currentPerson.thirdName) && 
         this.validString(this.currentPerson.email)) {
+          this.customType = 'viewUser'
           this.$emit('personSelected', this.currentPerson);
       } else {
+        this.customType = 'viewUser'
         this.open('personPage');
       }
     },
@@ -259,6 +298,48 @@ export default {
       }
 
       return false;
+    },
+    addPerson(type){
+      const searchMode = type == 2 ? "staff" : type == 3 ? "student" : null;
+
+      
+      this.currentPerson = {
+        IIN: null,
+        name: null,
+        type: null,
+        mail: null,
+        info: null,
+        id : null,
+        photo: null,
+        lastName: null,
+        thirdName: null,
+        firstName: null,
+        birthday: null,
+        gender: null,
+        state: null,
+        residnet: null,
+        locality: {
+          id: null,
+          name: null,
+        },
+        address: null, 
+        addressrus: null,
+        phone: null,
+        email: null,
+        idnumber: null,
+
+        mainPosition: {
+          id: null,
+          name:null,
+          nameen: null,
+          namekz:null,
+          nameru:null,
+        },
+        bank: {}
+        
+      }
+      this.visibility.personPage = true
+      this.customType = 'createUser';
     }
   }
 }
@@ -275,4 +356,14 @@ export default {
 :deep(.p-datatable.p-datatable-scrollable > .p-datatable-wrapper > .p-datatable-table > .p-datatable-thead) {
   background: transparent;
 }
+
+.p-sidebar-lg {
+    width: 300px; 
+  }
+
+  @media only screen and (max-width: 1024px) {
+    .p-sidebar {
+      width: 100%;
+    }
+  }
 </style>

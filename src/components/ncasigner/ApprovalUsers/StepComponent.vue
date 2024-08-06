@@ -15,9 +15,10 @@
         </li>
       </ul>
       <div class="steps-content p-fluid">
-        <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers" :disabled="readonly"></FindUser>
-        <Dropdown :disabled="!isNewStage || readonly" @change="updateModel" class="mt-2" v-model="certificate" dataKey="value"
-          :options="certificates" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
+        <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers" :user-type="3"  :disabled="readonly"></FindUser>
+        <Dropdown :disabled="!isNewStage || readonly" @change="updateModel" class="mt-2"
+                  v-model="certificate" dataKey="value" :options="certificates" :optionLabel="'name' + $i18n.locale"
+                  :placeholder="$t('ncasigner.certType')" />
       </div>
 
       <div>
@@ -42,16 +43,16 @@
       </ul>
       <div class="steps-content p-fluid">
         <Dropdown v-if="isNewStage" @change="approvalListChanged" v-model="approvalListItem" :options="approvalList" :optionLabel="'title' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)" :placeholder="$t('roleControl.instance')"></Dropdown>
-        <FindUser :disabled="readonly || !approvalStages[activeIndex].userChangeable" class="mt-2" @add="updateModel" @remove="updateModel" v-model="selectedUsers"></FindUser>
-        <Dropdown :disabled="true" @change="updateModel" class="mt-2" v-model="certificate" :options="certificates" optionValue="value" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
+        <FindUser :disabled="readonly || !approvalStages[activeIndex].userChangeable" class="mt-2" @add="updateModel" @remove="updateModel" v-model="selectedUsers" :user-type="3"></FindUser>
+        <Dropdown v-if="mode !== 'doc_template_creating'"  :disabled="true" @change="updateModel" class="mt-2" v-model="certificate" :options="certificates" optionValue="value" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
       </div>
 
       <div>
         <Button v-if="!readonly" :disabled="!(isNewStage && approvalStages.length < 10)" icon="pi pi-plus" class="p-button-rounded p-button-success"
                 @click="addStep"/>
         <Button v-if="!readonly" @click="clearSteps" class="btn danger ml-2"> {{ $t('common.clearApprovalList') }} </Button>
-        <Button v-if="!readonly && isNewStage && isEnuWorker" @click="approvalListControl = true" style="width: auto; color: white; font-weight: 700;"
-                :disabled="!isNewStage" class="p-button-warning"> {{ $t('roleControl.addNewInstance') }} </Button>
+<!--        <Button v-if="!readonly && isNewStage && isEnuWorker" @click="approvalListControl = true" style="width: auto; color: white; font-weight: 700;"-->
+<!--                :disabled="!isNewStage" class="p-button-warning"> {{ $t('roleControl.addNewInstance') }} </Button>-->
       </div>
     </div>
   </div>

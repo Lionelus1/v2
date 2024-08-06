@@ -169,6 +169,7 @@ export default {
       this.sideVisible = false;
       this.organizations.push(value.value);
       this.$emit("changed",value)
+      this.initApiCall()
     },
     initApiCall(data) {
       this.isAdmin = this.findRole(null, 'main_administrator') || this.findRole(null, "career_administrator")

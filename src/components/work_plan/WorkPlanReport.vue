@@ -65,7 +65,6 @@
 
 <script>
 import WorkPlanReportModal from "@/components/work_plan/WorkPlanReportModal";
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import moment from "moment/moment";
 import {WorkPlanService} from "@/service/work.plan.service";

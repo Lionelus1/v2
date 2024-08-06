@@ -47,15 +47,15 @@
 
           <!-- Год поступления -->
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <label>{{ $t('common.startDate') }}<span class="p-error" v-if="!readonly">*</span></label>
-            <PrimeCalendar :readonly="readonly" class="mt-2" v-model="academicDegree.start_date" :placeholder="$t('hr.edu.receiptDate')" :dateFormat="'mm.dd.yy'"/>
+            <label>{{ $t('hr.edu.receiptDate') }}<span class="p-error" v-if="!readonly">*</span></label>
+            <PrimeCalendar :readonly="readonly" class="mt-2" v-model="academicDegree.start_date" :placeholder="$t('hr.edu.receiptDate')" view="year" :dateFormat="'yy'"/>
             <small class="p-error" v-if="validation.receiptDate">{{ $t("common.requiredField") }}</small>
           </div>
 
           <!-- Год окончания -->
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <label>{{$t('common.endDate')}}</label>
-            <PrimeCalendar :readonly="readonly" class="mt-2" v-model="academicDegree.final_date" :placeholder="$t('hr.edu.expirationDate')" :dateFormat="'mm.dd.yy'"/>
+            <label>{{$t('hr.edu.expirationDate')}}</label>
+            <PrimeCalendar :readonly="readonly" class="mt-2" v-model="academicDegree.final_date" :placeholder="$t('hr.edu.expirationDate')" view="year" :dateFormat="'yy'"/>
             <!-- <small class="p-error" v-if="validation.expirationDate">{{ $t("common.requiredField") }}</small> -->
           </div>
 
@@ -78,7 +78,7 @@
 
   import api from "@/service/api";
   import {getHeader, smartEnuApi} from "@/config/config";
-  import { inject, defineProps, ref } from 'vue';
+  import {inject, defineProps, ref, onMounted} from 'vue';
   import {useI18n} from "vue-i18n";
   import {UserService} from "@/service/user.service"
   import { useToast } from "primevue/usetoast";
@@ -123,6 +123,8 @@
   const create = () => {
     if (validateForm()) {
       const fd = new FormData();
+      academicDegree.value.start_date = new Date(academicDegree.value.start_date);
+      academicDegree.value.final_date = new Date(academicDegree.value.final_date);
       fd.append("id", JSON.stringify(academicDegree.value))
       if (file.value !== null) {
         fd.append("idImage", file.value);
@@ -170,9 +172,29 @@
       command: () => {
         create()
       },
+      disabled: () => (academicDegree.value.institution_name == null || academicDegree.value.institution_name == '')
+      || (academicDegree.value.location == null || academicDegree.value.location == '')
+      || (academicDegree.value.speciality == null || academicDegree.value.speciality == '')
+      || (!academicDegree.value.start_date || academicDegree.value.start_date == "")
+      || (!academicDegree.value.diplom_number || academicDegree.value.diplom_number == "")
     },
   ])
-    
+
+  const formatDate = (dateString) => {
+    if (!dateString) {
+      return '';
+    }
+
+    const dateObject = new Date(dateString);
+    return dateObject.getFullYear().toString();
+  }
+
+
+  onMounted(() => {
+    academicDegree.value.start_date = formatDate(academicDegree.value.start_date)
+    academicDegree.value.final_date = formatDate(academicDegree.value.final_date)
+  })
+
 </script>
 <style>
 #carddiv label {

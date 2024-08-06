@@ -93,4 +93,32 @@ export class ScienceService {
     getProfDocumentType() {
         return api.get("/science/qualifications/profDocumentType", {headers: getHeader()})
     }
+
+    getScienceSchools(data) {
+        return api.post("/science/school/get", data, {headers: getHeader()})
+    }
+
+    scienceSchoolUpdate(data) {
+        return api.post('/science/school/update', data, {headers: getHeader()})
+    }
+
+    scienceSchoolDelete(data) {
+        return api.post('/science/school/delete', data, {headers: getHeader()})
+    }
+
+    getScientificGrants(data) {
+        return api.post('/science/scientific/grant/get', data, {headers: getHeader()})
+    }
+
+    updateScientificGrant(data) {
+        return api.post('/science/scientific/grant/update', data, {headers: getHeader()})
+    }
+
+    deleteScientificGrant(data) {
+        return api.post('/science/scientific/grant/delete', data, {headers: getHeader()})
+    }
+
+    getScientificGrantPositions(data) {
+        return api.post('/science/scientific/grant/position', data, {headers: getHeader()})
+    }
 }

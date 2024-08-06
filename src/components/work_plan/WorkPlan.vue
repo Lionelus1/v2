@@ -68,24 +68,6 @@
         </div>
       </div>
       <div class="p-fluid">
-        <!--        <div class="field">
-                  <label for="status-filter">{{ $t('common.status') }}</label>
-                  <Dropdown v-model="filter.doc_status" :options="statuses" optionValue="value"
-                            class="p-column-filter" :showClear="true">
-                    <template #value="slotProps">
-                    <span v-if="slotProps && slotProps.value" :class="'customer-badge status-' + statuses.find((e) => e.value === slotProps.value).value">
-                      {{ $i18n.locale === 'kz' ? statuses.find((e) => e.value === slotProps.value).nameKz : $i18n.locale === 'ru'
-                        ? statuses.find((e) => e.value === slotProps.value).nameRu : statuses.find((e) => e.value === slotProps.value).nameEn }}
-                    </span>
-                    </template>
-                    <template #option="slotProps">
-                    <span :class="'customer-badge status-' + slotProps.option.value">
-                      {{ $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
-                        ? slotProps.option.nameRu : slotProps.option.nameEn }}
-                    </span>
-                    </template>
-                  </Dropdown>
-                </div>-->
         <div class="field">
           <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
           <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter()" :label="$t('common.clear')"/>
@@ -349,7 +331,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e)
         return false
       }
 

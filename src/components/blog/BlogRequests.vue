@@ -1,43 +1,48 @@
 <template>
   <div class="col-12">
-    <TitleBlock :showBackButton="true" :title="$t('blog.title')" />
-    <div class="card">
-      <DataTable :lazy="true" :value="items" dataKey="id" :loading="loading" responsiveLayout="scroll" :rowHover="true"
-                 :rows="10" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
-        <template #empty>{{ $t("common.noData") }}</template>
-        <template #loading>{{ $t("common.loading") }}</template>
-        <Column field="question" :header="$t('faq.question')" style="width: 30%;">
-          <template #body="{data}">
-            <a href="javascript:void(0)" @click="navigateToView(data)" v-tooltip.bottom="{value: data.question, class: 'w-100 tooltip-size'}">
-              {{ truncateQuestion(data.question) }}
-            </a>
-          </template>
-        </Column>
-        <Column :header="$t('common.fullName')">
-          <template #body="{data}">
-            {{ data.last_name + ' ' + data.first_name }}
-          </template>
-        </Column>
-        <Column :header="$t('common.status')">
-          <template #body="{data}">
+    <TitleBlock :showBackButton="true" :title="$t('blog.title')"/>
+    <BlockUI v-if="haveAccess" :blocked="loading" class="card">
+      <div class="card">
+        <DataTable :lazy="true" :value="items" dataKey="id" :loading="loading" responsiveLayout="scroll" :rowHover="true"
+                   :rows="10" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
+          <template #empty>{{ $t("common.noData") }}</template>
+          <template #loading>{{ $t("common.loading") }}</template>
+          <Column field="question" :header="$t('faq.question')" style="width: 30%;">
+            <template #body="{data}">
+              <a href="javascript:void(0)" @click="navigateToView(data)" v-tooltip.bottom="{value: data.question, class: 'w-100 tooltip-size'}">
+                {{ truncateQuestion(data.question) }}
+              </a>
+            </template>
+          </Column>
+          <Column :header="$t('common.fullName')">
+            <template #body="{data}">
+              {{ data.last_name + ' ' + data.first_name }}
+            </template>
+          </Column>
+          <Column :header="$t('common.status')">
+            <template #body="{data}">
             <span :class="'customer-badge status-' + data.state.id">
               {{ $t("common.states." + data.state.code) }}
             </span>
-          </template>
-        </Column>
-        <Column :header="$t('faq.createDate')">
-          <template #body="{data}">
-            {{ formatDate(data.created_date) }}
-          </template>
-        </Column>
-        <Column class="text-right">
-          <template #body="{data}">
-            <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="navigateToView(data)"></Button>
-            <!-- <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)" /> -->
-            <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(data)" />
-          </template>
-        </Column>
-      </DataTable>
+            </template>
+          </Column>
+          <Column :header="$t('faq.createDate')">
+            <template #body="{data}">
+              {{ formatDate(data.created_date) }}
+            </template>
+          </Column>
+          <Column class="text-right">
+            <template #body="{data}">
+              <Button type="button" icon="fa-solid fa-eye" class="mr-2" @click="navigateToView(data)"></Button>
+              <!-- <Button icon="fa-solid fa-pen" class="p-button mr-2" @click="openEdit(data)" /> -->
+              <Button icon="fa-solid fa-trash" class="p-button-danger" @click="deleteConfirm(data)"/>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+    </BlockUI>
+    <div v-else class="card">
+      <Access textMode="short" :showLogo="false" returnMode="back"></Access>
     </div>
   </div>
 </template>
@@ -50,9 +55,11 @@ import {ref} from "vue";
 import {BlogService} from "@/service/blog.service";
 import {useRouter, useRoute} from "vue-router";
 import {formatDate} from "@/helpers/HelperUtil";
+import Access from "@/pages/Access.vue";
 
 export default {
   name: "BlogRequests",
+  components: {Access},
   adminMode: {
     type: Boolean,
     default: true
@@ -76,6 +83,7 @@ export default {
     const thumbFile = ref(null)
     const bgImg = ref(null)
     const blogId = ref(parseInt(route.params.id))
+    const haveAccess = ref(true)
     const lazyParams = ref({
       page: 0,
       rows: 10,
@@ -98,8 +106,12 @@ export default {
         }
         loading.value = false
       }).catch(error => {
-        loading.value = false
-        toast.add({severity: "error", summary: error, life: 3000});
+        if (error?.response?.status === 403) {
+          haveAccess.value = false
+        } else {
+          loading.value = false
+          toast.add({severity: "error", summary: error, life: 3000});
+        }
       });
     }
     getBlogRequests()
@@ -229,7 +241,7 @@ export default {
 
     return {
       items, isCreateModal, formData, lazyParams, responsible,
-      loading, selectedData, submitted, options, total, bgImg, thumbFile,
+      loading, selectedData, submitted, options, total, bgImg, thumbFile, haveAccess,
       navigateToView, openDialog, hideDialog, addBlog, save, deleteConfirm, openEdit, formatDate, uploadThumb, uploadBg,
       onSort, onPage, truncateQuestion
     }

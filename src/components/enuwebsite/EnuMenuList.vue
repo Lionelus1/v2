@@ -1,52 +1,21 @@
 <template>
   <div class="col-12">
     <TitleBlock :title="$t('web.menuPage')"/>
-    <div class="card" v-if="findRole(null, 'enu_web_admin') || findRole(null, 'enu_web_fac_admin') || findRole(null, 'main_administrator')">
-      <Button :label="$t('web.addMenu')" icon="pi pi-plus" class="ml-2" v-on:click="createMenu(null)"/>
-    </div>
-    <div class="card" v-if="findRole(null,'enu_web_admin')">
-      <SelectSiteSlug @onSelect="onSlugSelect"/>
-    </div>
-    <div class="card">
-      <TabView>
-        <TabPanel :header="$t('web.properties')">
-          <div class="text-right mb-3">
-            <Button type="button" icon="fa-solid fa-filter"
-                    @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
-                    class="p-button-outlined mr-2"/>
-            <OverlayPanel ref="global-filter">
-              <div v-for="text in menu_radio_options" :key="text" class="flex align-items-center">
-                <div class="field-radiobutton">
-                  <RadioButton v-model="selectedMenuType" :value="text.value"/>
-                  <label :for="text" class="ml-2">{{ text.text }}</label>
-                </div>
-              </div>
-              <div class="p-fluid">
-                <div class="field">
-                  <br/>
-
-                  <Button icon="pi pi-trash" class="ml-1" @click="clearMenuTypeFilter()"
-                          :label="$t('common.clear')"/>
-                </div>
-                <div class="field">
-                  <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="orderColumn(null)"/>
-                </div>
-              </div>
-            </OverlayPanel>
-            <div class="p-input-icon-left">
-              <i class="pi pi-search"/>
-              <InputText type="search" v-model="filter.search_text" :placeholder="$t('common.search')"
-                         @search="getMenus(null)"/>
-              <Button icon="pi pi-search" class="ml-1" @click="getMenus(null)"/>
-            </div>
-          </div>
-          <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading" @nodeExpand="onExpand"
-                     scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" show-gridlines columnResizeMode="fit"
-                     :paginator="true" :rows="lazyParams.rows" :total-records="total" @page="onPage($event)">
-            <template #empty> {{ $t('common.noData') }}</template>
-            <template #loading> {{ $t('common.loading') }}</template>
-            <Column field="menu_title_kz" :header="$t('common.nameIn')" :expander="true" style="min-width:300px">
-              <template #body="{ node }">
+    <BlockUI v-if="haveAccess" :blocked="loading">
+      <ToolbarMenu :data="headerMenus" @search="initSearch($event)" :search="true" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
+      <div class="card" v-if="findRole(null,'enu_web_admin')">
+        <SelectSiteSlug @onSelect="onSlugSelect"/>
+      </div>
+      <div class="card">
+        <TabView>
+          <TabPanel :header="$t('web.properties')">
+            <TreeTable class="p-treetable-sm" :value="menus" :lazy="true" :loading="loading" @nodeExpand="onExpand"
+                       scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true" show-gridlines columnResizeMode="fit"
+                       :paginator="true" :rows="lazyParams.rows" :total-records="total" @page="onPage($event)">
+              <template #empty> {{ $t('common.noData') }}</template>
+              <template #loading> {{ $t('common.loading') }}</template>
+              <Column field="menu_title_kz" :header="$t('common.nameIn')" :expander="true" style="min-width:300px">
+                <template #body="{ node }">
                 <span><i class="fa-solid fa-folder"></i>&nbsp;
                   {{
                     $i18n.locale === 'kz' ? node.menu_title_kz : $i18n.locale === 'ru' ?
@@ -55,61 +24,82 @@
                   (<a :href="node.url" target="_blank">{{ $t('common.link') }}</a>)
                   <Badge :value="$t('web.isHidden')" v-if="node.hidden"></Badge>
                 </span>
-              </template>
-            </Column>
-            <Column field="page" :header="$t('web.menuMainPage')">
-              <template #body="{ node }">
-                <a href="javascript:void(0)" @click="viewPage(node)">{{ showPage(node) }}</a>
-                <span>{{ node.page && node.page.is_plugin ? ' (Landing page)' : '' }}</span>
-              </template>
-              filter.menu_type.is_main
-            </Column>
-            <Column field="link" :header="$t('common.link')">
-              <template #body="{ node }">
-                <a v-if="node.link" :href="node.link" target="_blank">{{ node.link }}</a>
-              </template>
-            </Column>
-            <Column field="viewCount" :header="$t('web.viewCount')">
-              <template #body="{ node }">
-                <span v-if="node.view_count !== null">{{ node.view_count }} {{ $t('web.viewTimes') }}</span>
-                <span v-else>{{ 0 }} {{ $t('web.viewTimes') }}</span>
-
-              </template>
-            </Column>
-            <div v-if="showOrderColumn">
-              <Column v-if="filter.menu_type.is_usefull_link || filter.menu_type.is_header || filter.menu_type.is_middle"
-                      field="order" :header="$t('web.menuOrder')">
+                </template>
+              </Column>
+              <Column field="page" :header="$t('web.menuMainPage')">
                 <template #body="{ node }">
+                  <a href="javascript:void(0)" @click="viewPage(node)">{{ showPage(node) }}</a>
+                  <span>{{ node.page && node.page.is_plugin ? ' (Landing page)' : '' }}</span>
+                </template>
+              </Column>
+              <Column field="link" :header="$t('common.link')">
+                <template #body="{ node }">
+                  <a v-if="node.link" :href="node.link" target="_blank">{{ node.link }}</a>
+                </template>
+              </Column>
+              <Column field="viewCount" :header="$t('web.viewCount')">
+                <template #body="{ node }">
+                  <span v-if="node.view_count !== null">{{ node.view_count }} {{ $t('web.viewTimes') }}</span>
+                  <span v-else>{{ 0 }} {{ $t('web.viewTimes') }}</span>
+
+                </template>
+              </Column>
+              <div v-if="showOrderColumn">
+                <Column v-if="filter.menu_type.is_usefull_link || filter.menu_type.is_header || filter.menu_type.is_middle"
+                        field="order" :header="$t('web.menuOrder')">
+                  <template #body="{ node }">
                   <span class="p-buttonset">
                     <Button class="p-button-outlined" icon="pi pi-angle-up" @click="reOrderMenu(node, true)"/>
                     <Button class="p-button-outlined" icon="pi pi-angle-down" @click="reOrderMenu(node, false)"/>
                   </span>
 
+                  </template>
+                </Column>
+              </div>
+
+              <Column field="create_date" :header="$t('faq.createDate')" :sortable="true">
+                <template #body="{ node }">
+                  {{ formatDate(node.create_date) }}
                 </template>
               </Column>
-            </div>
-
-            <Column field="create_date" :header="$t('faq.createDate')" :sortable="true">
-              <template #body="{ node }">
-                {{ formatDate(node.create_date) }}
-              </template>
-            </Column>
-            <Column field="actions" header="" class="text-right">
-              <template #body="{ node }">
-                <ActionButton :show-label="true" :items="initItems" @toggle="toggle2(node)"/>
-              </template>
-            </Column>
-          </TreeTable>
-        </TabPanel>
-        <TabPanel :header="$t('web.history')">
-          <WebLogs :TN="TN" :key="TN"/>
-        </TabPanel>
-      </TabView>
+              <Column field="actions" header="" class="text-right">
+                <template #body="{ node }">
+                  <ActionButton :show-label="true" :items="initItems" @toggle="toggle2(node)"/>
+                </template>
+              </Column>
+            </TreeTable>
+          </TabPanel>
+          <TabPanel :header="$t('web.history')">
+            <WebLogs :TN="TN" :key="TN"/>
+          </TabPanel>
+        </TabView>
+      </div>
+    </BlockUI>
+    <div v-else class="card">
+      <Access textMode="short" :showLogo="false" returnMode="back"></Access>
     </div>
   </div>
   <AddMenu v-if="addMenuVisible" :is-visible="addMenuVisible" :all-pages="pages" :current-menu="selectedMenu"
            :menu_id="parentId" :slug="lazyParams.slug"></AddMenu>
   <PageView v-if="viewPageVisible" :is-visible="viewPageVisible" :selectedPage="selectedViewMenu"></PageView>
+
+  <OverlayPanel ref="global-filter">
+    <div class="p-fluid">
+      <div class="field">
+        <label>{{ $t('web.menuType') }}</label>
+        <Dropdown v-model="selectedMenuType" :options="menuTypes" optionLabel="name" optionValue="value"/>
+      </div>
+    </div>
+    <div class="p-fluid">
+      <div class="field">
+        <Button icon="pi pi-trash" class="ml-1" @click="clearMenuTypeFilter()"
+                :label="$t('common.clear')"/>
+      </div>
+      <div class="field">
+        <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="orderColumn(null)"/>
+      </div>
+    </div>
+  </OverlayPanel>
 </template>
 
 <script>
@@ -123,11 +113,13 @@ import {onMounted, ref} from "vue"
 import TitleBlock from "@/components/TitleBlock.vue";
 import SelectSiteSlug from "@/components/enuwebsite/SelectSiteSlug.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import Access from "@/pages/Access.vue";
 
 
 export default {
   name: "EnuMenuList",
-  components: {SelectSiteSlug, TitleBlock, AddMenu, PageView, WebLogs, ActionButton},
+  components: {Access, ToolbarMenu, SelectSiteSlug, TitleBlock, AddMenu, PageView, WebLogs, ActionButton},
   data() {
     return {
       actionsNode: Object,
@@ -149,21 +141,21 @@ export default {
       menuList: ref({}),
       menuIcon: false,
       menuIconEditMode: false,
-      menu_radio_options: [
+      menuTypes: [
         {
-          text: this.$t('web.mainMenu'),
+          name: this.$t('web.mainMenu'),
           value: 'is_main'
         },
         {
-          text: this.$t('web.headerMenu'),
+          name: this.$t('web.headerMenu'),
           value: 'is_header'
         },
         {
-          text: this.$t('web.middleMenu'),
+          name: this.$t('web.middleMenu'),
           value: 'is_middle'
         },
         {
-          text: this.$t('web.usefulMenu'),
+          name: this.$t('web.usefulMenu'),
           value: 'is_usefull_link'
         }
       ],
@@ -181,6 +173,8 @@ export default {
       },
       parentId: null,
       isGlobalFilter: false,
+      filtered: false,
+      haveAccess: true
     };
   },
   created() {
@@ -255,6 +249,10 @@ export default {
       this.parentNode = node
       this.getMenus(node)
     },
+    initSearch(searchText) {
+      this.filter.search_text = searchText
+      this.getMenus(null)
+    },
     getMenus(parentData) {
       this.loading = true;
       if (parentData == null) {
@@ -288,11 +286,11 @@ export default {
         this.loading = false;
       }).catch(error => {
         this.loading = false;
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
+        if (error?.response.status === 403) {
+          this.haveAccess = false
+        } else {
+          this.$toast.add({severity: "error", summary: error, life: 3000});
+        }
       });
     },
     orderColumn() {
@@ -322,7 +320,7 @@ export default {
         this.filter.menu_type.is_middle = null
         this.filter.menu_type.is_usefull_link = true
       }
-
+      this.filtered = true
       this.getMenus();
       this.showOrderColumn = true;
     },
@@ -333,14 +331,10 @@ export default {
           this.pages = res.data.pages;
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
+        if (error?.response.status === 403) {
+          this.haveAccess = false
         } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
+          this.$toast.add({severity: "error", summary: error, life: 3000});
         }
       });
     },
@@ -350,6 +344,7 @@ export default {
       this.filter.menu_type.is_middle = null;
       this.filter.menu_type.is_usefull_link = null;
       this.selectedMenuType = null;
+      this.filtered = false
       this.getMenus();
     },
     onPage(event) {
@@ -411,7 +406,6 @@ export default {
       this.parentId = null;
     },
     onSlugSelect(event) {
-      console.log("ON SLUG SLEECT", event)
       this.lazyParams.slug = event.slug
       this.getMenus()
       this.getPages()
@@ -448,6 +442,19 @@ export default {
         },
 
       ];
+    },
+    headerMenus() {
+      return [
+        {
+          label: this.$t('common.add'),
+          icon: "pi pi-plus",
+          visible: this.findRole(null, 'enu_web_admin') ||
+              this.findRole(null, 'enu_web_fac_admin') || this.findRole(null, 'main_administrator'),
+          command: () => {
+            this.createMenu(null)
+          },
+        },
+      ]
     }
   }
 }

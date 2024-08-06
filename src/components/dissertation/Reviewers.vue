@@ -67,7 +67,7 @@
                 </div>
                 <div class="field">
                   <label for="name">{{$t('common.fullName')}}</label>
-                  <FindUser v-model="selectedMembers" :max="1" :editMode="true"></FindUser>
+                  <FindUser v-model="selectedMembers" :max="1" :editMode="true" :user-type="3"></FindUser>
                   <small class="p-error" v-if="submitted && validationErrors.members">{{$t('dissertation.validationErrors.selectSecretary')}}</small>
                 </div>
                

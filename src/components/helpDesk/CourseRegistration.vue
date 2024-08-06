@@ -5,57 +5,39 @@
         {{ getDocStatus(props.courseRequest.doc?.docHistory?.stateEn) }}
       </span>
     </p>
-    <div
-        v-if="props.courseRequest.doc?.docHistory?.stateEn === 'revision' || props.courseRequest.doc?.docHistory?.stateEn === 'rejected' ">
+    <div v-if="props.courseRequest.doc?.docHistory?.stateEn === 'revision' || props.courseRequest.doc?.docHistory?.stateEn === 'rejected'">
       <label>{{ $t('common.comment') }}:</label>
       <div>
         <Message style="width: 150px;" :closable="false"
-                 v-if="props.courseRequest.doc != null && props.courseRequest.doc?.docHistory != null && props.courseRequest.doc?.docHistory != null"
-                 severity="warn">
+          v-if="props.courseRequest.doc != null && props.courseRequest.doc?.docHistory != null && props.courseRequest.doc?.docHistory != null" severity="warn">
           {{ props.courseRequest.doc?.docHistory?.comment }}
         </Message>
       </div>
     </div>
   </div>
 
-  <BlockUI style="margin-top: 10px"
-           v-if="findRole(null, 'student') || props.courseRequest.doc?.newParams?.not_formal_education_ids">
+  <BlockUI style="margin-top: 10px" v-if="findRole(null, 'student') || props.courseRequest.doc?.newParams?.not_formal_education_ids">
     <div>
-      <div class="mb-3"
-           style="display: flex; justify-content: space-between; margin-bottom: 20px"
-      >
+      <div class="mb-3" style="display: flex; justify-content: space-between; margin-bottom: 20px">
         <div class="buttonLanguag">
           <Button class="toggle-button" @click="toggleRegistration">{{ t('helpDesk.application.chooseDiscipline') }}
           </Button>
         </div>
-        <span class="p-input-icon-left mr-2 position-relative" v-if="showRegistration && props.courseRequest ">
-    <i class="pi pi-search position-absolute" style="top: 15px"/>
-    <InputText
-        type="search"
-        v-model="searchText"
-        :placeholder="t('common.search')"
-        @keyup.enter="getCourse"
-    />
-    <Button
-        icon="pi pi-search"
-        class="p-ml-1"
-        @click="getCourse"
-    />
-</span>
+        <span class="p-input-icon-left mr-2 position-relative" v-if="showRegistration && props.courseRequest">
+          <i class="pi pi-search position-absolute" style="top: 15px" />
+          <InputText type="search" v-model="searchText" :placeholder="t('common.search')" @keyup.enter="getCourse" />
+          <Button icon="pi pi-search" class="p-ml-1" @click="getCourse" />
+        </span>
 
       </div>
-      <DataTable v-if="showRegistration && props.courseRequest" :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]"
-                 :value="data" dataKey="id"
-                 :rowHover="true" filterDisplay="menu" responsiveLayout="scroll" :paginator="true" stripedRows
-                 class="p-datatable-sm" :rows="total >= 10 ? 10 : total" :totalRecords="total" @page="onPage"
-                 v-model:selection="currentDocument"
-                 scrollable scrollHeight="flex" @lazy="true">
+      <DataTable v-if="showRegistration && props.courseRequest" :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true" filterDisplay="menu"
+        responsiveLayout="scroll" :paginator="true" stripedRows class="p-datatable-sm" :rows="total >= 10 ? 10 : total" :totalRecords="total" @page="onPage"
+        v-model:selection="currentDocument" scrollable scrollHeight="flex" @lazy="true">
         <template #empty> {{ t('common.noData') }}</template>
         <Column field="checkbox">
           <template #body="{ data }">
-            <Checkbox
-                :disabled="isDisabled(data) || isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)"
-                v-model="data.checked" :binary="true" @change="checkBoxSelect(data)" style="margin-left: 20px;"/>
+            <Checkbox :disabled="isDisabled(data) || isAdmin || (props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID)" v-model="data.checked" :binary="true"
+              @change="checkBoxSelect(data)" style="margin-left: 20px;" />
           </template>
         </Column>
 
@@ -63,25 +45,23 @@
         <Column field="name" :header="t('course.disciplineCode')" style="padding-top: 15px; padding-bottom: 15px;">
           <template #body="{ data }">
             <a href="javascript:void(0)">{{
-                $i18n.locale === "kz" ? data.namekz : $i18n.locale === "ru" ? data.nameru :
-                    data.category.nameen
-              }}</a>
+    $i18n.locale === "kz" ? data.namekz : $i18n.locale === "ru" ? data.nameru :
+      data.category.nameen
+  }}</a>
           </template>
         </Column>
 
         <!-- :header="dic_course_type === 2 ? t('course.disciplineName') : t('common.description')" -->
-        <Column field="description" :header="t('course.disciplineName')"
-                style="padding-top: 15px; padding-bottom: 15px;">
+        <Column field="description" :header="t('course.disciplineName')" style="padding-top: 15px; padding-bottom: 15px;">
           <template #body="{ data }">
             <a href="javascript:void(0)">{{
-                $i18n.locale === "kz" ? data.descriptionkz : $i18n.locale === "ru" ? data.descriptionru :
-                    data.descriptionen
-              }}</a>
+    $i18n.locale === "kz" ? data.descriptionkz : $i18n.locale === "ru" ? data.descriptionru :
+      data.descriptionen
+  }}</a>
           </template>
         </Column>
 
-        <Column field="credit" :header="t('helpDesk.application.credits')"
-                style="padding-top: 15px; padding-bottom: 15px;">
+        <Column field="credit" :header="t('helpDesk.application.credits')" style="padding-top: 15px; padding-bottom: 15px;">
           <template #body="{ data }">
             <a href="javascript:void(0)">{{ data.hours }}</a>
           </template>
@@ -91,57 +71,39 @@
     </div>
   </BlockUI>
   <div>
-    <div class="field"
-         v-if="!findRole(null, 'student') && !props.courseRequest.doc?.newParams?.not_formal_education_ids "
-         style="margin-top: 15px;">
-      <label>{{ t('helpDesk.application.discipline') }}<span v-if="isCurrentUserSender"
-                                                             style="font-size: 20px; color: red;">*</span></label>
-      <InputText v-model="userData.discipline" type="text"
-                 :disabled="disabledStatus"
-                 :placeholder="t('helpDesk.application.discipline')" @input="input"/>
+    <div class="field" v-if="!findRole(null, 'student') && !props.courseRequest.doc?.newParams?.not_formal_education_ids" style="margin-top: 15px;">
+      <label>{{ t('helpDesk.application.discipline') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
+      <InputText v-model="userData.discipline" type="text" :disabled="disabledStatus" :placeholder="t('helpDesk.application.discipline')" @input="input" />
     </div>
     <div class="field">
-      <label>{{ t('common.fullName') }}<span v-if="isCurrentUserSender"
-                                             style="font-size: 20px; color: red;">*</span></label>
+      <label>{{ t('common.fullName') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
       <!-- :disabled="!!responseUserData.fullName" -->
-      <InputText v-model="userData.fullName" type="text"
-                 :disabled="disabledStatus" :placeholder="t('common.fullName')"
-                 @input="input"/>
+      <InputText v-model="userData.fullName" type="text" :disabled="disabledStatus" :placeholder="t('common.fullName')" @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
       <label>{{ t('common.speciality') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
-      <InputText v-model="userData.speciality" type="text"
-                 :disabled="disabledStatus"
-                 :placeholder="userData.speciality || t('common.speciality')" @input="input"/>
+      <InputText v-model="userData.speciality" type="text" :disabled="disabledStatus" :placeholder="userData.speciality || t('common.speciality')" @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
-      <label>{{ t('course.course') }}<span v-if="isCurrentUserSender"
-                                           style="font-size: 20px; color: red;">*</span></label>
-      <InputNumber v-model="userData.course" :disabled="disabledStatus"
-                   :placeholder=" t('course.course')" id="number-input" style="width: 350px;" @input="input"/>
+      <label>{{ t('course.course') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
+      <InputNumber v-model="userData.course" :disabled="disabledStatus" :placeholder="t('course.course')" id="number-input" style="width: 350px;" @input="input" />
       <!--      <div v-if="props.validationRequest.course" style="color: red; margin-top: 5px">Курс введен неправильно</div>-->
     </div>
     <div class="field" style="margin-top: 10px;">
-      <label>{{ t('contracts.cafedraGroup') }}<span v-if="isCurrentUserSender"
-                                                    style="font-size: 20px; color: red;">*</span>
+      <label>{{ t('contracts.cafedraGroup') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span>
       </label>
-      <InputText v-model="userData.group" type="text" :disabled="disabledStatus"
-                 :placeholder="userData.group || t('contracts.cafedraGroup')" @input="input"/>
+      <InputText v-model="userData.group" type="text" :disabled="disabledStatus" :placeholder="userData.group || t('contracts.cafedraGroup')" @input="input" />
     </div>
     <div class="field" style="margin-top: 10px;">
-      <label>{{ t('contact.phone') }}<span v-if="isCurrentUserSender"
-                                           style="font-size: 20px; color: red;">*</span></label>
-      <InputText v-model="userData.phone" class="mt-2" inputId="userDataPhone" :placeholder="t('contact.phone')"
-                 style="width: 350px;" @input="input" :disabled="disabledStatus"/>
+      <label>{{ t('contact.phone') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
+      <InputText v-model="userData.phone" class="mt-2" inputId="userDataPhone" :placeholder="t('contact.phone')" style="width: 350px;" @input="input" :disabled="disabledStatus" />
       <div v-if="props.validationRequest.phone" style="color: red; margin-top: 5px">
         {{ t('helpDesk.application.enteredIncorrectly') }}
       </div>
     </div>
     <div class="field" style="margin-top: 10px;">
-      <label>{{ t('contact.email') }}<span v-if="isCurrentUserSender"
-                                           style="font-size: 20px; color: red;">*</span></label>
-      <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input"
-                 :disabled="disabledStatus"/>
+      <label>{{ t('contact.email') }}<span v-if="isCurrentUserSender" style="font-size: 20px; color: red;">*</span></label>
+      <InputText v-model="userData.email" type="text" :placeholder="t('contact.email')" @input="input" :disabled="disabledStatus" />
       <div v-if="props.validationRequest.email" style="color: red; margin-top: 5px">
         {{ t('helpDesk.application.enteredIncorrectly') }}
       </div>
@@ -150,18 +112,18 @@
 </template>
 
 <script setup>
-import {ref, onMounted, computed} from 'vue';
-import {useI18n} from "vue-i18n";
+import { ref, onMounted, computed } from 'vue';
+import { useI18n } from "vue-i18n";
 import axios from 'axios';
-import {HelpDeskService} from "../../service/helpdesk.service";
-import {getHeader, smartEnuApi, findRole} from "@/config/config";
-import {useToast} from "primevue/usetoast";
-import {useStore} from "vuex";
-import {useRoute} from "vue-router";
+import { HelpDeskService } from "../../service/helpdesk.service";
+import { getHeader, smartEnuApi, findRole } from "@/config/config";
+import { useToast } from "primevue/usetoast";
+import { useStore } from "vuex";
+import { useRoute } from "vue-router";
 import DocEnum from "@/enum/docstates/index";
 
 const service = new HelpDeskService()
-const {t, locale} = useI18n()
+const { t, locale } = useI18n()
 const store = useStore()
 const route = useRoute();
 const toast = useToast()
@@ -249,7 +211,7 @@ const selectedDirection = ref({
 const showRegistration = ref(false);
 currentUser.value = JSON.parse(localStorage.getItem("loginedUser"));
 const disabledStatus = computed(() => {
- return !(currentUser.value?.userID == props.courseRequest.sender_id) || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.REJECTED.ID
+  return !(currentUser.value?.userID == props.courseRequest.sender_id) || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.INAPPROVAL.ID || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.REJECTED.ID
 })
 const toggleRegistration = () => {
   showRegistration.value = !showRegistration.value;
@@ -307,35 +269,35 @@ const getCourse = () => {
       courseId = null
     }
     axios.post(smartEnuApi + "/onlinecourse/courses",
-        {
-          user_id: userId,
-          page: lazyParams.value.page,
-          rows: lazyParams.value.rows,
-          searchText: searchText.value,
-          dic_course_type: "not_formal_education",
-          courses_ids: courseId
-        }, {headers: getHeader()})
-        .then((res) => {
-          data.value = res.data.courses;
-          if (data.value) {
-            if (props.courseRequest.doc.newParams) {
-              data.value.map(e => {
-                e.checked = props.courseRequest.doc.newParams.not_formal_education_ids.value.some(x => x === e.subject_id)
-              })
-            } else {
-              data.value.map(e => {
-                e.checked = selectedIds.value.some(x => x === e.subject_id)
-              })
-            }
+      {
+        user_id: userId,
+        page: lazyParams.value.page,
+        rows: lazyParams.value.rows,
+        searchText: searchText.value,
+        dic_course_type: "not_formal_education",
+        courses_ids: courseId
+      }, { headers: getHeader() })
+      .then((res) => {
+        data.value = res.data.courses;
+        if (data.value) {
+          if (props.courseRequest.doc.newParams) {
+            data.value.map(e => {
+              e.checked = props.courseRequest.doc.newParams.not_formal_education_ids.value.some(x => x === e.subject_id)
+            })
+          } else {
+            data.value.map(e => {
+              e.checked = selectedIds.value.some(x => x === e.subject_id)
+            })
           }
-          total.value = res.data.total;
-        })
+        }
+        total.value = res.data.total;
+      })
   }
 }
 const getStudentInfo = () => {
   const userId = props.courseRequest?.doc?.newParams?.student_id?.value
 
-  service.helpDeskStudentInfo({user_id: userId}).then(res => {
+  service.helpDeskStudentInfo({ user_id: userId }).then(res => {
     responseUserData.value.speciality = locale.value === "kz" ? res.data.studen_info.specialty_kz : res.data.studen_info.specialty_ru
     responseUserData.value.course = res.data.studen_info.course_number
     responseUserData.value.group = res.data.studen_info.group
@@ -350,8 +312,8 @@ const getStudentInfo = () => {
       group: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.group || responseUserData.value.group,
       course: (props.courseRequest.doc?.newParams?.not_formal_student_info?.value.course > 0 ? props.courseRequest.doc?.newParams?.not_formal_student_info?.value.course : null) || (responseUserData.value.course > 0 ? responseUserData.value.course : null),
       phone: (props.courseRequest.doc?.newParams?.not_formal_student_info?.value.phone > 0
-          ? props.courseRequest.doc.newParams.not_formal_student_info.value.phone
-          : '') || (responseUserData.value.phone > 0 ? responseUserData.value.phone : null),
+        ? props.courseRequest.doc.newParams.not_formal_student_info.value.phone
+        : '') || (responseUserData.value.phone > 0 ? responseUserData.value.phone : null),
       email: props.courseRequest.doc?.newParams?.not_formal_student_info?.value.email || responseUserData.value.email,
     }
     emit('childInputData', userData.value)

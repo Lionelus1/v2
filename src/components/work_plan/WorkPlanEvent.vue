@@ -1,8 +1,6 @@
 <template>
   <div class="col-12">
-    <h3 v-if="plan">
-      <TitleBlock :title="plan.work_plan_name" :show-back-button="true"/>
-    </h3>
+    <TitleBlock :title="plan?.work_plan_name" :show-back-button="true"/>
     <div class="card" v-if="plan && planDoc && isRejected">
       <div class="p-fluid">
         <div class="field">
@@ -35,7 +33,7 @@
     </div>
     <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
     <div class="card" v-if="plan && planDoc">
-      <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
+      <TreeTable ref="workplantreetable" class="p-treetable-sm" v-model:selectionKeys="selectedWorkPlanEvent" selectionMode="single" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total"
                  @page="onPage($event)">
         <template #empty> {{ $t('common.noData') }}</template>
@@ -67,7 +65,19 @@
         </Column>
         <Column field="fact" :header="$t('common.fact')" v-if="isOperPlan">
           <template #body="{ node }">
-            <span v-if="node.fact">{{ node.fact }}</span>
+            <span v-if="node.fact && isFactVisible" style="float: left;">{{ node.fact + " " }}</span>
+            <div v-if="node.resp_person_id === loginedUserId">
+              <div v-if="isFactInputVisible && parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id'])" style="min-width: 150px;">
+                <div class="inline-container">
+                  <InputText type="text" v-model="factValue" />
+                  <Button @click="updateFact(node.work_plan_event_id, factValue)" icon="pi pi-check" text rounded aria-label="Update" />
+                  <Button @click="cancelFact()" icon="pi pi-times" severity="danger" text rounded aria-label="Cancel" />
+                </div>
+            </div>
+            <span v-if="selectedWorkPlanEvent && Object.keys(selectedWorkPlanEvent)[0] && node">
+              <a v-if="parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id']) && isFactVisible" href="javascript:void(0)" @click="factValue=node.fact ;factVisiblity()">&nbsp;&nbsp;<i class="pi pi-pencil" style="margin-top: 5px;"></i></a>
+            </span>
+            </div>
           </template>
         </Column>
         <Column field="quarter" :header="$t('workPlan.quarter')" v-if="!isSciencePlan">
@@ -83,7 +93,7 @@
         <Column field="fullName" :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
           <template #body="{ node }">
             <div v-if="node.user && node.user.length > 2">
-              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text" icon="fa-solid fa-eye fa-xl" label=""/>
+              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text" icon="fa-solid fa-people-group fa-xl" label=""/>
               <OverlayPanel ref="op" @hide="closeOverlay">
                 <p v-for="item in selectedEvent.user" :key="item.id">{{ item.user.fullName }}</p>
               </OverlayPanel>
@@ -93,7 +103,7 @@
             </div>
           </template>
         </Column>
-        <Column field="supporting_docs" v-if="plan && plan.is_oper" :header="$t('common.suppDocs')">
+        <Column field="supporting_docs" v-if="plan && isOperPlan" :header="$t('common.suppDocs')">
           <template #body="{ node }">
             {{ node.supporting_docs }}
           </template>
@@ -102,7 +112,6 @@
           <template #body="{ node }">
             <div v-if="node.result && node.result.length > 100">
               {{ node.result_short }}
-              <!--              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-text" icon="fa-solid fa-eye" label="" />-->
               <a href="javascript:void(0);" @click="toggle('event-final-result', $event, node)">{{ $t('common.showMore').toLowerCase() }}</a>
               <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }" @hide="closeOverlay">
                 <div>{{ selectedEvent.result }}</div>
@@ -119,13 +128,12 @@
                 $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru :
                     node.status.name_en
               }}</span>
+
           </template>
         </Column>
         <Column field="actions" header="">
           <template #body="{ node }">
-            <div>
-              <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
-            </div>
+            <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
           </template>
         </Column>
       </TreeTable>
@@ -183,7 +191,7 @@
       </div>
       <div class="field">
         <label>{{ $t('cafedra.responsible') }}</label>
-        <FindUser v-model="filters.author.value" :max="1" :editMode="false"/>
+        <FindUser v-model="filters.author.value" :max="1" :editMode="false" :user-type="3"/>
       </div>
       <div class="field">
         <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined"/>
@@ -231,7 +239,6 @@ export default {
     WorkPlanEventEditModal,
     WorkPlanApprove,
     WorkPlanEventAdd,
-    // WorkPlanEventResultModal,
     DocSignaturesInfo,
     ActionButton
   },
@@ -239,6 +246,7 @@ export default {
     return {
       data: [],
       Enum: Enum,
+      DocEnum: DocEnum,
       work_plan_id: parseInt(this.$route.params.id),
       searchText: null,
       lastEvent: null,
@@ -288,7 +296,6 @@ export default {
       isAdmin: false,
       isCreator: false,
       isApproval: false,
-      isPlanSentApproval: false,
       isEventsNull: false,
       isShowPlanExecute: false,
       showReportDoc: false,
@@ -373,13 +380,21 @@ export default {
       documentFiles: null,
       service: new DocService(),
       DocState: DocState,
-      filtered: false
+      filtered: false,
+      stages: [],
+      isFactVisible: true,
+      isFactInputVisible:false,
+      factValue: null,
+      selectedWorkPlanEvent:null
     }
   },
   created() {
+
     this.isAdmin = this.findRole(null, 'main_administrator')
     this.getPlan();
     this.getEventsTree(null);
+    this.getWorkPlanApprovalUsers(this.work_plan_id)
+
   },
   mounted() {
     this.emitter.on('workPlanEventIsAdded', (data) => {
@@ -437,9 +452,47 @@ export default {
         this.getEventsTree(this.parentNode);
       }
     });
+    this.getEventsTree;
+
   },
   methods: {
     findRole: findRole,
+    factVisiblity(){
+      this.isFactVisible = false;
+      this.isFactInputVisible = true;
+      
+    },
+    cancelFact(){
+      this.isFactInputVisible = false;
+      this.isFactVisible = true;
+    },
+    updateFact(eventId, fact){
+      let data = {
+        event_id: eventId,
+        fact: fact
+      }
+      this.planService.updateEventFact(data).then(res => {
+        if (res.data) {
+          this.isFactVisible = true
+          this.isFactInputVisible = false;
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t("common.success"),
+            life: 3000,
+          });
+          this.getEventsTree();
+          
+        
+        }
+      }).catch(error => {
+        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      });
+    },
     signView(node) {
       this.showReportDoc = true;
     },
@@ -499,7 +552,6 @@ export default {
           }
           this.total = 0;
         }
-        // this.getWorkPlanApprovalUsers();
         this.loading = false;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -520,16 +572,13 @@ export default {
     getWorkPlanApprovalUsers() {
       this.planService.getWorkPlanApprovalUsers(parseInt(this.work_plan_id)).then(res => {
         if (res.data) {
-          this.approval_users = res.data;
-          this.isPlanSentApproval = true;
-          this.approval_users.forEach(e => {
-            if (this.loginedUserId === e.user.id) {
+          res?.data?.forEach(e => {
+            if (this.loginedUserId === e.id) {
               this.isApproval = true;
             }
           });
         } else {
           this.isApproval = false;
-          this.isPlanSentApproval = false;
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -610,6 +659,7 @@ export default {
             }
           ];
           this.getRelatedFiles()
+          this.getWorkPlanApprovalUsers(this.work_plan_id)
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -975,6 +1025,7 @@ export default {
       URL.revokeObjectURL(link.href);
     },
     actionsToggle(node) {
+      console.log(node)
       this.isCreator = node.creator_id === this.loginedUserId
       this.selectedEvent = node
     },
@@ -1015,18 +1066,75 @@ export default {
     initSearch(searchText) {
       this.filters.name.value = searchText
       this.getEventsTree(null)
-    }
+    },
+    respUserExists(id) {
+      return this.plan.responsive_users.some(user => user.id === id)
+    },
+    showMySign(approvalStages) {
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUserId) {
+              return true
+            }
+          }
+
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return false
+      }
+
+      return false
+    },
+    greenMySign(approvalStages) {
+      let signed = true
+
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUserId && stage.usersApproved[j] < 1) {
+              signed = false
+            }
+          }
+
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return signed
+      }
+
+      return signed
+    },
   },
-  /*unmounted() {
-    localStorage.removeItem("workPlan");
-  }*/
+ 
   computed: {
     initItems() {
       return [
         {
           label: this.$t('common.show'),
           icon: 'fa-solid fa-eye',
-          disabled: !(this.selectedEvent && this.isPlanApproved && this.canExecuteEvent),
+          disabled: !(this.isPlanApproved && this.canExecuteEvent),
           visible: this.isFinish,
           command: () => {
             this.openPlanExecuteSidebar()
@@ -1035,7 +1143,7 @@ export default {
         {
           label: this.$t('common.add'),
           icon: 'fa-solid fa-plus',
-          disabled: !(this.selectedEvent && (this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent.user)) && !this.isFinish),
+          disabled: !(this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent?.user) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.showDialog(this.dialog.add)
@@ -1079,24 +1187,6 @@ export default {
     isPlanUnderRevision() {
       return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
     },
-    // isGenerateActVisible(){
-    //   const currentMonth = new Date().getMonth() + 1;
-    //   let receivedDate = null;
-
-    //   if (this.planDoc && this.planDoc.docHistory) {
-    //     receivedDate = this.planDoc.docHistory?.setDate;
-    //   }
-    //   const newDate = receivedDate ? new Date(receivedDate) : null;
-    //   const receivedMonth = newDate ? newDate.getMonth() + 1 : null;
-    //   const isVisible = receivedMonth < currentMonth;
-
-    //   return (
-    //     this.planDoc &&
-    //     this.planDoc.docHistory &&
-    //     this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value &&
-    //     isVisible
-    //   );
-    // },
     toolbarMenus() {
       return [
         {
@@ -1181,7 +1271,13 @@ export default {
           }
         }
       ]
-    }
+    },
+    isFinshButtonDisabled() {
+      return this.data && this.data.length > 0;
+    },
+    isRespUser() {
+      return this.plan && this.respUserExists(this.loginedUserId)
+    },
   }
 }
 </script>
@@ -1226,6 +1322,10 @@ export default {
     background: #C8E6C9;
     color: #256029;
   }
-
+  .inline-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 }
 </style>

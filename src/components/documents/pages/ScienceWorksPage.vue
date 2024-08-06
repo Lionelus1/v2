@@ -25,34 +25,40 @@
           <div class="p-fluid md:col-6 pb-0">
             <label>{{ $t('scienceWorks.labels.' + param.description) }}</label>
           </div>
+
           <div class="p-fluid md:col-6" v-if="'text' === param.name">
+
             <template v-if="'publicationCategory' === param.description">
-              <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input" editable
-                        :option-label="publicationCategoriesLabel" :option-value="publicationCategoriesLabel"
-                        :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
+              <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input"
+                        :option-label="publicationCategoriesLabel" :option-value="publicationCategoriesValue"
+                        :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
               </Dropdown>
             </template>
-            <div v-else class="p-inputgroup p-input-filled">
-              <Share :data="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+            <div v-else-if="scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && !this.changed && param.value && param.description === 'link'" class="p-inputgroup p-input-filled">
+              <Share  @click="input" :data="param.value" :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
                 scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :param="param.value && param.description === 'link'" :label="$t('ncasigner.copy')" @copy="onCopy()"/>
+            </div>
+            <div v-else class="p-inputgroup p-input-filled">
+              <InputText @click="input" v-model="param.value" type="text" :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+                scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :label="$t('ncasigner.copy')" @copy="onCopy()"/>
             </div>
           </div>
           <div class="p-fluid md:col-6" v-if="'number' === param.name">
-            <InputNumber v-model="param.value"  :minFractionDigits="0" :maxFractionDigits="2" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+            <InputNumber @change="input" v-model="param.value"  :minFractionDigits="0" :maxFractionDigits="2" :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
               scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" @input="input"/>
           </div>
           <div class="p-fluid md:col-6" v-if="'date' === param.name">
-            <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+            <PrimeCalendar @change="input" v-model="param.value" dateFormat="yy" view="year" :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
               scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" @dateSelect="input"></PrimeCalendar>
           </div>
           <div class="p-fluid md:col-6" v-if="'persons' === param.name">
-            <FindUser searchMode="ldap" v-model="param.value" :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+            <FindUser @change="input" searchMode="ldap" v-model="param.value" :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
               scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" :userType="0" @input="input()" @remove="input()"></FindUser>
           </div>
           <div class="md:col-6" v-if="'options' === param.name">
             <template v-if="'editionType' === param.description">
-              <SelectButton v-model="param.value" :options="editionTypes" :allowEmpty="false" :unselectable="false" @change="input"
-                :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
+              <SelectButton  v-model="param.value" :options="editionTypes" :allowEmpty="false" :unselectable="false" @change="input"
+                :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
                 <template #option="slotProps">
                   {{ $t('scienceWorks.editionTypes.' + slotProps.option) }}
                 </template>
@@ -61,13 +67,14 @@
           </div>
           <div class="md:col-6" v-if="'koksnvo' === param.name">
             <Dropdown v-model="param.value" :options="koksnvoEditions" class="w-full" optionValue="id" :optionLabel="'name_' + $i18n.locale" @change="input"
-                      :disabled="(scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"></Dropdown>
+                      :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)"></Dropdown>
           </div>
           <div class="md:col-6" v-if="'attachments' === param.name">
             <DataTable :value="param.value" class="p-datatable-small w-full">
               <template v-if="scienceWork.docHistory.stateId === DocEnum.CREATED.ID || scienceWork.docHistory.stateId === DocEnum.REVISION.ID" #footer>
-                <FileUpload mode="basic" accept=".pdf" :customUpload="true" @uploader="uploadAttachment($event)"
+                <FileUpload :disabled="this.needMySign()" mode="basic" accept=".pdf" :customUpload="true" @uploader="uploadAttachment($event)"
                             :auto="true" :chooseLabel="$t('ncasigner.chooseFile')" ref="attachmentUploader"/>
+                <small class="p-error" v-if="validation.filePath">{{ $t("common.requiredField") }}</small>
               </template>
               <Column :header="$t('hdfs.fileName')">
                 <template #body="{data}">
@@ -80,9 +87,9 @@
                   <i class="fa-solid fa-check fa-xl" v-if="data.filepath"></i>
                 </template>
               </Column>
-              <Column>
+              <Column v-if="!this.needMySign()">
                 <template #body="{data, index}">
-                  <Button v-if="scienceWork.docHistory.stateId === DocEnum.CREATED.ID || scienceWork.docHistory.stateId === DocEnum.REVISION.ID"
+                  <Button :disabled="this.needMySign()" v-if="scienceWork.docHistory.stateId === DocEnum.CREATED.ID || scienceWork.docHistory.stateId === DocEnum.REVISION.ID"
                           @click="param.value.splice(index, 1); removeAttachment(data)" class="p-button-text p-button-danger p-1">
                     <i class="fa-solid fa-trash fa-xl"></i>
                   </Button>
@@ -203,7 +210,10 @@ export default {
 
       editionTypes: ['digital', 'printed'],
       koksnvoEditions: [],
-      publicationCategories: ['beforeMastersThesis', 'afterMastersThesis'],
+      publicationCategories: ['beforeMastersThesis', 'afterMastersThesis', 'beforeDoctoralDissertation', 'afterDoctoralDissertation', 'others'],
+      validation: {
+        filePath: false,
+      }
     }
   },
   mounted() {
@@ -392,6 +402,30 @@ export default {
       this.changed = true;
     },
     saveDocument() {
+      if (!this.attachments || Object.keys(this.attachments).length === 0) {
+        const hasNotAttachmentsParam = this.contractParams.some(param => {
+          if (param.name === 'attachments') {
+            if (param.value === null) {
+              return true;
+            }
+
+            if (param.value.length === 0) {
+              return true;
+            }
+
+            return false
+          }
+        });
+
+        if (hasNotAttachmentsParam) {
+          this.validation.filePath = true;
+          this.showMessage("warn", this.$t('common.message.fillError'));
+          return;
+        }
+      }
+
+      this.validation.filePath = false;
+
       for (let i = 0; i < this.contractParams.length; i++) {
         this.scienceWork.newParams[this.contractParams[i].description] = this.contractParams[i];
       }
@@ -430,7 +464,7 @@ export default {
       this.attachments = {};
 
       let paramsName = ["publicationType", "publicationCategory", "publicationName", "publicationDate",
-        "editionType", "editionFullName",  "editionName", "editionNumber", "editionYear", "editionPages", "subtypeDescription",
+        "editionType", "editionFullName",  "editionName", "editionNumber", "editionPages", "subtypeDescription",
         "issn", "isbn", "koksnvo", "link", "printedPages", "participationInGroup", "recommendedBy",
         "coauthorsInternal", "coauthorsExternal", "attachments",];
 
@@ -515,27 +549,27 @@ export default {
           stage: 1,
           users: null,
           titleRu: "Соискатель",
-          titleKz: "Соискатель",
-          titleEn: "Соискатель",
+          titleKz: "Өтініш беруші",
+          titleEn: "Applicant",
           certificate: DocEnum.CertificatesArray.Individual,
         }
       ];
 
-      if ([DocEnum.ScienceWorkType.Monograph, DocEnum.ScienceWorkType.ScopusArticle, DocEnum.ScienceWorkType.PublicationKOKSNVO].includes(this.getScienceWorkType())) {
+      if ([DocEnum.ScienceWorkType.ScopusArticle, DocEnum.ScienceWorkType.PublicationKOKSNVO].includes(this.getScienceWorkType())) {
         this.stages.push(
             {
               stage: 2,
               users: null,
               titleRu: "Начальник Управление научных изданий и наукометрических ресурсов",
-              titleKz: "Начальник Управление научных изданий и наукометрических ресурсов",
-              titleEn: "Начальник Управление научных изданий и наукометрических ресурсов",
+              titleKz: "Ғылыми басылымдар және ғылымометриялық ресурстар басқармасының бастығы",
+              titleEn: "Head of the Department of Scientific Publications and Scientometric Resources",
               certificate: DocEnum.CertificatesArray.Internal,
             },
             {
               stage: 3,
               users: null,
               titleRu: "Директор Департамента науки",
-              titleKz: "Директор Департамента науки",
+              titleKz: "Ғылым департаментінің директоры",
               titleEn: "Директор Департамента науки",
               certificate: DocEnum.CertificatesArray.Internal,
             },
@@ -563,6 +597,9 @@ export default {
     },
     publicationCategoriesLabel(data) {
       return this.$t('scienceWorks.publicationCategories.' + data);
+    },
+    publicationCategoriesValue(data) {
+      return data;
     },
   }
 }

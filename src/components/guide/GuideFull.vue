@@ -15,12 +15,12 @@
                 </div>
             </div>
         </transition>
-        <div class="layout-main guide_sidebar">
+        <div class="layout-main guide_sidebar flex-grow-1">
             <div class="col-12">
                 <router-view v-model:pagemenu="localpagemenu"/>
             </div>
         </div>
-        <AppFooter class="guide_sidebar"/>
+        <AppFooter class="guide_sidebar flex-grow-0"/>
     </div>
 </template>
 

@@ -16,13 +16,10 @@
       >
         <template #header>
           <div class="table-header flex justify-content-end align-items-center">
-            <span class="p-input-icon-left">
-            <i class="pi pi-search"/>
-            <InputText
-                v-model="filters['global'].value"
-                v-bind:placeholder="$t('hdfs.search')"
-            />
-          </span>
+            <IconField iconPosition="left">
+              <InputIcon class="pi pi-search"> </InputIcon>
+              <InputText v-model="filters['global'].value" v-bind:placeholder="$t('hdfs.search')" />
+            </IconField>
           </div>
         </template>
         <template #empty>
@@ -402,12 +399,12 @@ export default {
       return [
         {
           label: this.$t('common.edit'),
-          icon: "pi pi-pencil",
+          icon: "fa-solid fa-pencil",
           command: () => {this.editNewsCategory(this.actionsNode.id)},
         },
         {
           label: this.$t('common.delete'),
-          icon: "pi pi-trash",
+          icon: "fa-solid fa-trash-can",
           command: () => {this.delNewsCategory(this.actionsNode.id)},
         },
       ]

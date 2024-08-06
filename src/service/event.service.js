@@ -3,8 +3,8 @@ import api from "./api";
 
 export class EventsService {
 
-    getEvents() {
-        return api.get(`/allEvents`, {headers: getHeader()});
+    getEvents(params) {
+        return api.post(`/allEvents`, params,{headers: getHeader()});
     }
 
     downloadEventFile(event) {

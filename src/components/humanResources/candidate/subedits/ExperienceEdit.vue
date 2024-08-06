@@ -45,7 +45,7 @@
                 v-if="validation.endDate"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+          <div v-if="this.customType !== 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('common.organizationName') }}</label>
             <InputText
                 :readonly="readonly"
@@ -60,7 +60,82 @@
                 v-if="validation.organizationName"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+          <div v-if="this.customType === 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('science.orgNameKz') }}</label>
+            <InputText
+                :readonly="readonly"
+                class="mt-2"
+                :class="{'p-invalid': validation.organizationNameKz}"
+                type="text"
+                :placeholder="$t('common.organizationName')"
+                v-model="value.organizationName_kz"
+            ></InputText>
+            <small
+                class="p-error"
+                v-if="validation.organizationNameKz"
+            >{{ $t("common.requiredField") }}</small>
+          </div>
+          <div v-if="this.customType === 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('science.posNameKz') }}</label>
+            <InputText
+                :readonly="readonly"
+                class="mt-2"
+                :class="{'p-invalid': validation.positionKz}"
+                type="text"
+                :placeholder="$t('contact.position')"
+                v-model="value.position_kz"
+            ></InputText>
+            <small
+                class="p-error"
+                v-if="validation.positionKz"
+            >{{ $t("common.requiredField") }}</small>
+          </div>
+          <div v-if="this.customType === 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('science.orgNameRu') }}</label>
+            <InputText
+                :readonly="readonly"
+                class="mt-2"
+                :class="{'p-invalid': validation.organizationNameRu}"
+                type="text"
+                :placeholder="$t('common.organizationName')"
+                v-model="value.organizationName_ru"
+            ></InputText>
+            <small
+                class="p-error"
+                v-if="validation.organizationNameRu"
+            >{{ $t("common.requiredField") }}</small>
+          </div>
+          <div v-if="this.customType === 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('science.posNameRu') }}</label>
+            <InputText
+                :readonly="readonly"
+                class="mt-2"
+                :class="{'p-invalid': validation.positionRu}"
+                type="text"
+                :placeholder="$t('contact.position')"
+                v-model="value.position_ru"
+            ></InputText>
+            <small
+                class="p-error"
+                v-if="validation.positionRu"
+            >{{ $t("common.requiredField") }}</small>
+          </div>
+          <div v-if="this.customType === 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('science.orgNameEn') }}</label>
+            <InputText
+                :readonly="readonly"
+                class="mt-2"
+                :class="{'p-invalid': validation.organizationNameEn}"
+                type="text"
+                :placeholder="$t('common.organizationName')"
+                v-model="value.organizationName_en"
+            ></InputText>
+            <small
+                class="p-error"
+                v-if="validation.organizationNameEn"
+            >{{ $t("common.requiredField") }}</small>
+          </div>
+          <div v-if="this.customType !== 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('contact.position') }}</label>
             <InputText
                 :readonly="readonly"
@@ -75,7 +150,22 @@
                 v-if="validation.position"
             >{{ $t("common.requiredField") }}</small>
           </div>
-          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+          <div v-if="this.customType === 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('science.posNameEn') }}</label>
+            <InputText
+                :readonly="readonly"
+                class="mt-2"
+                :class="{'p-invalid': validation.positionEn}"
+                type="text"
+                :placeholder="$t('contact.position')"
+                v-model="value.position_en"
+            ></InputText>
+            <small
+                class="p-error"
+                v-if="validation.positionEn"
+            >{{ $t("common.requiredField") }}</small>
+          </div>
+          <div v-if="this.customType !== 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('hr.we.responsibilities') }}</label>
             <Textarea v-model="value.responsibilities"
                       class="mt-2"
@@ -88,6 +178,36 @@
                 class="p-error"
                 v-if="validation.responsibilities"
             >{{ $t("common.requiredField") }}</small>
+          </div>
+          <div v-if="this.customType === 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('science.responsibilitiesKz') }}</label>
+            <Textarea v-model="value.responsibilities_kz"
+                      class="mt-2"
+                      :class="{'p-invalid': validation.responsibilities}"
+                      :readonly="readonly"
+                      :autoResize="true"
+                      type="text"
+                      rows="3" cols="30"/>
+          </div>
+          <div v-if="this.customType === 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('science.responsibilitiesRu') }}</label>
+            <Textarea v-model="value.responsibilities_ru"
+                      class="mt-2"
+                      :class="{'p-invalid': validation.responsibilities}"
+                      :readonly="readonly"
+                      :autoResize="true"
+                      type="text"
+                      rows="3" cols="30"/>
+          </div>
+          <div v-if="this.customType === 'scientists'" class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('science.responsibilitiesEn') }}</label>
+            <Textarea v-model="value.responsibilities_en"
+                      class="mt-2"
+                      :class="{'p-invalid': validation.responsibilities}"
+                      :readonly="readonly"
+                      :autoResize="true"
+                      type="text"
+                      rows="3" cols="30"/>
           </div>
         </div>
       </div>
@@ -119,8 +239,17 @@ export default {
         startDate: false,
         endDate: false,
         organizationName: false,
+        organizationNameKz: false,
+        organizationNameRu: false,
+        organizationNameEn: false,
         position: false,
+        positionKz: false,
+        positionRu: false,
+        positionEn: false,
         responsibilities: false,
+        responsibilitiesKz: false,
+        responsibilitiesRu: false,
+        responsibilitiesEn: false,
       }
     };
   },
@@ -131,16 +260,36 @@ export default {
     validateForm() {
       this.validation.startDate = !this.value.startDate || this.value.startDate == ""
       this.validation.endDate = (!this.value.endDate || this.value.endDate == "") && !this.value.isStillWorking
-      this.validation.organizationName = !this.value.organizationName || this.value.organizationName == ""
-      this.validation.position = !this.value.position || this.value.position == ""
-      this.validation.responsibilities = !this.value.responsibilities || this.value.responsibilities == ""
-      return (
-          !this.validation.startDate &&
-          !this.validation.endDate &&
-          !this.validation.organizationName &&
-          !this.validation.position &&
-          !this.validation.responsibilities
-      )
+      if (this.customType === 'scientists') {
+        this.validation.organizationNameKz = !this.value.organizationName_kz || this.value.organizationName_kz == ""
+        this.validation.organizationNameRu = !this.value.organizationName_ru || this.value.organizationName_ru == ""
+        this.validation.organizationNameEn = !this.value.organizationName_en || this.value.organizationName_en == ""
+        this.validation.positionKz = !this.value.position_kz || this.value.position_kz == ""
+        this.validation.positionRu = !this.value.position_ru || this.value.position_ru == ""
+        this.validation.positionEn = !this.value.position_en || this.value.position_en == ""
+        return (
+            !this.validation.startDate &&
+            !this.validation.endDate &&
+            !this.validation.organizationNameKz &&
+            !this.validation.organizationNameRu &&
+            !this.validation.organizationNameEn &&
+            !this.validation.positionKz &&
+            !this.validation.positionRu &&
+            !this.validation.positionEn
+        )
+      } else {
+        this.validation.organizationName = !this.value.organizationName || this.value.organizationName == ""
+        this.validation.position = !this.value.position || this.value.position == ""
+        this.validation.responsibilities = !this.value.responsibilities || this.value.responsibilities == ""
+        return (
+            !this.validation.startDate &&
+            !this.validation.endDate &&
+            !this.validation.organizationName &&
+            !this.validation.position &&
+            !this.validation.responsibilities
+        )
+      }
+
     },
     action() {
       if (this.value.isStillWorking === null) {

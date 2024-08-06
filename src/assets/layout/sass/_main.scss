@@ -108,6 +108,12 @@ a {
             cursor: pointer;
         }
     }
+    .accordion_icon.rotate {
+
+        svg{
+            transform: rotate(180deg);
+        }
+    }
 }
 .customer-badge {
     border-radius: 2px;
@@ -249,4 +255,14 @@ a {
 
 .tox-tinymce-aux {
     z-index: 9999999 !important;
+}
+.p-icon-field-right i {
+    font-size: 1.25rem;
+    padding-right: 10px;
+}
+.fa-trash, .fa-trash-can {
+    color: #D32F2F;
+}
+.fa-pen, .fa-pencil {
+    color: #FBC02D;
 }

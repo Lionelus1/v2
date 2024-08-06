@@ -25,22 +25,29 @@
       <label>{{ $t('workPlan.approvalUsers') }}</label>
       <InputText v-model="editData.responsible_executor" />
     </div>
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+        <label>{{ $t('workPlan.summaryDepartment') }}</label>
+        <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
+    </div>
     <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
       <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
-      <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
+      <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
       <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
     <template v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science && inputSets">
       <div v-for="(inputSet, index) in inputSets" :key="index">
         <div class="field">
           <label>{{ $t('workPlan.scienceParticipants') }}</label>
-          <FindUser v-model="inputSet.selectedUsers" :editMode="true"></FindUser>
+          <FindUser v-model="inputSet.selectedUsers" :editMode="true" :user-type="3"></FindUser>
           <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
         </div>
         <div class="field">
           <label for="name">{{ $t('common.role') }}</label>
           <RolesByName v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
         </div>
+        <p style="text-align: right;" class="mb-3">
+            <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined"  @click="removeInputSet(index)" outlined />
+          </p>
       </div>
     </template>
     <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
@@ -73,8 +80,8 @@ import Enum from "@/enum/workplan/index"
 import RolesByName from "@/components/smartenu/RolesByName.vue";
 
 export default {
-  name: "WorkPlanEventEditModal",
-  components: { RolesByName },
+  name: "WorkPlanEventEditModal", 
+  components: { RolesByName }, 
   props: ['visible', 'event', 'planData', 'parent'],
   emits: ['hide'],
   data() {
@@ -106,6 +113,7 @@ export default {
       ],
       parentData: this.parent != null ? JSON.parse(JSON.stringify(this.parent)) : null,
       selectedUsers: null,
+      summaryDepartment:[],
       formValid: {
         event_name: false,
         users: false,
@@ -123,11 +131,16 @@ export default {
       this.editData.end_date = this.editData.end_date ? new Date(this.editData.end_date) : null
       this.selectedUsers = [];
       this.editData.quarter = parseInt(this.editData.quarter);
+      
       this.editData.user.forEach(e => {
         this.selectedUsers.push(e.user);
+        if(e.is_summary_department){
+            this.summaryDepartment.push(e.user);
+            this.selectedUsers.pop(e.user);
+        }
+        
       });
       if (this.plan && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science && this.editData.user) {
-        console.log()
         const roleMap = new Map();
 
         this.editData.user.forEach(item => {
@@ -143,6 +156,18 @@ export default {
         this.inputSets = Array.from(roleMap.values());
       }
     }
+  },
+  watch: {
+    summaryDepartment: {
+      handler(newVal) {
+        if (newVal.length === 0) {
+        this.selectedUsers.shift();
+        } else {
+          this.selectedUsers.unshift(...newVal);
+        }
+      },
+      deep: true,
+    },
   },
   unmounted() {
     this.showWorkPlanEventEditModal = false
@@ -174,6 +199,13 @@ export default {
           userIds.push({ user: e, role: null })
         });
       }
+      let resp_person_id;
+      if (this.summaryDepartment && this.summaryDepartment[0]?.userID) {
+          resp_person_id = this.summaryDepartment[0].userID;
+      } else {
+          resp_person_id = null;
+      }
+      this.editData.resp_person_id = resp_person_id;
 
       this.editData.resp_person_ids = userIds;
       this.planService.editEvent(this.editData).then(res => {
@@ -188,7 +220,10 @@ export default {
         }
       }).catch(error => {
         this.submitted = false;
-        this.$toast.add({ severity: "error", summary: error, life: 3000 });
+        if (error && error.error === 'summaryDepartmentadded') {
+          this.$toast.add({ severity: "warn", summary: this.$t('workPlan.warnAddingsummaryDepartment'), life: 4000 });
+        }
+        
       });
     },
     notValid() {
@@ -205,6 +240,9 @@ export default {
     },
     addNewUser() {
       this.inputSets.push({ selectedUsers: null, selectedRole: null })
+    },
+    removeInputSet(index) {
+      this.inputSets.splice(index, 1);
     }
   }
 }

@@ -135,6 +135,8 @@ import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
 import TitleBlock from "./components/TitleBlock";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import {isMobile} from "@/helpers/HelperUtil";
+import {VueReCaptcha} from "vue-recaptcha-v3";
 
 Date.prototype.toJSON = function(){
     const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
@@ -277,6 +279,8 @@ app.use(PrimeVue, {
 
 app.config.globalProperties.emitter = emitter;
 
+app.config.globalProperties.$isMobile = isMobile()
+
 
 app.use(i18n);
 app.use(ToastService);
@@ -289,6 +293,9 @@ app.use(ConfirmationService);
 app.use(store)
 app.use(Vue3SimpleHtml2pdf);
 app.use(VuePdfEmbed);
+app.use(VueReCaptcha, {
+    siteKey: process.env.VUE_APP_G_RECAPTCHA_SECRET_KEY,
+});
 
 app.directive('tooltip', Tooltip);
 app.directive('ripple', Ripple);

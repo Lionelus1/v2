@@ -12,7 +12,7 @@ export class MenuService {
                     {
                         label: $t('contracts.template'),
                         icon: 'pi pi-fw pi-book',
-                        to: '/documents/doctemplate',
+                        to: '/documents/templates',
                         visible: this.isEnuWorker()
                     },
                     {
@@ -28,7 +28,7 @@ export class MenuService {
                     {
                         label: $t('educomplex.title'), 
                         icon: 'pi pi-fw pi-folder', 
-                        to: '/documents/catalog/educomplex'
+                        to: '/documents/catalog/educomplex/' + Enum.DocType.EduComplex
                     },
                     {
                         label: $t('course.certificate.title'),
@@ -36,9 +36,20 @@ export class MenuService {
                         to: '/documents/certificates'
                     },
                     {
-                        label: $t('postaccmonrep.title'),
-                        icon: 'pi pi-fw pi-folder',
-                        to: '/documents/catalog/postaccmonrep'
+                        label: $t('workPlan.reports'),
+                        icon: 'pi pi-fw pi-chart-line',
+                        items: [
+                            {
+                                label: $t('postaccmonrep.title'),
+                                icon: 'pi pi-fw pi-folder',
+                                to: '/documents/catalog/postaccmonrep'
+                            },
+                            {
+                                label: $t('common.sacReportMenuTitle'),
+                                icon: 'pi pi-fw pi-folder',
+                                to: '/documents/catalog/educomplex/' + Enum.DocType.StateAttestationCommission,
+                            },
+                        ]
                     },
                 ]
             },
@@ -113,7 +124,8 @@ export class MenuService {
                     {
                         label: $t('smartenu.categories'),
                         icon: 'fa-solid fa-tags',
-                        to: '/newscategories/cattable'
+                        to: '/newscategories/cattable',
+                        visible: !this.findRole("student")
                     },
                     {
                         label: $t('smartenu.newsList'), 
@@ -300,7 +312,7 @@ export class MenuService {
                 label: $t('helpDesk.title'),
                 icon: 'pi pi-spin pi-cog',
                 to: '/helpdesk',
-            
+
             },
             {
                 label: $t('Telegram'),

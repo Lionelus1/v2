@@ -39,6 +39,11 @@
                         {{ slotProps.data.createdBy.fullName }}
                     </template>
                 </Column>
+              <Column field="history.modify_date" v-bind:header="$t('common.pDate')" sortable>
+                <template #body="{data}">
+                  {{ formatDate(data?.publish_date) }}
+                </template>
+              </Column>
               <Column field="history.modify_date" v-bind:header="$t('common.updated')" sortable>
                 <template #body="{data}">
                   {{ formatDate(data?.history?.modifyDate) }}
@@ -105,6 +110,11 @@
         </template>
     </Dialog>
 
+  <HistoryNews
+      v-if="historyNewsVisible"
+      :is-visible="historyNewsVisible"
+      :selected-news="selectedHistoryNews"
+  />
     <NewsView v-if="newsViewVisible" :is-visible="newsViewVisible" :selected-news="selectedNews"/>
     <AddEditNews v-if="editVisible" :is-visible="editVisible" :selected-news="newsData" :cat-tree="catTree"
                  :catTreeList="catTreeElementsList"/>
@@ -122,10 +132,11 @@ import AddEditNews from "./AddEditNews";
 import {formatDate, upFirstLetter} from "@/helpers/HelperUtil";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import HistoryNews from "@/components/news/HistoryNews.vue";
 
 export default {
     name: "NewsTable",
-    components: {ActionButton, ToolbarMenu, AddEditNews, NewsView},
+    components: {HistoryNews, ActionButton, ToolbarMenu, AddEditNews, NewsView},
     data() {
         return {
             lazyParams: {
@@ -146,12 +157,14 @@ export default {
             deleteVisible: false,
             rejectVisible: false,
             newsViewVisible: false,
+            historyNewsVisible: false,
             submitted: false,
             categories: null,
             newsData: null,
             allNews: [],
             newsCount: 0,
             selectedNews: false,
+            selectedHistoryNews: [],
             filters: {
                 'global': {value: null, matchMode: FilterMatchMode.CONTAINS},
                 'question': {value: null, matchMode: FilterMatchMode.CONTAINS},
@@ -196,6 +209,11 @@ export default {
     mounted() {
         this.emitter.on('newsViewModalClose', data => {
             this.newsViewVisible = data;
+        });
+
+        this.emitter.on('historyNewsModalClose', data => {
+          this.historyNewsVisible = data
+          this.selectedHistoryNews = []
         });
 
         this.emitter.on('addEditNewsDialogHide', data => {
@@ -394,6 +412,19 @@ export default {
             this.newsViewVisible = true;
         },
 
+        historyNews(data) {
+          this.newsService.getHistoryNews(data.id).then(res => {
+            this.selectedHistoryNews = res.data
+          }).catch(error => {
+            this.$toast.add({
+              severity: "error",
+              summary: error,
+              life: 3000,
+            });
+          })
+          this.historyNewsVisible = true;
+        },
+
         /**
          * SEND NEWS TO MODERATOR ACTION
          */
@@ -529,7 +560,7 @@ export default {
         this.getAllNews();
         this.getCategories();
         this.getRoles();
-      
+
     },
 
     computed: {
@@ -569,18 +600,24 @@ export default {
         return [
           {
             label: this.$t('common.show'),
-            icon: "pi pi-eye",
+            icon: "fa-solid fa-eye",
             command: () => {this.newsView(this.actionsNode)},
           },
           {
+            label: this.$t('common.history'),
+            icon: "fa-solid fa-clock-rotate-left",
+            visible: this.isAdmin || this.isModer || this.isPublisher,
+            command: () => {this.historyNews(this.actionsNode);},
+          },
+          {
             label: this.$t('common.edit'),
-            icon: "pi pi-pencil",
+            icon: "fa-solid fa-pencil",
             visible: this.actionsNode?.history.status.id ===this.statuses.created || this.isAdmin || this.isModer || this.isEnuWebAdmin || this.isEnuWebFacAdmin,
             command: () => {this.editNews(this.actionsNode)},
           },
           {
             label: this.$t('common.delete'),
-            icon: "pi pi-trash",
+            icon: "fa-solid fa-trash-can",
             visible: this.actionsNode?.history.status.id ===this.statuses.created || this.isAdmin|| this.isEnuWebAdmin || this.isEnuWebFacAdmin,
             command: () => {this.delNews(this.actionsNode.id)},
           },

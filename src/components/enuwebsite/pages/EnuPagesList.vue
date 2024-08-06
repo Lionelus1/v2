@@ -1,66 +1,58 @@
 <template>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <div class="col-12">
-    <TitleBlock :title="$t('web.pageLink')" />
-    <div class="card" v-if="isWebAdmin || isWebFacAdmin" >
-      <Button :label="$t('web.addPage')" icon="pi pi-plus" class="ml-2" @click="createPage" />
-    </div>
-    <div class="card" v-if="findRole(null, 'enu_web_admin')">
-      <SelectSiteSlug @onSelect="onSlugSelect" />
-    </div>
-    <div class="card">
-      <TabView>
-        <TabPanel :header="$t('web.properties')">
-          <DataTable :value="pages" responsiveLayout="scroll" :lazy="true" dataKey="enu_page_id" :loading="loading"
-            :rows="10" :rowHover="true" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
-            <template #header>
-              <div class="text-right">
-                <div class="p-input-icon-left">
-                  <i class="pi pi-search" />
-                  <InputText type="search" v-model="lazyParams.searchText" :placeholder="$t('common.search')"
-                    @search="getPages" />
-                  <Button icon="pi pi-search" class="ml-1" @click="getPages" />
-                </div>
-              </div>
-            </template>
-            <template #empty>{{ this.$t("common.recordsNotFound") }}</template>
-            <template #loading>{{ this.$t("common.recordsLoading") }}</template>
-            <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
-              <template #body="{ data }">
-                {{
-                  $i18n.locale === 'kz' ? data.title_kz : $i18n.locale === 'ru' ? data.title_ru :
-                  data.title_en
-                }}
-              </template>
-            </Column>
-            <Column field="is_landing" header="Landing page" sortable>
-              <template #body="{ data }">
-                {{ data.is_landing ? 'Landing page' : '' }}
-              </template>
-            </Column>
-            <Column field="create_date" :header="$t('faq.createDate')" sortable>
-              <template #body="{ data }">
-                {{ formatDate(data.create_date) }}
-              </template>
-            </Column>
-            <!-- <Column field="faculty_name" :header="$t('web.facultyName')" sortable>
+    <TitleBlock :title="$t('web.pageLink')"/>
+    <BlockUI v-if="haveAccess" :blocked="loading">
+      <ToolbarMenu :data="toolbarMenus" @search="initSearch($event)" :search="true"/>
+      <div class="card" v-if="findRole(null, 'enu_web_admin')">
+        <SelectSiteSlug @onSelect="onSlugSelect"/>
+      </div>
+      <div class="card">
+        <TabView>
+          <TabPanel :header="$t('web.properties')">
+            <DataTable :value="pages" responsiveLayout="scroll" :lazy="true" dataKey="enu_page_id" :loading="loading"
+                       :rows="10" :rowHover="true" :paginator="true" :totalRecords="total" @page="onPage" @sort="onSort">
+              <template #empty>{{ this.$t("common.recordsNotFound") }}</template>
+              <template #loading>{{ this.$t("common.recordsLoading") }}</template>
+              <Column :field="'title_' + $i18n.locale" :header="$t('common.nameIn')" sortable>
                 <template #body="{ data }">
-                    {{ $i18n.locale === 'kz' ? data.faculty_name.faculty_name_kz : $i18n.locale === 'ru' ? data.faculty_name.faculty_name_ru :
-                        data.faculty_name.faculty_name_en }}
+                  {{
+                    $i18n.locale === 'kz' ? data.title_kz : $i18n.locale === 'ru' ? data.title_ru :
+                        data.title_en
+                  }}
                 </template>
-            </Column> -->
-            <Column header="" style="text-align: right;">
-              <template #body="{ data }">
-                <ActionButton :show-label="true" :items="initItems" @toggle="toggle(data)" />
-              </template>
-            </Column>
-          </DataTable>
-        </TabPanel>
-        <TabPanel :header="$t('web.history')" @click="getTableLogs()">
-          <WebLogs :TN="TN" :key="TN" />
-        </TabPanel>
-      </TabView>
-
+              </Column>
+              <Column field="is_landing" header="Landing page" sortable>
+                <template #body="{ data }">
+                  {{ data.is_landing ? 'Landing page' : '' }}
+                </template>
+              </Column>
+              <Column field="create_date" :header="$t('faq.createDate')" sortable>
+                <template #body="{ data }">
+                  {{ formatDate(data.create_date) }}
+                </template>
+              </Column>
+              <!-- <Column field="faculty_name" :header="$t('web.facultyName')" sortable>
+                  <template #body="{ data }">
+                      {{ $i18n.locale === 'kz' ? data.faculty_name.faculty_name_kz : $i18n.locale === 'ru' ? data.faculty_name.faculty_name_ru :
+                          data.faculty_name.faculty_name_en }}
+                  </template>
+              </Column> -->
+              <Column header="" style="text-align: right;">
+                <template #body="{ data }">
+                  <ActionButton :show-label="true" :items="initItems" @toggle="toggle(data)"/>
+                </template>
+              </Column>
+            </DataTable>
+          </TabPanel>
+          <TabPanel :header="$t('web.history')" @click="getTableLogs()">
+            <WebLogs :TN="TN" :key="TN"/>
+          </TabPanel>
+        </TabView>
+      </div>
+    </BlockUI>
+    <div v-else class="card">
+      <Access textMode="short" :showLogo="false" returnMode="back"></Access>
     </div>
   </div>
 
@@ -71,20 +63,22 @@
 </template>
 
 <script>
-import { EnuWebService } from "@/service/enu.web.service";
+import {EnuWebService} from "@/service/enu.web.service";
 import PageView from "@/components/enuwebsite/PageView.vue";
-import { formatDate } from "@/helpers/HelperUtil";
-import { FileService } from "../../../service/file.service";
-import { downloadRoute, findRole, fileRoute, getHeader, smartEnuApi } from "../../../config/config";
+import {formatDate} from "@/helpers/HelperUtil";
+import {FileService} from "../../../service/file.service";
+import {downloadRoute, findRole, fileRoute, getHeader, smartEnuApi} from "../../../config/config";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
 import AddPage from "@/components/enuwebsite/pages/AddPage.vue";
 import TitleBlock from "@/components/TitleBlock.vue";
 import SelectSiteSlug from "@/components/enuwebsite/SelectSiteSlug.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import Access from "@/pages/Access.vue";
 
 export default {
   name: "EnuPagesList",
-  components: { ActionButton, SelectSiteSlug, TitleBlock, AddPage, PageView, WebLogs },
+  components: {Access, ToolbarMenu, ActionButton, SelectSiteSlug, TitleBlock, AddPage, PageView, WebLogs},
   data() {
     return {
       pages: [],
@@ -119,12 +113,12 @@ export default {
         sortField: null,
         sortOrder: 0,
         slug: localStorage.getItem('selectedSlug') ? JSON.parse(localStorage.getItem('selectedSlug')).slug : null,
-        responsibleUserId: this.setResponsibleUserId()
       },
       total: 0,
       fileService: new FileService(),
       fileList: [],
-      actionsNode: null
+      actionsNode: null,
+      haveAccess: true
     }
   },
   created() {
@@ -136,7 +130,7 @@ export default {
       this.pageView = data;
     });
     this.emitter.on('pageCreateEditMsg', () => {
-      this.$toast.add({ severity: "success", summary: this.$t("common.success"), life: 3000 });
+      this.$toast.add({severity: "success", summary: this.$t("common.success"), life: 3000});
     })
     this.emitter.on('pageCreated', _ => {
       this.display = false;
@@ -163,7 +157,11 @@ export default {
         this.loading = false;
       }).catch(error => {
         this.loading = false;
-        this.$toast.add({ severity: "error", summary: error, life: 3000 });
+        if (error?.response?.status === 403) {
+          this.haveAccess = false
+        } else {
+          this.$toast.add({severity: "error", summary: error, life: 3000});
+        }
       });
     },
     onPage(event) {
@@ -202,14 +200,14 @@ export default {
         }
         this.getPages();
       }).catch(error => {
-        this.$toast.add({ severity: "error", summary: error, life: 3000 });
+        this.$toast.add({severity: "error", summary: error, life: 3000});
       });
       this.deleteVisible = false;
 
     },
     onView(data) {
       if (data.is_landing) {
-        this.$router.push({ name: 'LandingPageView', params: { id: data.enu_page_id } })
+        this.$router.push({name: 'LandingPageView', params: {id: data.enu_page_id}})
       } else {
         this.selectedPage = data;
         this.pageView = true;
@@ -219,7 +217,7 @@ export default {
       /*this.addButtonName = this.onSavePage;
       this.display = true;
       this.formData = data;*/
-      this.$router.push({ name: 'EditPage', params: { id: data.enu_page_id, pageData: data } });
+      this.$router.push({name: 'EditPage', params: {id: data.enu_page_id, pageData: data}});
     },
     onSlugSelect(event) {
       this.lazyParams.slug = event.slug;
@@ -228,6 +226,10 @@ export default {
     toggle(node) {
       this.actionsNode = node
     },
+    initSearch(searchText) {
+      this.lazyParams.searchText = searchText
+      this.getPages()
+    },
   },
   computed: {
     initItems() {
@@ -235,7 +237,6 @@ export default {
         {
           label: this.$t('common.show'),
           icon: 'fa-solid fa-eye',
-          
           command: () => {
             this.onView(this.actionsNode)
           }
@@ -257,6 +258,18 @@ export default {
         },
 
       ];
+    },
+    toolbarMenus() {
+      return [
+        {
+          label: this.$t('web.addPage'),
+          icon: "pi pi-plus",
+          visible: this.isWebAdmin || this.isWebFacAdmin,
+          command: () => {
+            this.createPage()
+          },
+        },
+      ]
     }
   }
 }
