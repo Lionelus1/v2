@@ -309,9 +309,9 @@ export class MenuService {
                 visible: this.findRole('telegram') || this.findRole('main_administrator')
             },
             {
-                label: $t('Hitvision'),
+                label: $t('Hikvision'),
                 icon: 'fa-brands fa-telegram',
-                to: '/Hitvision',
+                to: '/Hikvision',
             }
         ]
     }

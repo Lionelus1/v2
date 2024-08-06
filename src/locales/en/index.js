@@ -1806,5 +1806,32 @@ export default {
         anwersru: 'Enter a answer in Russian',
         crAndUpdEdu: 'Creating and editing a question and answer'
 
-    } 
+    },
+    hikvision: {
+        employeeEntryExitReport: 'Employee Entry and Exit Report',
+        generateReport: 'Generate Report',
+        workSchedule: 'Work Schedule',
+        generatedReports: 'Generated Reports',
+        dateRange: 'Date/Date Range',
+        category: 'Category',
+        department: 'Department',
+        employee: 'Employee',
+        author: 'Author',
+        reportGenerationDate: 'Report Generation Date',
+        actions: 'Actions',
+        view: 'View',
+        export: 'Export',
+        delete: 'Delete',
+        all: 'All',
+        pps: 'PPS',
+        aup: 'AUP',
+        // add other translations here
+        workScheduleForPPS: 'Work Schedule for PPS',
+        workScheduleForEmployees: 'Work Schedule for Employees',
+        dayOff: 'Day Off',
+        reset: 'Reset',
+        save: 'Save',
+        cancel: 'Cancel',
+        // more translations
+    },
 }

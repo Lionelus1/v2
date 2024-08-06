@@ -1,37 +1,37 @@
 <template>
   <div class="dialog">
-    <h2>{{ $t('hitvision.generateReport') }}</h2>
+    <h2>{{ $t('hikvision.generateReport') }}</h2>
     <form @submit.prevent="generateReport">
       <div>
-        <label>{{ $t('hitvision.dateRange') }}</label>
+        <label>{{ $t('hikvision.dateRange') }}</label>
         <input type="date" v-model="startDate" />
         <input type="date" v-model="endDate" />
       </div>
       <div>
-        <label>{{ $t('hitvision.category') }}</label>
+        <label>{{ $t('hikvision.category') }}</label>
         <div>
-          <label><input type="checkbox" v-model="categories" value="all" />{{ $t('hitvision.all') }}</label>
-          <label><input type="checkbox" v-model="categories" value="pps" />{{ $t('hitvision.pps') }}</label>
-          <label><input type="checkbox" v-model="categories" value="aup" />{{ $t('hitvision.aup') }}</label>
+          <label><input type="checkbox" v-model="categories" value="all" />{{ $t('hikvision.all') }}</label>
+          <label><input type="checkbox" v-model="categories" value="pps" />{{ $t('hikvision.pps') }}</label>
+          <label><input type="checkbox" v-model="categories" value="aup" />{{ $t('hikvision.aup') }}</label>
           <!-- Добавьте остальные категории -->
         </div>
       </div>
       <div>
-        <label>{{ $t('hitvision.department') }}</label>
+        <label>{{ $t('hikvision.department') }}</label>
         <select v-model="department">
-          <option value="all">{{ $t('hitvision.all') }}</option>
+          <option value="all">{{ $t('hikvision.all') }}</option>
           <!-- Добавьте остальные подразделения -->
         </select>
       </div>
       <div>
-        <label>{{ $t('hitvision.employee') }}</label>
+        <label>{{ $t('hikvision.employee') }}</label>
         <select v-model="employee">
-          <option value="">{{ $t('hitvision.selectEmployee') }}</option>
+          <option value="">{{ $t('hikvision.selectEmployee') }}</option>
           <!-- Добавьте остальных сотрудников -->
         </select>
       </div>
-      <button type="submit">{{ $t('hitvision.generate') }}</button>
-      <button type="button" @click="$emit('close')">{{ $t('hitvision.cancel') }}</button>
+      <button type="submit">{{ $t('hikvision.generate') }}</button>
+      <button type="button" @click="$emit('close')">{{ $t('hikvision.cancel') }}</button>
     </form>
   </div>
 </template>

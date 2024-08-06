@@ -1804,7 +1804,33 @@ export default {
             inputErrorMessage: 'Дұрыс деректерді енгізіңіз',
             applicationObjectives: 'Өтінімнің мақсаттары',
             enteredIncorrectly: 'Қате енгіздіңіз'
-        },
-
-    }
+        }
+    },
+    hikvision: {
+        employeeEntryExitReport: 'Қызметкерлердің ғимаратқа кіру және шығуы туралы есеп',
+        generateReport: 'Есеп құрастыру',
+        workSchedule: 'Жұмыс уақыты',
+        generatedReports: 'Список сформированных отчетов',
+        dateRange: 'Күн/Күн диапазоны',
+        category: 'Категория',
+        department: 'Құрылымдық бөлімше',
+        employee: 'Сотрудник',
+        author: 'Автор',
+        reportGenerationDate: 'Есеп құрастырылған күн',
+        actions: 'Действия',
+        view: 'Просмотр',
+        export: 'Экспорт',
+        delete: 'Удалить',
+        all: 'Барлығы',
+        pps: 'ППС',
+        aup: 'АУП',
+        // add other translations here
+        workScheduleForPPS: 'Жұмыс тәртібі для ППС',
+        workScheduleForEmployees: 'Жұмыс тәртібі для сотрудников',
+        dayOff: 'Демалыс күні',
+        reset: 'Қалпына келтіру',
+        save: 'Сақтау',
+        cancel: 'Болдырмау',
+        // more translations
+    },
 }
