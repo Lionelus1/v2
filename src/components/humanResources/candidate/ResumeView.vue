@@ -193,7 +193,7 @@
         <Timeline style="align-content: flex-start" :value="languages">
           <template #opposite="slotProps">
             <div class="secondary">
-              <em>{{ slotProps.item.language['name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)] }}</em>
+              <em>{{ slotProps?.item?.language['name' + ($i18n.locale)?.charAt(0)?.toUpperCase() + ($i18n.locale).slice(1)] }}</em>
             </div>
           </template>
           <template #content="slotProps">

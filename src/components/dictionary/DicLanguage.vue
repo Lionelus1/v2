@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{console()}}
     <Dropdown
         @change="sayChange($event)" v-model="value" :class="{'p-invalid': validation}" :options="languages" :optionLabel="($i18n.locale == 'kz'? 'nameKz' : $i18n.locale == 'en' ? 'nameEn': 'nameRu')" :filter="true" :placeholder="(placeHolder != undefined ? placeHolder: $t('common.select'))">
       <template #value="slotProps">
@@ -28,18 +29,18 @@ import api from "@/service/api";
 
 export default {
   name: "DicLanguage",
+  props: {
+    modelValue: null,
+     editMode: Boolean,
+    placeHolder: String,
+    autoLoad: Boolean,
+    validation: Boolean,
+  },
   data() {
     return {
       value: this.modelValue,
       languages:  null,
     }
-  },
-  props: {
-    modelValue: null,
-    editMode: Boolean,
-    placeHolder: Text,
-    autoLoad: Boolean,
-    validation: Boolean,
   },
   emits: ['changed'],
   setup(props, context) {
@@ -87,6 +88,9 @@ export default {
     updateModel(event) {
       this.$emit('update:modelValue', this.value);
     },
+    console() {
+      this.value = this.modelValue
+    }
   }
 }
 </script>
