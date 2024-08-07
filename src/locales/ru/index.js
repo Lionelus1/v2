@@ -973,7 +973,11 @@ export default {
         choiceTime: "По выбору времени",
         errorFreeOperators: "Уже нельзя на это время записаться, выберите другую время!",
         noLunch: "Без перерыва на обед",
-        withoutWeekend: "Без выходных"
+        withoutWeekend: "Без выходных",
+        notification: "Уведомление",
+        notificationTextKz: "Напишите на казахском",
+        notificationTextRu: "Напишите на русском",
+        notificationTextEn: "Напишите на английском",
     },
     dissertation: {
         title: "Диссертационный совет",
