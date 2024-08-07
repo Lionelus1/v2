@@ -1934,6 +1934,8 @@ export default {
                 ssdfgsdfg: 'sdfgsdfg',
         },
         helpDesk: {
+                instructionNumber: "Оқыту тілі",
+                nameOftheTrainingProgram: "Оқыту бағдарламасының атауы",
                 title: 'Менің өтінімдерім',
                 creationTime: 'Құру уақыты',
                 priority: 'Басымдық',

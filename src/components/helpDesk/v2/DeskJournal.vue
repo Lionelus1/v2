@@ -63,7 +63,7 @@
                     <Column field="requestReason" :header="t('helpDesk.application.requestReason')">
                         <template #body="{ data }">
                             {{
-            data.doc.newParams.selectedPosition.value[ALIAS[$i18n.locale]]
+            data.doc.newParams == null ? "" : data.doc.newParams.selectedPosition.value[ALIAS[$i18n.locale]]
         }}
                         </template>
                     </Column>
@@ -81,7 +81,11 @@
         }}</a>
                         </template>
                     </Column>
-
+                    <Column field="fullName" :header="t('web.logUser')">
+                        <template #body="{ data }">
+                            <span>{{ data.doc?.newParams?.not_formal_student_info?.value.fullName }}</span>
+                        </template>
+                    </Column>
                     <Column style="min-width: 50px">
                         <template #body="{ data }">
                             <div v-if="data.doc?.uuid" class="flex flex-wrap column-gap-1 row-gap-1" style="margin-left: 30px">
@@ -102,6 +106,7 @@
                             </div>
                         </template>
                     </Column>
+
                 </DataTable>
             </BlockUI>
         </div>

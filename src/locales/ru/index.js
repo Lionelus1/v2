@@ -1918,6 +1918,8 @@ export default {
                 ssdfgsdfg: 'sdfgsdfg',
         },
         helpDesk: {
+                instructionNumber: "Язык обучения",
+                nameOftheTrainingProgram: "Наименование программы обучения",
                 title: 'Мои заявки',
                 creationTime: 'Время создания',
                 priority: 'Приоритет',
