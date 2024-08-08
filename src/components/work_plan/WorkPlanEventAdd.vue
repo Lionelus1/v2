@@ -1,21 +1,27 @@
 <template>
-  <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
+  <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}"
+          @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
       <!-- mastersplan -->
       <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
-        <label>{{$t("educationalPrograms.semester")}}</label>
-        <Dropdown v-model="semester" :options="semesters" optionLabel="name" optionValue="id" :placeholder="$t('educationalPrograms.semester')"/>
+        <label>{{ $t("educationalPrograms.semester") }}</label>
+        <Dropdown v-model="semester" :options="semesters" optionLabel="name" optionValue="id"
+                  :placeholder="$t('educationalPrograms.semester')"/>
         <small class="p-error" v-if="submitted && formValid.semester">{{ $t('workPlan.errors.pleaseChoose') }}</small>
       </div>
       <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
-        <label>{{$t("workPlan.content")}}</label>
+        <label>{{ $t("workPlan.content") }}</label>
         <Textarea v-model="event_name" rows="3" style="resize: vertical"/>
       </div>
       <!-- mastersplan -->
       <div class="field" v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
-        <label>{{ plan?.plan_type?.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
-        <InputText v-model="event_name" />
-        <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
+        <label>{{
+            plan?.plan_type?.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName')
+          }}</label>
+        <InputText v-model="event_name"/>
+        <small class="p-error" v-if="submitted && formValid.event_name">{{
+            $t('workPlan.errors.eventNameError')
+          }}</small>
       </div>
       <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Science || Enum.WorkPlanTypes.Masters">
         <label>{{ $t('common.startDate') }}</label>
@@ -27,25 +33,29 @@
       </div>
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('common.unit') }}</label>
-        <InputText v-model="unit" />
+        <InputText v-model="unit"/>
       </div>
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('common.planNumber') }}</label>
-        <InputText v-model="plan_number" />
+        <InputText v-model="plan_number"/>
       </div>
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('workPlan.approvalUsers') }}</label>
-        <InputText v-model="responsible_executor" />
+        <InputText v-model="responsible_executor"/>
       </div>
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('workPlan.summaryDepartment') }}</label>
         <FindUser v-model="summaryDepartment" :max="1" :user-type="3" editMode="true"/>
         <!-- <small class="p-error" v-if="submitted && formValid.summaryUser">{{ $t("common.requiredField") }}</small> -->
-        <small class="p-error" v-if="submitted && formValid.summaryUser">{{ $t('workPlan.errors.approvalUserError') }}</small>
+        <small class="p-error" v-if="submitted && formValid.summaryUser">{{
+            $t('workPlan.errors.approvalUserError')
+          }}</small>
       </div>
 
       <div class="field" v-if="plan?.plan_type?.code !== (Enum.WorkPlanTypes.Science && Enum.WorkPlanTypes.Masters)">
-        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
+        <label>{{
+            plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers')
+          }}</label>
         <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
         <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
       </div>
@@ -54,36 +64,42 @@
           <div class="field">
             <label>{{ $t('workPlan.scienceParticipants') }}</label>
             <FindUser v-model="inputSet.selectedUsers" :editMode="true" :user-type="3"></FindUser>
-            <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
+            <small class="p-error" v-if="submitted && formValid.users">{{
+                $t('workPlan.errors.approvalUserError')
+              }}</small>
           </div>
           <div class="field">
             <label for="name">{{ $t('common.role') }}</label>
             <RolesByName v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
           </div>
           <p style="text-align: right;" class="mb-3">
-            <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined"  @click="removeInputSet(index)" outlined />
+            <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times"
+                    class="p-button-danger p-button-sm p-button-outlined" @click="removeInputSet(index)" outlined/>
           </p>
         </div>
       </template>
       <!-- mastersplan -->
       <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
-        <label>{{$t("workPlan.expectingResults")}}</label>
+        <label>{{ $t("workPlan.expectingResults") }}</label>
         <Textarea v-model="result" rows="3" style="resize: vertical"/>
       </div>
       <!-- mastersplan -->
     </div>
     <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
-      <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser" />
+      <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5"
+              @click="addNewUser"/>
     </div>
     <div class="p-fluid" v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
-      <div class="field" v-if="plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science && !parentData || (parentData && parentData.quarter === 5)">
+      <div class="field"
+           v-if="plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science && !parentData || (parentData && parentData.quarter === 5)">
         <label>{{ $t('workPlan.quarter') }}</label>
-        <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
+        <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id"
+                  :placeholder="$t('common.select')"/>
         <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
       </div>
       <div class="field" v-if="isOperPlan">
         <label>{{ $t('common.suppDocs') }}</label>
-        <Textarea v-model="supporting_docs" rows="3" style="resize: vertical" />
+        <Textarea v-model="supporting_docs" rows="3" style="resize: vertical"/>
       </div>
       <div class="field" v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
         <label>{{ isOperPlan ? $t('common.additionalInfo') : $t('common.result') }}</label>
@@ -111,7 +127,7 @@ export default {
   props: ['visible', 'data', 'isMain', 'items', 'planData'],
   components: {RolesByName},
   emits: ['hide'],
- 
+
   data() {
     return {
       formData: {},
@@ -167,12 +183,12 @@ export default {
       responsible_executor: null,
       planService: new WorkPlanService(),
       Enum: Enum,
-      inputSets: [{ selectedUsers: '', selectedRole: '' }],
+      inputSets: [{selectedUsers: '', selectedRole: ''}],
       start_date: new Date,
       end_date: new Date(),
       semester: null,
       semesters: [
-        { 
+        {
           id: 1,
           name: '1'
         },
@@ -193,7 +209,7 @@ export default {
   },
 
   mounted() {
-   
+
     if (this.data)
       this.parentData = this.data;
     if (this.parentData) {
@@ -206,13 +222,13 @@ export default {
         this.selectedUsers.shift();
       }
     }
-   
+
   },
   watch: {
     summaryDepartment: {
       handler(newVal) {
         if (newVal.length === 0) {
-        this.selectedUsers.shift();
+          this.selectedUsers.shift();
         } else {
           this.selectedUsers.unshift(...newVal);
         }
@@ -222,8 +238,7 @@ export default {
   },
   created() {
     this.work_plan_id = parseInt(this.$route.params.id);
-    
-   
+
 
   },
   computed: {
@@ -283,9 +298,7 @@ export default {
       } else {
         this.selectedUsers.forEach(e => {
           userIds.push({user: e, role: null});
-            this.respUsers.push({id: e.userID, fullName: e.fullName});
-          
-          
+          this.respUsers.push({id: e.userID, fullName: e.fullName});
         });
       }
 
@@ -294,9 +307,9 @@ export default {
       }
       let resp_person_id;
       if (this.summaryDepartment && this.summaryDepartment[0]?.userID) {
-          resp_person_id = this.summaryDepartment[0].userID;
+        resp_person_id = this.summaryDepartment[0].userID;
       } else {
-          resp_person_id = null;
+        resp_person_id = null;
       }
       let data = {
         work_plan_id: this.work_plan_id,
@@ -318,10 +331,11 @@ export default {
         data.start_date = this.start_date
         data.end_date = this.end_date
       }
-      if(this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters){
+      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters) {
         data.event_name = this.event_name
         data.result = this.result
         data.semester = this.semester
+        data.resp_person_id = this.loginedUserId
       }
       this.planService.createEvent(data).then(res => {
         this.emitter.emit("workPlanEventIsAdded", {is_success: true, is_main: this.isMain});
@@ -331,24 +345,24 @@ export default {
         //this.addToArray(res.data);
       }).catch(error => {
         if (error && error.error === 'summaryuseradded') {
-          this.$toast.add({ severity: "warn", summary: this.$t('workPlan.warnAddingSummaryUser'), life: 4000 });
+          this.$toast.add({severity: "warn", summary: this.$t('workPlan.warnAddingSummaryUser'), life: 4000});
         }
       });
     },
     addToArray(data) {
       data.user = this.respUsers;
-      data.quarter = { String: JSON.stringify(this.quarter), Valid: true }
+      data.quarter = {String: JSON.stringify(this.quarter), Valid: true}
       data.status = {
         work_plan_event_status_id: 1,
-            name_ru: "Запланировано",
-            name_kz: "Жоспарланды",
-            name_en: "Planned"
+        name_ru: "Запланировано",
+        name_kz: "Жоспарланды",
+        name_en: "Planned"
       }
       this.parentItems.push(data);
     },
     validateForm() {
-      if(this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters){
-        if (this.semester != null){
+      if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters) {
+        if (this.semester != null) {
           this.formValid.semester == false
           return true
         }
@@ -372,7 +386,7 @@ export default {
       this.responsible_executor = null;
       this.supporting_docs = null;
       this.selectedUsers = [];
-      this.inputSets = [{ selectedUsers: '', selectedRole: '' }]
+      this.inputSets = [{selectedUsers: '', selectedRole: ''}]
       this.start_date = new Date()
       this.end_date = new Date()
       this.closeBasic()
@@ -381,7 +395,7 @@ export default {
       this.$emit('hide')
     },
     addNewUser() {
-      this.inputSets.push({ selectedUsers: null, selectedRole: null })
+      this.inputSets.push({selectedUsers: null, selectedRole: null})
     },
     removeInputSet(index) {
       this.inputSets.splice(index, 1);
