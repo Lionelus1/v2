@@ -1957,7 +1957,8 @@ export default {
         ssdfgsdfg: 'sdfgsdfg',
     },
     helpDesk: {
-        title: 'Менің өтінімдерім',
+        instructionNumber: "Оқыту тілі",
+        nameOftheTrainingProgram: "Оқыту бағдарламасының атауы", title: 'Менің өтінімдерім',
         creationTime: 'Құру уақыты',
         priority: 'Басымдық',
         responsible: 'Жауапты',

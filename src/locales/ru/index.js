@@ -1944,7 +1944,8 @@ export default {
         ssdfgsdfg: 'sdfgsdfg',
     },
     helpDesk: {
-        title: 'Мои заявки',
+        instructionNumber: "Язык обучения",
+        nameOftheTrainingProgram: "Наименование программы обучения", title: 'Мои заявки',
         creationTime: 'Время создания',
         priority: 'Приоритет',
         responsible: 'Ответственный',
