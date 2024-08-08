@@ -1464,7 +1464,11 @@ export default {
         choiceTime: "Choice of time",
         errorFreeOperators: "It is no longer possible to book for this time, please choose another time!",
         noLunch: "No lunch break",
-        withoutWeekend: "Without weekend"
+        withoutWeekend: "Without weekend",
+        notification: "Notification",
+        notificationTextKz: "Write in Kazakh",
+        notificationTextRu: "Write in Russian",
+        notificationTextEn: "Write in English",
     },
     educomplex: {
         title: "Educational-methodical complex of the discipline",

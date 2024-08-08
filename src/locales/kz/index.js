@@ -981,7 +981,11 @@ export default {
         choiceTime: "Уақыт таңдау бойынша",
         errorFreeOperators: "Бұл уақытқа орын қалған жоқ басқа уақытты таңдаңыз!",
         noLunch: "Түскі үзіліссіз",
-        withoutWeekend: "Демалыссыз"
+        withoutWeekend: "Демалыссыз",
+        notification: "Хабарлама",
+        notificationTextKz: "Қазақ тілінде жазыңыз",
+        notificationTextRu: "Орыс тілінде жазыңыз",
+        notificationTextEn: "Ағылшын тілінде жазыңыз",
     },
 
     dissertation: {
