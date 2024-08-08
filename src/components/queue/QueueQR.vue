@@ -179,7 +179,7 @@
                   <span v-if="locale === 'en'">Receiving operator: </span>
                   <b>{{ queinfo.queueName }}</b>
                 </div>
-                <div class="dashed text-left">
+                <div class="dashed text-left" v-if="queinfo.notification_text">
                   <span v-if="locale === 'kz'">Хабарлама: </span>
                   <span v-if="locale === 'ru'">Уведомление: </span>
                   <span v-if="locale === 'en'">Notification: </span>
