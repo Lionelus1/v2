@@ -6,7 +6,14 @@
     <div class="hint" v-if="showOverlay">
       <div class="hint-popup">
         {{ $t("common.hint") }}
-        <Button style="float: right; margin-top: 10px" class="p-button-outlined" @click="hideOverlay">OK</Button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+          <div style="display: flex; align-items: center;">
+            <Checkbox v-model="showAnymore" :binary="true" style="margin-left: 10px;" />
+            <div style="margin-left: 10px">{{ $t("common.doNotShowAnymore") }}</div>
+          </div>
+          <Button class="p-button-outlined" @click="hideOverlay">OK</Button>
+        </div>
+
       </div>
     </div>
     <div :class="[sidebarClass,{ 'hide_items': hasClass }]" @click="onSidebarClick" v-show="isSidebarVisible()" :style="{ width: menuWidth + 'px' }"
@@ -52,6 +59,7 @@ import AppFooter from '../AppFooter.vue';
 import PositionChangeDialog from './PositionChangeDialog.vue';
 import {isNumber} from "chart.js/helpers";
 import Bold from "quill/formats/bold";
+import logger from "quill/core/logger";
 
 export default {
   setup() {
@@ -75,6 +83,7 @@ export default {
       menuWidth: 85,
       hasClass: false,
       showOverlay: false,
+      showAnymore: false,
       fixedMenu: localStorage.getItem('fixedMenu') === 'true' || false
     }
   },
@@ -289,7 +298,52 @@ export default {
     hideOverlay() {
       this.showOverlay = false;
       localStorage.setItem("show-hint", true);
+      this.saveThemeStyles()
     },
+    changeShowAnymore(value) {
+      this.showAnymore = value;
+    },
+    saveThemeStyles(){
+      axios
+          .post(smartEnuApi + "/smartenu/settings/insert",{
+                show_anymore: this.showAnymore,
+              },
+              {
+                headers: getHeader()
+              },).then((res) => {
+
+      }).catch((err) => {
+        if (err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+
+        this.$toast.add({
+          severity: "error",
+          detail: this.$t("common.message.saveError"),
+          life: 3000,
+        });
+
+        this.loading = false;
+      });
+    },
+    getThemeStyles() {
+      axios
+          .get(smartEnuApi + "/smartenu/settings/get",
+              {
+                headers: getHeader()
+              },
+          )
+          .then((res) => {
+            console.log(res.data.enu_settings)
+            if (res.data && res.data.enu_settings){
+              this.changeShowAnymore(res.data.enu_settings.show_anymore)
+              this.showOverlay = !res.data.enu_settings.show_anymore
+            }
+          })
+          .catch((err) => {
+            console.error("Error loading data:", err);
+          });
+    }
   },
   computed: {
     containerClass() {
@@ -341,6 +395,7 @@ export default {
       localStorage.removeItem('showPositionsDialog');
     }
     this.loadMenuIcon()
+    this.getThemeStyles()
   },
   beforeUpdate() {
     if (this.mobileMenuActive)
