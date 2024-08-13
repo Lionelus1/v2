@@ -2075,5 +2075,17 @@ export default {
         anwersen: 'Enter a answer in English',
         anwersru: 'Enter a answer in Russian',
         crAndUpdEdu: 'Creating and editing a question and answer'
+    },
+    enuTopicSettings: {
+        normalVersion: 'Normal version',
+        inputType: 'Input Style',
+        inputOutlined: 'Outlined',
+        inputFilled: 'Filled',
+        rippleEffect: 'Ripple Effect',
+        menuColor: 'Menu Color',
+        menuColorDark: 'Dark',
+        menuColorLight: 'Light',
+        epg: 'Profession/EPG',
+        ep: 'Specialization/EP'
     }
 }
