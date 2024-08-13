@@ -22,8 +22,8 @@
             </div>
             <template #footer>
                 <Button :label="t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger" @click="close('newPublicationDialog')" />
-                <Button :label="t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2" :disabled="!selectedDirection || !selectedPosition"
-                    @click="createHelpDesk" />
+                <Button :label="t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2"
+                    :disabled="!selectedDirection || !selectedPosition || loadingOnCreate" :loading="loadingOnCreate" @click="createHelpDesk" />
             </template>
         </Dialog>
         <div>
@@ -563,7 +563,9 @@ const getCategory = () => {
             });
         });
 };
+const loadingOnCreate = ref(false)
 const createHelpDesk = async () => {
+    loadingOnCreate.value = true;
     let currentDate = new Date();
 
     // Extract day, month, and year
@@ -578,7 +580,6 @@ const createHelpDesk = async () => {
     // Construct the formatted date string
     let formattedDate = `${day}.${month}.${year}`;
     delete user.photo;
-
     await camundaServiceInstance.startProcess("scope", {
         application: selectedDirection.value,
         user: user,
@@ -624,6 +625,7 @@ const createHelpDesk = async () => {
 
     //     loading.value = false;
     //   });
+    loadingOnCreate.value = false;
 };
 const getTicket = () => {
     loading.value = true;
