@@ -1994,6 +1994,15 @@ export default {
         anwersru: 'Введите ответ на русском',
         author: 'Автор вопроса',
         crAndUpdEdu: 'Создание и редактирование вопроса и ответа'
+    },
+    enuTopicSettings: {
+        normalVersion: 'Нормальный вариант',
+        inputType: 'Стиль ввода',
+        inputOutlined: 'Упомянутый',
+        inputFilled: 'Заполненный',
+        rippleEffect: 'Волновой эффект',
+        menuColor: 'Цвет меню',
+        menuColorDark: 'Темный',
+        menuColorLight: 'Светлый',
     }
-
 }
