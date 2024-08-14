@@ -1375,7 +1375,8 @@ export default {
         plannedTesting: "Planned testing",
         dissertationLanguage: "Dissertation language",
         conclusionOfDepartment: "Mark of completion or conclusion of the department",
-        semester: "Semester"
+        semester: "Semester",
+        doctorsThesisInfo: "Information about the doctoral dissertation"
     },
     queue: {
 

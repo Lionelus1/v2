@@ -35,7 +35,7 @@
                  :filtered="filtered"/>
 
 
-    <WorkPlanMastersTable v-if="plan && planDoc && isMastersPlan" :data="data" :items="initItems" @onPage="onPage"
+    <DoctorsMastersTable v-if="plan && planDoc && (isMastersPlan || isDoctorsPlan)" :data="data" :items="initItems" @onPage="onPage"
                           @onExpand="onExpand" @onToggle="actionsToggle" :total="total" :loading="loading"/>
   </div>
 
@@ -139,7 +139,7 @@ import {DocService} from "@/service/doc.service";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import DocState from "@/enum/docstates/index";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
-import WorkPlanMastersTable from "./table/WorkPlanMastersTable.vue";
+import DoctorsMastersTable from "./table/DoctorsMastersTable.vue";
 
 export default {
   name: "WorkPlanEvent",
@@ -153,7 +153,7 @@ export default {
     WorkPlanEventAdd,
     // WorkPlanEventResultModal,
     DocSignaturesInfo,
-    WorkPlanMastersTable
+    DoctorsMastersTable
   },
   data() {
     return {
@@ -1130,6 +1130,9 @@ export default {
     isMastersPlan() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Masters
     },
+    isDoctorsPlan() {
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Doctors
+    },
     // isGenerateActVisible(){
     //   const currentMonth = new Date().getMonth() + 1;
     //   let receivedDate = null;
@@ -1181,7 +1184,7 @@ export default {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
           color: this.isFinish ? "" : "green",
-          visible: (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters && (!this.isFinish || this.isApproval)) || this.isFinish && (this.planDoc && !(this.isCreatedPlan || this.isPlanUnderRevision)),
+          visible: ((this.isMastersPlan || this.isDoctorsPlan) && (!this.isFinish || this.isApproval)) || this.isFinish && (this.planDoc && !(this.isCreatedPlan || this.isPlanUnderRevision)),
           command: () => {
             if (this.isFinish) {
               this.showDialog(this.dialog.planView)
@@ -1200,7 +1203,7 @@ export default {
         },
         {
           label: this.$t('workPlan.reports'),
-          visible: this.isFinish && (!this.isSciencePlan && (this.isApproval || this.isPlanCreator || this.isAdmin)) && (!this.isMastersPlan || this.isPlanApproved),
+          visible: this.isFinish && (!this.isSciencePlan && (this.isApproval || this.isPlanCreator || this.isAdmin)) && (!(this.isMastersPlan || this.isDoctorsPlan) || this.isPlanApproved),
           command: () => {
             this.navigateToReports()
           }
@@ -1237,9 +1240,9 @@ export default {
           }
         },
         {
-          label: this.$t('workPlan.mastersThesisInfo'),
+          label: this.$t(this.isMastersPlan ? 'workPlan.mastersThesisInfo' : 'workPlan.doctorsThesisInfo'),
           icon: 'pi pi-file',
-          visible: (this.isPlanCreator) && !this.isFinish && this.plan?.plan_type?.code == Enum.WorkPlanTypes.Masters,
+          visible: (this.isPlanCreator) && !this.isFinish && (this.isMastersPlan || this.isDoctorsPlan),
           color: 'grey',
           command: () => {
             this.showDialog(this.dialog.info)

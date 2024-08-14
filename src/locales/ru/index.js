@@ -1423,7 +1423,8 @@ export default {
         plannedTesting: "Планируемая апробация",
         dissertationLanguage: "Язык диссертации",
         conclusionOfDepartment: "Отметка о выполнении или заключение кафедры",
-        semester: "Семестр"
+        semester: "Семестр",
+        doctorsThesisInfo: "Информация о докторской диссертации"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

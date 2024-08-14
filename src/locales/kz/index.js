@@ -1433,7 +1433,8 @@ export default {
         plannedTesting: "Жоспарлы тестілеу",
         dissertationLanguage: "Диссертация тілі",
         conclusionOfDepartment: "Кафедраны аяқтау немесе қорытындылау белгісі",
-        semester: "Семестр"
+        semester: "Семестр",
+        doctorsThesisInfo: "Докторлық диссертация туралы мәлімет"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",

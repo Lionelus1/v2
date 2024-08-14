@@ -31,6 +31,7 @@
 import {ref, reactive, onMounted} from "vue"
 import {DocService} from "@/service/doc.service";
 import {useToast} from "primevue/usetoast";
+import Enum from "@/enum/workplan/index";
 
 const props = defineProps(['plan', 'visible'])
 const docService = new DocService()
@@ -40,6 +41,7 @@ const emit = defineEmits(['hide'])
 const fields = reactive({info: null, id: null});
 const loading = ref(true);
 const data = ref(null);
+
 onMounted(() => {
   docService.getAdditionalInfo(props.plan?.work_plan_id).then(res => {
     if (res.data?.description !== null) {
@@ -153,12 +155,28 @@ onMounted(() => {
           error: null
         }
       ]
+    
       data.value[2].value = props.plan?.lang
+
+      if(props.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors){
+        data.value.splice(3, 0,  {
+          name: "foreign_consultant",
+          label: "dissertation.foreignConsultantInfo",
+          field: "FindUser",
+          value: null,
+          error: null
+        });
+      }
+
       props.plan?.doc_info?.params.forEach(element => {
         if (element.name === "sci_advisor") {
           data.value[1].value = element.value
         }
+        if (element.name === "foreign_consultant") {
+          data.value[3].value = element.value
+        }
       });
+
       fields.info = data
     }
     loading.value = false
