@@ -1,30 +1,9 @@
 <template>
-  <Dialog
-    :header="$t('workPlan.addEvent')"
-    v-model:visible="showWorkPlanEventModal"
-    :style="{ width: '600px' }"
-    @hide="closeBasic"
-    :close-on-escape="true"
-  >
+  <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{ width: '600px' }"
+    @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
       <!-- mastersplan -->
-      <div class="field" v-if="isMastersPlan || isDoctorsPlan">
-        <label>{{ $t('educationalPrograms.semester') }}</label>
-        <Dropdown
-          v-model="semester"
-          :options="semesters"
-          optionLabel="name"
-          optionValue="id"
-          :placeholder="$t('educationalPrograms.semester')"
-        />
-        <small class="p-error" v-if="submitted && formValid.semester">{{
-          $t('workPlan.errors.pleaseChoose')
-        }}</small>
-      </div>
-      <div class="field" v-if="isMastersPlan || isDoctorsPlan">
-        <label>{{ $t('workPlan.content') }}</label>
-        <Textarea v-model="event_name" rows="3" style="resize: vertical" />
-      </div>
+      <DoctorsMastersAddEvent :plan="plan" @update-data="updateData" />
       <!-- mastersplan -->
       <div class="field" v-if="!isMastersPlan && !isDoctorsPlan">
         <label>{{
@@ -37,73 +16,42 @@
           $t('workPlan.errors.eventNameError')
         }}</small>
       </div>
-      <div class="field" v-if="isSciencePlan || isMastersPlan || isDoctorsPlan">
+      <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan)">
         <label>{{ $t('common.startDate') }}</label>
-        <PrimeCalendar
-          v-model="start_date"
-          dateFormat="dd.mm.yy"
-          showIcon
-          :showButtonBar="true"
-        ></PrimeCalendar>
+        <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field" v-if="isSciencePlan || isMastersPlan || isDoctorsPlan">
+      <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan)">
         <label>{{ $t('common.endDate') }}</label>
-        <PrimeCalendar
-          v-model="end_date"
-          dateFormat="dd.mm.yy"
-          showIcon
-          :showButtonBar="true"
-        ></PrimeCalendar>
+        <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div
-        class="field"
-        v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper"
-      >
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('common.unit') }}</label>
         <InputText v-model="unit" />
       </div>
-      <div
-        class="field"
-        v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper"
-      >
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('common.planNumber') }}</label>
         <InputText v-model="plan_number" />
       </div>
-      <div
-        class="field"
-        v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper"
-      >
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('workPlan.approvalUsers') }}</label>
         <InputText v-model="responsible_executor" />
       </div>
-      <div
-        class="field"
-        v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper"
-      >
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('workPlan.summaryDepartment') }}</label>
-        <FindUser
-          v-model="summaryDepartment"
-          :max="1"
-          :user-type="3"
-          editMode="true"
-        />
+        <FindUser v-model="summaryDepartment" :max="1" :user-type="3" editMode="true" />
         <!-- <small class="p-error" v-if="submitted && formValid.summaryUser">{{ $t("common.requiredField") }}</small> -->
         <small class="p-error" v-if="submitted && formValid.summaryUser">{{
           $t('workPlan.errors.approvalUserError')
         }}</small>
       </div>
 
-      <div class="field" v-if="!isSciencePlan && !isMastersPlan">
+      <div class="field" v-if="!isSciencePlan && !isMastersPlan && !isDoctorsPlan">
         <label>{{
           plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper
             ? $t('workPlan.summary')
             : $t('workPlan.approvalUsers')
         }}</label>
-        <FindUser
-          v-model="selectedUsers"
-          :editMode="true"
-          :user-type="3"
-        ></FindUser>
+        <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
         <small class="p-error" v-if="submitted && formValid.users">{{
           $t('workPlan.errors.approvalUserError')
         }}</small>
@@ -112,66 +60,36 @@
         <div v-for="(inputSet, index) in inputSets" :key="index">
           <div class="field">
             <label>{{ $t('workPlan.scienceParticipants') }}</label>
-            <FindUser
-              v-model="inputSet.selectedUsers"
-              :editMode="true"
-              :user-type="3"
-            ></FindUser>
+            <FindUser v-model="inputSet.selectedUsers" :editMode="true" :user-type="3"></FindUser>
             <small class="p-error" v-if="submitted && formValid.users">{{
               $t('workPlan.errors.approvalUserError')
             }}</small>
           </div>
           <div class="field">
             <label for="name">{{ $t('common.role') }}</label>
-            <RolesByName
-              v-model="inputSet.selectedRole"
-              roleGroupName="workplan_science"
-            ></RolesByName>
+            <RolesByName v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
           </div>
           <p style="text-align: right" class="mb-3">
-            <Button
-              v-if="inputSets && inputSets.length > 1 && index > 0"
-              icon="pi pi-times"
-              class="p-button-danger p-button-sm p-button-outlined"
-              @click="removeInputSet(index)"
-              outlined
-            />
+            <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times"
+              class="p-button-danger p-button-sm p-button-outlined" @click="removeInputSet(index)" outlined />
           </p>
         </div>
       </template>
-      <!-- mastersplan -->
-      <div class="field" v-if="isMastersPlan || isDoctorsPlan">
-        <label>{{ $t('workPlan.expectingResults') }}</label>
-        <Textarea v-model="result" rows="3" style="resize: vertical" />
-      </div>
-      <!-- mastersplan -->
     </div>
     <div class="field" v-if="isSciencePlan">
-      <Button
-        :label="$t('common.add')"
-        icon="fa-solid fa-add"
-        class="p-button-sm p-button-outlined px-5"
-        @click="addNewUser"
-      />
+      <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5"
+        @click="addNewUser" />
     </div>
     <div class="p-fluid" v-if="!isMastersPlan && !isDoctorsPlan">
-      <div
-        class="field"
-        v-if="
-          (plan &&
-            plan.plan_type.code !== Enum.WorkPlanTypes.Science &&
-            !parentData) ||
-          (parentData && parentData.quarter === 5)
-        "
-      >
+      <div class="field" v-if="
+        (plan &&
+          plan.plan_type.code !== Enum.WorkPlanTypes.Science &&
+          !parentData) ||
+        (parentData && parentData.quarter === 5)
+      ">
         <label>{{ $t('workPlan.quarter') }}</label>
-        <Dropdown
-          v-model="quarter"
-          :options="quarters"
-          optionLabel="name"
-          optionValue="id"
-          :placeholder="$t('common.select')"
-        />
+        <Dropdown v-model="quarter" :options="quarters" optionLabel="name" optionValue="id"
+          :placeholder="$t('common.select')" />
         <small class="p-error" v-if="submitted && formValid.quarter">{{
           $t('workPlan.errors.quarterError')
         }}</small>
@@ -183,24 +101,16 @@
       <div class="field" v-if="!isMastersPlan && !isDoctorsPlan">
         <label>{{
           isOperPlan ? $t('common.additionalInfo') : $t('common.result')
-        }}</label>
+          }}</label>
         <Textarea v-model="result" rows="3" style="resize: vertical" />
       </div>
     </div>
 
     <template #footer>
-      <Button
-        :label="$t('common.cancel')"
-        icon="pi pi-times"
-        class="p-button-rounded p-button-danger"
-        @click="closeBasic"
-      />
-      <Button
-        :label="$t('common.add')"
-        icon="pi pi-check"
-        class="p-button-rounded p-button-success mr-2"
-        @click="createEvent"
-      />
+      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
+        @click="closeBasic" />
+      <Button :label="$t('common.add')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
+        @click="createEvent" />
     </template>
   </Dialog>
 </template>
@@ -210,11 +120,13 @@ import { getHeader, smartEnuApi } from '@/config/config';
 import { WorkPlanService } from '@/service/work.plan.service';
 import Enum from '@/enum/workplan/index';
 import RolesByName from '@/components/smartenu/RolesByName.vue';
+import DoctorsMastersAddEvent from './event_add/DoctorsMastersAddEvent.vue';
+import { ref } from 'vue';
 
 export default {
   name: 'WorkPlanEventAdd',
   props: ['visible', 'data', 'isMain', 'items', 'planData'],
-  components: { RolesByName },
+  components: { RolesByName, DoctorsMastersAddEvent },
   emits: ['hide'],
 
   data() {
@@ -275,25 +187,7 @@ export default {
       inputSets: [{ selectedUsers: '', selectedRole: '' }],
       start_date: new Date(),
       end_date: new Date(),
-      semester: null,
-      semesters: [
-        {
-          id: 1,
-          name: '1',
-        },
-        {
-          id: 2,
-          name: '2',
-        },
-        {
-          id: 3,
-          name: '3',
-        },
-        {
-          id: 4,
-          name: '4',
-        },
-      ],
+      comingData: ref(),
     };
   },
 
@@ -308,20 +202,6 @@ export default {
       if (this.selectedUsers.length > 0) {
         this.selectedUsers.shift();
       }
-    }
-    if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
-      this.semesters.push(
-        ...[
-          {
-            id: 5,
-            name: '5',
-          },
-          {
-            id: 6,
-            name: '6',
-          },
-        ]
-      );
     }
   },
   watch: {
@@ -398,11 +278,7 @@ export default {
       let userIds = [];
       this.respUsers = [];
 
-      if (
-        this.plan &&
-        this.plan.plan_type &&
-        this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science
-      ) {
+      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Science) {
         userIds = this.inputSets.reduce((acc, inputSet) => {
           inputSet.selectedUsers.forEach((user) => {
             acc.push({
@@ -437,28 +313,26 @@ export default {
         result: this.result,
         resp_person_ids: userIds,
       };
-      if (
-        this.plan &&
-        this.plan.plan_type &&
-        this.plan.plan_type.code === this.Enum.WorkPlanTypes.Oper
-      ) {
+      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Oper) {
         data.unit = this.unit;
         data.plan_number = this.plan_number;
         data.responsible_executor = this.responsible_executor;
         data.supporting_docs = this.supporting_docs;
       }
 
-      if (
-        (this.plan &&
-          this.plan.plan_type &&
-          this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) ||
-        this.Enum.WorkPlanTypes.Masters
-      ) {
+      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Science) {
         data.start_date = this.start_date;
         data.end_date = this.end_date;
       }
-      if (this.isMastersPlan || this.isDoctorsPlan) {
-        data.semester = this.semester;
+      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Science) {
+        data.start_date = this.start_date;
+        data.end_date = this.end_date;
+      }
+      if (
+        this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters ||
+        this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Doctors
+      ) {
+        data = { ...data, ...this.comingData };
       }
       this.planService
         .createEvent(data)
@@ -498,13 +372,8 @@ export default {
       this.parentItems.push(data);
     },
     validateForm() {
-      if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters) {
-        if (this.semester != null) {
-          this.formValid.semester == false;
-          return true;
-        }
-        this.formValid.semester = true;
-        return false;
+      if (this.isMastersPlan || this.isDoctorsPlan) {
+        return true;
       }
       this.formValid.event_name = !this.event_name;
       this.formValid.summaryUser = !this.summaryDepartment.length === 0;
@@ -513,12 +382,12 @@ export default {
 
       return this.parentData
         ? !this.formValid.event_name &&
-            !this.formValid.users &&
-            !this.formValid.summaryUser
+        !this.formValid.users &&
+        !this.formValid.summaryUser
         : !this.formValid.event_name &&
-            !this.formValid.users &&
-            !this.formValid.quarter &&
-            !this.formValid.summaryUser;
+        !this.formValid.users &&
+        !this.formValid.quarter &&
+        !this.formValid.summaryUser;
     },
     clearModel() {
       this.event_name = null;
@@ -543,6 +412,9 @@ export default {
     },
     removeInputSet(index) {
       this.inputSets.splice(index, 1);
+    },
+    updateData(data) {
+      this.comingData = data;
     },
   },
 };
