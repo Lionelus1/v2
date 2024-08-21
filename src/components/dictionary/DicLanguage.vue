@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{console()}}
     <Dropdown
         @change="sayChange($event)" v-model="value" :class="{'p-invalid': validation}" :options="languages" :optionLabel="($i18n.locale == 'kz'? 'nameKz' : $i18n.locale == 'en' ? 'nameEn': 'nameRu')" :filter="true" :placeholder="(placeHolder != undefined ? placeHolder: $t('common.select'))">
       <template #value="slotProps">
@@ -88,9 +87,6 @@ export default {
     updateModel(event) {
       this.$emit('update:modelValue', this.value);
     },
-    console() {
-      this.value = this.modelValue
-    }
   }
 }
 </script>
