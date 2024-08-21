@@ -445,6 +445,8 @@ export default {
             bin: "BIN",
         },
         orgEmployees: "{org} employees",
+        domesticPartners: 'Domestic Partners',
+        foreignPartners: 'Foreign Partners'
     },
     doctemplate: {
         title: "Document template creation",

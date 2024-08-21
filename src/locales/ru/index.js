@@ -438,6 +438,8 @@ export default {
             bin: "БИН",
         },
         orgEmployees: "Сотрудники {org}",
+        domesticPartners: 'Отечественные партнеры',
+        foreignPartners: 'Зарубежные партнеры'
     },
     doctemplate: {
         title: "Создание шаблона документа",

@@ -436,6 +436,8 @@ export default {
             bin: "БСН",
         },
         orgEmployees: "{org} қызметкерлері",
+        domesticPartners: 'Отандас серіктестер',
+        foreignPartners: 'Шетел серіктестер'
     },
     doctemplate: {
         title: "Құжат үлгісін жасау",

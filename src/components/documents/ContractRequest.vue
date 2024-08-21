@@ -39,7 +39,7 @@
     <Message severity="warn" :closable="false">{{ $t('contracts.contragentWarning') }}</Message>
   </div>
   <Sidebar v-model:visible="visibility.organizationCard" position="right" class="p-sidebar-lg">
-    <OrganizationPage :organization="contragent" :sidebar="true" @organizationUpdated="organizationUpdated"></OrganizationPage>
+    <OrganizationPage :id="contragent.id" :organization="contragent" :sidebar="true" @organizationUpdated="organizationUpdated"></OrganizationPage>
   </Sidebar>
   <Sidebar v-model:visible="visibility.signerCard" position="right" class="p-sidebar-lg">
     <PersonPage :person="signer" :sidebar="true" @organizationUpdated="personUpdated" custom-type="viewUser"></PersonPage>
