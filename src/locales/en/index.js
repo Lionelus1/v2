@@ -686,6 +686,8 @@ export default {
             consultant: "Scientific supervisor",
             projectManager: "Project Scientific Director",
         },
+        cooperationDocument: "Document on cooperation",
+        name_doc: "Name of the document"
     },
     hdfs: {
         archiveBtn: "Аrchive",

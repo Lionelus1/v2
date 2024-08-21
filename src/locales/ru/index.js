@@ -677,6 +677,8 @@ export default {
             consultant: "Научный консультант",
             projectManager: "Научный руководитель проекта",
         },
+        cooperationDocument: "Документ о сотрудничества",
+        name_doc: "Наименование документа"
     },
     hdfs: {
         archiveBtn: "Архивировать",

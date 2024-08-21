@@ -675,6 +675,8 @@ export default {
             consultant: "Ғылыми кеңесші",
             projectManager: "Жобаның ғылыми жетекшісі",
         },
+        cooperationDocument: "Ынтымақтастық туралы құжат",
+        name_doc: "Құжаттың атауы"
     },
     hdfs: {
         archiveBtn: "Мұрағаттау",

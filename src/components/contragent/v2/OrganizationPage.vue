@@ -95,6 +95,28 @@
     <Accordion style="margin-left: -14px; margin-right: -14px">
       <AccordionTab>
         <template #header>
+          <div class="uppercase">{{ this.$t("contracts.cooperationDocument") }}</div>
+        </template>
+        <div class="card">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>{{ this.$t("contracts.name_doc") }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="doc in documents" :key="doc.id">
+              <td>
+                <a :href="`/documents/${doc.id}`">{{ doc.type }}</a>
+              </td>
+              <td>{{ doc.action }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </AccordionTab>
+      <AccordionTab>
+        <template #header>
           <div class="uppercase">{{ this.$t("bank.requisite") }}<span class="p-error" v-if="!readonly && org.type === 2">*</span></div>
         </template>
         <div class="card">
@@ -359,8 +381,14 @@ export default {
       this.validation.form = !this.org.form || this.org.form.id < 1;
       this.validation.email = !this.org.email || this.org.email.length < 1;
 
+      if (this.org.type === 2) {
+        this.validation.swift = !this.bank.swift || this.bank.swift.length < 1;
+      } else {
+        this.validation.swift = false
+      }
+
       return (this.validation.bin || this.validation.namekz || this.validation.nameru ||
-        this.validation.form || this.validation.email || this.validation.country);
+        this.validation.form || this.validation.email || this.validation.country || this.validation.swift);
     },
     createEmptyOrganization() {
       return {
