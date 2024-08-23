@@ -1990,6 +1990,10 @@ export default {
         all: 'Все',
         pps: 'ППС',
         aup: 'АУП',
+        op: 'ОП',
+        axp:'АХП',
+        uvp:'УВП',
+        nii: 'НИИ',
         // add other translations here
         workScheduleForPPS: 'Режим работы для ППС',
         workScheduleForEmployees: 'Режим работы для сотрудников',

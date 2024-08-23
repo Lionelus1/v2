@@ -614,9 +614,9 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path: '/hitvision',
-                name: 'HitvisionTemplate',
-                component: load('hitvision/Hitvision'),
+                path: '/hikvision',
+                name: 'HikvisionTemplate',
+                component: load('hikvision/Hikvision'),
                 beforeEnter: ifAuthenticated,
             },
 

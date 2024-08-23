@@ -2002,6 +2002,10 @@ export default {
         all: 'Барлығы',
         pps: 'ППС',
         aup: 'АУП',
+        op: 'ОП',
+        axp:'АХП',
+        uvp:'УВП',
+        nii: 'НИИ',
         // add other translations here
         workScheduleForPPS: 'Жұмыс тәртібі для ППС',
         workScheduleForEmployees: 'Жұмыс тәртібі для сотрудников',

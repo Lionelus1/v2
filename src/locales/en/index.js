@@ -2086,6 +2086,10 @@ export default {
         all: 'All',
         pps: 'PPS',
         aup: 'AUP',
+        op: 'ОП',
+        axp:'АХП',
+        uvp:'УВП',
+        nii: 'НИИ',
         // add other translations here
         workScheduleForPPS: 'Work Schedule for PPS',
         workScheduleForEmployees: 'Work Schedule for Employees',
