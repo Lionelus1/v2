@@ -303,7 +303,7 @@ export class MenuService {
             
             },
             {
-                label: $t('Telegram'),
+                label: $t('Telegram.title'),
                 icon: 'fa-solid fa-robot',
                 to: '/telegram',
                 visible: this.findRole('telegram') || this.findRole('main_administrator')
