@@ -1808,6 +1808,8 @@ export default {
 
     },
     telegram: {
+        title: 'Чат-бот Е-куратор',
+
         question: 'Сұрақтар',
 
         anwers: 'Жауаптар',

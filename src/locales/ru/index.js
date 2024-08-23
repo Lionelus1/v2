@@ -1794,6 +1794,7 @@ export default {
 
     },
     telegram: {
+        title: 'Чат-бот Е-куратор',
         question: 'Вопросы',
         anwers: 'Ответы',
         questionkz: 'Введите вопрос на казахском',
