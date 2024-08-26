@@ -354,6 +354,7 @@ export default {
                 this.findRole(null, RolesEnum.roles.CareerModerator) ||
                 this.findRole(null, RolesEnum.roles.UMKAdministrator) ||
                 this.findRole(null, RolesEnum.roles.Accountant) ||
+                  this.findRole(null, RolesEnum.roles.DormitoryAdministration) ||
                 (this.findRole(null, RolesEnum.roles.Teacher) &&
                   this.docInfo.docType === Enum.DocType.Contract) ||
                 (this.signatures &&

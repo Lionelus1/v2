@@ -19,5 +19,6 @@ export default {
         ScienceDirector: "science_director",
         OnlineCourseAdministrator: "online_course_administrator",
         TemplateManager: "template_manager",
+        DormitoryAdministration: "dormitory_administration",
     }
 }
