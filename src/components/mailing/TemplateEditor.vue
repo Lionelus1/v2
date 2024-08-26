@@ -3,7 +3,13 @@
     <ToolbarMenu :data="menu" />
     <div class="editor-body">
       <div class="rich-text-editor">
-        <TinyEditor ref="editor" v-model="templateContent" :height="700" @click="handleEditorClick" />
+        <TinyEditor ref="editor" v-model="templateContent" :height="700" @click="handleEditorClick" :init="{
+        height: 500,
+        menubar: false,
+        setup: (editor) => {
+          this.editor = editor;
+        },
+      }"/>
       </div>
     </div>
     <div class="field">
@@ -62,6 +68,7 @@ export default {
       templateContent: '',
       selectedCategories: [],
       emails: [],
+      editor: null,
       description: '',
       fileService: new FileService(),
       toast: new useToast(),
@@ -144,28 +151,13 @@ export default {
           });
     },
     handleEditorClick() {
-      if (!this.isDefaultTextRemoved) {
-        const selection = window.getSelection();
-        if (selection.rangeCount > 0) {
-          this.savedRange = selection.getRangeAt(0);
-        }
-
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(this.templateContent, 'text/html');
-        const mainContent = doc.getElementById('main-content');
-        if (mainContent) {
-          mainContent.innerHTML = '';
-          this.templateContent = doc.documentElement.outerHTML;
-
-          if (this.savedRange) {
-            const range = document.createRange();
-            range.setStart(mainContent, 0);
-            range.setEnd(mainContent, 0);
-            selection.removeAllRanges();
-            selection.addRange(range);
-          }
-        }
+      if (!this.isDefaultTextRemoved  && this.editor) {
+        const bookmark = this.editor.selection.getBookmark(2, true);
+        let content = this.editor.getContent();
+        content = content.replace(/<p id="main-content">.*?<\/p>/g, "<p></p>");
+        this.editor.setContent(content);
         this.isDefaultTextRemoved = true;
+        this.editor.selection.moveToBookmark(bookmark);
       }
     }
   },
