@@ -101,7 +101,7 @@
             @uploader="uploadFile"
             ref="fileUploader"
         />
-        <small class="p-error" v-if="validationErrors.filePath">{{ $t("common.requiredField") }}</small>
+        <small class="p-error" v-if="validationErrors.filePath">{{ t("common.requiredField") }}</small>
       </div>
 
       <InlineMessage severity="info"
@@ -111,21 +111,8 @@
       </InlineMessage>
 
       <div v-if="cooperationDocument.file_path" class="field col-12">
-        <h4>{{ $t('hdfs.fileName') }}</h4>
-<!--        <p v-if="!fileData.file_path">{{ cooperationDocument.file_path }}</p>-->
+        <h4>{{ t('hdfs.fileName') }}</h4>
         <a @click="downloadFile(cooperationDocument.file_name, cooperationDocument.file_path)" style="cursor: pointer;">{{ cooperationDocument.file_name }}</a>
-
-        <div v-if="fileData.filepath">
-          <i class="fa-solid fa-check fa-xl"></i>
-        </div>
-
-        <Button
-            v-if="canDeleteFile"
-            @click="removeFile"
-            class="p-button-text p-button-danger p-1"
-        >
-          <i class="fa-solid fa-trash fa-xl"></i>
-        </Button>
       </div>
 
     </div>
@@ -429,7 +416,7 @@ function downloadFile(filename, filepath) {
             showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
           });
         } else {
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+          showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
         }
       });
 }

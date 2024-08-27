@@ -6,7 +6,7 @@
     <div class="grid formgrid">
       <div class="field col-12 md:col-6">
         <label>{{ $t("contact.bin") }}<span class="p-error" v-if="!pageReadonly && org.resident !== -1">*</span></label>
-        <InputMask :readonly="pageReadonly" type="text" :placeholder="$t('contact.bin')" 
+        <InputMask :readonly="pageReadonly" type="text" :placeholder="$t('contact.bin')"
           v-model="org.iin" @update:modelValue="input" mask="999999999999"></InputMask>
         <small class="p-error" v-if="validation.bin">{{$t('common.requiredField')}}</small>
       </div>
@@ -110,7 +110,7 @@
                 {{ this.countryLabel(slotProps.data) }}
               </template>
             </Column>
-            <Column v-if="!pageReadonly" :header="this.$t('common.actionTitle')" class="text-right">
+            <Column v-if="!pageReadonly" :header="$t('common.actionTitle')" class="text-right">
               <template #body="slotProps">
                 <ActionButton :show-label="true" :items="initItems" @toggle="toggle2(slotProps.data)"/>
               </template>
@@ -123,7 +123,6 @@
         <template #header>
           <div class="uppercase">{{ this.$t("contracts.rating") }}</div>
         </template>
-        <div class="card">
           <Menubar :model="menuRating" class="m-0 pt-0 pb-0"></Menubar>
 
           <DataTable :value="ratings" dataKey="id" :rows="ratingFilter.rows" :totalRecords="ratingTotal"
@@ -141,14 +140,14 @@
                 {{slotProps.data.place}}
               </template>
             </Column>
-            <Column v-if="!pageReadonly" :header="this.$t('common.actionTitle')" class="text-right">
+            <Column v-if="!pageReadonly" :header="this.$t('common.actionTitle')">
               <template #body="slotProps">
                 <ActionButton :show-label="true" :items="initItemsRiting" @toggle="toggleRating(slotProps.data)"/>
               </template>
             </Column>
           </DataTable>
-        </div>
       </AccordionTab>
+
       <AccordionTab>
         <template #header>
           <div class="uppercase">{{ this.$t("bank.requisite") }}<span class="p-error" v-if="!readonly && org.type === 2">*</span></div>
@@ -200,6 +199,7 @@
         </div>
       </AccordionTab>
     </Accordion>
+
     <Sidebar position="right" class="p-sidebar-lg"
              style="width: 50%;"  v-model:visible="cooperationDialog">
       <CooperationPage :model-value="cooperation" :org-id="org.id" :on-close="closeSidebar"></CooperationPage>
