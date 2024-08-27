@@ -676,7 +676,17 @@ export default {
             projectManager: "Жобаның ғылыми жетекшісі",
         },
         cooperationDocument: "Ынтымақтастық туралы құжат",
-        name_doc: "Құжаттың атауы"
+        name_doc: "Құжаттың атауы",
+        doc_type_kz: "Құжат түрі қазақша",
+        doc_type_ru: "Құжат түрі орысша",
+        doc_type_en: "Құжат түрі ағылшынша",
+        doc_number:"Құжат нөмірі",
+        subject_document: "Құжаттың мәні",
+        date_conclusion: "Жобалар және/немесе шарттар жасалған күн",
+        indefinite: "бессрочный",
+        early_termination: 'Мерзімінен бұрын бұзу',
+        rating: 'Рейтинг',
+        rating_place: 'Рейтингтегі орын'
     },
     hdfs: {
         archiveBtn: "Мұрағаттау",

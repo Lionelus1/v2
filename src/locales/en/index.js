@@ -687,7 +687,17 @@ export default {
             projectManager: "Project Scientific Director",
         },
         cooperationDocument: "Document on cooperation",
-        name_doc: "Name of the document"
+        name_doc: "Name of the document",
+        doc_type_kz: "Type of document in Kazakh",
+        doc_type_ru: "Type of document in Russia",
+        doc_type_en: "Type of document in English",
+        doc_number:"Document number",
+        subject_document: "Subject of the document",
+        date_conclusion: "Date of conclusion of projects and/or contracts",
+        indefinite: "indefinite",
+        early_termination: 'Early termination',
+        rating: 'Rating',
+        rating_place: 'Place in the rating'
     },
     hdfs: {
         archiveBtn: "Аrchive",

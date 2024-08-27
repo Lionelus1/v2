@@ -678,7 +678,17 @@ export default {
             projectManager: "Научный руководитель проекта",
         },
         cooperationDocument: "Документ о сотрудничества",
-        name_doc: "Наименование документа"
+        name_doc: "Наименование документа",
+        doc_type_kz: "Вид документа на казахском",
+        doc_type_ru: "Вид документа на русском",
+        doc_type_en: "Вид документа на английском",
+        doc_number:"Номер документа",
+        subject_document: "Предмет документа",
+        date_conclusion: "Дата заключения проектов и/или договоров",
+        indefinite: "бессрочный",
+        early_termination: 'Досрочное расторжение договора',
+        rating: 'Рейтинг',
+        rating_place: 'Место в рейтинге'
     },
     hdfs: {
         archiveBtn: "Архивировать",

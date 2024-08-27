@@ -19,5 +19,6 @@ export default {
         ScienceDirector: "science_director",
         OnlineCourseAdministrator: "online_course_administrator",
         TemplateManager: "template_manager",
+        OrganizationManager: "organization_manager"
     }
 }

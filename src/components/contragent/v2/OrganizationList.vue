@@ -63,13 +63,12 @@
 <script>
 import { ContragentService } from "@/service/contragent.service";
 import OrganizationPage from "@/components/contragent/v2/OrganizationPage";
-import { TabMenu } from 'primevue/tabmenu';
 import { findRole } from "@/config/config";
 
 
 export default {
   name: 'OrganizationList',
-  components: { OrganizationPage, TabMenu },
+  components: { OrganizationPage },
   props: {
     sidebar: {
       type: Boolean,
@@ -336,16 +335,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-.card {
-  flex-grow: 1;
-  background-color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  padding: 1rem;
-  margin-bottom: 0px;
-}
-:deep(.p-datatable.p-datatable-scrollable > .p-datatable-wrapper > .p-datatable-table > .p-datatable-thead) {
-  background: transparent;
-}
-</style>

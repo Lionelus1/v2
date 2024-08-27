@@ -33,7 +33,7 @@
         <Dropdown
             @change="input"
             class="mt-2"
-            :disabled="localReadonly"
+            :disabled="pageReadonly"
             v-model="org.type"
             :options="orgStatus"
             optionLabel="name"
@@ -81,7 +81,7 @@
       </div>
       <div class="field col-12 md:col-6">
         <label>{{ $t('science.qualification.country') }}<span class="p-error" v-if="!pageReadonly && this.org.resident === -1">*</span></label>
-        <Dropdown @change="input" filter v-model="localityId" option-value="id" :placeholder="$t('common.select')" :options="countries" class="w-full"
+        <Dropdown :disabled="pageReadonly" @change="input" filter v-model="localityId" option-value="id" :placeholder="$t('common.select')" :options="countries" class="w-full"
                   :option-label="countryLabel">
         </Dropdown>
         <small class="p-error" v-if="validation.country">{{$t('common.requiredField')}}</small>
@@ -93,26 +93,60 @@
       </div>
     </div>
     <Accordion style="margin-left: -14px; margin-right: -14px">
-      <AccordionTab>
+      <AccordionTab v-if="org.id">
         <template #header>
           <div class="uppercase">{{ this.$t("contracts.cooperationDocument") }}</div>
         </template>
+        <Menubar :model="menuCooperation" class="m-0 pt-0 pb-0"></Menubar>
+
         <div class="card">
-          <table class="table">
-            <thead>
-            <tr>
-              <th>{{ this.$t("contracts.name_doc") }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="doc in documents" :key="doc.id">
-              <td>
-                <a :href="`/documents/${doc.id}`">{{ doc.type }}</a>
-              </td>
-              <td>{{ doc.action }}</td>
-            </tr>
-            </tbody>
-          </table>
+          <DataTable :value="cooperations" dataKey="id" :rows="cooperationFilter.rows" :totalRecords="cooperationTotal"
+                     :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
+                     :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="cooperationLoading"
+                     scrollable scrollHeight="flex" v-model:selection="cooperation" selectionMode="single"
+                     :rowHover="true" stripedRows class="flex-grow-1" @page="onPage">
+            <Column :header="$t('contracts.name_doc')" style="min-width: 50px;">
+              <template #body="slotProps">
+                {{ this.countryLabel(slotProps.data) }}
+              </template>
+            </Column>
+            <Column v-if="!pageReadonly" :header="this.$t('common.actionTitle')" class="text-right">
+              <template #body="slotProps">
+                <ActionButton :show-label="true" :items="initItems" @toggle="toggle2(slotProps.data)"/>
+              </template>
+            </Column>
+          </DataTable>
+        </div>
+      </AccordionTab>
+
+      <AccordionTab v-if="org.form.namerus === 'Учреждение высшего образования'">
+        <template #header>
+          <div class="uppercase">{{ this.$t("contracts.rating") }}</div>
+        </template>
+        <div class="card">
+          <Menubar :model="menuRating" class="m-0 pt-0 pb-0"></Menubar>
+
+          <DataTable :value="ratings" dataKey="id" :rows="ratingFilter.rows" :totalRecords="ratingTotal"
+                     :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
+                     :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="cooperationLoading"
+                     scrollable scrollHeight="flex" v-model:selection="rating" selectionMode="single"
+                     :rowHover="true" stripedRows class="flex-grow-1" @page="onPageRating">
+            <Column :header="this.$t('contracts.rating')">
+              <template #body="slotProps">
+                {{ this.countryLabel(slotProps.data) }}
+              </template>
+            </Column>
+            <Column :header="this.$t('contracts.rating_place')">
+              <template #body="slotProps">
+                {{slotProps.data.place}}
+              </template>
+            </Column>
+            <Column v-if="!pageReadonly" :header="this.$t('common.actionTitle')" class="text-right">
+              <template #body="slotProps">
+                <ActionButton :show-label="true" :items="initItemsRiting" @toggle="toggleRating(slotProps.data)"/>
+              </template>
+            </Column>
+          </DataTable>
         </div>
       </AccordionTab>
       <AccordionTab>
@@ -124,7 +158,7 @@
             <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
               <label>{{ this.$t("bank.accnumber") }}</label>
               <InputText
-                  :readonly="localReadonly"
+                  :readonly="pageReadonly"
                   class="mt-2"
                   type="text"
                   :placeholder="$t('bank.accnumber')"
@@ -134,7 +168,7 @@
             </div>
             <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
               <label>{{ $t('bank.title2') }}</label>
-              <Dropdown  :disabled="localReadonly" v-model="bank.id" option-value="id" :optionLabel="bankLabel"
+              <Dropdown  :disabled="pageReadonly" v-model="bank.id" option-value="id" :optionLabel="bankLabel"
                          :options="banks" :placeholder="$t('bank.title2')"
                          class="dropdown w-full mt-2" @change="input"></Dropdown>
             </div>
@@ -166,6 +200,43 @@
         </div>
       </AccordionTab>
     </Accordion>
+    <Sidebar position="right" class="p-sidebar-lg"
+             style="width: 50%;"  v-model:visible="cooperationDialog">
+      <CooperationPage :model-value="cooperation" :org-id="org.id" :on-close="closeSidebar"></CooperationPage>
+    </Sidebar>
+
+    <Sidebar position="right" class="p-sidebar-lg"
+             style="width: 50%;"  v-model:visible="ratingDialog">
+      <TitleBlock :title="this.$t('contracts.rating')" :show-back-button="false"></TitleBlock>
+
+      <Menubar :model="menuRatingSave" class="m-0 pt-0 pb-0"></Menubar>
+      <div class="card p-fluid">
+        <div class="grid formgrid">
+          <div class="field col-12 md:col-4">
+            <label>{{ this.$t('contracts.rating') }} {{this.$t('common.language.kz')}}<span class="p-error">*</span></label>
+            <InputText v-model="rating.name_kz"  required />
+            <small class="p-error" v-if="validationErrors.name_kz">{{ this.$t('common.requiredField') }}</small>
+          </div>
+
+          <div class="field col-12 md:col-4">
+            <label>{{ this.$t('contracts.rating') }} {{this.$t('common.language.ru')}}<span class="p-error">*</span></label>
+            <InputText v-model="rating.name_ru" required />
+            <small class="p-error" v-if="validationErrors.place">{{ this.$t('common.requiredField') }}</small>
+          </div>
+
+          <div class="field col-12 md:col-4">
+            <label>{{ this.$t('contracts.rating') }} {{this.$t('common.language.ru')}}<span class="p-error">*</span></label>
+            <InputText v-model="rating.name_en" required />
+            <small class="p-error" v-if="validationErrors.place">{{ this.$t('common.requiredField') }}</small>
+          </div>
+          <div class="field col-12 md:col-12">
+            <label>{{ this.$t('contracts.rating_place') }}<span class="p-error">*</span></label>
+            <InputText v-model="rating.place" required />
+            <small class="p-error" v-if="validationErrors.place">{{ this.$t('common.requiredField') }}</small>
+          </div>
+        </div>
+      </div>
+    </Sidebar>
   </BlockUI>
 </template>
 <script>
@@ -175,10 +246,12 @@ import Enum from "@/enum/roleControls/index";
 import { ContragentService } from "@/service/contragent.service";
 import Dropdown from "primevue/dropdown";
 import api from "@/service/api";
+import ActionButton from "@/components/ActionButton.vue";
+import CooperationPage from "@/components/contragent/v2/CooperationPage.vue";
 
 export default {
   name: 'OrganizationPage',
-  components: {Dropdown},
+  components: {CooperationPage, ActionButton, Dropdown},
   props: {
     organization: null,
     readonly: {
@@ -197,6 +270,12 @@ export default {
   emits: ['organizationUpdated'],
   data() {
     return {
+      paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
+      currentPageReportTemplate: this.$t('common.showingRecordsCount', {
+        first: '{first}',
+        last: '{last}',
+        totalRecords: '{totalRecords}',
+      }),
       service: new ContragentService(),
       loginedUser: null,
       findRole: findRole,
@@ -234,7 +313,7 @@ export default {
       ],
       localReadonly: this.readonly,
       localShowBackButton: this.$route?.query?.showBackButton === 'true',
-      org_id: this.id || this.$route.params.id || null,
+      org_id: Number(this.id) || Number(this.$route.params.id) || null,
       orgStatus: [
         {id: 1, name: this.$t("common.organization")},
         {id: 2, name: this.$t("bank.title2")}
@@ -251,11 +330,103 @@ export default {
         type: null
       },
       localityId: null,
+      cooperationFilter: {
+        id: null,
+        org_id: Number(this.id) || Number(this.$route.params.id) || null,
+        page: 0,
+        rows: 10,
+      },
+      cooperations: [],
+      cooperation: null,
+      cooperationTotal: 0,
+      cooperationLoading: false,
+      menuCooperation: [
+        {
+          label: this.$t("common.add"),
+          icon: "fa-solid fa-plus",
+          disabled: () => this.pageReadonly, // TODO here need check role
+          command: () => { this.createCooperation() },
+        }
+      ],
+      cooperationDialog: false,
+      actionsNode: null,
+      ratingDialog: false,
+      menuRating: [
+        {
+          label: this.$t("common.add"),
+          icon: "fa-solid fa-plus",
+          disabled: () => this.pageReadonly, // TODO here need check role
+          command: () => { this.createRating() },
+        },
+      ],
+      menuRatingSave: [
+        {
+          label: this.$t("common.save"),
+          icon: "pi pi-fw pi-save",
+          disabled: () => this.pageReadonly,
+          command: () => { this.saveRating() },
+        }
+      ],
+      rating: {
+        id: null,
+        name_kz: '',
+        name_en: '',
+        name_ru: '',
+        place: '',
+        org_id: null
+      },
+      ratings: [],
+      ratingTotal: 0,
+      ratingFilter: {
+        id: null,
+        org_id: Number(this.id) || Number(this.$route.params.id) || null,
+        page: 0,
+        rows: 10,
+      },
+      validationErrors:{},
+      actionsNodeRating: null,
     }
   },
   computed: {
-    bankDetailsbankDetails() {
-      return this.org.bank || { corrswift: '' } || {swift: ''} || {id: null};
+    initItems() {
+      return [
+        {
+          label: this.$t('common.edit'),
+          icon: 'fa-solid fa-pen',
+          disabled: this.pageReadonly,
+          command: () => {
+            this.editCoolection(this.actionsNode)
+          }
+        },
+        {
+          label: this.$t('common.delete'),
+          icon: 'fa-solid fa-trash',
+          disabled: this.pageReadonly,
+          command: () => {
+            this.deleteCoolection(this.actionsNode)
+          }
+        },
+      ];
+    },
+    initItemsRiting() {
+      return [
+        {
+          label: this.$t('common.edit'),
+          icon: 'fa-solid fa-pen',
+          disabled: this.pageReadonly,
+          command: () => {
+            this.editRating(this.actionsNodeRating)
+          }
+        },
+        {
+          label: this.$t('common.delete'),
+          icon: 'fa-solid fa-trash',
+          disabled: this.pageReadonly,
+          command: () => {
+            this.deleteRating(this.actionsNodeRating)
+          }
+        },
+      ];
     }
   },
   created() {
@@ -265,6 +436,7 @@ export default {
     this.getCountries()
     if (this.org_id) {
       this.getOrganizations();
+      this.getCooperations(this.org_id)
     } else {
       this.org = this.createEmptyOrganization()
     }
@@ -272,12 +444,18 @@ export default {
   mounted() {
     this.pageReadonly = true;
 
-    if (!this.readonly && (this.findRole(this.loginedUser, this.enum.roles.MainAdministrator) || (this.org && this.loginedUser?.mainPosition?.organization?.id === this.org.id &&
+    if (!this.readonly && (this.findRole(this.loginedUser, this.enum.roles.OrganizationManager) || this.findRole(this.loginedUser, this.enum.roles.MainAdministrator) || (this.org && this.loginedUser?.mainPosition?.organization?.id === this.org.id &&
       (this.findRole(this.loginedUser, this.enum.roles.Signer) || this.findRole(this.loginedUser, this.enum.roles.HeadOfCompany))))) {
         this.pageReadonly = false;
     }
   },
   methods: {
+    toggle2(node) {
+      this.actionsNode = node
+    },
+    toggleRating(node) {
+      this.actionsNodeRating = node
+    },
     showMessage(msgtype, message, content) {
       this.$toast.add({
         severity: msgtype,
@@ -330,6 +508,10 @@ export default {
 
       this.service.updateOrganization(this.org).then(res => {
         this.loading = false;
+        if (this.org.id === null || this.org.id === undefined) {
+          this.$router.push({ name: 'OrganizationList' });
+          return
+        }
 
         this.$emit('organizationUpdated', this.org)
       }).catch(err => {
@@ -370,7 +552,7 @@ export default {
     validate() {
       if (this.org.resident === -1) {
         this.validation.bin = false
-        this.validation.country = !localityId || !localityId < 0;
+        this.validation.country = !this.localityId || !this.localityId < 0;
       } else {
         this.validation.bin = !this.org.iin || this.org.iin.length != 12;
         this.validation.country = false
@@ -420,6 +602,10 @@ export default {
           if (this.org.locality){
             this.localityId = this.org.locality.id
           }
+          if (this.org.form.namerus === "Учреждение высшего образования") {
+            this.getRatings()
+          }
+
         }
       }).catch(err => {
         if (err.response && err.response.status == 401) {
@@ -453,7 +639,6 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       });
-
     },
     countryLabel(data) {
       if (data === undefined || data === null) {
@@ -475,7 +660,138 @@ export default {
           this.$toast.add({severity: 'error', summary: t('common.error'), life: 3000})
         }
       })
-    }
+    },
+    getCooperations(orgId) {
+      this.cooperationFilter.org_id = Number(orgId)
+
+      this.service.getCooperations(this.cooperationFilter).then(res => {
+        this.cooperations = res.data.cooperations;
+        this.cooperationTotal = res.data.total;
+      }).catch(err => {
+        this.cooperations = [];
+        this.cooperationTotal = 0;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null);
+        } else {
+          console.log(err);
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+        }
+      });
+    },
+    onPage(event) {
+      this.cooperationFilter.page = event.page;
+      this.cooperationFilter.rows = event.rows;
+      this.getCooperations(this.org_id);
+    },
+    editCoolection(actionsNode) {
+      console.log('test: ', actionsNode)
+      this.cooperation = actionsNode
+      this.cooperationDialog = true
+    },
+    createCooperation() {
+      this.cooperation = null
+      this.cooperationDialog = true
+    },
+    closeSidebar() {
+     this.cooperationDialog = false;
+     this.getCooperations(this.org_id)
+    },
+    deleteCoolection(actionNode) {
+      this.$confirm.require({
+        message: this.$t("common.doYouWantDelete"),
+        header: this.$t("common.confirm"),
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'p-button p-button-success',
+        rejectClass: 'p-button p-button-danger',
+        accept: () => {
+          const req = {
+            id: actionNode.id
+          }
+
+          this.service.deleteCooperation(req).then(res => {
+            this.showMessage('success', this.$t('common.message.successCompleted'), null);
+            this.getCooperations(this.org_id);
+          }).catch(err => {
+            console.log(err);
+          })
+        }
+      })
+    },
+    createRating() {
+      this.rating = {
+        id: null,
+        name: '',
+        place: ''
+      }
+      this.ratingDialog = true
+    },
+    getRatings(){
+      this.service.getRatings(this.ratingFilter).then(res => {
+        this.ratings = res.data.ratings
+        this.ratingTotal = res.data.total
+      }).catch(err => {
+        console.log(err);
+      })
+    },
+    saveRating() {
+      if (!this.validateFormRating()) {
+        this.showMessage('warn', this.$t('common.message.fillError'), null);
+        return
+      }
+
+      this.rating.org_id = this.org.id
+
+      this.service.updateRating(this.rating).then(res => {
+        this.getRatings()
+        this.ratingDialog = false
+      }).catch(err => {
+        console.log(err)
+      })
+
+    },
+    validateFormRating() {
+      this.validationErrors = {}
+
+      if (!this.rating.name_kz) this.validationErrors.name_kz = true;
+      if (!this.rating.name_ru) this.validationErrors.name_ru = true;
+      if (!this.rating.name_en) this.validationErrors.name_en = true;
+      if (!this.rating.place) this.validationErrors.place = true;
+
+      return Object.keys(this.validationErrors).length === 0
+    },
+    onPageRating(event) {
+      this.ratingFilter.page = event.page;
+      this.ratingFilter.rows = event.rows;
+      this.getRatings();
+    },
+    editRating(actionsNode) {
+      this.rating = actionsNode
+      this.ratingDialog = true
+    },
+    deleteRating(actionNode) {
+      this.$confirm.require({
+        message: this.$t("common.doYouWantDelete"),
+        header: this.$t("common.confirm"),
+        icon: 'pi pi-exclamation-triangle',
+        acceptClass: 'p-button p-button-success',
+        rejectClass: 'p-button p-button-danger',
+        accept: () => {
+          const req = {
+            id: actionNode.id
+          }
+
+          this.service.deleteRating(req).then(res => {
+            this.showMessage('success', this.$t('common.message.successCompleted'), null);
+            this.getRatings();
+          }).catch(err => {
+            console.log(err);
+          })
+        }
+      })
+    },
   }
 }
 </script>
