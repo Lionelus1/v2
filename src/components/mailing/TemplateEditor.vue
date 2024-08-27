@@ -169,14 +169,6 @@ export default {
     menu() {
       return [
         {
-          label: this.$t("common.save"),
-          icon: "pi pi-fw pi-save",
-          disabled: false,
-          command: () => {
-            this.sendMailing(1);
-          },
-        },
-        {
           label: this.$t("common.saveToDrafts"),
           icon: "fa-solid fa-download",
           disabled: false,
