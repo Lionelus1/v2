@@ -13,27 +13,13 @@
       </div>
     </div>
     <div class="field">
-<!--      <div class="grid">-->
-<!--        <div class="col-12 md:col-5">-->
-<!--          <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadMainImage($event)"-->
-<!--                      :auto="true" v-bind:chooseLabel="$t('smartenu.chooseMainImage')" accept="image/*"/>-->
-<!--        </div>-->
-<!--      </div>-->
-<!--      <div v-if="main_image_file">-->
-<!--        <img :src="main_image_file_url" style="width: 50%; height: 50%"/>-->
-<!--      </div>-->
-<!--      <div v-else>-->
-<!--        <img :src="imageUrl" style="width: 50%; height: 50%"/>-->
-<!--      </div>-->
     </div>
     <div class="field">
-    <div class="grid">
-      <div class="col-12 md:col-3">
+    <div class="grid align-items-center">
+      <div class="col-12 md:col-3" style="display: flex; align-items: center; width: auto;">
         <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true"
                     v-bind:chooseLabel="this.$t('smartenu.chooseAdditionalFile')"/>
-      </div>
-      <div class="col-12 md:col-5">
-        <InlineMessage severity="info" show v-if="additionalFileName">
+        <InlineMessage severity="info" show v-if="additionalFileName" style="margin-left: 10px;">
           {{ this.$t("ncasigner.chosenFile", {fn: additionalFileName}) }}
         </InlineMessage>
       </div>
