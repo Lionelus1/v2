@@ -606,6 +606,7 @@ export default {
             sendForExecution: "Отправить на исполнение",
             tocontragent: "Отправить контрагенту",
             toSciadvisor: "Отправить научному руководителю",
+            multipleSignature: "Множественная подписание"
         },
         contragentEmail: "Эл.почта контрагента",
         contragentRequest: "На согласовании у контрагента",
