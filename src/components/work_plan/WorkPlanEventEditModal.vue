@@ -449,6 +449,8 @@ export default {
                   
             if(this.editorComment?.length > 0){  
               commentData += '"comment":"' + this.editorComment + '"';
+            }else{
+              commentData += '"comment":"' + '' + '"';
             }
           }
           

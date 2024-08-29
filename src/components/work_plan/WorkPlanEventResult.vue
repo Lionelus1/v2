@@ -369,7 +369,7 @@
       </div>
       <div class="field">
         <label class="bold">{{ $t('common.comment') + ":"}}</label>
-        <div v-if="commentParseJson?.comment !== 'null'">
+        <div v-if="commentParseJson?.comment !== ''">
           <p class="value" v-if="commentParseJson?.comment && commentParseJson?.comment?.length > 0">{{ commentParseJson?.comment }}</p>
         </div>
         <div v-else>{{ $t('common.noComment') }}</div>
