@@ -36,6 +36,8 @@ export default {
         updateGES: "Update the list of GES",
         downloadCertificate: "Download The Certificate",
         selectAll: "Select All",
+        saveToDrafts: "Save to drafts",
+        sendMailing: "Send mailing",
         action: {
             submit: "Submit",
             accept: "Accept",

@@ -31,7 +31,7 @@
                 @click="selectTemplate(template.id)"
             >
               <h4>{{ template.template_name }}</h4>
-              <div v-html="template.template_content_en.String" class="template-content"></div>
+              <div v-html="getTemplateContent(template)" class="template-content"></div>
             </div>
           </div>
         </div>
@@ -83,6 +83,93 @@ export default {
       } catch (error) {
         console.error('Ошибка при получении шаблонов:', error);
       }
+    },
+    getTemplateContent(template) {
+      const lang = this.$i18n.locale;
+      let content = '';
+
+      switch (lang) {
+        case 'kz':
+          content = template.template_content_kz?.String || '';
+          break;
+        case 'ru':
+          content = template.template_content_ru?.String || '';
+          break;
+        case 'en':
+          content = template.template_content_en?.String || '';
+          break;
+        default:
+          content = template.template_content_en?.String || '';
+      }
+
+      if (template.id === 2) {
+        const style = `
+          <style>
+            .content {
+                text-align: center !important;
+                position: relative !important;
+            }
+            .content .megaphone {
+                position: absolute !important;
+                left: 2% !important;
+                top: 135px !important;
+                width: 100px !important;
+                height: 100px !important;
+            }
+            .content .monitor {
+                top: 10px !important;
+                width: 250px !important;
+                height: 200px !important;
+            }
+            .content .icon1 {
+                position: absolute !important;
+                top: 40px !important;
+                left: 53% !important;
+                transform: translateX(-60%) !important;
+                width: 70px !important;
+                height: 70px !important;
+            }
+            .content h1 {
+                font-size: 24px !important;
+                margin: 20px 0 !important;
+            }
+            .content p {
+                font-size: 16px !important;
+                line-height: 1.5 !important;
+            }
+            .footer {
+                padding-top: 20px !important;
+                text-align: center !important;
+            }
+            .footer p {
+                margin: 5px 0 !important;
+            }
+            .btn {
+                display: inline-block !important;
+                margin-top: 20px !important;
+                padding: 10px 20px !important;
+                text-decoration: none !important;
+                border-radius: 5px !important;
+                transition: background-color 0.3s !important;
+            }
+          </style>
+        `;
+
+        content = content.replace(
+            `<div style="display: flex; justify-content: center; height: 180px; width: max-content; margin: 0 auto;">
+            <img src="assets/layout/images/mailing/mailing.png" alt="Invitation Image" class="monitor" style="aspect-ratio: 16/12; height: 200px; position: absolute; left: 50%; transform: translate(-37%, 0)">
+        </div>`,
+            `<div>
+            <img src="assets/layout/images/mailing/mailing.png" alt="Invitation Image" class="monitor">
+          </div>`
+        );
+
+        console.log(content)
+
+        content = content.replace('</head>', `${style}</head>`);
+      }
+
+      return content;
     },
     handleCategoryChange(categoryId) {
       if (categoryId === 6) {

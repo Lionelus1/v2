@@ -29,9 +29,9 @@
 </template>
 
 <script>
-import Editor from '@tinymce/tinymce-vue'
-import {fileRoute, smartEnuApi} from "@/config/config";
-import {MailingService} from "@/service/mailing.service"
+import Editor from '@tinymce/tinymce-vue';
+import { fileRoute, smartEnuApi } from "@/config/config";
+import { MailingService } from "@/service/mailing.service";
 import { useToast } from "primevue/usetoast";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import { FileService } from "@/service/file.service";
@@ -67,22 +67,44 @@ export default {
       main_image_id: 0,
       mailingService: new MailingService(),
       isContentChanged: false,
+      mailingData: null,
     };
   },
   methods: {
+    loadTemplateContent() {
+      const data = {
+        templateId: parseInt(this.$route.params.templateId, 10),
+        lang: this.$i18n.locale
+      };
+
+      this.mailingService.getMailingTemplateByID(data)
+          .then(response => response.data)
+          .then(data => {
+            if (this.$i18n.locale === "kz") {
+              this.templateContent = data.template_content_kz.String;
+            } else if (this.$i18n.locale === "ru") {
+              this.templateContent = data.template_content_ru.String;
+            } else if (this.$i18n.locale === "en") {
+              this.templateContent = data.template_content_en.String;
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching template:', error);
+          });
+    },
     uploadFile(event) {
-      const fd = new FormData()
-      fd.append("files[]", event.files[0])
+      const fd = new FormData();
+      fd.append("files[]", event.files[0]);
       this.fileService.uploadFile(fd).then(res => {
         if (res.data) {
-          const file = res.data[0]
+          const file = res.data[0];
           this.additionalFileId = file.id;
           this.additionalFileName = file.filename;
           this.additional_file_path = smartEnuApi + fileRoute + file.filepath;
         }
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
-      })
+      });
     },
     sendMailing(statusID) {
       this.toast.add({
@@ -113,7 +135,8 @@ export default {
         AdditionalFileID: this.additionalFileId,
         MainImagePath: this.main_image_file_url,
         AdditionalFilePath: this.additional_file_path,
-        isContentChanged: this.isContentChanged
+        isContentChanged: this.isContentChanged,
+        lang: this.$i18n.locale
       };
 
       this.mailingService.mailing(mailingData)
@@ -147,23 +170,15 @@ export default {
       }
     }
   },
+  watch: {
+    '$i18n.locale': function(newLocale) {
+      this.loadTemplateContent();
+    }
+  },
   mounted() {
     this.selectedCategories = JSON.parse(this.$route.params.selectedCategories || '[]');
     this.emails = JSON.parse(this.$route.params.emails || '[]');
-
-    const templateId = parseInt(this.$route.params.templateId, 10);
-    this.mailingService.getMailingTemplateByID(templateId)
-        .then(response => {
-          return response.data
-        })
-        .then(data => {
-          if (data.template_content_ru && data.template_content_ru.Valid) {
-            this.templateContent = data.template_content_ru.String;
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching template:', error);
-        });
+    this.loadTemplateContent();
   },
   computed: {
     menu() {

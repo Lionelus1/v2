@@ -100,7 +100,7 @@ export default {
         state: "Күйі",
         status: "Статус",
         show: "Көру",
-        saveToDrafts: "Қоқысқа сақтау",
+        saveToDrafts: "Қараламаға сақтау",
         sendMailing: "Ақпараттық бюллетень жіберу",
         save: "Cақтау",
         speciality: "Мамандығы",
