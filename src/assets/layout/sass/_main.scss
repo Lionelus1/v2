@@ -263,3 +263,7 @@ a {
 .select_wp .p-dropdown, .p-chips, .select_wp .p-button {
     width: 100%;
 }
+
+.timeline_wp_history .p-timeline-event-opposite {
+    flex:0;
+}

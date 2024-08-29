@@ -362,7 +362,10 @@ export default {
         deny: "Отказать",
         doYouWantApprove: "Вы действительно хотите согласовать договор?",
         changeApprovals: "Замена согласующих лиц",
-        sacReportMenuTitle: 'Отчеты Государственной аттестационной комиссии'
+        sacReportMenuTitle: 'Отчеты Государственной аттестационной комиссии',
+        added: "Добавлен",
+        removed: "Исключен",
+        modified: "Измененный"
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -1413,6 +1416,7 @@ export default {
         warnAddingSummaryUser: "Вы не можете добавить пользователя, выбранного в поле «Свод структурный отдел», в поле «Свод/Подтверждение».",
         topicOfMastersThesis: "Тема магистерской диссертации",
         editRespUser: "Изменить ответственное лицо",
+        modifiedPerson: "Изменить"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

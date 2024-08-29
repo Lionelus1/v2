@@ -360,7 +360,10 @@ export default {
         deny: "Бас тарту",
         doYouWantApprove: "Сіз шынымен келісім-шартқа келіскіңіз келе ме?",
         changeApprovals: "Бекітуші тұлғаларды ауыстыру",
-        sacReportMenuTitle: 'Мемлекеттік аттестаттау комиссиясының есебі'
+        sacReportMenuTitle: 'Мемлекеттік аттестаттау комиссиясының есебі',
+        added: "Қосылды",
+        removed: "Алынды",
+        modified: "Өзгертілді"
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -1423,6 +1426,8 @@ export default {
         warnAddingSummaryUser: "«Жинақтаушы құрылымдық бөлім» өрісінде таңдалған қолданушыны «Жинақтаушы/Растау» өрісіне қоса алмайсыз.",
         topicOfMastersThesis: "Магистрлік диссертация тақырыбы",
         editRespUser: "Жауапты тұлғаны өзгерту",
+        modifiedPerson: "Өзгеріс еңгізген",
+        
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",

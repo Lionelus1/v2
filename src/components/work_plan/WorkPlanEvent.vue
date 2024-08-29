@@ -242,7 +242,7 @@
   </OverlayPanel>
   <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null"
                        :isMain="!!selectedEvent" :plan-data="plan" @hide="hideDialog(dialog.add)"/>
-  <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :event="selectedEvent" @hide="hideDialog(dialog.edit)"/>
+  <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :event="selectedEvent" :copiedEvent="selectedEvent" @hide="hideDialog(dialog.edit)"/>
   <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport"
                          :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan" @sentToApprove="hideDialog(dialog.reportApprove)"/>
   <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state" :approval-stages="planApprovalStage" :plan="plan" :events="data"

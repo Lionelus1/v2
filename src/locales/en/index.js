@@ -361,7 +361,10 @@ export default {
         deny: "Refuse",
         doYouWantApprove: "Do you really want to agree to a contract?",
         changeApprovals: "Replacement of approving persons",
-        sacReportMenuTitle: 'Report of the State Attestation Commission'
+        sacReportMenuTitle: 'Report of the State Attestation Commission',
+        added: "Added",
+        removed: "Removed",
+        modified: "Modified"
     },
     positions: {
         menuTitle: 'Change position',
@@ -1362,6 +1365,7 @@ export default {
         warnAddingSummaryUser: "You cannot add a user selected in the «Summary structural department» field to the «Summary/Confirmation» field.",
         topicOfMastersThesis: "Topic of master's thesis",
         editRespUser: "Edit responsive person",
+        modifiedPerson: "Modified"
 
     },
     queue: {
