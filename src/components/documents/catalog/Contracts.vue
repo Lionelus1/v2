@@ -4,16 +4,29 @@
   <ToolbarMenu :data="menu" @filter="toggle('filterOverlayPanel', $event)" :filter="true" :filtered="filtered"/>
   <BlockUI :blocked="loading" class="card">
     <DataTable :value="documents" dataKey="id" :rows="rows" :totalRecords="total" :first="first"
-      :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
-      :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading" 
-      scrollable scrollHeight="flex" v-model:selection="currentDocument" selectionMode="single" 
-      :rowHover="true" stripedRows class="flex-grow-1" @page="onPage">
+               :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
+               :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading"
+               scrollable scrollHeight="flex" v-model:selection="currentDocument" selectionMode="single"
+               :rowHover="true" stripedRows class="flex-grow-1" @page="onPage">
       <template #empty>
         {{ this.$t("common.recordsNotFound") }}
       </template>
-      <Column field="checkbox" v-if="showCheckbox">
+      <Column v-if="findRole(null, 'signer')" header=" ">
+        <template #header>
+          <Checkbox
+              v-model="allChecked"
+              @change="selectAllCheckBox"
+              :binary="true"
+          />
+          <span class="ml-2">{{this.$t("common.selectAll")}}</span>
+        </template>
         <template #body="slotProps">
-          <Checkbox v-model="slotProps.data.checked" @change="checkBoxSelect(slotProps)" :binary="true" :disabled="!isSlotEnabled(slotProps) || !(slotProps.data.docHistory.stateId === Enum.SIGNING.ID) "/>
+          <Checkbox
+              v-model="slotProps.data.checked"
+              @change="checkBoxSelect(slotProps)"
+              :binary="true"
+              :disabled="!isSlotEnabled(slotProps) || !(slotProps.data.docHistory.stateId === Enum.SIGNING.ID)"
+          />
         </template>
       </Column>
       <Column :header="$t('contracts.columns.createDate')" style="min-width: 150px;">
@@ -204,6 +217,7 @@ import FindUser from "@/helpers/FindUser";
 import {
   getHeader,
   smartEnuApi,
+  findRole
 } from "@/config/config";
 import {
   runNCaLayer,
@@ -306,7 +320,8 @@ export default {
       signerIin: null,
       isTspRequired: false,
       selectAll: false,
-      allChecked: false
+      allChecked: false,
+      documentsNotSigned: false
     }
   },
   created() {
@@ -342,6 +357,7 @@ export default {
     localStorage.setItem('contractsCurrentPage', JSON.stringify({first: this.first, page: this.page, rows: this.rows}))
   },
   methods: {
+    findRole : findRole,
     getLongDateString: getLongDateString,
     getShortDateString: getShortDateString,
     showMessage(msgtype, message, content) {
@@ -510,6 +526,7 @@ export default {
         docType: this.Enum.DocType.Contract,
         templateId: this.filter.sourceType === Enum.DocSourceType.Template && this.filter.template ? this.filter.template.id : null,
         folderId: this.filter.sourceType === Enum.DocSourceType.FilledDoc && this.filter.folder ? this.filter.folder.id : null,
+        documentsNotSigned: this.documentsNotSigned,
         filter: {
           name: this.filter.sourceType === Enum.DocSourceType.FilledDoc && this.filter.name && this.filter.name.length > 0 ? this.filter.name : null,
           status: this.filter.status && this.filter.status.length > 0 ? this.filter.status : null,
@@ -584,7 +601,7 @@ export default {
       } else {
         this.filter.status = null;
       }
-
+      this.documentsNotSigned = !this.documentsNotSigned
       this.getContracts()
     },
     haveRequest(contract) {
@@ -826,7 +843,7 @@ export default {
     selectAllCheckBox() {
       const loginedUser = JSON.parse(localStorage.getItem('loginedUser'));
       const loggedInUserId = loginedUser ? loginedUser.userID : null;
-
+      this.allChecked = !this.allChecked;
       if (this.allChecked) {
         this.documents.forEach(document => {
           document.checked = false;
@@ -857,8 +874,10 @@ export default {
     }
   },
   computed: {
-    menu () {
-      return [
+    menu() {
+      const isSigner = this.findRole(null, 'signer');
+
+      const menuItems = [
         {
           label: this.$t('contracts.card'),
           icon: "fa-regular fa-address-card",
@@ -880,18 +899,19 @@ export default {
         },
         {
           label: this.$t('ncasigner.sign'),
-          icon: "fa-solid fa-link",
-          disabled: !this.selectedIds.length > 0,
-          command: () => {this.sign()},
+          disabled: this.selectedIds.length === 0,
+          command: () => { this.sign(); },
         },
-        {
-          label: this.$t('common.selectAll'),
-          // icon: "fa-solid fa-link",
-          disabled: !this.selectAll,
-          command: () => {this.selectAllCheckBox()},
-        },
-    ]
+      ];
+
+      // Удаляем последние два пункта, если роль 'signer'
+      if (!isSigner) {
+        return menuItems.slice(0, -2);
+      }
+
+      return menuItems;
     },
+
     actions () {
       return [
         {
