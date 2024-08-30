@@ -28,6 +28,13 @@
         <InputText v-model="cooperationDocument.number" :placeholder="t('contracts.doc_number')" />
       </div>
 
+      <div class="field col-12 md:col-6">
+        <label>{{ t('science.qualification.country') }}</label>
+        <Dropdown filter v-model="cooperationDocument.locality"  :placeholder="t('common.select')" :options="countries" class="w-full"
+                  :option-label="countryLabel">
+        </Dropdown>
+      </div>
+
       <div class="field col-12">
         <label>{{ t("contracts.subject_document") }}<span class="p-error">*</span></label>
         <div class="p-formgrid p-grid">
@@ -162,6 +169,8 @@ const loading = ref(false)
 const service = new ContragentService
 const changed = ref(false)
 const subjectDialog = ref(false)
+const countries = ref([])
+const countryTotal = ref(0)
 
 const props = defineProps({
   orgId: {
@@ -433,9 +442,38 @@ function uploadFile(event) {
   }
 }
 
+function countryLabel(data) {
+  if (data === undefined || data === null) {
+    return ''
+  }
+  return data['name_'+locale.value]
+}
+
+function getCountries() {
+  const req = {
+    searchText: null,
+  }
+  service.getLocality(req).then(res => {
+    countries.value = res.data.locality;
+    countryTotal.value = res.data.total;
+  }).catch(err => {
+    countries.value = [];
+    countryTotal.value = 0;
+
+    if (err.response && err.response.status == 401) {
+      store.dispatch("logLout");
+    } else if (err.response && err.response.data && err.response.data.localized) {
+      showMessage('error', t(err.response.data.localizedPath), null);
+    } else {
+      console.log(err);
+      showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
+    }
+  });
+}
 
 onMounted(() => {
   getCoopertationSubjects();
+  getCountries()
 });
 
 </script>

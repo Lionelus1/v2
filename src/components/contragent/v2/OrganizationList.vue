@@ -5,8 +5,7 @@
 
     <ToolbarMenu :data="menu" @filter="toggle('filterOverlayPanel', $event)" :filter="true" :filtered="filtered"/>
 
-
-    <DataTable :value="organizations" dataKey="id" :rows="rows" :totalRecords="total"
+    <DataTable :value="organizations" dataKey="id" :rows="rows" :totalRecords="total" :first="first"
                :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
                :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading"
                scrollable scrollHeight="flex" v-model:selection="currentOrganization" selectionMode="single"
@@ -45,6 +44,14 @@
         <label>{{ $t('common.organizationName') }}</label>
         <InputText type="text" :placeholder="$t('common.search')" v-model="tempFilter.name"/>
       </div>
+
+      <div class="field">
+        <label>{{ $t('contragent.form') }}</label>
+        <Dropdown filter v-model="tempFilter.form_id" option-value="id" :placeholder="$t('common.select')" :options="org_forms" class="w-full"
+                  :option-label="formLabel">
+        </Dropdown>
+      </div>
+
       <div v-if="activeTabIndex === 1" class="field">
         <label>{{ $t('science.qualification.country') }}</label>
         <Dropdown filter v-model="tempFilter.country_id" option-value="id" :placeholder="$t('common.select')" :options="countries" class="w-full"
@@ -98,16 +105,19 @@ export default {
       total: 0,
       page: 0,
       rows: 10,
+      first: 0,
 
       filter: {
         name: '',
         resident: 1,
         country_id:null,
+        form_id: null,
       },
       tempFilter: {
         name: null,
         country_id:null,
         localeSearchText: null,
+        form_id: null,
       },
 
       activeTabIndex: 0,
@@ -118,6 +128,7 @@ export default {
       filtered: false,
       countries: [],
       countryTotal: 0,
+      org_forms: []
     }
   },
   computed: {
@@ -163,7 +174,29 @@ export default {
       this.$emit('apply-flex', true);
     }
 
+    let filter = localStorage.getItem('organizationsFilter');
+
+    if (filter) {
+      this.filter = JSON.parse(filter);
+
+      if (this.filter.resident === -1) {
+        this.activeTabIndex = 1
+        this.filtered = this.filter.form_id !== null || this.filter.name !== null || this.filter.country_id !== null;
+      } else {
+        this.filtered = this.filter.form_id !== null || this.filter.name !== null
+      }
+    }
+
+    let currentPage = localStorage.getItem('organizationsCurrentPage');
+    if (currentPage) {
+      currentPage = JSON.parse(currentPage);
+      this.first = currentPage.first;
+      this.page = currentPage.page;
+      this.rows = currentPage.rows;
+    }
+
     this.getOrganizations();
+    this.getOrgForms()
   },
   beforeUnmount() {
     if (!this.sidebar) {
@@ -215,15 +248,16 @@ export default {
     },
     getOrganizations() {
       this.tableLoading = true;
-      const resident = this.activeTabIndex === 0 ? 1 : -1
+      this.filter.resident = this.activeTabIndex === 0 ? 1 : -1
 
       this.service.getOrganizations({
         page: this.page,
         rows: this.rows,
         filter: {
           name: this.filter.name,
-          resident: resident,
+          resident: this.filter.resident,
           country_id: this.activeTabIndex === 1 ? this.filter.country_id : null,
+          form_id: this.filter.form_id,
         }
       }).then(res => {
         this.organizations = res.data.organizations;
@@ -251,6 +285,7 @@ export default {
       this.getOrganizations();
     },
     onPage(event) {
+      this.first = event.first;
       this.page = event.page;
       this.rows = event.rows;
       this.getOrganizations();
@@ -259,6 +294,10 @@ export default {
       this.getOrganizations();
     },
     organizationSelected() {
+
+      localStorage.setItem('organizationsFilter', JSON.stringify(this.filter));
+      localStorage.setItem('organizationsCurrentPage', JSON.stringify({first: this.first, page: this.page, rows: this.rows}))
+
       if (!this.sidebar) {
         this.$router.push({ name: 'OrganizationPage', params: { id: this.currentOrganization.id }, query: {
             showBackButton: true
@@ -272,8 +311,12 @@ export default {
     },
     toggle(ref, event) {
       if (this.activeTabIndex === 1) {
+        this.filtered = this.filter.form_id !== null || this.filter.name !== null || this.filter.country_id !== null;
         this.getCountries()
+      } else  {
+        this.filtered = this.filter.form_id !== null || this.filter.name !== null;
       }
+
       if (ref === 'filterOverlayPanel') {
         this.tempFilter = JSON.parse(JSON.stringify(this.filter));
       }
@@ -282,6 +325,10 @@ export default {
     },
     clearFilter() {
       this.filter = {
+        name: null,
+        form_id: null,
+        resident: 0,
+        country_id:  null,
       };
       this.filtered = false;
     },
@@ -331,6 +378,41 @@ export default {
       } else {
         this.open('organizationPage');
       }
+    },
+    getOrgForms() {
+      this.service.getOrganizationForms().then(res => {
+        this.org_forms = res.data;
+      }).catch(err => {
+        this.org_forms = [];
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null);
+        } else {
+          console.log(err);
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+        }
+      });
+    },
+    formLabel(data) {
+      if (data === undefined || data === null) {
+        return ''
+      }
+
+      if (this.$i18n.locale === "kz") {
+        return data.name
+      }
+
+      if (this.$i18n.locale === "ru") {
+        return data.namerus
+      }
+
+      if (this.$i18n.locale === "en") {
+        return data.namerus
+      }
+
+      return data.name
     }
   }
 }

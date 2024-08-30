@@ -102,7 +102,7 @@
         <div class="card">
           <DataTable :value="cooperations" dataKey="id" :rows="cooperationFilter.rows" :totalRecords="cooperationTotal"
                      :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
-                     :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="cooperationLoading"
+                      :lazy="true" :loading="cooperationLoading"
                      scrollable scrollHeight="flex" v-model:selection="cooperation" selectionMode="single"
                      :rowHover="true" stripedRows class="flex-grow-1" @page="onPage">
             <Column :header="$t('contracts.name_doc')" style="min-width: 50px;">
@@ -119,7 +119,7 @@
         </div>
       </AccordionTab>
 
-      <AccordionTab v-if="org.form.namerus === 'Учреждение высшего образования'">
+      <AccordionTab v-if="org?.form?.namerus === 'Учреждение высшего образования'">
         <template #header>
           <div class="uppercase">{{ this.$t("contracts.rating") }}</div>
         </template>
@@ -127,7 +127,7 @@
 
           <DataTable :value="ratings" dataKey="id" :rows="ratingFilter.rows" :totalRecords="ratingTotal"
                      :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
-                     :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="cooperationLoading"
+                     :lazy="true" :loading="cooperationLoading"
                      scrollable scrollHeight="flex" v-model:selection="rating" selectionMode="single"
                      :rowHover="true" stripedRows class="flex-grow-1" @page="onPageRating">
             <Column :header="this.$t('contracts.rating')">
