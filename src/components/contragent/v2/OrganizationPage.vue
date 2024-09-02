@@ -48,6 +48,22 @@
           :optionLabel="($i18n.locale === 'kz' ? 'name' : $i18n.locale === 'ru' ? 'namerus' : 'nameen')" @change="input"></Dropdown>
         <small class="p-error" v-if="validation.form">{{$t('common.requiredField')}}</small>
       </div>
+      <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+        <label>{{ this.$t("common.head") }}</label>
+        <FindUser userType="3" @input="input" @remove="input" class="mt-2" :disabled="pageReadonly" :editMode="true" v-model="users"  v-model:first="org.chief" :max="1"/>
+      </div>
+      <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+        <label>{{ this.$t("common.state") }}</label>
+        <SelectButton
+            :disabled="pageReadonly"
+            class="mt-2"
+            v-model="org.state"
+            :options="states"
+            optionValue="id"
+            @change="input"
+            optionLabel="name"
+        />
+      </div>
       <div class="field col-12 md:col-6">
         <label>&nbsp;</label>
         <SelectButton :disabled="pageReadonly"  v-model="org.resident" :options="resident" optionValue="id"
@@ -385,6 +401,11 @@ export default {
       },
       validationErrors:{},
       actionsNodeRating: null,
+      users: [],
+      states: [
+        { id: 1, name: this.$t("contragent.active") },
+        { id: -1, name: this.$t("contragent.inactive") },
+      ],
     }
   },
   computed: {
