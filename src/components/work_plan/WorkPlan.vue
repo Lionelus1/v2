@@ -62,7 +62,6 @@
     <WorkPlanAdd v-if="showAddPlanDialog" :visible="showAddPlanDialog" @hide="closeBasic"/>
     <Dialog v-if="isAdmin" :closable="false" v-model:visible="changeCreator" modal :header="$t('workPlan.changeCreatedPerson')">
       <div class="field">
-                  <label>{{ $t('workPlan.summaryDepartment') }}</label>
                   <FindUser v-model="planCreator" :max="1" editMode="true" :user-type="3"/>
                   <small class="p-error" v-if="submitted && !planCreator?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
         </div>
@@ -70,24 +69,6 @@
                   <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeCreatorChangeDialog"></Button>
                   <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="changeWorkPlanCreator"></Button>
         </div>
-      </Dialog>
-    <Dialog :visible="confirmVisible" :closable="false" :modal="true" :dismissableMask="false" blockScroll>
-      <h3>{{ $t('common.delete') }}</h3>
-      <p>{{ $t('common.doYouWantDelete') }}</p>
-      <div class="flex justify-content-end gap-2">
-        <Button 
-          :label="$t('common.cancel')" 
-          icon="pi pi-times" 
-          class="p-button-rounded p-button-danger" 
-          @click="cancelDelete" 
-        />
-        <Button 
-          :label="$t('common.delete')" 
-          icon="pi pi-check" 
-          class="p-button-rounded p-button-success" 
-          @click="confirmDelete" 
-        />
-      </div>
     </Dialog>
     <OverlayPanel ref="global-filter">
       <div v-for="(item, index) in types" :key="index" class="flex align-items-center">
@@ -103,7 +84,6 @@
         </div>
       </div>
     </OverlayPanel>
-
   </div>
 </template>
 
@@ -187,7 +167,6 @@ export default {
       changeCreator: false,
       planCreator:[],
       submitted: false,
-      confirmVisible: false,
     }
   },
   mounted() {
@@ -263,17 +242,18 @@ export default {
   methods: {
     findRole: findRole,
     formatDate: formatDate,
-    
     closeCreatorChangeDialog(){
       this.planCreator = [];
       this.deleteData = null;
       this.changeCreator = false;
-      this.getPlans();
     },
     actionsToggle(data) {
+      this.deleteData = null;
       this.deleteData = data
+
       if (data && data.user) {
-            this.planCreator.push(data.user.user);
+          this.planCreator = []
+          this.planCreator.push(data.user.user);
         }
     },
     changeWorkPlanCreator(){
@@ -323,6 +303,7 @@ export default {
       this.planService.getPlans(this.lazyParams).then(res => {
         this.data = res.data.plans;
         this.total = res.data.total;
+        this.planCreator = [];
         this.loading = false;
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
@@ -337,42 +318,25 @@ export default {
         this.$router.push({query: query})
       });
     },
-    // deleteConfirm(event) {
-    //   this.$confirm.require({
-    //     message: this.$t('common.doYouWantDelete'),
-    //     header: this.$t('common.delete'),
-    //     icon: 'pi pi-info-circle',
-    //     acceptClass: 'p-button-rounded p-button-success',
-    //     rejectClass: 'p-button-rounded p-button-danger',
-    //     accept: () => {
-    //       this.delete(event);
-    //       this.planCreator = []; 
-    //       this.deleteData = null;
-    //     },
-    //     reject: () => {
-    //       this.planCreator = [];
-    //       this.deleteData = null;
-          
-    //     },
-    //   });
-    // },
-
     deleteConfirm(event) {
-      this.deleteData = event;
-      this.confirmVisible = true; 
+      this.$confirm.require({
+        message: this.$t('common.doYouWantDelete'),
+        header: this.$t('common.delete'),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.delete(event);
+          this.planCreator = []; 
+          this.deleteData = null;
+        },
+        reject: () => {
+          this.planCreator = [];
+          this.deleteData = null;
+          
+        },
+      });
     },
-    confirmDelete() {
-      this.delete(this.deleteData);
-      this.planCreator = []; 
-      this.deleteData = null;
-      this.confirmVisible = false; 
-    },
-    cancelDelete() {
-      this.planCreator = [];
-      this.deleteData = null;
-      this.confirmVisible = false; 
-    },
-
     delete(event) {
       this.planService.deletePlan(event.work_plan_id).then(response => {
         if (response.data.is_success) {
