@@ -1973,6 +1973,9 @@ export default {
         },
     },
     hikvision: {
+        startDate: 'Время прихода',
+        endDate: 'Время ухода',
+        employeeName: 'Имя сотрудника',
         employeeEntryExitReport: 'Отчет по входу и выходу сотрудников в корпус',
         generateReport: 'Сформировать отчет',
         workSchedule: 'График работы',
@@ -1991,7 +1994,7 @@ export default {
         pps: 'ППС',
         aup: 'АУП',
         op: 'ОП',
-        axp:'АХП',
+        ahp:'АХП',
         uvp:'УВП',
         nii: 'НИИ',
         // add other translations here

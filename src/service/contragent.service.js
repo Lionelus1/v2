@@ -14,4 +14,7 @@ export class ContragentService {
     getPersons(data, cancelToken) {
         return api.post("/getUser", data, {headers: getHeader(), cancelToken: cancelToken});
     }
+    getDepartments(data) {
+        return api.post('/departments', data, {headers: getHeader()});
+    }
 }

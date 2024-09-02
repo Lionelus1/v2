@@ -22,7 +22,7 @@
         <template #header>
           <div class="table-header">
             <Button :label="$t('hikvision.generateReport')" icon="pi pi-plus" class="p-button-success mr-2" @click="showGenerateReport" />
-            <Button :label="$t('hikvision.workSchedule')" icon="pi pi-calendar" class="p-button-info" @click="showWorkSchedule" />
+            <!-- <Button :label="$t('hikvision.workSchedule')" icon="pi pi-calendar" class="p-button-info" @click="showWorkSchedule" /> -->
           </div>
         </template>
 
@@ -34,13 +34,19 @@
 
         <Column :field="'department'" :header="$t('hikvision.department')">
           <template #body="slotProps">
-            {{ slotProps.data.department.name }}
+            {{ slotProps.data.department?.name || $t('common.all') }}
+          </template>
+        </Column>
+
+        <Column :field="'category'" :header="$t('hikvision.category')">
+          <template #body="slotProps">
+            {{ slotProps.data.categoryIDs?.join(', ') || $t('common.all') }}
           </template>
         </Column>
 
         <Column :field="'employee'" :header="$t('hikvision.employeeName')">
           <template #body="slotProps">
-            {{ slotProps.data.employee ? slotProps.data.employee.fullName : $t('common.unknown') }}
+            {{ slotProps.data.employee?.fullName || $t('common.all') }}
           </template>
         </Column>
 
@@ -59,7 +65,7 @@
         <Column :header="$t('hikvision.actions')">
           <template #body="slotProps">
             <Button icon="pi pi-eye" class="p-button-text p-button-info" @click="viewReport(slotProps.data.id)" />
-            <Button icon="pi pi-download" class="p-button-text p-button-success" @click="downloadReport(slotProps.data.id)" />
+            <Button icon="pi pi-download" class="p-button-text p-button-success" @click="downloadFile(slotProps.data.doc.filePath)" />
             <Button icon="pi pi-times" class="p-button-text p-button-danger" @click="deleteReport(slotProps.data.id)" />
           </template>
         </Column>
@@ -69,6 +75,7 @@
 </template>
 
 <script setup>
+
 import { ref, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import BlockUI from 'primevue/blockui';
@@ -79,6 +86,8 @@ import Button from 'primevue/button';
 import WorkScheduleDialog from '@/components/hikvision/WorkScheduleDialog.vue';
 import GenerateReportDialog from "@/components/hikvision/GenerateReportDialog.vue";
 import { ReportService } from "@/service/report.service";
+import { downloadFile } from "@/config/config";
+
 
 const showGenerateReportDialog = ref(false);
 const showWorkScheduleDialog = ref(false);
@@ -92,6 +101,9 @@ const lazyParams = ref({ page: 0 });
 
 const showError = (message) => {
   toast.add({ severity: 'error', summary: 'Ошибка', detail: message, life: 3000 });
+};
+const showSuccess = (message) => {
+  toast.add({ severity: 'success', summary: 'Успешно', detail: message, life: 3000 });
 };
 
 const getReports = async () => {
@@ -134,33 +146,17 @@ const viewReport = async (id) => {
   }
 };
 
-const downloadReport = async (id) => {
+
+const deleteReport = async (id) => {
   try {
-    const response = await reportService.downloadReport(id);
-    const url = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `report_${id}.xlsx`);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    console.log('Скачивание отчета:', id);
+    await reportService.deleteReport({ id });
+    reports.value = reports.value.filter(report => report.id !== id);
+    showSuccess('Отчет успешно удален');
   } catch (error) {
-    console.error('Не удалось скачать отчет:', error);
-    showError('Не удалось скачать отчет');
+    console.error('Не удалось удалить отчет:', error);
+    showError('Не удалось удалить отчет');
   }
 };
-
-// const deleteReport = async (id) => {
-//   try {
-//     await reportService.deleteReport(id);
-//     reports.value = reports.value.filter(report => report.id !== id);
-//     console.log('Удаление отчета:', id);
-//   } catch (error) {
-//     console.error('Не удалось удалить отчет:', error);
-//     showError('Не удалось удалить отчет');
-//   }
-// };
 
 const onPageChange = (event) => {
   lazyParams.value.page = event.page;

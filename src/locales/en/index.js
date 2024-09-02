@@ -2069,6 +2069,10 @@ export default {
 
     },
     hikvision: {
+        startDate: 'Arrival time',
+        endDate: 'Departure time',
+        employeeName: "Employee",
+        generate: 'Generate a report',
         employeeEntryExitReport: 'Employee Entry and Exit Report',
         generateReport: 'Generate Report',
         workSchedule: 'Work Schedule',
@@ -2087,7 +2091,7 @@ export default {
         pps: 'PPS',
         aup: 'AUP',
         op: 'ОП',
-        axp:'АХП',
+        ahp:'АХП',
         uvp:'УВП',
         nii: 'НИИ',
         // add other translations here

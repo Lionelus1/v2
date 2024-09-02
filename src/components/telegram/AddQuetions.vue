@@ -116,7 +116,7 @@ const create = () => {
   questionService.createQuestion(fd).then(res => {
     toast.add({ severity: 'success', summary: t('common.success'), life: 3000 });
     emitter.emit('telegram', true);
-    emitter.emit('node', true); // Эмитирование события
+    emitter.emit('node', true);
   }).catch(err => {
     toast.add({
       summary: t('message.actionError'),

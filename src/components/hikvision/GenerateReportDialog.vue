@@ -2,86 +2,178 @@
   <div class="dialog">
     <h2>{{ $t('hikvision.generateReport') }}</h2>
     <form @submit.prevent="createReports">
-      <!-- Выбор диапазона дат -->
       <div class="form-group">
         <label>{{ $t('hikvision.dateRange') }}</label>
-        <input type="date" v-model="startDate" class="form-control" />
-        <input type="date" v-model="endDate" class="form-control" />
+        <PrimeCalendar v-model="startDate" dateFormat="dd/mm/yy" :placeholder="$t('hikvision.startDate')" />
+        <PrimeCalendar v-model="endDate" dateFormat="dd/mm/yy" :placeholder="$t('hikvision.endDate')" />
       </div>
 
-      <!-- Выбор категории -->
-      <div class="form-group">
+      <div class="field col-12">
         <label>{{ $t('hikvision.category') }}</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" v-model="categories" value="all" /> {{ $t('hikvision.all') }}</label>
-          <label><input type="checkbox" v-model="categories" value="pps" /> {{ $t('hikvision.pps') }}</label>
-          <label><input type="checkbox" v-model="categories" value="aup" /> {{ $t('hikvision.aup') }}</label>
-          <label><input type="checkbox" v-model="categories" value="op" /> {{ $t('hikvision.op') }}</label>
-          <label><input type="checkbox" v-model="categories" value="ahp" /> {{ $t('hikvision.ahp') }}</label>
-          <label><input type="checkbox" v-model="categories" value="uvp" /> {{ $t('hikvision.uvp') }}</label>
-          <label><input type="checkbox" v-model="categories" value="nii" /> {{ $t('hikvision.nii') }}</label>
+        <div class="p-formgrid p-grid">
+          <div class="field-checkbox" v-for="subject in categoriesV2" :key="subject.id">
+            <Checkbox :inputId="subject.id" v-model="subject.is_noted" :binary="true" />
+            <label :for="subject.id">{{ subject.code }}</label>
+          </div>
         </div>
       </div>
 
-      <!-- Выбор отдела -->
-      <div class="form-group">
+      <div class="p-field pb-3">
         <label>{{ $t('hikvision.department') }}</label>
-        <select v-model="department" class="form-control">
-          <option value="all">{{ $t('hikvision.all') }}</option>
-          <!-- Добавьте опции для департаментов -->
-        </select>
+        <Dropdown
+            class="dropdown"
+            v-model="department"
+            :options="departments"
+            :optionLabel="localizeDepartment"
+            :placeholder="$t('roleControl.selectDepartment')"
+            :filter="true"
+            :showClear="true"
+            dataKey="id"
+            :emptyFilterMessage="$t('roleControl.noResult')"
+            @filter="handleFilterDepartment"
+        />
       </div>
 
-      <!-- Выбор сотрудника -->
       <div class="form-group">
         <label>{{ $t('hikvision.employee') }}</label>
-        <select v-model="employee" class="form-control">
-          <option value="">{{ $t('hikvision.selectEmployee') }}</option>
-          <!-- Добавьте опции для сотрудников -->
-        </select>
+        <FindUser
+            :placeholder="$t('hikvision.all')"
+            :userType="3"
+            v-model="employee"
+            :max="1"
+            style="width: 100%"
+        />
       </div>
 
-      <!-- Кнопки действий -->
       <div class="button-group">
-        <button type="submit" class="btn btn-primary">{{ $t('hikvision.generate') }}</button>
-        <button type="button" class="btn btn-secondary" @click="$emit('close')">{{ $t('hikvision.cancel') }}</button>
+        <button type="submit" class="btn btn-primary" rounded>{{ $t('common.generate') }}</button>
+        <button type="button" class="btn btn-secondary" rounded @click="close">{{ $t('hikvision.cancel') }}</button>
       </div>
     </form>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, defineEmits, watch} from 'vue';
 import { useI18n } from 'vue-i18n';
-import { ReportService } from '@/service/report.service'; // Путь к вашему файлу с ReportService
+import PrimeCalendar from 'primevue/calendar';
+import Dropdown from 'primevue/dropdown';
+import Checkbox from 'primevue/checkbox';
+import { ReportService } from '@/service/report.service';
+import { ContragentService } from '@/service/contragent.service';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
+const emit = defineEmits(['reportCreated', 'close']);
+
 const startDate = ref('');
 const endDate = ref('');
 const categories = ref([]);
-const department = ref('all');
-const employee = ref('');
-const reportService = new ReportService(); // Создание экземпляра ReportService
+const department = ref(null);
+const employee = ref(null);
+const departments = ref([]);
+const searchText = ref('');
+
+const categoriesV2 = ref([
+  { id: 1, name_kz: '', name_ru: '', name_en: '', code: t('hikvision.aup'), is_noted: false },
+  { id: 2, name_kz: '', name_ru: '', name_en: '', code: t('hikvision.ahp'), is_noted: false },
+  { id: 3, name_kz: '', name_ru: '', name_en: '', code: t('hikvision.uvp'), is_noted: false },
+  { id: 4, name_kz: '', name_ru: '', name_en: '', code: t('hikvision.nii'), is_noted: false },
+  { id: 5, name_kz: '', name_ru: '', name_en: '', code: t('hikvision.pps'), is_noted: false },
+  { id: 6, name_kz: '', name_ru: '', name_en: '', code: t('hikvision.op'), is_noted: false },
+]);
+
+watch(
+    categoriesV2,
+    (newCategories) => {
+      console.log('Updated categoriesV2:', newCategories);
+      categories.value = newCategories
+          .filter(cat => cat.is_noted)
+          .map(cat => cat.id);
+      console.log('Updated categories:', categories.value);
+    },
+    { deep: true }
+);
+
+const reportService = new ReportService();
+const contragentService = new ContragentService();
+
+const capitalize = (str) => {
+  if (typeof str !== 'string') return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const localizeDepartment = (department) => {
+  const localizedText = t(department['name' + capitalize(locale.value)]);
+  return localizedText;
+};
+
+const handleFilterDepartment = (event) => {
+  if (event.value && event.value.length > 1) {
+    searchText.value = event.value;
+    getDepartments();
+  }
+};
+
+const getDepartments = async () => {
+  const orgId = 1;
+
+  try {
+    const response = await contragentService.getDepartments({
+      orgId: orgId,
+      searchText: searchText.value,
+    });
+
+    if (response.data && response.data.departments && Array.isArray(response.data.departments)) {
+      departments.value = response.data.departments;
+    } else {
+      departments.value = [];
+    }
+  } catch (error) {
+    console.error('Failed to load departments:', error);
+    toast.add({
+      severity: 'error',
+      detail: t('common.message.loadError'),
+      life: 3000,
+    });
+  }
+};
 
 const createReports = async () => {
-  try {
-    const data = {
-      startDate: startDate.value,
-      endDate: endDate.value,
-      categories: categories.value,
-      department: department.value === "all" ? null : parseInt(department.value, 10),
-      employee: employee.value,
+  const categoryIds = categories.value.length > 0
+      ? categories.value
+      : categoriesV2.value
+          .filter(cat => cat.is_noted && cat.id != null)
+          .map(cat => cat.id);
 
-    };
-    const response = await reportService.createReport(data); // Вызов правильного метода
+  console.log('Category IDs to be sent:', categoryIds);
+
+  const data = {
+    start_date: startDate.value,
+    end_date: endDate.value,
+    category_ids: categoryIds,
+    department_id: department.value ? department.value.id : null,
+    employee_id: employee.value && Array.isArray(employee.value) && employee.value.length > 0
+        ? employee.value[0].userID
+        : null,
+  };
+
+  try {
+    const response = await reportService.createReport(data);
     console.log('Report created:', response);
-    $emit('reportCreated', response);
-    $emit('close');
+    emit('reportCreated', response);
+    emit('close');
   } catch (error) {
     console.error('Error creating report:', error);
   }
 };
 
+const close = () => {
+  emit('close');
+};
+
+onMounted(() => {
+  getDepartments();
+});
 </script>
 
 <style scoped>
@@ -109,12 +201,6 @@ label {
   font-weight: bold;
 }
 
-.form-control {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-}
-
 .checkbox-group {
   display: flex;
   flex-wrap: wrap;
@@ -123,5 +209,23 @@ label {
 .button-group {
   display: flex;
   justify-content: space-between;
+}
+
+.btn {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: #fff;
 }
 </style>

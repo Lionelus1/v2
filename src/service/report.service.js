@@ -13,5 +13,8 @@ export class ReportService {
     createReport(data) {
         return api.post("/report/create", data, {headers: getHeader()})
     }
+    deleteReport(data) {
+        return api.post("/report/delete", data, {headers: getHeader()})
+    }
 
 }
