@@ -1,6 +1,5 @@
 <template>
   <Dialog
-      header="Mailing Details"
       v-model:visible="isVisible"
       :style="{ width: '1000px' }"
       :modal="true"
@@ -16,16 +15,18 @@
       <h3>{{ $t("mailing.description") }}</h3>
       <div v-html="selectedMailing?.mailing?.description"></div>
 
-      <h3>{{ $t("mailing.emails") }}</h3>
+      <div v-if="categoryExists(83)">
+      <h5 >{{ $t("mailing.emails") }}</h5>
       <p>{{ selectedMailing?.mailing?.emails.join(', ') || '-' }}</p>
+      </div>
 
-      <h3>{{ $t("mailing.sender") }}</h3>
+      <h5>{{ $t("mailing.sender") }}</h5>
       <p>{{ getFullName }}</p>
 
-      <h3>{{ $t("mailing.template") }}</h3>
+      <h5>{{ $t("mailing.template") }}</h5>
       <p>{{ selectedMailing?.template?.template_name || '-' }}</p>
 
-      <h3>{{ $t("mailing.status") }}</h3>
+      <h5>{{ $t("mailing.status") }}</h5>
       <p>{{ statusText }}</p>
     </div>
   </Dialog>
@@ -37,16 +38,13 @@ import {inject, computed, ref} from "vue";
 import { useI18n } from "vue-i18n";
 
 const emitter = inject('emitter');
-// Props
 const props = defineProps(['mailingViewVisible', 'selectedMailing'])
 const isVisible = ref(props.mailingViewVisible ?? false)
-// Emits
+
 const emit = defineEmits(['close']);
 
-// Localization
 const { locale } = useI18n();
 
-// Computed properties
 const statusText = computed(() => {
   const statusId = props.selectedMailing?.mailing?.statusId;
   if (!statusId) return 'unknown';
@@ -82,7 +80,11 @@ const getCategories = computed(() => {
           : categories?.map(category => category.en || '-').join(', ')
 });
 
-// Methods
+const categoryExists = (id) => {
+  const categories = props.selectedMailing?.categories || [];
+  return categories.some(category => category.id === id);
+}
+
 const closeModal = () => {
   emitter.emit("modalClose", false);
 }
