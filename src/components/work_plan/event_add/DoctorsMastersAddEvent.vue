@@ -1,18 +1,26 @@
 <template>
   <div class="field">
     <label>{{ $t('educationalPrograms.semester') }}</label>
-    <Dropdown v-model="semester" :options="semesters" optionLabel="name" optionValue="id"
-      :placeholder="$t('educationalPrograms.semester')" />
+    <Dropdown
+      v-model="semester"
+      :options="semesters"
+      optionLabel="name"
+      optionValue="id"
+      :placeholder="$t('educationalPrograms.semester')"
+    />
     <small class="p-error" v-if="submitted && formValid.semester">{{
       $t('workPlan.errors.pleaseChoose')
-      }}</small>
+    }}</small>
   </div>
-  <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors">
+  <div
+    class="field"
+    v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors"
+  >
     <label>{{ $t('workPlan.approvalUsers') }}</label>
-    <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
+    <FindUser v-model="resp_person" :editMode="true" :user-type="3"></FindUser>
     <small class="p-error" v-if="submitted && formValid.users">{{
       $t('workPlan.errors.approvalUserError')
-      }}</small>
+    }}</small>
   </div>
   <div class="field">
     <label>{{ $t('workPlan.content') }}</label>
@@ -20,11 +28,21 @@
   </div>
   <div class="field">
     <label>{{ $t('common.startDate') }}</label>
-    <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+    <PrimeCalendar
+      v-model="start_date"
+      dateFormat="dd.mm.yy"
+      showIcon
+      :showButtonBar="true"
+    ></PrimeCalendar>
   </div>
   <div class="field">
     <label>{{ $t('common.endDate') }}</label>
-    <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+    <PrimeCalendar
+      v-model="end_date"
+      dateFormat="dd.mm.yy"
+      showIcon
+      :showButtonBar="true"
+    ></PrimeCalendar>
   </div>
   <div class="field">
     <label>{{ $t('workPlan.expectingResults') }}</label>
@@ -44,17 +62,36 @@ const start_date = ref(new Date());
 const end_date = ref(new Date());
 const event_name = ref(null);
 const result = ref(null);
+const resp_person = ref(null);
+const resp_person_id = ref(
+  JSON.parse(localStorage.getItem('loginedUser')).userID
+);
 
-watch([semester, start_date, end_date, result, event_name], () => {
-  let data = {
-    event_name,
-    result,
+watch(
+  [
+    semester,
     start_date,
     end_date,
-    semester,
-  };
-  emit('updateData', data);
-});
+    result,
+    event_name,
+    resp_person_id,
+    resp_person,
+  ],
+  () => {
+    if (resp_person.value?.length > 0) {
+      resp_person_id.value = resp_person.value[0].userID;
+    }
+    let data = {
+      event_name,
+      result,
+      start_date,
+      end_date,
+      semester,
+      resp_person_id,
+    };
+    emit('updateData', data);
+  }
+);
 
 const semesters = [
   {
