@@ -914,6 +914,11 @@ export default {
         deleteFailed: "Delete Failed",
         unknownSender: "Unknown Sender",
         invalidSenderData: "Invalid Sender Data",
+        description: "Description",
+        emails: "Emails",
+        sender: "Sender",
+        template: "Template",
+        status: "Status"
     },
     vaccination: {
         title: "Vaccination",

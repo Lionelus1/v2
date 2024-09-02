@@ -919,6 +919,11 @@ export default {
         deleteFailed: "Удалить не удалось",
         unknownSender: "Неизвестный отправитель",
         invalidSenderData: "Неверные данные отправителя",
+        description: "Описание",
+        emails: "Почты",
+        sender: "Отправитель",
+        template: "Шаблон",
+        status: "Статус"
     },
     vaccination: {
         title: "Вакцинация",

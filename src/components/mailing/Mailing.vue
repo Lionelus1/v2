@@ -3,11 +3,7 @@
     <DataTable :value="mailingList">
       <Column field="title" :header="$t('mailing.title')">
         <template #body="slotProps">
-          <span>
-            {{
-              slotProps.data.TemplateName
-            }}
-          </span>
+          <span>{{ slotProps.data.TemplateName }}</span>
         </template>
       </Column>
       <Column field="categories" :header="$t('mailing.categories')">
@@ -18,28 +14,14 @@
           <span v-else>-</span>
         </template>
       </Column>
-<!--      <Column field="categories" :header="$t('mailing.categories')">-->
-<!--        <template #body="slotProps">-->
-<!--          <span v-for="role in slotProps.data.Roles" :key="role.id">{{ role.ru }}</span>-->
-<!--        </template>-->
-<!--      </Column>-->
       <Column field="author" :header="$t('mailing.author')">
         <template #body="slotProps">
-          <span>
-            {{
-              getFullName(slotProps.data.Notification.senderJSON)
-            }}
-          </span>
+          <span>{{ getFullName(slotProps.data.Notification.senderJSON) }}</span>
         </template>
-
       </Column>
-      <Column field="dateAndTime" :header="$t('mailing.dateAndTIme')">
+      <Column field="dateAndTime" :header="$t('mailing.dateAndTime')">
         <template #body="slotProps">
-          <span>
-            {{
-              slotProps.data.Notification.updatedDate
-            }}
-          </span>
+          <span>{{ slotProps.data.Notification.updatedDate }}</span>
         </template>
       </Column>
       <Column>
@@ -50,10 +32,12 @@
     </DataTable>
   </div>
 
-
-  <MailingView v-if="mailingViewVisible" :mailingViewVisible="mailingViewVisible" :selectedMailing="selectedMailing"/>
-
-
+  <MailingView
+      v-if="mailingViewVisible && selectedMailing"
+      :mailingViewVisible="mailingViewVisible"
+      :selectedMailing="selectedMailing"
+      @close="closeMailingView"
+  />
 </template>
 
 <script>
@@ -75,6 +59,7 @@ export default {
         itemsPerPage: 6,
         statusId: 0,
       },
+      actionsNode: null, // Добавлено поле для хранения действия
     };
   },
   methods: {
@@ -96,36 +81,43 @@ export default {
           .post("/mailing/mailingList", this.getParams, { headers: getHeader() })
           .then((res) => {
             this.mailingList = res.data;
-            this.loading = false;
           })
           .catch((err) => {
             console.error("Error loading mailing list:", err);
+          })
+          .finally(() => {
             this.loading = false;
           });
     },
-    async getMailingByID(mailingId) {
-      console.log("Requesting mailing with ID:", mailingId);
-      try {
-        const response = await api.post("/mailing/getMailingByID", { mailingId }, { headers: getHeader() });
-        console.log("Received response:", response.data);
-        return response.data;
-      } catch (error) {
-        console.error("Error fetching mailing by ID:", error);
-        return null;
-      }
+    getMailingByID(mailingId, callback) {
+      api
+          .post("/mailing/getMailingByID", { mailingId }, { headers: getHeader() })
+          .then((response) => {
+            callback(null, response.data);
+          })
+          .catch((error) => {
+            console.error("Error fetching mailing by ID:", error);
+            callback(error, null);
+          });
     },
-    async toggle(node) {
+    toggle(node) {
+      if (!node || !node.data || !node.data.Notification) {
+        return;
+      }
+
       const mailingId = node.data.Notification.id;
-      console.log("Toggling mailing view for ID:", mailingId);
-      this.selectedMailing = await this.getMailingByID(mailingId);
-      console.log("Selected mailing data:", this.selectedMailing);
-      if (this.selectedMailing) {
+
+      this.getMailingByID(mailingId, (error, data) => {
+        if (error) {
+          return;
+        }
+        this.selectedMailing = data;
         this.mailingViewVisible = true;
-      }
+      });
     },
-    mailingView(actionsNode) {
-      this.actionsNode = actionsNode;
-      this.toggle(actionsNode);
+    closeMailingView() {
+      console.log('Closing view from parent...');  // Лог для проверки
+      this.mailingViewVisible = false;
     },
   },
   computed: {
@@ -135,7 +127,7 @@ export default {
           label: this.$t('common.show'),
           icon: "fa-solid fa-eye",
           command: () => {
-            this.mailingView(this.actionsNode);
+            this.toggle(this.actionsNode); // Используем стрелочную функцию
           },
         },
       ];

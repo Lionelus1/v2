@@ -996,6 +996,11 @@ export default {
         deleteFailed: "Жою сәтсіз аяқталды",
         unknownSender: "Белгісіз жіберуші",
         invalidSenderData: "Жіберушінің жарамсыз деректері",
+        description: "Хабарламаның сипаттамасы",
+        emails: "Почталар",
+        sender: "Жіберуші",
+        template: "Үлгі",
+        status: "Жағдайы"
     },
     dissertation: {
         title: "Диссертациялық кеңес",
