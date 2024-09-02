@@ -1,13 +1,45 @@
+<template>
+  <Dialog
+      header="Mailing Details"
+      v-model:visible="isVisible"
+      :style="{ width: '1000px' }"
+      :modal="true"
+      class="p-fluid"
+      :closable="true"
+      :breakpoints="{'960px': '75vw', '640px': '90vw'}"
+      :close-on-escape="true"
+      @hide="closeModal">
+    <div>
+      <h3>{{ $t("mailing.categories") }}</h3>
+      <p>{{getCategories}}</p>
+
+      <h3>{{ $t("mailing.description") }}</h3>
+      <div v-html="selectedMailing?.mailing?.description"></div>
+
+      <h3>{{ $t("mailing.emails") }}</h3>
+      <p>{{ selectedMailing?.mailing?.emails.join(', ') || '-' }}</p>
+
+      <h3>{{ $t("mailing.sender") }}</h3>
+      <p>{{ getFullName }}</p>
+
+      <h3>{{ $t("mailing.template") }}</h3>
+      <p>{{ selectedMailing?.template?.template_name || '-' }}</p>
+
+      <h3>{{ $t("mailing.status") }}</h3>
+      <p>{{ statusText }}</p>
+    </div>
+  </Dialog>
+</template>
+
+
 <script setup>
-import { computed } from "vue";
+import {inject, computed, ref} from "vue";
 import { useI18n } from "vue-i18n";
 
+const emitter = inject('emitter');
 // Props
-const props = defineProps({
-  mailingViewVisible: Boolean,
-  selectedMailing: Object,
-});
-
+const props = defineProps(['mailingViewVisible', 'selectedMailing'])
+const isVisible = ref(props.mailingViewVisible ?? false)
 // Emits
 const emit = defineEmits(['close']);
 
@@ -41,43 +73,18 @@ const getFullName = computed(() => {
   }
 });
 
+const getCategories = computed(() => {
+  const categories = props.selectedMailing?.categories
+  return locale.value === "kz"
+      ? categories?.map(category => category.kz || '-').join(', ')
+      : locale.value === "ru"
+          ? categories?.map(category => category.ru || '-').join(', ')
+          : categories?.map(category => category.en || '-').join(', ')
+});
+
 // Methods
 const closeModal = () => {
-  console.log('Closing modal...');  // Лог для проверки
-  emit('close');
-};
+  emitter.emit("modalClose", false);
+}
+
 </script>
-
-<template>
-  <Dialog
-      header="Mailing Details"
-      :visible="mailingViewVisible"
-      :style="{ width: '1000px' }"
-      :modal="true"
-      class="p-fluid"
-      :closable="true"
-      :breakpoints="{'960px': '75vw', '640px': '90vw'}"
-      :close-on-escape="true"
-      @hide="() => { console.log('Hide event triggered'); closeModal(); }">
-
-    <div>
-      <h3>{{ $t("mailing.categories") }}</h3>
-      <p>{{ selectedMailing?.categories?.map(category => category[locale.value] || '-').join(', ') }}</p>
-
-      <h3>{{ $t("mailing.description") }}</h3>
-      <div v-html="selectedMailing?.mailing?.description"></div>
-
-      <h3>{{ $t("mailing.emails") }}</h3>
-      <p>{{ selectedMailing?.mailing?.emails.join(', ') || '-' }}</p>
-
-      <h3>{{ $t("mailing.sender") }}</h3>
-      <p>{{ getFullName }}</p>
-
-      <h3>{{ $t("mailing.template") }}</h3>
-      <p>{{ selectedMailing?.template?.template_name || '-' }}</p>
-
-      <h3>{{ $t("mailing.status") }}</h3>
-      <p>{{ statusText }}</p>
-    </div>
-  </Dialog>
-</template>

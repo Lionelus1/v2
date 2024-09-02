@@ -135,6 +135,9 @@ export default {
   },
   mounted() {
     this.initMailing();
+    this.emitter.on('modalClose', data => {
+      this.mailingViewVisible = data;
+    });
   },
 };
 </script>
