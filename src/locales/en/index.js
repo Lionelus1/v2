@@ -1332,7 +1332,8 @@ export default {
             reportSentToApprove: "The report was successfully sent for approval",
             planSentToApprove: "Plan sent for revision",
             planCreated: "Plan successfully created",
-            maxFileUploadSize: "You cannot upload more than 10 files at once"
+            maxFileUploadSize: "You cannot upload more than 10 files at once",
+            planCreatorChanged: "Plan creator has been successfully changed"
         },
         reportTypes: {
             year: "Annual",
@@ -1365,7 +1366,8 @@ export default {
         warnAddingSummaryUser: "You cannot add a user selected in the «Summary structural department» field to the «Summary/Confirmation» field.",
         topicOfMastersThesis: "Topic of master's thesis",
         editRespUser: "Edit responsive person",
-        modifiedPerson: "Modified"
+        modifiedPerson: "Modified",
+        changeCreatedPerson: "Change creator"
 
     },
     queue: {

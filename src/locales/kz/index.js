@@ -1393,7 +1393,8 @@ export default {
             reportSentToApprove: "Есеп келісуге сәтті жіберілді",
             planSentToApprove: "Жоспар қайта қарауға жіберілді",
             planCreated: "Жоспар сәтті құрылды",
-            maxFileUploadSize: "Бір уақытта 10 файлдан артық жүктеуге болмайды"
+            maxFileUploadSize: "Бір уақытта 10 файлдан артық жүктеуге болмайды",
+            planCreatorChanged: "Жоспар құрушы сәтті өзгертілді"
         },
         reportTypes: {
             year: "Жылдық",
@@ -1426,7 +1427,8 @@ export default {
         warnAddingSummaryUser: "«Жинақтаушы құрылымдық бөлім» өрісінде таңдалған қолданушыны «Жинақтаушы/Растау» өрісіне қоса алмайсыз.",
         topicOfMastersThesis: "Магистрлік диссертация тақырыбы",
         editRespUser: "Жауапты тұлғаны өзгерту",
-        modifiedPerson: "Өзгеріс еңгізген",
+        modifiedPerson: "Өзгеріс енгізген",
+        changeCreatedPerson: "Құрушыны өзгерту"
         
     },
     educomplex: {

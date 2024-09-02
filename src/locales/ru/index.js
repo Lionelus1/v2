@@ -1383,7 +1383,8 @@ export default {
             reportSentToApprove: "Отчет успешно отправлен на согласование",
             planSentToApprove: "План отправлен на корректировку",
             planCreated: "План успешно создан",
-            maxFileUploadSize: "Вы не можете загружать более 10 файлов одновременно"
+            maxFileUploadSize: "Вы не можете загружать более 10 файлов одновременно",
+            planCreatorChanged: "Создатель плана успешно изменено"
         },
         reportTypes: {
             year: "Годовой",
@@ -1416,7 +1417,8 @@ export default {
         warnAddingSummaryUser: "Вы не можете добавить пользователя, выбранного в поле «Свод структурный отдел», в поле «Свод/Подтверждение».",
         topicOfMastersThesis: "Тема магистерской диссертации",
         editRespUser: "Изменить ответственное лицо",
-        modifiedPerson: "Изменить"
+        modifiedPerson: "Изменить",
+        changeCreatedPerson: "Изменить созданное лицо"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
