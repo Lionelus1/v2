@@ -572,9 +572,9 @@ export default {
             mnvoDate: "Дата договора с МНВО",
             contractSum: "Сумма договора",
             documentsNotSigned: {
-                label: "Менің қол қоймаған құжаттарым",
-                signedByMe: "Мен қол қойған",
-                notSignedByMe: "Мен қол қоймаған"
+                label: "Документы, не подписанные мной",
+                signedByMe: "Подписанные мной",
+                notSignedByMe: "Не подписанные мной"
             }
         },
         title: "Договоры",
