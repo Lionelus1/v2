@@ -569,6 +569,11 @@ export default {
             projectPosition: "Жобадағы орны",
             mnvoDate: "БҒЖМ келісімнің күні",
             contractSum: "Шарт сомасы",
+            documentsNotSigned: {
+                label: "Менің қол қоймаған құжаттарым",
+                signedByMe: "Мен қол қойған",
+                notSignedByMe: "Мен қол қоймаған"
+            }
         },
         title: "Келісім-шарттар",
         template: "Келісім-шарт үлгілері",

@@ -4,13 +4,31 @@
   <ToolbarMenu :data="menu" @filter="toggle('filterOverlayPanel', $event)" :filter="true" :filtered="filtered"/>
   <BlockUI :blocked="loading" class="card">
     <DataTable :value="documents" dataKey="id" :rows="rows" :totalRecords="total" :first="first"
-      :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
-      :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading" 
-      scrollable scrollHeight="flex" v-model:selection="currentDocument" selectionMode="single" 
-      :rowHover="true" stripedRows class="flex-grow-1" @page="onPage">
+               :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
+               :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading"
+               scrollable scrollHeight="flex" v-model:selection="currentDocument" selectionMode="single"
+               :rowHover="true" stripedRows class="flex-grow-1" @page="onPage">
       <template #empty>
         {{ this.$t("common.recordsNotFound") }}
       </template>
+      <Column v-if="findRole(null, 'signer')" header=" ">
+        <template #header>
+          <Checkbox
+              v-model="allChecked"
+              @change="selectAllCheckBox"
+              :binary="true"
+          />
+          <span class="ml-2">{{this.$t("common.selectAll")}}</span>
+        </template>
+        <template #body="slotProps">
+          <Checkbox
+              v-model="slotProps.data.checked"
+              @change="checkBoxSelect(slotProps)"
+              :binary="true"
+              :disabled="!isSlotEnabled(slotProps) || !(slotProps.data.docHistory.stateId === Enum.SIGNING.ID)"
+          />
+        </template>
+      </Column>
       <Column :header="$t('contracts.columns.createDate')" style="min-width: 150px;">
         <template #body="slotProps">
           {{ getLongDateString(slotProps.data.createDate) }}
@@ -99,6 +117,15 @@
             </span>
           </template>
         </Dropdown>
+      </div>
+      <div class="field" v-if="filterPage === 0">
+        <label>{{$t('contracts.filter.documentsNotSigned.label')}}</label>
+        <SelectButton v-model="tempFilter.documentsNotSignedType" :options="docSourceType">
+          <template #option="slotProps">
+            <div v-if="slotProps.option == Enum.DocSourceType.Template">{{$t('contracts.filter.documentsNotSigned.signedByMe')}}</div>
+            <div v-else>{{$t('contracts.filter.documentsNotSigned.notSignedByMe')}}</div>
+          </template>
+        </SelectButton>
       </div>
       <div class="field" v-if="filterPage === 0">
         <label>{{ $t('contracts.filter.contractType.label') }}</label>
@@ -192,10 +219,22 @@
 <script>
 import { getShortDateString, getLongDateString } from "@/helpers/helper";
 import Enum from "@/enum/docstates/index";
-
+import api from "@/service/api";
 import { DocService } from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import FindUser from "@/helpers/FindUser";
+import {
+  getHeader,
+  smartEnuApi,
+  findRole
+} from "@/config/config";
+import {
+  runNCaLayer,
+  makeTimestampForSignature,
+} from "@/helpers/SignDocFunctions";
+import logger from "quill/core/logger";
+import {NCALayerClient} from "ncalayer-js-client";
+import {checkIdAvailability, docToByteArray} from "../../../helpers/SignDocFunctions";
 
 export default {
   name: 'Contracts',
@@ -247,6 +286,7 @@ export default {
         mnvo: null,
         sciadvisor: [],
         financingType: null,
+        documentsNotSignedType: null,
       },
 
       tempFilter: {
@@ -268,6 +308,7 @@ export default {
         mnvo: null,
         sciadvisor: [],
         financingType: null,
+        documentsNotSignedType: null,
       },
 
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
@@ -283,6 +324,15 @@ export default {
       actionsNode: {},
 
       financingTypes: ['government', 'program_targeted', 'grant', 'company'],
+      showAnymore: null,
+      showCheckbox: false,
+      selectedIds: [],
+      docInfo: null,
+      signerIin: null,
+      isTspRequired: false,
+      selectAll: false,
+      allChecked: false,
+      documentsNotSigned: false,
     }
   },
   created() {
@@ -318,6 +368,7 @@ export default {
     localStorage.setItem('contractsCurrentPage', JSON.stringify({first: this.first, page: this.page, rows: this.rows}))
   },
   methods: {
+    findRole : findRole,
     getLongDateString: getLongDateString,
     getShortDateString: getShortDateString,
     showMessage(msgtype, message, content) {
@@ -501,12 +552,14 @@ export default {
           mnvo: this.filter.mnvo,
           sciadvisor: this.filter.sciadvisor.length > 0 && this.filter.sciadvisor[0] ? this.filter.sciadvisor[0].userID : null,
           financingType: this.filter.financingType,
+          documentsNotSigned: this.filter.documentsNotSignedType,
         },
+
       }).then(res => {
         this.documents = res.data.documents
         this.total = res.data.total
         this.currentDocument = null
-
+        this.selectedIds = []
         this.tableLoading = false
       }).catch(err => {
         this.documents = []
@@ -530,6 +583,38 @@ export default {
     },
     greenMySign() {
 
+    },
+    checkBoxSelect(slotProps){
+      if (slotProps.data.checked) {
+        this.selectedIds.push(slotProps.data.id);
+      } else {
+        this.selectedIds = this.selectedIds.filter(item => item !== slotProps.data.id);
+      }
+    },
+    isSlotEnabled(slotProps) {
+      const loginedUser = JSON.parse(localStorage.getItem('loginedUser'));
+      const loggedInUserId = loginedUser ? loginedUser.userID : null;
+
+      let isEnabled = false;
+        if (slotProps.data.signatures) {
+          const foundStage = slotProps.data.signatures.find(stage => stage.userId === loggedInUserId);
+          if (foundStage && foundStage.signature.length === 0) {
+            isEnabled = true;
+          }
+      }
+      return isEnabled;
+    },
+    multipleSignature() {
+      this.showCheckbox = !this.showCheckbox
+      this.selectAll = !this.selectAll
+      this.filter.status = "status_signing"
+      if (this.showCheckbox) {
+        this.toggle('filterOverlayPanel', event);
+      } else {
+        this.filter.status = null;
+      }
+      this.documentsNotSigned = !this.documentsNotSigned
+      this.getContracts()
     },
     haveRequest(contract) {
       if (contract.requests) {
@@ -614,6 +699,7 @@ export default {
         mnvo: null,
         sciadvisor: [],
         financingType: null,
+        documentsNotSignedType: null,
       };
       this.filtered = false;
     },
@@ -672,10 +758,143 @@ export default {
     financingTypesLabel(data) {
       return this.$t('contracts.financingTypes.' + data);
     },
+    sign() {
+      this.loading = true;
+      api.post( smartEnuApi + "/document/multipleSignature",
+              {
+                doc_id: this.selectedIds,
+              },
+              {
+                headers: getHeader(),
+              }
+          )
+          .then((response) => {
+              this.docInfo = response.data.maniFestDocumentUuid
+
+            api
+                .post(
+                    "/downloadFile",
+                    {
+                      filePath: this.docInfo.filePath,
+                    },
+                    {
+                      headers: getHeader(),
+                    }
+                )
+                .then((response) => {
+                  runNCaLayer(
+                      this.$t,
+                      this.$toast,
+                      response.data,
+                      "cms",
+                      this.signerType,
+                      this.isTspRequired,
+                      this.$i18n.locale
+                  )
+                      .then((sign) => {
+                        if (sign != undefined) {
+                          this.sendRequest(sign);
+                        }
+                      })
+                      .catch((e) => {
+                        console.log(e);
+                        this.loading = false;
+                      });
+                })
+                .catch((error) => {
+                  this.loading = false;
+                  if (error.response.status == 401) {
+                    this.$store.dispatch("logLout");
+                  }
+                });
+          })
+          .catch((error) => {
+          this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      });
+
+
+
+    },
+    sendRequest(signature) {
+      var req = {
+        docUUID: this.docInfo.uuid,
+        sign: signature,
+        signerIin: this.signerIin,
+        isTspRequired: this.isTspRequired,
+      };
+      this.loading = true;
+
+      api
+          .post("/doc/sign", req, { headers: getHeader() })
+          .then((response) => {
+            this.loading = false;
+            // this.getData();
+            this.showMessage(
+                "success",
+                this.$t("ncasigner.signDocTitle"),
+                this.$t("ncasigner.success.signSuccess")
+            );
+          })
+          .catch((error) => {
+            this.loading = false;
+            if (error.response.status == 405) {
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t(error.response.data),
+                life: 3000,
+              });
+            }
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else this.loading = false;
+          });
+    },
+    selectAllCheckBox() {
+      const loginedUser = JSON.parse(localStorage.getItem('loginedUser'));
+      const loggedInUserId = loginedUser ? loginedUser.userID : null;
+      this.allChecked = !this.allChecked;
+      if (this.allChecked) {
+        this.documents.forEach(document => {
+          document.checked = false;
+        });
+        this.selectedIds = [];
+      } else {
+        this.documents.forEach(document => {
+          if (document.signatures) {
+            let isChecked = false;
+
+            document.signatures.forEach(signature => {
+              console.log(signature)
+              if (signature.userId === loggedInUserId && signature.signature.length === 0) {
+                isChecked = true;
+                this.selectedIds.push(document.id);
+              }
+            });
+
+            if (isChecked) {
+              document.checked = true;
+            }
+          }
+        });
+      }
+
+      this.allChecked = !this.allChecked
+
+    },
+
+    selectDocumentsNotSigned() {
+        this.documentsNotSigned = !this.documentsNotSigned
+    }
   },
   computed: {
-    menu () {
-      return [
+    menu() {
+      const isSigner = this.findRole(null, 'signer');
+
+      const menuItems = [
         {
           label: this.$t('contracts.card'),
           icon: "fa-regular fa-address-card",
@@ -689,8 +908,27 @@ export default {
               this.currentDocument.sourceType !== Enum.DocSourceType.FilledDoc,
           command: () => {this.$router.push('/documents/contracts/' + this.currentDocument.uuid + '/related')},
         },
-      ]
+        // {
+        //   label: this.$t('contracts.menu.multipleSignature'),
+        //   icon: "fa-solid fa-link",
+        //   // disabled: "",
+        //   command: () => {this.multipleSignature()},
+        // },
+        {
+          label: this.$t('ncasigner.sign'),
+          disabled: this.selectedIds.length === 0,
+          command: () => { this.sign(); },
+        },
+      ];
+
+      // Удаляем последние два пункта, если роль 'signer'
+      if (!isSigner) {
+        return menuItems.slice(0, -1);
+      }
+
+      return menuItems;
     },
+
     actions () {
       return [
         {

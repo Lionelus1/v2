@@ -571,6 +571,11 @@ export default {
             projectPosition: "Позиция в проекте",
             mnvoDate: "Дата договора с МНВО",
             contractSum: "Сумма договора",
+            documentsNotSigned: {
+                label: "Документы, не подписанные мной",
+                signedByMe: "Подписанные мной",
+                notSignedByMe: "Не подписанные мной"
+            }
         },
         title: "Договоры",
         autogenerate: "Будет сформировано автоматически при подписании или регистрации",
@@ -606,6 +611,7 @@ export default {
             sendForExecution: "Отправить на исполнение",
             tocontragent: "Отправить контрагенту",
             toSciadvisor: "Отправить научному руководителю",
+            multipleSignature: "Множественное подписание"
         },
         contragentEmail: "Эл.почта контрагента",
         contragentRequest: "На согласовании у контрагента",

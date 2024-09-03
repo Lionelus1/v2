@@ -579,6 +579,11 @@ export default {
             projectPosition: "Position in the project",
             mnvoDate: "Date of agreement with the MES",
             contractSum: "The amount of the contract",
+            documentsNotSigned: {
+                label: "Documents Not Signed by Me",
+                signedByMe: "Signed by Me",
+                notSignedByMe: "Not Signed by Me"
+            }
         },
         title: "Contracts",
         autogenerate: "Will be generated automatically when signing or registering",
