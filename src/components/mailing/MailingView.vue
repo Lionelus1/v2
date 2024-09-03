@@ -8,26 +8,32 @@
       :breakpoints="{'960px': '75vw', '640px': '90vw'}"
       :close-on-escape="true"
       @hide="closeModal">
-    <div>
-      <h3>{{ $t("mailing.categories") }}</h3>
-      <p>{{getCategories}}</p>
-
-      <h3>{{ $t("mailing.description") }}</h3>
-      <div v-html="selectedMailing?.mailing?.description"></div>
-
-      <div v-if="categoryExists(83)">
-      <h5 >{{ $t("mailing.emails") }}</h5>
-      <p>{{ selectedMailing?.mailing?.emails.join(', ') || '-' }}</p>
+    <div class="dialog-content">
+      <div class="field">
+        <label class="bold">{{ $t("mailing.time") }}</label>
+        <span class="value">{{ moment(new Date(selectedMailing?.mailing?.createdDate)).utc().format("DD.MM.YYYY") }}</span>
       </div>
 
-      <h5>{{ $t("mailing.sender") }}</h5>
-      <p>{{ getFullName }}</p>
+      <div class="field">
+        <label class="bold">{{ $t("mailing.categories") }}</label>
+        <span class="value">{{ getCategories }}</span>
+      </div>
 
-      <h5>{{ $t("mailing.template") }}</h5>
-      <p>{{ selectedMailing?.template?.template_name || '-' }}</p>
+      <div v-if="categoryExists(83)" class="field">
+        <label class="bold">{{ $t("mailing.emails") }}</label>
+        <span class="value">{{ selectedMailing?.mailing?.emails.join(', ') || '-' }}</span>
+      </div>
 
-      <h5>{{ $t("mailing.status") }}</h5>
-      <p>{{ statusText }}</p>
+      <div class="field">
+        <label class="bold">{{ $t("mailing.text") }}</label>
+        <div v-html="selectedMailing?.mailing?.description"></div>
+      </div>
+
+      <div class="field">
+        <label class="bold">{{ $t("mailing.sender") }}</label>
+        <span class="value">{{ getFullName }}</span>
+      </div>
+
     </div>
   </Dialog>
 </template>
@@ -36,6 +42,7 @@
 <script setup>
 import {inject, computed, ref} from "vue";
 import { useI18n } from "vue-i18n";
+import moment from "moment";
 
 const emitter = inject('emitter');
 const props = defineProps(['mailingViewVisible', 'selectedMailing'])
@@ -90,3 +97,29 @@ const closeModal = () => {
 }
 
 </script>
+
+<style>
+.dialog-content {
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+.bold {
+  font-weight: bold;
+  color: #333;
+}
+
+
+.value {
+  display: block;
+  margin-top: 0.25rem;
+  color: #555;
+  font-size: 1rem;
+}
+
+p.value {
+  margin: 0;
+}
+
+
+</style>

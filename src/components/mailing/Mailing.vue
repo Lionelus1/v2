@@ -19,7 +19,7 @@
           <span>{{ getFullName(slotProps.data.Notification.senderJSON) }}</span>
         </template>
       </Column>
-      <Column field="dateAndTime" :header="$t('mailing.dateAndTime')">
+      <Column field="dateAndTime" :header="$t('mailing.dateAndTIme')">
         <template #body="slotProps">
           <span>{{ slotProps.data.Notification.updatedDate }}</span>
         </template>
