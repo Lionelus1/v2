@@ -60,6 +60,11 @@
       </div>
 
       <div class="field">
+        <label>{{ $t('science.qualification.city') }}</label>
+        <InputText type="text" :placeholder="$t('common.search')" v-model="tempFilter.address"/>
+      </div>
+
+      <div class="field">
         <Button :label="$t('common.clear')" @click="clearFilter();toggle('filterOverlayPanel', $event);getOrganizations()" class="mb-2 p-button-outlined"/>
         <Button :label="$t('common.search')" @click="saveFilter();toggle('filterOverlayPanel', $event);getOrganizations()" class="mt-2"/>
       </div>
@@ -112,12 +117,14 @@ export default {
         resident: 1,
         country_id:null,
         form_id: null,
+        address: null,
       },
       tempFilter: {
         name: null,
         country_id:null,
         localeSearchText: null,
         form_id: null,
+        address: null,
       },
 
       activeTabIndex: 0,
@@ -258,6 +265,7 @@ export default {
           resident: this.filter.resident,
           country_id: this.activeTabIndex === 1 ? this.filter.country_id : null,
           form_id: this.filter.form_id,
+          address: this.filter.address,
         }
       }).then(res => {
         this.organizations = res.data.organizations;
@@ -311,10 +319,10 @@ export default {
     },
     toggle(ref, event) {
       if (this.activeTabIndex === 1) {
-        this.filtered = this.filter.form_id !== null || this.filter.name !== null || this.filter.country_id !== null;
+        this.filtered = this.filter.form_id !== null || this.filter.name !== null || this.filter.country_id !== null || this.filter.address !== null ;
         this.getCountries()
       } else  {
-        this.filtered = this.filter.form_id !== null || this.filter.name !== null;
+        this.filtered = this.filter.form_id !== null || this.filter.name !== null || this.filter.address !== null;
       }
 
       if (ref === 'filterOverlayPanel') {
@@ -329,6 +337,7 @@ export default {
         form_id: null,
         resident: 0,
         country_id:  null,
+        address: null,
       };
       this.filtered = false;
     },
