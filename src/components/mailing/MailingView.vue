@@ -11,7 +11,7 @@
     <div class="dialog-content">
       <div class="field">
         <label class="bold">{{ $t("mailing.time") }}</label>
-        <span class="value">{{ moment(new Date(selectedMailing?.mailing?.createdDate)).utc().format("DD.MM.YYYY") }}</span>
+        <span class="value">{{ moment(new Date(selectedMailing?.mailing?.createdDate)).utc().format("DD.MM.YYYY HH:mm:ss") }}</span>
       </div>
 
       <div class="field">
