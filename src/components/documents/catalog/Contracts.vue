@@ -119,6 +119,15 @@
         </Dropdown>
       </div>
       <div class="field" v-if="filterPage === 0">
+        <label>{{$t('contracts.filter.documentsNotSigned.label')}}</label>
+        <SelectButton v-model="tempFilter.documentsNotSignedType" :options="docSourceType">
+          <template #option="slotProps">
+            <div v-if="slotProps.option == Enum.DocSourceType.Template">{{$t('contracts.filter.documentsNotSigned.signedByMe')}}</div>
+            <div v-else>{{$t('contracts.filter.documentsNotSigned.notSignedByMe')}}</div>
+          </template>
+        </SelectButton>
+      </div>
+      <div class="field" v-if="filterPage === 0">
         <label>{{ $t('contracts.filter.contractType.label') }}</label>
         <SelectButton v-model="tempFilter.sourceType" :options="docSourceType">
           <template #option="slotProps">
@@ -277,6 +286,7 @@ export default {
         mnvo: null,
         sciadvisor: [],
         financingType: null,
+        documentsNotSignedType: null,
       },
 
       tempFilter: {
@@ -298,6 +308,7 @@ export default {
         mnvo: null,
         sciadvisor: [],
         financingType: null,
+        documentsNotSignedType: null,
       },
 
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
@@ -321,7 +332,7 @@ export default {
       isTspRequired: false,
       selectAll: false,
       allChecked: false,
-      documentsNotSigned: false
+      documentsNotSigned: false,
     }
   },
   created() {
@@ -526,7 +537,6 @@ export default {
         docType: this.Enum.DocType.Contract,
         templateId: this.filter.sourceType === Enum.DocSourceType.Template && this.filter.template ? this.filter.template.id : null,
         folderId: this.filter.sourceType === Enum.DocSourceType.FilledDoc && this.filter.folder ? this.filter.folder.id : null,
-        documentsNotSigned: this.documentsNotSigned,
         filter: {
           name: this.filter.sourceType === Enum.DocSourceType.FilledDoc && this.filter.name && this.filter.name.length > 0 ? this.filter.name : null,
           status: this.filter.status && this.filter.status.length > 0 ? this.filter.status : null,
@@ -542,7 +552,9 @@ export default {
           mnvo: this.filter.mnvo,
           sciadvisor: this.filter.sciadvisor.length > 0 && this.filter.sciadvisor[0] ? this.filter.sciadvisor[0].userID : null,
           financingType: this.filter.financingType,
+          documentsNotSigned: this.filter.documentsNotSignedType,
         },
+
       }).then(res => {
         this.documents = res.data.documents
         this.total = res.data.total
@@ -687,6 +699,7 @@ export default {
         mnvo: null,
         sciadvisor: [],
         financingType: null,
+        documentsNotSignedType: null,
       };
       this.filtered = false;
     },
@@ -871,6 +884,10 @@ export default {
 
       this.allChecked = !this.allChecked
 
+    },
+
+    selectDocumentsNotSigned() {
+        this.documentsNotSigned = !this.documentsNotSigned
     }
   },
   computed: {
@@ -891,12 +908,12 @@ export default {
               this.currentDocument.sourceType !== Enum.DocSourceType.FilledDoc,
           command: () => {this.$router.push('/documents/contracts/' + this.currentDocument.uuid + '/related')},
         },
-        {
-          label: this.$t('contracts.menu.multipleSignature'),
-          icon: "fa-solid fa-link",
-          // disabled: "",
-          command: () => {this.multipleSignature()},
-        },
+        // {
+        //   label: this.$t('contracts.menu.multipleSignature'),
+        //   icon: "fa-solid fa-link",
+        //   // disabled: "",
+        //   command: () => {this.multipleSignature()},
+        // },
         {
           label: this.$t('ncasigner.sign'),
           disabled: this.selectedIds.length === 0,
@@ -906,7 +923,7 @@ export default {
 
       // Удаляем последние два пункта, если роль 'signer'
       if (!isSigner) {
-        return menuItems.slice(0, -2);
+        return menuItems.slice(0, -1);
       }
 
       return menuItems;

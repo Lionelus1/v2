@@ -569,6 +569,7 @@ export default {
             projectPosition: "Жобадағы орны",
             mnvoDate: "БҒЖМ келісімнің күні",
             contractSum: "Шарт сомасы",
+
         },
         title: "Келісім-шарттар",
         template: "Келісім-шарт үлгілері",
