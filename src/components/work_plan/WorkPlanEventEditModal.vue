@@ -70,6 +70,7 @@
     <div class="field">
       <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.comment') : $t('common.comment') }}</label>
       <Textarea v-model="editorComment" rows="3" style="resize: vertical" />
+      <small class="p-error" v-if="submitted && !editorComment?.length > 0">{{ $t('common.requiredField') }}</small>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeBasic" />
@@ -195,6 +196,7 @@ export default {
       if (this.notValid()) {
         return;
       }
+      
       let userIds = [];
 
       if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
@@ -238,6 +240,11 @@ export default {
                       const fullName = `${user.thirdName || ''} ${user.firstName || ''} ${lastName}`.trim();
                       return fullName;
                     }).filter(name => name).join(', ');
+      
+      
+      
+
+    
 
       if((this.editorComment && this.editorComment.length > 0)|| (copySummaryDepUser !== null && currentSummaryDepUser !== null) || (this.addedRespUser?.length > 0 || this.removedRespUser?.length > 0)){
             commentData += "{";
@@ -458,6 +465,30 @@ export default {
       }
       if (commentData && commentData.length > 0 && commentData !== "{}" ){
         this.editData.resp_person_edit_comment = commentData
+      }
+      
+      const noComment = !this.editorComment || this.editorComment.length <= 0;
+      const noChangesInRespUser = this.removedRespUser?.length <= 0 && this.addedRespUser?.length <= 0;
+      const changesInSummaryDepUser = this.copySummaryDepUser?.userID !== this.currentSummaryDepUser?.userID;
+      const isOperPlan = this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Oper
+
+      if (noComment && noChangesInRespUser) {
+        this.$toast.add({ severity: "warn", summary: this.$t('workPlan.message.noChanges'), life: 4000 });
+        return false;
+      }
+
+      if (!noComment && noChangesInRespUser) {
+        this.$toast.add({ severity: "warn", summary: this.$t('workPlan.message.noRespPersonChanged'), life: 4000 });
+        return false;
+      }
+
+      if (noComment && !noChangesInRespUser) {
+        this.$toast.add({ severity: "warn", summary: this.$t('common.noComment'), life: 4000 });
+        return false;
+      }
+      if (isOperPlan && noComment && changesInSummaryDepUser) {
+        this.$toast.add({ severity: "warn", summary: this.$t('workPlan.message.noChanges'), life: 4000 });
+        return false;
       }
       
       this.planService.editEvent(this.editData).then(res => {

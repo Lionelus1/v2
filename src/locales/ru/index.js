@@ -1384,7 +1384,9 @@ export default {
             planSentToApprove: "План отправлен на корректировку",
             planCreated: "План успешно создан",
             maxFileUploadSize: "Вы не можете загружать более 10 файлов одновременно",
-            planCreatorChanged: "Создатель плана успешно изменено"
+            planCreatorChanged: "Создатель плана успешно изменено",
+            noChanges: "Не изменений",
+            noRespPersonChanged: "Ответственное лицо не изменено",
         },
         reportTypes: {
             year: "Годовой",

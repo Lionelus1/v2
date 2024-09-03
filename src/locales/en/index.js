@@ -1333,7 +1333,9 @@ export default {
             planSentToApprove: "Plan sent for revision",
             planCreated: "Plan successfully created",
             maxFileUploadSize: "You cannot upload more than 10 files at once",
-            planCreatorChanged: "Plan creator has been successfully changed"
+            planCreatorChanged: "Plan creator has been successfully changed",
+            noChanges: "No changes",
+            noRespPersonChanged: "Responsible person has not been changed",
         },
         reportTypes: {
             year: "Annual",

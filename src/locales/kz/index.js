@@ -1394,7 +1394,9 @@ export default {
             planSentToApprove: "Жоспар қайта қарауға жіберілді",
             planCreated: "Жоспар сәтті құрылды",
             maxFileUploadSize: "Бір уақытта 10 файлдан артық жүктеуге болмайды",
-            planCreatorChanged: "Жоспар құрушы сәтті өзгертілді"
+            planCreatorChanged: "Жоспар құрушы сәтті өзгертілді",
+            noChanges: "Өзгеріс енгізілмеген",
+            noRespPersonChanged: "Жауапты тұлға өзгертілмеген",
         },
         reportTypes: {
             year: "Жылдық",
