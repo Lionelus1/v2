@@ -27,10 +27,10 @@ onMounted(async () => {
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    selectedCategories.value = Array.isArray(response.data.categoryIds) ? response.data.categoryIds : [];
-    emails.value = response.data.emails || [];
-    description.value = response.data.description;
-    templateId.value = response.data.templateId;
+    selectedCategories.value = Array.isArray(response.data.mailing.categoryIds) ? response.data.mailing.categoryIds : [];
+    emails.value = response.data.mailing.emails || [];
+    description.value = response.data.mailing.description;
+    templateId.value = response.data.mailing.templateId;
   } catch (error) {
     console.error("Failed to fetch mailing data:", error);
   }
@@ -50,14 +50,6 @@ const menu = computed(() => {
       {
         label: t("common.save"),
         icon: "pi pi-fw pi-save",
-        disabled: false,
-        command: () => {
-          sendMailing(1);
-        },
-      },
-      {
-        label: t("common.saveToDrafts"),
-        icon: "fa-solid fa-download",
         disabled: false,
         command: () => {
           sendMailing(2);
