@@ -542,6 +542,7 @@ const formatTime= (date) => {
 const previous = () => {
   currentStep.value = 1
 }
+
 onMounted(() => {
   if (parentId.value !== parseInt(localStorage.getItem('queueParentId'))) {
     localStorage.removeItem('phoneNumber')
