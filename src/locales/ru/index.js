@@ -924,7 +924,10 @@ export default {
         emails: "Почты",
         sender: "Отправитель",
         template: "Шаблон",
-        status: "Статус"
+        status: "Статус",
+        textCategory: "Пожалуйста, выберите категорию",
+        textEmails: "Пожалуйста, введите почту правильно",
+        textTemplate: "Пожалуйста, выберите шаблон"
     },
     vaccination: {
         title: "Вакцинация",

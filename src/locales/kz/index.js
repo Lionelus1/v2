@@ -1001,7 +1001,10 @@ export default {
         emails: "Почталар",
         sender: "Жіберуші",
         template: "Үлгі",
-        status: "Жағдайы"
+        status: "Жағдайы",
+        textCategory: "Санатты таңдаңыз",
+        textEmails: "Поштаны дұрыс енгізіңіз",
+        textTemplate: "Үлгіні таңдаңыз"
     },
     dissertation: {
         title: "Диссертациялық кеңес",

@@ -45,6 +45,7 @@
 
 <script>
 import {getHeader, smartEnuApi} from "@/config/config";
+import { useToast } from "primevue/usetoast";
 import 'primeicons/primeicons.css'
 
 export default {
@@ -59,6 +60,7 @@ export default {
       selectedTemplate: null,
       templates: [],
       showOtherEmailField: false,
+      toast: new useToast(),
       categories: [
         {id: 1, nameen: 'Contractors', namekz: 'Контрагенттер', nameru: 'Контрагенты'},
         {id: 2, nameen: 'Employees', namekz: 'Қызметкерлер', nameru: 'Сотрудники'},
@@ -79,7 +81,6 @@ export default {
         });
         const data = await response.json();
         this.templates = data;
-        console.log(this.templates);
       } catch (error) {
         console.error('Ошибка при получении шаблонов:', error);
       }
@@ -164,8 +165,6 @@ export default {
           </div>`
         );
 
-        console.log(content)
-
         content = content.replace('</head>', `${style}</head>`);
       }
 
@@ -185,13 +184,30 @@ export default {
     },
     nextPage() {
       if (this.selectedCategories.length === 0) {
-        alert('Пожалуйста, выберите категорию');
-        return; // Предотвращает переход на следующую страницу
+        this.toast.add({
+          severity: "error",
+          detail: this.$t('mailing.textCategory'),
+          life: 3000,
+        });
+        return;
+      }
+
+      if (this.selectedCategories[0] === 6 && this.emails.length === 0) {
+        this.toast.add({
+          severity: "error",
+          detail: this.$t('mailing.textEmails'),
+          life: 3000,
+        });
+        return
       }
 
       if (!this.selectedTemplate) {
-        alert('Пожалуйста, выберите шаблон');
-        return; // Предотвращает переход на следующую страницу
+        this.toast.add({
+          severity: "error",
+          detail: this.$t('mailing.textTemplate'),
+          life: 3000,
+        });
+        return;
       }
 
       this.$router.push({

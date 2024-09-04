@@ -919,7 +919,10 @@ export default {
         emails: "Emails",
         sender: "Sender",
         template: "Template",
-        status: "Status"
+        status: "Status",
+        textCategory: "Please select a category",
+        textEmails: "Please enter your email correctly",
+        textTemplate: "Please select a template"
     },
     vaccination: {
         title: "Vaccination",
