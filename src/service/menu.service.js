@@ -321,10 +321,18 @@ export class MenuService {
                 visible: this.findRole('telegram') || this.findRole('main_administrator')
             },
             {
-                label: $t('Hikvision'),
-                icon: 'fa-brands fa-telegram',
-                to: '/Hikvision',
-            }
+                label: $t('workPlan.reports'),
+                icon: 'pi pi-fw pi-chart-line',
+                visible: this.findRole('hikvision') || this.findRole('main_administrator'),
+                items: [
+                    {
+                        label: $t('Hikvision'),
+                        icon: 'fa-solid fa-file-signature',
+                        to: '/hikvision',
+
+                    }
+                ]
+            },
         ]
     }
 

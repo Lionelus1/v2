@@ -2017,7 +2017,6 @@ export default {
         reset: 'Қалпына келтіру',
         save: 'Сақтау',
         cancel: 'Болдырмау',
-        // more translations
     },
     error: {
         invalidEmail: "Электрондық поштаның мекенжайы дұрыс емес",

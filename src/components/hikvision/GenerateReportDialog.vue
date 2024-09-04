@@ -10,7 +10,7 @@
 
       <div class="field col-12">
         <label>{{ $t('hikvision.category') }}</label>
-        <div class="p-formgrid p-grid">
+        <div class="checkbox-group">
           <div class="field-checkbox" v-for="subject in categoriesV2" :key="subject.id">
             <Checkbox :inputId="subject.id" v-model="subject.is_noted" :binary="true" />
             <label :for="subject.id">{{ subject.code }}</label>
@@ -47,7 +47,6 @@
 
       <div class="button-group">
         <button type="submit" class="btn btn-primary" rounded>{{ $t('common.generate') }}</button>
-        <button type="button" class="btn btn-secondary" rounded @click="close">{{ $t('hikvision.cancel') }}</button>
       </div>
     </form>
   </div>
@@ -227,5 +226,18 @@ label {
 .btn-secondary {
   background-color: #6c757d;
   color: #fff;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.field-checkbox {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
 }
 </style>
