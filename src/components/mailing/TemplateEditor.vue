@@ -164,6 +164,9 @@ export default {
         const bookmark = this.editor.selection.getBookmark(2, true);
         let content = this.editor.getContent();
         content = content.replace(/<p id="main-content">.*?<\/p>/g, "<p></p>");
+        if (parseInt(this.$route.params.templateId, 10) === 3) {
+          content = content.replace(/<p id="title">.*?<\/p>/g, "<p></p>");
+        }
         this.editor.setContent(content);
         this.isDefaultTextRemoved = true;
         this.editor.selection.moveToBookmark(bookmark);
