@@ -25,8 +25,8 @@
         </Column>
         <Column field="status" :header="$t('common.status')">
           <template #body="{ data }">
-            <span :class="'customer-badge status-' + data.doc_info.docHistory.stateEn">
-              {{ getDocStatus(data.doc_info.docHistory.stateEn) }}
+            <span :class="'customer-badge status-' + data?.doc_info?.docHistory?.stateEn">
+              {{ getDocStatus(data?.doc_info?.docHistory?.stateEn) }}
           </span>
           </template>
         </Column>
@@ -37,7 +37,7 @@
         </Column>
         <Column field="status" :header="$t('workPlan.planType')" v-if="isAdmin">
           <template #body="{ data }">
-            <span :class="'customer-badge ' + data.plan_type.code">
+            <span :class="'customer-badge ' + data?.plan_type?.code">
               {{ data.plan_type['name_' + $i18n.locale] }}
             </span>
           </template>
@@ -69,7 +69,7 @@
                   <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeCreatorChangeDialog"></Button>
                   <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="changeWorkPlanCreator"></Button>
         </div>
-    </Dialog>
+      </Dialog>
     <OverlayPanel ref="global-filter">
       <div v-for="(item, index) in types" :key="index" class="flex align-items-center">
         <div class="field-radiobutton">
@@ -84,6 +84,7 @@
         </div>
       </div>
     </OverlayPanel>
+
   </div>
 </template>
 
@@ -95,6 +96,7 @@ import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import Enum from "@/enum/docstates";
 import moment from "moment";
 import {formatDate} from "@/helpers/HelperUtil";
+import DocState from "@/enum/docstates/index";
 
 export default {
   components: {ToolbarMenu, WorkPlanAdd},
@@ -167,6 +169,8 @@ export default {
       changeCreator: false,
       planCreator:[],
       submitted: false,
+      planDoc: null,
+      DocState: DocState,
     }
   },
   mounted() {
@@ -183,6 +187,15 @@ export default {
 
   },
   computed: {
+    isCreatedPlan() {
+      return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.CREATED.Value
+    },
+    isPlanApproved() {
+      return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.APPROVED.Value
+    },
+    isPlanUnderRevision() {
+      return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
+    },
     initMenu() {
       return [
         {
@@ -199,7 +212,7 @@ export default {
         {
           label: this.$t('workPlan.changeCreatedPerson'),
           icon: 'fa-solid fa-pen',
-          disabled: !(this.isAdmin),
+          disabled: !(this.isAdmin && this.isCreatedPlan),
           visible:this.isAdmin,
           command: () => {
             this.changeCreator = true
@@ -220,6 +233,7 @@ export default {
         },
       ];
     },
+    
   },
   created() {
     let oldPath = this.$router.options.history.state.back;
@@ -249,7 +263,8 @@ export default {
     },
     actionsToggle(data) {
       this.deleteData = null;
-      this.deleteData = data
+      this.deleteData = data;
+      this.planDoc = data?.doc_info;
 
       if (data && data.user) {
           this.planCreator = []
