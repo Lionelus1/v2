@@ -3,13 +3,13 @@
     <DataTable :value="mailingList">
       <Column field="title" :header="$t('mailing.title')">
         <template #body="slotProps">
-          <span>{{ slotProps.data.TemplateName }}</span>
+          <span>{{ $i18n.locale === "kz" ? slotProps.data.TemplateNameKz : $i18n.locale === "ru" ? slotProps.data.TemplateNameRu : slotProps.data.TemplateNameEn }}</span>
         </template>
       </Column>
       <Column field="categories" :header="$t('mailing.categories')">
         <template #body="slotProps">
           <span v-if="slotProps.data.Roles">
-            {{ slotProps.data.Roles.map(role => role.ru).join(', ') }}
+            {{ slotProps.data.Roles.map(role => $i18n.locale === "kz" ? role.kz : $i18n.locale === "ru" ? role.ru : role.en).join(', ') }}
           </span>
           <span v-else>-</span>
         </template>
@@ -59,7 +59,7 @@ export default {
         itemsPerPage: 6,
         statusId: 0,
       },
-      actionsNode: null, // Добавлено поле для хранения действия
+      actionsNode: null
     };
   },
   methods: {

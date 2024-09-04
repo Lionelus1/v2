@@ -331,7 +331,7 @@ const routes = [
                     //     beforeEnter: ifAuthenticated,
                     // },
                     {
-                        path: '/template/:templateId&:selectedCategories&:emails',
+                        path: '/template',
                         name: 'TemplateEditor2',
                         props: true,
                         component: load('mailing/TemplateEditor'),

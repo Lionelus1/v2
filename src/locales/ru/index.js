@@ -912,6 +912,7 @@ export default {
     },
     mailing: {
         title: "Наименование",
+        fileTitle: "Прикрепленный файл",
         categories: "Категории",
         author: "Автор",
         dateAndTIme: "Дата и время",

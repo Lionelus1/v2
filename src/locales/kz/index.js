@@ -915,7 +915,7 @@ export default {
         posterImageRuInvalid: "Орысша постер таңдалмады",
         posterImageEnInvalid: "Ағылшынша постер таңдалмады",
         mailings: "Таратулар",
-        drafts: "Қоқыстар",
+        drafts: "Қаралама",
     },
     vaccination: {
         title: "Вакциналау",
@@ -989,6 +989,7 @@ export default {
     },
     mailing: {
         title: "Атауы",
+        fileTitle: "Тіркелген файл",
         categories: "Санаттар",
         author: "Автор",
         dateAndTIme: "Күні мен уақыты",

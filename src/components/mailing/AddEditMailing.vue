@@ -30,7 +30,7 @@
                 :class="['template-card', { selected: template.id === selectedTemplate }]"
                 @click="selectTemplate(template.id)"
             >
-              <h4>{{ template.template_name }}</h4>
+              <h4>{{ $i18n.locale === "kz" ? template.template_name_kz : $i18n.locale === "ru" ? template.template_name_ru : template.template_name_en }}</h4>
               <div v-html="getTemplateContent(template)" class="template-content"></div>
             </div>
           </div>
@@ -210,14 +210,15 @@ export default {
         return;
       }
 
-      this.$router.push({
-        name: 'TemplateEditor2',
-        params: {
-          templateId: this.selectedTemplate,
-          selectedCategories: JSON.stringify(this.selectedCategories),
-          emails: JSON.stringify(this.emails),
-        },
-      });
+      const data = {
+        templateId: this.selectedTemplate,
+        selectedCategories: this.selectedCategories,
+        emails: this.emails,
+      };
+
+      localStorage.setItem('mailingData', JSON.stringify(data));
+
+      this.$router.push({ name: 'TemplateEditor2' });
     },
     hideDialog() {
       this.emitter.emit('addEditMailingDialogHide', true);

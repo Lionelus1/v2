@@ -907,6 +907,7 @@ export default {
     },
     mailing: {
         title: "Title",
+        fileTitle: "Attached file",
         categories: "Categories",
         author: "Author",
         dateAndTIme: "Date and Time",

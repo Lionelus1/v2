@@ -34,6 +34,14 @@
         <span class="value">{{ getFullName }}</span>
       </div>
 
+      <div class="field">
+        <a
+            :href="props.selectedMailing?.mailing?.AdditionalFilePath"
+            download = "true"
+        >
+          {{ $t("mailing.fileTitle") }}
+        </a>
+      </div>
     </div>
   </Dialog>
 </template>
@@ -71,7 +79,7 @@ const getFullName = computed(() => {
 
   try {
     const { lastName = "", firstName = "", thirdName = "" } = JSON.parse(senderString);
-    return `${lastName} ${firstName} ${thirdName}`.trim();
+    return `${thirdName} ${firstName} ${lastName}`.trim();
   } catch (e) {
     console.error("Failed to parse senderJSON:", e);
     return "Invalid sender data";

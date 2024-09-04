@@ -122,11 +122,12 @@ export const downloadFile = function(filePath) {
     if (error.response.status == 401) {
       this.$store.dispatch("logLout");
     } else {
-      this.$toast.add({
-        severity: "error",
-        summary: "downloadFileError:\n" + error,
-        life: 3000,
-      });
+      console.error(error)
+      // this.$toast.add({
+      //   severity: "error",
+      //   summary: "downloadFileError:\n" + error,
+      //   life: 3000,
+      // });
     }
   });
 }

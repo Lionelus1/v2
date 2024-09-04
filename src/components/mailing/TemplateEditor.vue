@@ -52,6 +52,7 @@ export default {
     return {
       additionalFileId: 0,
       templateContent: '',
+      templateId: null,
       selectedCategories: [],
       emails: [],
       editor: null,
@@ -73,7 +74,7 @@ export default {
   methods: {
     loadTemplateContent() {
       const data = {
-        templateId: parseInt(this.$route.params.templateId, 10),
+        templateId: parseInt(this.templateId, 10),
         lang: this.$i18n.locale
       };
 
@@ -126,7 +127,7 @@ export default {
           roles: roles,
         },
         userID: null,
-        docTemplateID: parseInt(this.$route.params.templateId, 10),
+        docTemplateID: parseInt(this.templateId, 10),
         description: this.templateContent,
         emails: processedEmails,
         filePath: null,
@@ -144,14 +145,17 @@ export default {
             if (!response.status === 200) {
               throw new Error(`HTTP error! status: ${response.status}`);
             }
+            localStorage.removeItem('mailingData');
             this.$router.push('/mailing');
           })
           .then(data => {
             console.log('Success:', data);
+            localStorage.removeItem('mailingData');
             this.$router.push('/mailing');
           })
           .catch(error => {
             console.error('Error:', error);
+            localStorage.removeItem('mailingData');
             this.toast.add({
               severity: "error",
               detail: this.$t('common.requestFailed'),
@@ -179,9 +183,14 @@ export default {
     }
   },
   mounted() {
-    this.selectedCategories = JSON.parse(this.$route.params.selectedCategories || '[]');
-    this.emails = JSON.parse(this.$route.params.emails || '[]');
-    this.loadTemplateContent();
+    const storedData = localStorage.getItem('mailingData');
+    if (storedData) {
+      const { templateId, selectedCategories, emails } = JSON.parse(storedData);
+      this.templateId = templateId;
+      this.selectedCategories = selectedCategories;
+      this.emails = emails;
+      this.loadTemplateContent();
+    }
   },
   computed: {
     menu() {
