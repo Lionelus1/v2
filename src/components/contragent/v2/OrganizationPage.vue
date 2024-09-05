@@ -77,10 +77,10 @@
       </div>
       <div class="field col-12 md:col-6">
         <!-- <span class="p-error" v-if="!pageReadonly">*</span> -->
-        <label>{{ $t("contact.email") }}</label>
+        <label>{{ $t("contact.email") }}<span class="p-error" v-if="!pageReadonly && this.org.resident === 1">*</span></label>
         <InputText :readonly="pageReadonly" type="text" :placeholder="$t('contact.email')" 
           v-model="org.email" @input="input"></InputText>
-        <!-- <small class="p-error" v-if="validation.email">{{$t('common.requiredField')}}</small> -->
+        <small class="p-error" v-if="validation.email">{{$t('common.requiredField')}}</small>
       </div>
       <div class="field col-12 md:col-6">
         <label>{{ $t("contact.phone") }}</label>
@@ -309,7 +309,7 @@ export default {
         nameru: false,
         nameen: false,
         form: false,
-        //email: false,
+        email: false,
         country: false,
         swift: false,
       },
@@ -582,7 +582,10 @@ export default {
       this.validation.nameru =  !this.org.nameru || this.org.nameru.length < 1;
       this.validation.nameen =  !this.org.nameen || this.org.nameen.length < 1;
       this.validation.form = !this.org.form || this.org.form.id < 1;
-      // this.validation.email = !this.org.email || this.org.email.length < 1;
+      if(this.org.resident === 1){
+        this.validation.email = !this.org.email || this.org.email.length < 1;
+      }
+      
 
       if (this.org.type === 2) {
         this.validation.swift = !this.bank.swift || this.bank.swift.length < 1;
@@ -591,7 +594,7 @@ export default {
       }
 
       return (this.validation.bin || this.validation.namekz || this.validation.nameru ||
-        this.validation.form || this.validation.country || this.validation.swift);
+        this.validation.form || this.validation.email || this.validation.country || this.validation.swift);
     },
     createEmptyOrganization() {
       return {
