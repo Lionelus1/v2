@@ -31,6 +31,12 @@
             {{ formatDateMoment(node.end_date) }}
           </template>
         </Column>
+        <Column field="responsible_executor" :header="$t('workPlan.respExecutor')" style="max-width: 100px">
+          <template #body="{ node }">
+            {{ node.responsible_executor }}
+          </template>
+        </Column>
+        
         <Column field="status" :header="$t('common.status')">
           <template #body="{ node }">
             <span :class="'customer-badge status-' + node.status.work_plan_event_status_id">{{

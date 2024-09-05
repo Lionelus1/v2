@@ -101,7 +101,7 @@
             </div>
           </div>
           <div class="grid mt-3" v-else>
-            <div class="p-fluid" v-if="isMastersPlan || (!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
+            <div class="p-fluid" v-if="(isMastersPlan || isDoctorsPlan) || (!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
               event.status.work_plan_event_status_id !== 5 &&
               event.status.work_plan_event_status_id !== 2 && event.status.work_plan_event_status_id !== 6) || (isRespUser && isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
               event.status.work_plan_event_status_id !== 5 &&
@@ -280,7 +280,7 @@
                     </div>
                   </div>
                   <div style="margin-left: -12px;"
-                       v-if="((isPlanCreator || findRole(null, 'main_administrator')) && (!isMastersPlan || isAdviser))">
+                       v-if="((isPlanCreator || findRole(null, 'main_administrator')) && (!isMastersPlan && !isDoctorsPlan || isAdviser))">
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check"
                             class="p-button-rounded p-button-text"
                             @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)"
@@ -294,7 +294,7 @@
                     <br/><br/>
                   </div>
                   <div v-else class="p-0">
-                    <span style="float:right;margin-top: -7px;" v-if="isPlanCreator && (!isMastersPlan || isAdviser)">
+                    <span style="float:right;margin-top: -7px;" v-if="isPlanCreator && (!isMastersPlan && !isDoctorsPlan || isAdviser)">
                       <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)"
                               :label="$t('common.action.accept')"></Button>
                       <Button icon="pi pi-fw pi-times" class="p-button-rounded p-button-text"
@@ -542,6 +542,9 @@ export default {
     isMastersPlan() {
       return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters
     },
+    isDoctorsPlan() {
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors
+    },
     isStandartPlan() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Standart
     },
@@ -660,8 +663,8 @@ export default {
       this.inputWordCount = count
     },
     respUserExists(id) {
-      if (this.isMastersPlan) {
-        return this.event?.summary_department_id === id || this.isAdviser
+      if (this.isMastersPlan || this.isDoctorsPlan) {
+        return this.event?.summary_department_id === id || this.isAdviser || this.event?.creator_id
       }
       return this.event?.user?.some(user => user.id === id)
     },

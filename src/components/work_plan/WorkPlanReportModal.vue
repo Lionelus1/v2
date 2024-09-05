@@ -8,7 +8,7 @@
       <label>{{ $t('workPlan.reportName') }}</label>
       <InputText v-model="report_name"/>
     </div>
-    <div class="field" v-if="!isMastersPlan">
+    <div class="field" v-if="!isMastersPlan && !isDoctorsPlan">
       <label>{{ $t('common.type') }}</label>
       <Dropdown v-model="type" :options="reportTypes" optionLabel="name" optionValue="id"
                 :placeholder="$t('common.select')" @select="selectReportType"/>
@@ -29,7 +29,7 @@
                 optionValue="department_id" :filter="true" :show-clear="true"
                 :placeholder="$t('common.select')"/>
     </div>
-    <div class="field" v-if="isMastersPlan">
+    <div class="field" v-if="isMastersPlan || isDoctorsPlan">
       <label>{{ $t('workPlan.semester') }}</label>
       <Dropdown v-model="quarter" :options="semesters" optionLabel="name" optionValue="id"
                 :placeholder="$t('common.select')"/>
@@ -137,6 +137,18 @@ export default {
       this.getDepartments();
       this.getRespUsers();
     }
+    if (this.isDoctorsPlan) {
+      this.semesters.push(
+        {
+          id: 5,
+          name: 5,
+        },
+        {
+          id: 6,
+          name: 6,
+        }
+      );
+    }
   },
   computed: {
     isOperPlan() {
@@ -144,6 +156,9 @@ export default {
     },
     isMastersPlan() {
       return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters
+    },
+    isDoctorsPlan() {
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors
     },
     showCreateReportButton() {
       return (this.plan && this.plan.user.id === this.loginedUser.userID) || this.getResposiveUser;
@@ -220,6 +235,9 @@ export default {
       };
       if (this.plan.plan_type.code === Enum.WorkPlanTypes.Masters) {
         data.report_type = 8
+        data.quarter = this.quarter
+      }
+      if (this.plan.plan_type.code === Enum.WorkPlanTypes.Doctors) {
         data.quarter = this.quarter
       }
       if (this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) {

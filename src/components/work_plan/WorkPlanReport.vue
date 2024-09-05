@@ -37,7 +37,7 @@
         <Column
             field="department"
             :header="$t('common.department')"
-            v-if="!isMastersPlan"
+            v-if="!isMastersPlan && !isDoctorsPlan"
         >
           <template #body="{ data }">
             <span v-if="data.department">
@@ -70,21 +70,21 @@
             </span>
           </template>
         </Column>
-        <Column :header="$t('common.type')" v-if="!isMastersPlan">
+        <Column :header="$t('common.type')" v-if="!isMastersPlan && !isDoctorsPlan">
           <template #body="{ data }">
             {{ initReportType(data.report_type, data.halfYearType) }}
           </template>
         </Column>
         <Column
             :header="
-            isMastersPlan ? $t('workPlan.semester') : $t('workPlan.quarter')
+            isMastersPlan  || isDoctorsPlan ? $t('workPlan.semester') : $t('workPlan.quarter')
           "
         >
           <template #body="{ data }">
-            {{ isMastersPlan ? data.quarter : initQuarter(data.quarter) }}
+            {{ isMastersPlan || isDoctorsPlan ? data.quarter : initQuarter(data.quarter) }}
           </template>
         </Column>
-        <Column :header="$t('common.comment')" v-if="!isMastersPlan">
+        <Column :header="$t('common.comment')" v-if="!isMastersPlan && !isDoctorsPlan">
           <template #body="{ data }">
             <p v-if="data.reject_history">{{ data.reject_history.message }}</p>
           </template>
@@ -149,6 +149,9 @@ export default {
     },
     isMastersPlan() {
       return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters;
+    },
+    isDoctorsPlan() {
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors;
     },
     showCreateReportButton() {
       return this.plan && (this.isPlanCreator || this.getResponsiveUser());
