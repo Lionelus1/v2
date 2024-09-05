@@ -866,6 +866,8 @@ export default {
         failToSign: "Failed to sign the document!",
         notEnoughRights: "You don't have enough rights to sign the document!",
         failToSendDoc: "The document ID could not be sent to the server!",
+        uploadScanDoc: "Upload Document Scan",
+        uploadAdditionalDoc: "Additional Document"
     },
     publicReception: {
         title: "Public reception",

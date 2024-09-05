@@ -842,6 +842,8 @@ export default {
         failToSign: "Құжатқа қол қою мүмкін емес!",
         notEnoughRights: "Құжатқа қол қою құқығыңыз жеткіліксіз!",
         failToSendDoc: "Құжаттың ID-ін серверге жіберу мүмкін емес!",
+        uploadScanDoc: "Құжаттың скан нұсқасын жүктеу",
+        uploadAdditionalDoc: "Қосымша құжат"
 
     },
     publicReception: {

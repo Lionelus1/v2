@@ -44,7 +44,7 @@
       </div>
       <div class="field col-12 md:col-6">
         <label>{{ $t("contragent.form") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
-        <Dropdown :disabled="pageReadonly" v-model="org.form" dataKey="id" :placeholder="$t('common.select')" :options="orgforms" 
+        <Dropdown :disabled="pageReadonly" filter v-model="org.form" dataKey="id" :placeholder="$t('common.select')" :options="orgforms" 
           :optionLabel="($i18n.locale === 'kz' ? 'name' : $i18n.locale === 'ru' ? 'namerus' : 'nameen')" @change="input"></Dropdown>
         <small class="p-error" v-if="validation.form">{{$t('common.requiredField')}}</small>
       </div>
@@ -64,6 +64,7 @@
             optionLabel="name"
         />
       </div>
+      <!-- resizdent and not resident -->
       <div class="field col-12 md:col-6">
         <label>&nbsp;</label>
         <SelectButton :disabled="pageReadonly"  v-model="org.resident" :options="resident" optionValue="id"
@@ -75,10 +76,11 @@
         {{ this.$t("contact.title") }}
       </div>
       <div class="field col-12 md:col-6">
-        <label>{{ $t("contact.email") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
+        <!-- <span class="p-error" v-if="!pageReadonly">*</span> -->
+        <label>{{ $t("contact.email") }}</label>
         <InputText :readonly="pageReadonly" type="text" :placeholder="$t('contact.email')" 
           v-model="org.email" @input="input"></InputText>
-        <small class="p-error" v-if="validation.email">{{$t('common.requiredField')}}</small>
+        <!-- <small class="p-error" v-if="validation.email">{{$t('common.requiredField')}}</small> -->
       </div>
       <div class="field col-12 md:col-6">
         <label>{{ $t("contact.phone") }}</label>
@@ -140,7 +142,6 @@
           <div class="uppercase">{{ this.$t("contracts.rating") }}</div>
         </template>
           <Menubar :model="menuRating" class="m-0 pt-0 pb-0"></Menubar>
-
           <DataTable :value="ratings" dataKey="id" :rows="ratingFilter.rows" :totalRecords="ratingTotal"
                      :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
                      :lazy="true" :loading="cooperationLoading"
@@ -224,7 +225,6 @@
     <Sidebar position="right" class="p-sidebar-lg"
              style="width: 50%;"  v-model:visible="ratingDialog">
       <TitleBlock :title="this.$t('contracts.rating')" :show-back-button="false"></TitleBlock>
-
       <Menubar :model="menuRatingSave" class="m-0 pt-0 pb-0"></Menubar>
       <div class="card p-fluid">
         <div class="grid formgrid">
@@ -241,7 +241,7 @@
           </div>
 
           <div class="field col-12 md:col-4">
-            <label>{{ this.$t('contracts.rating') }} {{this.$t('common.language.ru')}}<span class="p-error">*</span></label>
+            <label>{{ this.$t('contracts.rating') }} {{this.$t('common.language.en')}}<span class="p-error">*</span></label>
             <InputText v-model="rating.name_en" required />
             <small class="p-error" v-if="validationErrors.place">{{ this.$t('common.requiredField') }}</small>
           </div>
@@ -309,7 +309,7 @@ export default {
         nameru: false,
         nameen: false,
         form: false,
-        email: false,
+        //email: false,
         country: false,
         swift: false,
       },
@@ -582,7 +582,7 @@ export default {
       this.validation.nameru =  !this.org.nameru || this.org.nameru.length < 1;
       this.validation.nameen =  !this.org.nameen || this.org.nameen.length < 1;
       this.validation.form = !this.org.form || this.org.form.id < 1;
-      this.validation.email = !this.org.email || this.org.email.length < 1;
+      // this.validation.email = !this.org.email || this.org.email.length < 1;
 
       if (this.org.type === 2) {
         this.validation.swift = !this.bank.swift || this.bank.swift.length < 1;
@@ -591,7 +591,7 @@ export default {
       }
 
       return (this.validation.bin || this.validation.namekz || this.validation.nameru ||
-        this.validation.form || this.validation.email || this.validation.country || this.validation.swift);
+        this.validation.form || this.validation.country || this.validation.swift);
     },
     createEmptyOrganization() {
       return {
@@ -678,7 +678,7 @@ export default {
         this.banks = res.data;
       }).catch(err => {
         if (err?.response?.status !== 404) {
-          this.$toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+          this.$toast.add({severity: 'error', summary: this.$t('common.error'), life: 3000})
         }
       })
     },

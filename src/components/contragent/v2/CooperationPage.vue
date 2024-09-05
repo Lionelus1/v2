@@ -1,7 +1,6 @@
 <template>
   <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
   <TitleBlock :title="t('contracts.cooperationDocument')" :show-back-button="false"></TitleBlock>
-
   <Menubar :model="menu" class="m-0 pt-0 pb-0"></Menubar>
   <div class="card p-fluid">
     <div class="grid formgrid">
@@ -26,13 +25,6 @@
       <div class="field col-12 md:col-6">
         <label>{{ t("contracts.doc_number") }}</label>
         <InputText v-model="cooperationDocument.number" :placeholder="t('contracts.doc_number')" />
-      </div>
-
-      <div class="field col-12 md:col-6">
-        <label>{{ t('science.qualification.country') }}</label>
-        <Dropdown filter v-model="cooperationDocument.locality"  :placeholder="t('common.select')" :options="countries" class="w-full"
-                  :option-label="countryLabel">
-        </Dropdown>
       </div>
 
       <div class="field col-12">
@@ -98,7 +90,33 @@
         <small class="p-error" v-if="validationErrors.termination_reason_date">{{ t('common.requiredField') }}</small>
       </div>
 
+      <!-- file uploads -->
       <div class="field col-12">
+        <label>{{ t("ncasigner.uploadScanDoc") }}</label>
+        <FileUpload
+            mode="basic"
+            accept=".pdf"
+            :customUpload="true"
+            :auto="true"
+            :chooseLabel="t('ncasigner.chooseFile')"
+            @uploader="uploadScannedFile"
+            ref="scannedFileUploader"
+        />
+        <!-- <small class="p-error" v-if="validationErrors.filePath">{{ t("common.requiredField") }}</small> -->
+      </div>
+
+      <InlineMessage severity="info" class="mt-2" show v-if="tempScannedFileData.scannedfilename">
+        {{ t('ncasigner.chosenFile', {fn: tempScannedFileData.scannedfilename ? tempScannedFileData.scannedfilename : ""}) }}
+      </InlineMessage>
+
+      <div v-if="cooperationDocument.scanned_file_path" class="field col-12">
+        <h6>{{ t('hdfs.fileName') }}</h6>
+        <a @click="downloadFile(cooperationDocument.scanned_file_name, cooperationDocument.scanned_file_path)" style="cursor: pointer;">{{ cooperationDocument.scanned_file_name }}</a>
+      </div>
+
+
+      <div class="field col-12">
+        <label>{{ t("ncasigner.uploadAdditionalDoc") }}</label>
         <FileUpload
             mode="basic"
             accept=".pdf"
@@ -108,17 +126,15 @@
             @uploader="uploadFile"
             ref="fileUploader"
         />
-        <small class="p-error" v-if="validationErrors.filePath">{{ t("common.requiredField") }}</small>
+        <!-- <small class="p-error" v-if="validationErrors.filePath">{{ t("common.requiredField") }}</small> -->
       </div>
 
-      <InlineMessage severity="info"
-                     class="mt-2"
-                     show v-if="tempFileData.filename">
+      <InlineMessage severity="info" class="mt-2" show v-if="tempFileData.filename">
         {{ t('ncasigner.chosenFile', {fn: tempFileData.filename ? tempFileData.filename : ""}) }}
       </InlineMessage>
 
       <div v-if="cooperationDocument.file_path" class="field col-12">
-        <h4>{{ t('hdfs.fileName') }}</h4>
+        <h6>{{ t('hdfs.fileName') }}</h6>
         <a @click="downloadFile(cooperationDocument.file_name, cooperationDocument.file_path)" style="cursor: pointer;">{{ cooperationDocument.file_name }}</a>
       </div>
 
@@ -169,7 +185,7 @@ const loading = ref(false)
 const service = new ContragentService
 const changed = ref(false)
 const subjectDialog = ref(false)
-const countries = ref([])
+// const countries = ref([])
 const countryTotal = ref(0)
 
 const props = defineProps({
@@ -211,7 +227,7 @@ const cooperationSubjects = ref([])
 const cooperationDocument = ref(props.modelValue || {
   id: null,
   org_id: props.orgId || null,
-  locality: null,
+  // locality: null,
   indefinite: false,
   date_signature: null,
   start_date: null,
@@ -249,6 +265,11 @@ const tempFileData = ref({
   filepath: null,
 })
 
+const tempScannedFileData = ref({
+  scannedfilename: null,
+  scannedfilepath: null,
+})
+
 function saveCooperationDocument() {
   if (!validateForm()) {
     showMessage('warn', t('common.message.fillError'), null);
@@ -260,10 +281,14 @@ function saveCooperationDocument() {
   const fd = new FormData();
 
   fd.append("cooperation", JSON.stringify(cooperationDocument.value))
+  
+  if (tempFileData.value.filepath) {
+    fd.append("file", tempFileData.value.filepath);
+  }
 
-  console.log('asdasd')
-  fd.append("file", tempFileData.value.filepath);
-
+  if (tempScannedFileData.value.scannedfilepath) {
+    fd.append("scanfile", tempScannedFileData.value.scannedfilepath);
+  }
 
   service.updateCooperation(fd)
       .then((response) => {
@@ -293,7 +318,7 @@ function createNewSubject() {
     showMessage('warn', t('common.message.fillError'), null);
     return;
   }
-
+ 
   service.createCooperationSubject(cooperationSubject.value)
     .then((response) => {
       showMessage('success', t('common.message.successSaved'), null);
@@ -442,6 +467,16 @@ function uploadFile(event) {
   }
 }
 
+function uploadScannedFile(event) {
+  if (event && event.files && event.files.length > 0) {
+    tempScannedFileData.value.scannedfilename = event.files[0].name;
+    tempScannedFileData.value.scannedfilepath = event.files[0];
+  } else {
+    tempScannedFileData.value.scannedfilename = null;
+    tempScannedFileData.value.scannedfilepath = null;
+  }
+}
+
 function countryLabel(data) {
   if (data === undefined || data === null) {
     return ''
@@ -449,31 +484,31 @@ function countryLabel(data) {
   return data['name_'+locale.value]
 }
 
-function getCountries() {
-  const req = {
-    searchText: null,
-  }
-  service.getLocality(req).then(res => {
-    countries.value = res.data.locality;
-    countryTotal.value = res.data.total;
-  }).catch(err => {
-    countries.value = [];
-    countryTotal.value = 0;
+// function getCountries() {
+//   const req = {
+//     searchText: null,
+//   }
+//   service.getLocality(req).then(res => {
+//     countries.value = res.data.locality;
+//     countryTotal.value = res.data.total;
+//   }).catch(err => {
+//     countries.value = [];
+//     countryTotal.value = 0;
 
-    if (err.response && err.response.status == 401) {
-      store.dispatch("logLout");
-    } else if (err.response && err.response.data && err.response.data.localized) {
-      showMessage('error', t(err.response.data.localizedPath), null);
-    } else {
-      console.log(err);
-      showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
-    }
-  });
-}
+//     if (err.response && err.response.status == 401) {
+//       store.dispatch("logLout");
+//     } else if (err.response && err.response.data && err.response.data.localized) {
+//       showMessage('error', t(err.response.data.localizedPath), null);
+//     } else {
+//       console.log(err);
+//       showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
+//     }
+//   });
+// }
 
 onMounted(() => {
   getCoopertationSubjects();
-  getCountries()
+  // getCountries()
 });
 
 </script>

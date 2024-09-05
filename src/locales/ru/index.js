@@ -830,6 +830,8 @@ export default {
         failToSign: "Не удалось подписать документ!",
         notEnoughRights: "У вас недостаточно прав для подписи документа!",
         failToSendDoc: "Не удалось отправить ID документа на сервер!",
+        uploadScanDoc: "Скан вариант документа",
+        uploadAdditionalDoc: "Дополнительный документ"
 
     },
     publicReception: {
