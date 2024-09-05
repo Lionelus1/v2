@@ -81,7 +81,7 @@
                   :optionLabel="'name'+this.$i18n.locale" :placeholder="this.$t('common.select')"
                   :filter="true" :showClear="true"
                   dataKey="value" :emptyFilterMessage="this.$t('roleControl.noResult')"
-                  @filter="handleFilterDepartment"/>
+                  @filter="handleFilterDepartment" @change="handleSelectionChange"/>
       </div>
       <div v-if="personType == 3" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ $t('common.faculty') }}</label>
@@ -296,7 +296,7 @@ export default {
       academicDegrees: [
         {namekz: "Бакалавр", nameru:"Бакалавр",nameen:"Bachelor", value: 'Бакалавр'},
         {namekz: 'Магистрант (бейіндік бағыт)', nameen: 'Master (specialized)', nameru: 'Магистрант (профильное направление)', value: 'Магистрант (профильное направление)'},
-        {namekz: 'Бакалавриат (ғылыми-педагогикалық бағыт)', nameen: 'Master (scientific-pedagogical)', nameru: 'Магистрант (научно-педагогическое направление)', value: 'Магистрант (научно-педагогическое направление)'},
+        {namekz: 'Магистрант (ғылыми-педагогикалық бағыт)', nameen: 'Master (scientific-pedagogical)', nameru: 'Магистрант (научно-педагогическое направление)', value: 'Магистрант (научно-педагогическое направление)'},
         {namekz: 'Докторант PhD', nameen: 'PhD student', nameru: 'Докторант PhD', value: 'Докторант PhD'},
       ],
       academicDegree: null,
@@ -695,6 +695,7 @@ export default {
         parentId: this.parentId,
         cafedraId: this.cafedraId,
         type: type,
+        academicDegree: this.academicDegree?.namekz || null
       }
 
       api.post('/departments', req, {
@@ -785,6 +786,9 @@ export default {
         }
       } else {
         this.cafedraId = null
+        if (this.academicDegree) {
+          this.getEducationalProgramGroups()
+        }
       }
     },
     getSpecialities() {
@@ -834,7 +838,8 @@ export default {
             "page": this.educationalProgramFilter?.page,
             "rows": this.educationalProgramFilter?.rows,
             "faculty_id": this.educationalProgramFilter.faculty_id,
-            "cafedra_ids": this.educationalProgramFilter.cafedra_ids
+            "cafedra_ids": this.educationalProgramFilter.cafedra_ids,
+             "academic_degree": this.academicDegree?.namekz || null
           },
       )
           .then(response=>{
@@ -1003,7 +1008,6 @@ export default {
     hideDialog() {
     },
 
-    // Метод для инициирования скачивания файла
     downloadFile(fileContent, fileName) {
       const url = window.URL.createObjectURL(fileContent);
       const link = document.createElement('a');

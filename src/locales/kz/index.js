@@ -217,7 +217,7 @@ export default {
         users:'Пайдаланушылар',
         group: 'Топ',
         paymentForm: 'Төлем нысаны',
-        downloadResume: 'Түйіндемені бастырып алу',
+        downloadResume: 'Түйіндемені жүктеп алу',
         share:'Бөлісу',
         states: {
             submitted: "Берілген",
