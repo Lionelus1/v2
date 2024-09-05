@@ -2,7 +2,7 @@
   <div class="col-12">
     <h3>{{ $t('hikvision.employeeEntryExitReport') }}</h3>
     <BlockUI class="card">
-      <Dialog  v-model:visible="showGenerateReportDialog" :style="{ width: '650px' }" class="p-fluid">
+      <Dialog v-model:visible="showGenerateReportDialog" :style="{  width: '650px' }" :breakpoints="{ '960px': '75vw', '640px': '90vw' }" :modal="true"  class="p-fluid responsive-dialog">
         <GenerateReportDialog @close="showGenerateReportDialog = false" @reportCreated="getReports" />
         <template #footer>
           <Button :label="$t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger" @click="showGenerateReportDialog = false" />
@@ -241,4 +241,17 @@ const deleteReport = async (id) => {
   border-color: #007bff !important;
   color: #fff !important;
 }
+
+.responsive-dialog {
+  width: 100%;
+  max-width: 90vw;
+}
+
+@media (max-width: 768px) {
+  .responsive-dialog {
+    width: 90vw;
+    max-width: 100%;
+  }
+}
+
 </style>

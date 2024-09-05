@@ -4,11 +4,13 @@
     <form @submit.prevent="createReports">
       <div class="form-group">
         <label>{{ $t('hikvision.dateRange') }}</label>
-        <PrimeCalendar v-model="startDate" dateFormat="dd/mm/yy" :placeholder="$t('hikvision.startDate')" />
-        <PrimeCalendar v-model="endDate" dateFormat="dd/mm/yy" :placeholder="$t('hikvision.endDate')" />
+        <div class="calendar-group">
+          <PrimeCalendar v-model="startDate" dateFormat="dd/mm/yy" :placeholder="$t('hikvision.startDate')" />
+          <PrimeCalendar v-model="endDate" dateFormat="dd/mm/yy" :placeholder="$t('hikvision.endDate')" />
+        </div>
       </div>
 
-      <div class="field col-12">
+      <div class="field col-12" :binary="true">
         <label>{{ $t('hikvision.category') }}</label>
         <div class="checkbox-group">
           <div class="field-checkbox" v-for="subject in categoriesV2" :key="subject.id">
@@ -203,6 +205,8 @@ label {
 .checkbox-group {
   display: flex;
   flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
 }
 
 .button-group {
@@ -228,16 +232,20 @@ label {
   color: #fff;
 }
 
-.checkbox-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-
 .field-checkbox {
   display: flex;
   align-items: center;
   margin-right: 15px;
+  line-height: 10;
+}
+.field-checkbox label {
+  margin-left: 5px;
+}
+
+.calendar-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 </style>
