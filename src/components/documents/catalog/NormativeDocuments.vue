@@ -769,7 +769,7 @@ export default {
         headers: getHeader()
       }).then(res => {
         let link = document.createElement("a");
-        link.href = "data:application/octet-stream;base64," + res.data;
+        link.href = "data:application/octet-stream;base64," + res.data.file;
         link.setAttribute("download", this.selectedNode ? this.selectedNode.name : this.currentDocument.name);
         link.download = this.selectedNode ? this.selectedNode.name : this.currentDocument.name;
         link.click();
