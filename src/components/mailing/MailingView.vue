@@ -34,7 +34,7 @@
         <span class="value">{{ getFullName }}</span>
       </div>
 
-      <div class="field">
+      <div v-if="props.selectedMailing?.mailing?.AdditionalFilePath" class="field">
         <a
             :href="props.selectedMailing?.mailing?.AdditionalFilePath"
             download = "true"
