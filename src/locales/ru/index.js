@@ -438,6 +438,8 @@ export default {
             bin: "БИН",
         },
         orgEmployees: "Сотрудники {org}",
+        domesticPartners: 'Отечественные партнеры',
+        foreignPartners: 'Зарубежные партнеры'
     },
     doctemplate: {
         title: "Создание шаблона документа",
@@ -681,6 +683,18 @@ export default {
             consultant: "Научный консультант",
             projectManager: "Научный руководитель проекта",
         },
+        cooperationDocument: "Документ о сотрудничества",
+        name_doc: "Наименование документа",
+        doc_type_kz: "Вид документа на казахском",
+        doc_type_ru: "Вид документа на русском",
+        doc_type_en: "Вид документа на английском",
+        doc_number:"Номер документа",
+        subject_document: "Предмет документа",
+        date_conclusion: "Дата заключения проектов и/или договоров",
+        indefinite: "бессрочный",
+        early_termination: 'Досрочное расторжение договора',
+        rating: 'Рейтинг',
+        rating_place: 'Место в рейтинге'
     },
     hdfs: {
         archiveBtn: "Архивировать",
@@ -822,6 +836,8 @@ export default {
         failToSign: "Не удалось подписать документ!",
         notEnoughRights: "У вас недостаточно прав для подписи документа!",
         failToSendDoc: "Не удалось отправить ID документа на сервер!",
+        uploadScanDoc: "Скан вариант документа",
+        uploadAdditionalDoc: "Дополнительный документ"
 
     },
     publicReception: {

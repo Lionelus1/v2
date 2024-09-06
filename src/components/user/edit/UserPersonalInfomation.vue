@@ -160,7 +160,7 @@
       </div>
     </div>
     <Sidebar v-model:visible="organizationCard" position="right" class="p-sidebar-lg">
-      <OrganizationPage :organization="user?.mainPosition?.organization" :sidebar="true"/>
+      <OrganizationPage :id="user?.mainPosition?.organization?.id" :organization="user?.mainPosition?.organization" :sidebar="true"/>
     </Sidebar>
 
     <Sidebar v-model:visible="organizationList" position="right" class="p-sidebar-lg">

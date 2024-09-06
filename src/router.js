@@ -121,6 +121,10 @@ const routes = [
                 name: '/documents/catalog/contracts',
                 component: load('documents/catalog/Contracts'),
                 beforeEnter: ifAuthenticated,
+                props: route => ({
+                    readonly: route.query.readonly === 'true',
+                    showBackButton: route.query.showBackButton === 'true'
+                })
             },
             {
                 path: '/documents/catalog/educomplex/:docType',
@@ -308,8 +312,15 @@ const routes = [
             },
             {
                 path: '/contragent/organizations',
-                name: 'organizations',
-                component: load('contragent/Organizations'),
+                name: 'OrganizationList',
+                component: load('contragent/v2/OrganizationList'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/contragent/organization/:id?',
+                name: 'OrganizationPage',
+                component: load('contragent/v2/OrganizationPage'),
+                props: true,
                 beforeEnter: ifAuthenticated,
             },
             {

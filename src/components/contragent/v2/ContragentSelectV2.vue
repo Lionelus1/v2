@@ -23,7 +23,7 @@
     <small v-if="[0, Enum.ContragentType.Organization, Enum.ContragentType.Bank].includes(contr.type)">{{$t('contracts.signer')}}</small>
   </div>
   <Sidebar v-model:visible="visibility.organizationCard" position="right" class="p-sidebar-lg">
-    <OrganizationPage :organization="this.contr.data" :sidebar="true" @organizationUpdated="organizationUpdated"></OrganizationPage>
+    <OrganizationPage :id="this.contr.data.id" :organization="this.contr.data" :sidebar="true" @organizationUpdated="organizationUpdated"></OrganizationPage>
   </Sidebar>
   <Sidebar v-model:visible="visibility.organizationList" position="right" class="p-sidebar-lg">
     <div class="flex flex-column" style="width: 100%; height: 100%;">
