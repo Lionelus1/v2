@@ -1765,8 +1765,9 @@ export default {
         responsibilitiesKz: 'Қазақ тіліндегі қызметтік міндеттер',
         responsibilitiesRu: 'Орыс тіліндегі қызметтік міндеттер',
         responsibilitiesEn: 'Ағылшын тіліндегі қызметтік міндеттер',
-
-
+        nameTopicInQazaq: "Тақырып атауы қазақ тілінде",
+        nameTopicInRussian: "Тақырып атауы орыс тілінде",
+        nameTopicInEnglish: "Тақырып атауы ағылшын тілінде",
     },
     personalData: 'Жеке ақпарат',
     yearPeriod: 'Период годов',
