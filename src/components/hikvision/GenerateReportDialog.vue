@@ -55,7 +55,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, defineEmits, watch} from 'vue';
+import { ref, onMounted, defineEmits, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import PrimeCalendar from 'primevue/calendar';
 import Dropdown from 'primevue/dropdown';
@@ -87,9 +87,7 @@ watch(
     categoriesV2,
     (newCategories) => {
       console.log('Updated categoriesV2:', newCategories);
-      categories.value = newCategories
-          .filter(cat => cat.is_noted)
-          .map(cat => cat.id);
+      categories.value = newCategories.filter(cat => cat.is_noted).map(cat => cat.id);
       console.log('Updated categories:', categories.value);
     },
     { deep: true }
@@ -142,9 +140,7 @@ const getDepartments = async () => {
 const createReports = async () => {
   const categoryIds = categories.value.length > 0
       ? categories.value
-      : categoriesV2.value
-          .filter(cat => cat.is_noted && cat.id != null)
-          .map(cat => cat.id);
+      : categoriesV2.value.filter(cat => cat.is_noted && cat.id != null).map(cat => cat.id);
 
   console.log('Category IDs to be sent:', categoryIds);
 
@@ -179,12 +175,13 @@ onMounted(() => {
 
 <style scoped>
 .dialog {
-  width: 600px;
+  width: 100%;
+  max-width: 600px;
   margin: 0 auto;
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
 }
 
 h2 {
@@ -202,16 +199,11 @@ label {
   font-weight: bold;
 }
 
-.checkbox-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
 
 .button-group {
   display: flex;
   justify-content: space-between;
+  margin-top: 20px;
 }
 
 .btn {
@@ -227,19 +219,22 @@ label {
   color: #fff;
 }
 
-.btn-secondary {
-  background-color: #6c757d;
-  color: #fff;
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
 }
 
 .field-checkbox {
   display: flex;
   align-items: center;
   margin-right: 15px;
-  line-height: 10;
 }
+
 .field-checkbox label {
   margin-left: 5px;
+  line-height: normal;
 }
 
 .calendar-group {
@@ -247,5 +242,26 @@ label {
   flex-direction: column;
   gap: 10px;
   margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .dialog {
+    padding: 15px;
+  }
+
+  .button-group {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .calendar-group {
+    flex-direction: column;
+  }
+
 }
 </style>

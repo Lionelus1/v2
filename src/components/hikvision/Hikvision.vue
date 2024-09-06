@@ -1,19 +1,7 @@
 <template>
   <div class="col-12">
     <h3>{{ $t('hikvision.employeeEntryExitReport') }}</h3>
-    <BlockUI class="card">
-      <Dialog v-model:visible="showGenerateReportDialog" :style="{  width: '650px' }" :breakpoints="{ '960px': '75vw', '640px': '90vw' }" :modal="true"  class="p-fluid responsive-dialog">
-        <GenerateReportDialog @close="showGenerateReportDialog = false" @reportCreated="getReports" />
-        <template #footer>
-          <Button :label="$t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger" @click="showGenerateReportDialog = false" />
-        </template>
-      </Dialog>
-      <Dialog :header="$t('hikvision.workSchedule')" v-model:visible="showWorkScheduleDialog" :style="{ width: '650px' }" class="p-fluid">
-        <WorkScheduleDialog @close="showWorkScheduleDialog = false" />
-        <template #footer>
-          <Button :label="$t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger" @click="showWorkScheduleDialog = false" />
-        </template>
-      </Dialog>
+    <BlockUI>
       <DataTable selectionMode="single" v-model:selection="selectedReport" :lazy="true" :value="reports"
                    :loading="loading" :paginator="true" :rows="10" :totalRecords="totalRecords"
                    @page="onPageChange" class="p-datatable-sm wider-table">
@@ -32,7 +20,7 @@
                 year: 'numeric',
               }
           ) + ' - ' + (slotProps.data.end_date ? new Date(slotProps.data.end_date).toLocaleDateString( 'ru-RU', {
-                day: '2-digit',
+               day: '2-digit',
                 month: '2-digit',
                 year: 'numeric',
               }
@@ -89,6 +77,29 @@
       </DataTable>
     </BlockUI>
   </div>
+  <Dialog
+      v-model:visible="showGenerateReportDialog"
+      :style="{ width: '650px', maxWidth: '90vw' }"
+      :breakpoints="{ '960px': '75vw', '640px': '90vw' }"
+      :modal="true"
+      class="p-fluid responsive-dialog"
+  >
+    <GenerateReportDialog @close="showGenerateReportDialog = false" @reportCreated="getReports" />
+    <template #footer>
+      <Button
+          :label="$t('common.cancel')"
+          icon="fa-solid fa-times"
+          class="p-button-rounded p-button-danger"
+          @click="showGenerateReportDialog = false"
+      />
+    </template>
+  </Dialog>
+  <Dialog :header="$t('hikvision.workSchedule')" v-model:visible="showWorkScheduleDialog" :style="{ width: '650px' }" class="p-fluid">
+    <WorkScheduleDialog @close="showWorkScheduleDialog = false" />
+    <template #footer>
+      <Button :label="$t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger" @click="showWorkScheduleDialog = false" />
+    </template>
+  </Dialog>
 </template>
 
 <script setup>
@@ -104,7 +115,10 @@ import GenerateReportDialog from "@/components/hikvision/GenerateReportDialog.vu
 import { ReportService } from "@/service/report.service";
 import { downloadFile } from "@/config/config";
 import {useI18n} from "vue-i18n";
+import { useConfirm } from "primevue/useconfirm";
 
+
+const confirm = useConfirm()
 const showGenerateReportDialog = ref(false);
 const showWorkScheduleDialog = ref(false);
 const reports = ref([]);
@@ -198,16 +212,24 @@ const viewReport = async (id) => {
   }
 };
 
-const deleteReport = async (id) => {
-  try {
-    await reportService.deleteReport({ id });
-    reports.value = reports.value.filter(report => report.id !== id);
-    showSuccess('Отчет успешно удален');
-    getReports();
-  } catch (error) {
-    console.error('Не удалось удалить отчет:', error);
-    showError('Не удалось удалить отчет');
-  }
+const deleteReport = (id) => {
+  confirm.require({
+    message: t('common.doYouWantDelete'),
+    header: t('common.confirm'),
+    icon: 'pi pi-exclamation-triangle',
+    acceptClass: 'p-button p-button-success',
+    rejectClass: 'p-button p-button-danger',
+    accept: async () => {
+      try {
+        await reportService.deleteReport({ id });
+        reports.value = reports.value.filter(report => report.id !== id);
+        showSuccess('Отчет успешно удален');
+        getReports();
+      } catch (error) {
+        showError('Не удалось удалить отчет');
+      }
+    },
+  });
 };
 </script>
 
@@ -232,9 +254,6 @@ const deleteReport = async (id) => {
   width: 100%;
 }
 
-.dialog {
-  width: 600px;
-}
 
 .p-button-blue {
   background-color: #007bff !important;
@@ -243,14 +262,19 @@ const deleteReport = async (id) => {
 }
 
 .responsive-dialog {
-  width: 100%;
-  max-width: 90vw;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 960px) {
+  .responsive-dialog {
+    width: 75vw;
+  }
+}
+
+@media (max-width: 640px) {
   .responsive-dialog {
     width: 90vw;
-    max-width: 100%;
   }
 }
 
