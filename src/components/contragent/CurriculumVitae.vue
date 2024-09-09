@@ -26,6 +26,17 @@
             </div>
           </div>
         </div>
+        <div class="section">
+          <h2>Опыт работы</h2>
+          <div class="entry" v-for="exp in experiences" :key="exp.id">
+            <div class="year">{{ formatDate(exp.startDate) }} - {{ exp.isStillWorking ? 'До настоящего времени' : formatDate(exp.endDate) }}</div>
+            <div class="details">
+              <p>{{ exp.organizationName }}</p>
+              <p>{{ exp.position }}</p>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <div class="section">
@@ -55,19 +66,6 @@
       </div>
     </div>
 
-    </div>
-
-    <div class="content">
-      <div class="section">
-        <h2>Опыт работы</h2>
-        <div class="entry" v-for="exp in experiences" :key="exp.id">
-          <div class="year">{{ formatDate(exp.startDate) }} - {{ exp.isStillWorking ? 'До настоящего времени' : formatDate(exp.endDate) }}</div>
-          <div class="details">
-            <p>{{ exp.organizationName }}</p>
-            <p>{{ exp.position }}</p>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
   <div v-else>
@@ -233,7 +231,7 @@ onMounted(() => {
 .content {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .column {
@@ -241,7 +239,7 @@ onMounted(() => {
 }
 
 .section {
-  margin-bottom: 20px;
+  margin-bottom: 50px;
 }
 
 .section h2 {
@@ -263,7 +261,7 @@ onMounted(() => {
   font-size: 14px;
 }
 .language-container {
-  margin-bottom: 20px;
+  margin-bottom: 0.1px;
 }
 
 .progress-bar {
@@ -280,6 +278,7 @@ onMounted(() => {
 .level-name {
   width: 100px;
   margin-right: 10px;
+  margin-bottom: 1px;
 }
 
 .progress {
@@ -289,6 +288,6 @@ onMounted(() => {
 }
 .level-title {
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 1px;
 }
 </style>
