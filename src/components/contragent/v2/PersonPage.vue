@@ -119,6 +119,7 @@ import ScienceWorks from "@/components/documents/catalog/ScienceWorks.vue"
 import html2canvas from "html2canvas";
 import * as jsPDF from "jspdf";
 import ScientificGrantsView from "@/components/user/view/ScientificGrantsView.vue";
+import CryptoJS from "crypto-js";
 
 export default {
   name: 'PersonPage',
@@ -166,7 +167,7 @@ export default {
         bankaccount: false,
         bank_id: false,
       },
-
+      showResume: false,
       items: [
         {
           label: this.$t("common.save"),
@@ -191,6 +192,19 @@ export default {
             this.openScientificWorksList();
           },
           visible: this.customType != 'createUser' && this.customType != 'viewUser' && (this.customType === 'scientists' || (findRole(null, 'teacher') || findRole(null, 'personal')))
+        },
+        {
+          label: this.$t('common.theResume'),
+          icon: "fa-solid fa-address-card",
+          command: () => {
+            this.openResumeV2();
+          },
+          visible: () => {
+            if (this.customType === 'viewUser' && findRole(null, 'main_administrator') && this.showResume){
+              return true;
+            }
+            return false;
+          }
         },
       ],
       user: {},
@@ -369,12 +383,18 @@ export default {
         req.userID = this.per.userID
       }
       this.loading = true
-      this.userService.getUserAccount(req).then(response=>{
-  
+      this.userService.getUserAccount(req).then(async response => {
+
         this.per = response.data.user
         this.$emit("update:modelValue", this.per);
         this.$emit("update:person", this.per);
         this.loading = false
+
+        const result = await this.service.checkResume({userID: this.per?.userID});
+        if (result.data) {
+          this.showResume = true;
+        }
+
       }).catch(err => {
 
         this.this.loading = false
@@ -456,7 +476,16 @@ export default {
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
       const year = date.getFullYear();
       return `${day}.${month}.${year}`;
-    }
+    },
+    hashUserId(userId) {
+      const secretKey = 'secretKey';
+      const encrypted = CryptoJS.AES.encrypt(userId, secretKey).toString();
+      return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(encrypted));
+    },
+    async openResumeV2() {
+      const hashedUserId = this.hashUserId(this.per.userID.toString());
+      this.$router.push({ name: 'CurriculumVitae', params: { uuid: hashedUserId } });
+    },
   }
 }
 </script>

@@ -969,13 +969,10 @@ export default {
     },
 
     shareResults() {
-      console.log(this.persons);
-
       this.shareData = '<div>';
 
       this.persons.forEach(async person => {
         const result = await this.service.checkResume({ userID: person.userID });
-        console.log('result: ', result);
         if (result?.data === true) {
           const hashedUserId = this.hashUserId(person.userID.toString());
           this.shareData += `
