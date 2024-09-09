@@ -18,6 +18,11 @@
           <FloatLabel>
             <Chips v-model="emails" placeholder="Введите почту"/>
           </FloatLabel>
+          <p></p>
+          <div class="hint-container">
+            <i class="fas fa-asterisk required-icon"></i>
+            <h6 class="hintTextEmail">{{ $t("common.hintTextEmail") }}</h6>
+          </div>
         </div>
         <div class="template-selection-container">
           <div class="flex align-items-center">
@@ -273,6 +278,25 @@ export default {
 .template-card.selected {
   border-color: #007bff;
   background-color: #e9f7fe;
+}
+
+.hint-container {
+  display: flex; /* Использование Flexbox для выравнивания элементов по горизонтали */
+  align-items: center; /* Выравнивание по вертикали по центру */
+}
+
+.hintTextEmail {
+  border-color: #bfc0c3; /* Цвет границы */
+  color: #999;        /* Цвет текста */
+  font-size: 14px;       /* Размер шрифта */
+  font-style: italic;    /* Стиль шрифта (например, курсив) */
+  font-weight: normal;   /* Насыщенность шрифта (например, обычный) */
+  margin: 0; /* Убираем отступы вокруг текста, чтобы лучше выравнивать */
+}
+
+.required-icon {
+  color: #ff3939; /* Цвет иконки */
+  margin-right: 5px; /* Отступ между иконкой и текстом */
 }
 
 .checkbox-container {

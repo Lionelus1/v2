@@ -193,6 +193,7 @@ export default {
         teacher: "ПОҚ",
         student: "Білім алушы",
         students: "Білім алушылар",
+        hintTextEmail: "Электрондық поштаны енгізгеннен кейін Enter пернесін басыңыз",
         doYouWantDelete: "Сіз шынымен жойғыңыз келе ме",
         publish: "Жариялау",
         reject: "Қайтару",

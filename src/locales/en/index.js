@@ -174,6 +174,7 @@ export default {
         teacher: "Academic personnel",
         student: "Student",
         students: "Students",
+        hintTextEmail: "After entering your email, press Enter",
         registration: "Registration",
         total: "Total",
         all: "All",

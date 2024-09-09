@@ -194,6 +194,7 @@ export default {
         teacher: "ППС",
         student: "Обучающийся",
         students: "Обучающиеся",
+        hintTextEmail: "После ввода электронной почты нажмите Enter",
         doYouWantDelete: "Вы действительно хотите удалить",
         publish: "Опубликовать",
         reject: "Отказать",
