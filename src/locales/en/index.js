@@ -1417,7 +1417,9 @@ export default {
         rejectionMessage: "Rejection message",
         summaryDepartment: "Converging structural unit",
         warnAddingSummaryUser: "You cannot add a user selected in the «Summary structural department» field to the «Summary/Confirmation» field.",
-        topicOfMastersThesis: "Topic of master's thesis"
+        topicOfMastersThesis: "Topic of master's thesis",
+        changeCreatedPerson: "Change creator",
+        requiredCreatedPerson: "The creator field must be filled"
 
     },
     queue: {

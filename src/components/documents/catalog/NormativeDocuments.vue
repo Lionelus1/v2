@@ -6,16 +6,17 @@
   <BlockUI :blocked="loading" class="card">
     <Toolbar class="m-0 p-1">
       <template #start>
-        <div v-if="findRole(null, 'normative_docs_admin')">
+        <div v-if="findRole(null, 'normative_docs_admin') || isAdmin">
           <Button @click="open('folderUploadDialog')" :disabled="!tooltip.folder"
                   class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-folder-plus fa-xl" />
           </Button>
-          <Button @click="open('folderUploadDialog', selectedNode)" :disabled="!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId"
+          <!-- edit here -->
+          <Button @click="open('folderUploadDialog', selectedNode)" :disabled="!selectedNode || (!isAdmin && (!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId))"
                   class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-square-pen fa-xl" />
           </Button>
-          <Button @click="deleteFolder()" :disabled="!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId"
+          <Button @click="deleteFolder()" :disabled="!selectedNode || (!isAdmin && (!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId))"
                   class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-folder-minus fa-xl" />
           </Button>
@@ -249,6 +250,7 @@ export default {
         {value: 'gt'},
         {value: 'equals'}
       ],
+      isAdmin: false
     }
   },
   mounted() {
@@ -259,6 +261,9 @@ export default {
   },
   beforeUnmount() {
     this.$emit('apply-flex', false);
+  },
+  created() {
+    this.isAdmin = this.findRole(null, 'main_administrator')
   },
   methods: {
     getLongDateString: getLongDateString,
@@ -500,6 +505,7 @@ export default {
         this.selectedNode.approvedBy = event.approvedBy
         this.selectedNode.approveDate = new Date(event.approveDate)
       }
+      
     },
     folderUpdated(event) {
       this.close('folderUploadDialog')
@@ -525,6 +531,7 @@ export default {
           parentID: this.selectedNode.id,
           ownerId: this.loginedUser.userID,
         })
+       
       } else {
         this.selectedNode.namekz = event.namekz
         this.selectedNode.nameru = event.nameru
@@ -532,6 +539,7 @@ export default {
         this.selectedNode.code = event.code
         this.selectedNode.groups = event.groups
       }
+      this.getFolders();
     },
     deleteFolder() {
       if (!this.selectedNode || this.selectedNode.nodeType !== 'folder') {
