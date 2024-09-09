@@ -1985,8 +1985,6 @@ export default {
         }
     },
     hikvision: {
-        startDate: 'Келу уақыты',
-        endDate: 'Кету уақыты',
         employeeName: 'Қызметкер',
         generate: 'Отчет генерациялау',
         employeeEntryExitReport: 'Қызметкерлердің ғимаратқа кіру және шығуы туралы есеп',

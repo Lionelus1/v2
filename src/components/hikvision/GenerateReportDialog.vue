@@ -5,8 +5,8 @@
       <div class="form-group">
         <label>{{ $t('hikvision.dateRange') }}</label>
         <div class="calendar-group">
-          <PrimeCalendar v-model="startDate" dateFormat="dd/mm/yy" :placeholder="$t('hikvision.startDate')" />
-          <PrimeCalendar v-model="endDate" dateFormat="dd/mm/yy" :placeholder="$t('hikvision.endDate')" />
+          <PrimeCalendar v-model="startDate" dateFormat="dd/mm/yy" />
+          <PrimeCalendar v-model="endDate" dateFormat="dd/mm/yy"  />
         </div>
       </div>
 

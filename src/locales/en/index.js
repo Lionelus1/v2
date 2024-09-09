@@ -2069,8 +2069,6 @@ export default {
 
     },
     hikvision: {
-        startDate: 'Arrival time',
-        endDate: 'Departure time',
         employeeName: "Employee",
         generate: 'Generate a report',
         employeeEntryExitReport: 'Employee Entry and Exit Report',

@@ -1973,8 +1973,6 @@ export default {
         },
     },
     hikvision: {
-        startDate: 'Время прихода',
-        endDate: 'Время ухода',
         employeeName: 'Имя сотрудника',
         employeeEntryExitReport: 'Отчет по входу и выходу сотрудников в корпус',
         generateReport: 'Сформировать отчет',
