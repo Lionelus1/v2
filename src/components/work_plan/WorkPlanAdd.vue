@@ -18,7 +18,7 @@
       <small class="p-error" v-if="submitted && !formData.plan_type">{{ $t('common.requiredField') }}</small>
     </div>
 
-    {{ params }}
+<!--    {{ params }}-->
 
     <DocParams :params="params"></DocParams>
 

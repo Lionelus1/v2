@@ -219,6 +219,7 @@ export default {
     tabChanged() {
       if (this.active == 1 && this.files.length < 1) { // showFileTab
         if (this.docInfo.isManifest === true) {
+          console.log(this.docInfo)
           api.post(
             "/downloadManifestFiles", {
             docId: this.docInfo.id
@@ -233,6 +234,7 @@ export default {
               }
             })
         } else {
+          console.log(this.docInfo.filePath)
           api.post(
             "/downloadFile", {
             filePath: this.docInfo.filePath

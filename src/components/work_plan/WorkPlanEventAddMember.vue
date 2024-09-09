@@ -1,6 +1,5 @@
 <template>
   <Dialog :header="$t('common.addMember')" v-model:visible="showModal" :style="{width: '600px'}" class="p-fluid" @hide="closeBasic">
-
     <div class="field">
       <label>{{ $t('common.fullNameNote') }}</label>
       <Dropdown v-model="formData.fio" :options="students" optionLabel="fullName" optionValue="userID" :placeholder="$t('common.select')"/>

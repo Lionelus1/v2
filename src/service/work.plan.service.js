@@ -15,6 +15,10 @@ export class WorkPlanService {
         return api.get(`/workPlan/getWorkPlanById/${planId}`, {headers: getHeader()});
     }
 
+    downloadDiaryRepPlanById(planId) {
+        return api.get(`/workPlan/downloadZipDiaryRep/${planId}`, {headers: getHeader()});
+    }
+
     finishEvent(planId) {
         return api.post('/workPlan/finishEvent', {work_plan_id: parseInt(planId)}, {headers: getHeader()});
     }
@@ -108,6 +112,10 @@ export class WorkPlanService {
 
     getWorkPlanReports(planId) {
         return api.get(`/workPlan/getWorkPlanReports/${planId}`, {headers: getHeader()});
+    }
+
+    getWorkPlanDiaryReports(planId) {
+        return api.get(`/workPlan/getWorkPlanDiaryReports/${planId}`, {headers: getHeader()});
     }
 
     deletePlanReport(id) {

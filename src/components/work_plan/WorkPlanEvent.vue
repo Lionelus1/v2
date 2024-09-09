@@ -137,7 +137,7 @@
     </div>
     <WorkPlanScheduleEventTree v-if="plan && planDoc && isWorkSchedule && members" :data="data" :loading="loading" :members="members"
       :menus="initItems" :total="total" :isPlanCreator="isPlanCreator"
-    @expand="onExpand" @onToggle="actionsToggle" @onPage="onPage" />
+    @expand="onExpand" @onToggle="actionsToggle" @onPage="onPage" @updateActive="handleActive"/>
 
   </div>
 
@@ -243,8 +243,7 @@ import ActionButton from "@/components/ActionButton.vue";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import DocState from "@/enum/docstates/index";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
-import WorkPlanAdd from "@/components/work_plan/WorkPlanAdd.vue";
-import WorkPlanScheduleEventTree from "@/components/work_plan/ table/WorkPlanScheduleEventTree.vue";
+import WorkPlanScheduleEventTree from "@/components/work_plan/table/WorkPlanScheduleEventTree.vue";
 
 export default {
   name: "WorkPlanEvent",
@@ -480,6 +479,9 @@ export default {
     });
   },
   methods: {
+    handleActive(event){
+      this.active = event
+    },
     filterData() {
       const query = this.searchQuery.toLowerCase();
       this.filteredMembers = this.members.filter(member => {
@@ -1266,7 +1268,7 @@ export default {
         {
           label: this.$t('common.addMember'),
           icon: 'pi pi-plus',
-          visible: this.active === 1,
+          visible: this.active === 1 && !findRole(null, 'student'),
           // color: 'blue',
           command: () => {
             this.showDialog(this.dialog.addMember)
@@ -1317,7 +1319,7 @@ export default {
         },
         {
           label: this.$t('workPlan.reports'),
-          visible: this.isFinish && this.isWorkSchedule && !this.isSciencePlan && (this.isApproval || this.isPlanCreator || this.isAdmin),
+          visible: this.isFinish && !this.isWorkSchedule && !this.isSciencePlan && (this.isApproval || this.isPlanCreator || this.isAdmin),
           command: () => {
             this.navigateToReports()
           }
@@ -1332,7 +1334,7 @@ export default {
         {
           label: this.$t('workPlan.journalReports'),
           // icon: 'pi pi-plus',
-          visible: this.isFinish && this.isWorkSchedule && this.isPlanApproved,
+          visible: this.isFinish && this.isWorkSchedule && this.isPlanApproved && findRole(null, 'student'),
           command: () => {
             this.navigateToJournalReports()
           }

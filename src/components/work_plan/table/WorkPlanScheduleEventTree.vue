@@ -1,5 +1,5 @@
 <template>
-    <TabView v-model:activeIndex="active">
+    <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel :header="$t('common.tasks')">
         <div class="card">
           <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
@@ -35,10 +35,10 @@
             </Column>
             <Column field="status" :header="$t('common.status')" style="text-align: center;">
               <template #body="{ node }">
-            <span :class="'customer-badge status-' + node.status?.work_plan_event_status_id">{{
-                $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru :
-                    node.status.name_en
-              }}</span>
+              <span :class="'customer-badge status-' + node.status?.work_plan_event_status_id">{{
+                  $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru :
+                      node.status.name_en
+                }}</span>
               </template>
             </Column>
             <Column field="actions" header="" style="text-align: center;">
@@ -77,8 +77,14 @@
                 </div>
               </template>
             </Column>
-            <Column field="actions" header="" style="text-align: center;">
-              <Button label="" icon="fa fa-eye" @click="navigateToJournalReports" />
+            <Column field="id" header="" style="text-align: center;">
+              <template #body="{ node }">
+                <div style="text-align: left;">
+                  <button @click="navigateToJournalReports(node.id)" style="background: none; border: none; cursor: pointer;">
+                    <i class="fas fa-eye"></i> <!-- Иконка глаза -->
+                  </button>
+                </div>
+              </template>
             </Column>
           </TreeTable>
         </div>
@@ -95,13 +101,17 @@ import {useRoute, useRouter} from "vue-router";
 const router = useRouter()
 const route = useRoute()
 const props = defineProps(['data', 'loading', 'total', 'menus', 'isPlanCreator', 'members'])
-const emits = defineEmits(['expand', 'onPage', 'onToggle']);
+const emits = defineEmits(['expand', 'onPage', 'onToggle', 'updateActive']);
 
 const searchQuery = ref("")
 const filteredMembers = ref(props.members)
 const workPlanId = computed(() => parseInt(route.params.id)).value
 const loginedUserId = computed(() => JSON.parse(localStorage.getItem("loginedUser")).userID).value
 const active = ref(0)
+
+const tabChanged = () => {
+  emits('updateActive', active.value)
+}
 
 const filterData = () => {
   const query = searchQuery.value.toLowerCase();
@@ -110,8 +120,8 @@ const filterData = () => {
   });
 }
 
-const navigateToJournalReports = () => {
-  router.push({name: 'WorkPlanJournalReport', params: {id: workPlanId, userId: loginedUserId}});
+const navigateToJournalReports = studentId => {
+  router.push({name: 'WorkPlanJournalReport', params: {id: workPlanId, userId: studentId}});
 }
 
 const formatDateMoment = (date) => {
