@@ -147,7 +147,7 @@ watch(() => formData.plan_type, () => {
   docService.getDocParams(id).then(res => {
     params.value = JSON.parse(res.data)
   }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
+    params.value = null
   })
 
 })

@@ -2,6 +2,8 @@ export default {
     WorkPlanTypes: {
         Standart: "standart",
         Oper: "oper",
-        Science: "science"
+        Science: "science",
+        Masters: "masters",
+        Doctors: "doctors"
     }
 }

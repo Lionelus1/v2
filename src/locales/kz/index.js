@@ -1413,6 +1413,7 @@ export default {
             approvalUserError: "Жауапты тұлғаларды таңдаңыз",
             quarterError: "Тоқсан таңдаңыз",
             langError: "Тіл таңдаңыз",
+            pleaseChoose: "Таңдаңыз"
         },
         message: {
             eventCreated: "Іс-шара сәтті құрылды",
@@ -1451,7 +1452,25 @@ export default {
         rejectionMessage: "Бас тарту туралы хабарлама",
         summaryDepartment: "Жинақтаушы құрылымдық бөлім",
         warnAddingSummaryUser: "«Жинақтаушы құрылымдық бөлім» өрісінде таңдалған қолданушыны «Жинақтаушы/Растау» өрісіне қоса алмайсыз.",
-        topicOfMastersThesis: "Магистрлік диссертация тақырыбы"
+        topicOfMastersThesis: "Магистрлік диссертация тақырыбы",
+        mastersThesisInfo: "Магистрлік диссертация туралы мәлімет",
+        mastersThesisGeneralPlan: "Магистрлік диссертациямен жұмыс істеудің жалпы жоспары",
+        content: "Мазмұны",
+        viewDoc: "Документті көру",
+        expectingResults: "Күтілетін нәтижелер",
+        relevance: "Маңыздылығы",
+        goal: "Мақсат",
+        mainGoals: "Негізгі тапсырмалар",
+        theoreticalSignificance: "Теориялық маңызы",
+        scientificNovelty: "Ғылыми жаңалық",
+        practicalSignificance: "Практикалық маңыздылығы",
+        researchMetodology: "Зерттеу әдістемесі",
+        publications: "Жарияланымдар",
+        plannedTesting: "Жоспарлы тестілеу",
+        dissertationLanguage: "Диссертация тілі",
+        conclusionOfDepartment: "Кафедраны аяқтау немесе қорытындылау белгісі",
+        semester: "Семестр",
+        doctorsThesisInfo: "Докторлық диссертация туралы мәлімет"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",

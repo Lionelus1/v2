@@ -37,6 +37,7 @@
         </Timeline>
       </div>
       <div class="card">
+        <ProgressBar v-if="!sourceb64" mode="indeterminate" style="height: .5em"/>
         <embed :src="sourceb64" style="width: 100%; height: 1000px" v-if="sourceb64" type="application/pdf"/>
       </div>
     </div>
@@ -129,7 +130,10 @@ export default {
       }
     },
     getFile() {
-      this.planService.getPlanFile(this.plan.doc_id).then(res => {
+      let data = {
+        work_plan_id: this.plan.work_plan_id,
+      };
+      this.planService.getWorkPlanData(data).then(res => {
         if (res.data) {
           this.source = `data:application/pdf;base64,${res.data}`;
           this.sourceb64 = this.b64toBlob(res.data);

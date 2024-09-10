@@ -1404,6 +1404,7 @@ export default {
             approvalUserError: "Выберите ответственных лиц",
             quarterError: "Выберите квартал",
             langError: "Выберите язык",
+            pleaseChoose: "Выберите"
         },
         message: {
             eventCreated: "Мероприятие успешно создано",
@@ -1442,7 +1443,25 @@ export default {
         rejectionMessage: "Сообщение о отказе",
         summaryDepartment: "Сводящее структурное подразделение",
         warnAddingSummaryUser: "Вы не можете добавить пользователя, выбранного в поле «Свод структурный отдел», в поле «Свод/Подтверждение».",
-        topicOfMastersThesis: "Тема магистерской диссертации"
+        topicOfMastersThesis: "Тема магистерской диссертации",
+        mastersThesisInfo: "Информация о магистерской диссертации",
+        mastersThesisGeneralPlan: "Общий план работы над магистерской диссертацией",
+        content: "Содержание",
+        viewDoc: "Просмотр документа",
+        expectingResults: "Ожидаемые результаты",
+        relevance: "Актуальность",
+        goal: "Цель",
+        mainGoals: "Основные задачи",
+        theoreticalSignificance: "Теоретическая значимость",
+        scientificNovelty: "Научная новизна",
+        practicalSignificance: "Практическая значимость",
+        researchMetodology: "Методика исследования",
+        publications: "Публикации",
+        plannedTesting: "Планируемая апробация",
+        dissertationLanguage: "Язык диссертации",
+        conclusionOfDepartment: "Отметка о выполнении или заключение кафедры",
+        semester: "Семестр",
+        doctorsThesisInfo: "Информация о докторской диссертации"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

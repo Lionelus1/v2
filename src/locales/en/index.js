@@ -1395,6 +1395,7 @@ export default {
             approvalUserError: "Select the responsible persons",
             quarterError: "Select a quarter",
             langError: "Choose language",
+            pleaseChoose: "Choose"
         },
         message: {
             eventCreated: "Event created successfully",
@@ -1433,8 +1434,25 @@ export default {
         rejectionMessage: "Rejection message",
         summaryDepartment: "Converging structural unit",
         warnAddingSummaryUser: "You cannot add a user selected in the «Summary structural department» field to the «Summary/Confirmation» field.",
-        topicOfMastersThesis: "Topic of master's thesis"
-
+        topicOfMastersThesis: "Topic of master's thesis",
+        mastersThesisInfo: "Information about the master's thesis",
+        mastersThesisGeneralPlan: "General plan for working on a master's thesis",
+        content: "Content",
+        viewDoc: "View document",
+        expectingResults: "Expecting results",
+        relevance: "Relevance",
+        goal: "Goal",
+        mainGoals: "Main goals",
+        theoreticalSignificance: "Theoretical significance",
+        scientificNovelty: "Scientific novelty",
+        practicalSignificance: "Practical Significance",
+        researchMetodology: "Research metodology",
+        publications: "Publications",
+        plannedTesting: "Planned testing",
+        dissertationLanguage: "Dissertation language",
+        conclusionOfDepartment: "Mark of completion or conclusion of the department",
+        semester: "Semester",
+        doctorsThesisInfo: "Information about the doctoral dissertation"
     },
     queue: {
         title: "Queue",

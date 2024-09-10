@@ -1,31 +1,55 @@
 <template>
-  <div class="toolbar_menu card mb-3" ref="containerRef" :class="{ 'scrollable':!search || !filter,'toolbar_border': border }">
-    <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-left']" icon="pi pi-angle-left" @click="scrollLeft"/>
-    <div :class="['justify-content-between', {'flex': search || filter},{'inline-flex': isScrollable && (!search || !filter)}]">
-      <div class="toolbar_bars" v-if="(search || filter)">
+  <div
+    class="toolbar_menu card mb-3"
+    ref="containerRef"
+    :class="{ scrollable: !search || !filter, toolbar_border: border }"
+  >
+    <Button
+      v-if="isScrollable && (!search || !filter)"
+      :class="['scroll-left']"
+      icon="pi pi-angle-left"
+      @click="scrollLeft"
+    />
+    <div
+      :class="[
+        'justify-content-between',
+        { flex: search || filter },
+        { 'inline-flex': isScrollable && (!search || !filter) },
+      ]"
+    >
+      <div class="toolbar_bars" v-if="search || filter">
         <Button
             class="p-button-text p-button-secondary"
             icon="pi pi-bars"
             @click="onClick($event)"
             aria-haspopup="true"
-            aria-controls="overlay_menu"/>
-        <Menu ref="mobilemenu" id="overlay_menu" :model="actionList" :popup="true"/>
+            aria-controls="overlay_menu"
+        /><Menu ref="mobilemenu" id="overlay_menu" :model="actionList" :popup="true"/>
       </div>
-      <div :class="{'button_list': (search || filter)}">
-        <template v-for="(i,index) of data" :key="i">
+
+      <div :class="{ button_list: search || filter }">
+        <template v-for="(i, index) of data" :key="index">
           <Button
               v-if="i.visible !== false && !i.right && !i.items"
               :class="['p-button-outlined','toolbar_btn',
-                {'button_green': i.color},
-                {'button_blue': i.color === 'blue'},
-                {'button_purple': i.color === 'purple'},
-                {'button_yellow': i.color === 'yellow'},
-                {'button_red': i.color === 'red'}
-                ]"
+                {button_green: i.color },
+              { button_blue: i.color === 'blue' },
+              { button_purple: i.color === 'purple' },
+              { button_yellow: i.color === 'yellow' },
+              { button_red: i.color === 'red' },
+              { button_grey: i.color === 'grey' },  ]"
               :icon="i.icon"
               :label="label(i.label)"
               :disabled="i.disabled"
-              @click="i.command(index)"/>
+              v-on="
+              i.dropdown
+                ? {
+                    click: (e) => {
+                      toggle(e), setOpValues(i);
+                    },
+                  }
+                : { click: () => i.command(index) }
+            "/>
           <template v-if="i.right">
             <Button
                 v-if="i.visible !== false && i.right"
@@ -33,17 +57,18 @@
                 :icon="i.icon"
                 :label="label(i.label)"
                 :disabled="i.disabled"
-                @click="i.command(index)"/>
+                @click="i.command(index)"
+          />
           </template>
           <Button
-              v-if="i && i.items"
-              :class="['p-button-outlined']"
-              icon="pi pi-angle-down"
-              iconPos="right"
-              :label="label(i.label)"
-              :disabled="i.disabled"
-              @click="toggleSubMenu($event, index)"/>
-          <Menu v-if="i?.items" :ref="(el) => (subMenu[index] = el)" :model="i?.items" :popup="true"/>
+            v-if="i && i.items"
+            :class="['p-button-outlined']"
+            icon="pi pi-angle-down"
+            iconPos="right"
+            :label="label(i.label)"
+            :disabled="i.disabled"
+            @click="toggleSubMenu($event, index)"
+          /><Menu v-if="i?.items" :ref="(el) => (subMenu[index] = el)" :model="i?.items" :popup="true"/>
         </template>
       </div>
       <div class="flex" v-if="search || filter">
@@ -57,43 +82,55 @@
           <div class="vertical_line"></div>
           <IconField iconPosition="left">
             <InputIcon class="pi pi-search"></InputIcon>
-            <InputText type="search"
-                       class="search_toolbar"
-                       @keyup.enter="searchClick()"
-                       @search="searchClick()"
-                       v-model="searchModel"
-                       :placeholder="$t('common.search')"/>
+            <InputText
+              type="search"
+              class="search_toolbar"
+              @keyup.enter="searchClick()"
+              @search="searchClick()"
+              v-model="searchModel"
+              :placeholder="$t('common.search')"
+            />
           </IconField>
         </template>
       </div>
     </div>
-    <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-right']" icon="pi pi-angle-right" @click="scrollRight"/>
+    <Button
+      v-if="isScrollable && (!search || !filter)"
+      :class="['scroll-right']"
+      icon="pi pi-angle-right"
+      @click="scrollRight"
+    />
   </div>
 </template>
 
 <script setup>
-import {computed, onBeforeUnmount, onMounted, ref} from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 const props = defineProps(['data', 'notShowLabel', 'search', 'filter', 'filtered', 'border', 'filterLabel', 'change'])
 const containerRef = ref(null);
 const scrollStep = 50;
 const isScrollable = ref(false);
-const emit = defineEmits(['search', 'filter'])
-const searchModel = defineModel('searchModel')
-const mobilemenu = ref()
-const subMenu = ref({})
-const actionList = computed(() => props.data)
+const emit = defineEmits(["search", "filter"]);
+const searchModel = defineModel("searchModel");
+const mobilemenu = ref();
+const subMenu = ref({});
+const actionList = computed(() => props.data);
+const op = ref({});
+
+const toggle = (event) => {
+  op.value.toggle(event);
+};
 const onClick = (event) => {
   mobilemenu.value.toggle(event);
-  emit('toggle')
-}
+  emit("toggle");
+};
 const checkScroll = () => {
   const menuItemsRef = containerRef.value;
   isScrollable.value = menuItemsRef.scrollWidth > menuItemsRef.clientWidth;
 };
 const label = (label) => {
-  return !props.notShowLabel ? label : ''
-}
+  return !props.notShowLabel ? label : "";
+};
 
 const scrollLeft = () => {
   containerRef.value.scrollLeft -= scrollStep;
@@ -103,14 +140,14 @@ const scrollRight = () => {
   containerRef.value.scrollLeft += scrollStep;
 };
 const searchClick = () => {
-  emit('search', searchModel.value)
-}
+  emit("search", searchModel.value);
+};
 const filterClick = (event) => {
-  emit('filter', event)
-}
+  emit("filter", event);
+};
 const toggleSubMenu = (event, index) => {
-  subMenu?.value[index].toggle(event)
-}
+  subMenu?.value[index].toggle(event);
+};
 
 onMounted(() => {
   checkScroll();
@@ -206,7 +243,7 @@ onBeforeUnmount(() => {
 }
 
 .button_green:hover {
-  background: rgba(0, 128, 0, 0.30) !important;
+  background: rgba(0, 128, 0, 0.3) !important;
 }
 
 .button_blue {
@@ -215,7 +252,7 @@ onBeforeUnmount(() => {
 }
 
 .button_blue:hover {
-  background: rgba(13, 137, 236, 0.30) !important;
+  background: rgba(13, 137, 236, 0.3) !important;
 }
 
 .button_purple {
@@ -224,16 +261,16 @@ onBeforeUnmount(() => {
 }
 
 .button_purple:hover {
-  background: rgba(128, 0, 128, 0.30) !important;
+  background: rgba(128, 0, 128, 0.3) !important;
 }
 
 .button_yellow {
   color: #000 !important;
-  background: rgba(251, 192, 45, 0.70);
+  background: rgba(251, 192, 45, 0.7);
 }
 
 .button_yellow:hover {
-  background: rgba(251, 192, 45, 0.90) !important;
+  background: rgba(251, 192, 45, 0.9) !important;
 }
 
 .button_red {
@@ -242,7 +279,14 @@ onBeforeUnmount(() => {
 }
 
 .button_red:hover {
-  background: rgba(255, 0, 0, 0.30) !important;
+  background: rgba(255, 0, 0, 0.3) !important;
+}
+.button_grey {
+  color: #000000 !important;
+  background: rgba(79, 83, 87, 0.15);
+}
+.button_grey:hover {
+  background: rgba(64, 66, 68, 0.30) !important;
 }
 
 @media (max-width: 960px) {
@@ -261,6 +305,5 @@ onBeforeUnmount(() => {
   .float_right {
     float: none;
   }
-
 }
 </style>

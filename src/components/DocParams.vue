@@ -17,6 +17,7 @@
 
 <script setup>
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
+import { onMounted } from "vue";
 
 const props = defineProps(['params'])
 
@@ -27,4 +28,12 @@ const uploadFile = (event, name) => {
     }
   })
 }
+// const data = [
+//   {"name":"sci_advisor","value":null,"description":"contracts.labels.sciadvisor","placeholder":"","component":"finduser"},
+//   {"name":"foreign_consultant","value":null,"description":"dissertation.foreignConsultantInfo","placeholder":"","component":"finduser"}
+// ]
+// onMounted(() => {
+//   console.log(JSON.parse(props.params))
+// })
+
 </script>

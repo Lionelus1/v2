@@ -1,5 +1,5 @@
 import Enum from "../enum/docstates";
-import {useStore} from "vuex";
+import { useStore } from "vuex";
 
 export class MenuService {
     getGlobalMenu($t) {
@@ -355,32 +355,36 @@ export class MenuService {
         return role;
     }
 
-    isRoleGroupMember(groupPrefix) {
-        let loginedUser = this.getLoginedUser();
-        if (!loginedUser || !loginedUser.roles) {
-            return false;
-        }
-        for (let i = 0; i < loginedUser.roles.length; i++) {
-            if (loginedUser.roles[i].name.includes(groupPrefix)) {
-                return true;
-            }
-        }
-        return false;
+  isRoleGroupMember(groupPrefix) {
+    let loginedUser = this.getLoginedUser();
+    if (!loginedUser || !loginedUser.roles) {
+      return false;
     }
-
-    isEnuWorker() {
-        let loginedUser = this.getLoginedUser();
-        if (!loginedUser || !loginedUser.roles || !loginedUser.mainPosition ||
-            loginedUser.mainPosition.organization.id !== 1) {
-            return false;
-        }
-
-        for (let i = 0; i < loginedUser.roles.length; i++) {
-            if (loginedUser.roles[i].name === 'student') {
-                return false;
-            }
-        }
-
+    for (let i = 0; i < loginedUser.roles.length; i++) {
+      if (loginedUser.roles[i].name.includes(groupPrefix)) {
         return true;
+      }
     }
+    return false;
+  }
+
+  isEnuWorker() {
+    let loginedUser = this.getLoginedUser();
+    if (
+      !loginedUser ||
+      !loginedUser.roles ||
+      !loginedUser.mainPosition ||
+      loginedUser.mainPosition.organization.id !== 1
+    ) {
+      return false;
+    }
+
+    for (let i = 0; i < loginedUser.roles.length; i++) {
+      if (loginedUser.roles[i].name === "student") {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }
