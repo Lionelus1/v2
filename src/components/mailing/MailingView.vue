@@ -35,11 +35,12 @@
       </div>
 
       <div v-if="props.selectedMailing?.mailing?.AdditionalFilePath" class="field">
+        <label class="fileTitle">{{ $t("mailing.fileTitle") }}: </label>
         <a
             :href="props.selectedMailing?.mailing?.AdditionalFilePath"
             download = "true"
         >
-          {{ $t("mailing.fileTitle") }}
+          {{ props.selectedMailing?.mailing?.AdditionalFileName }}
         </a>
       </div>
     </div>
@@ -118,7 +119,11 @@ const closeModal = () => {
   color: #333;
 }
 
-
+.fileTitle {
+  font-weight: bold;
+  color: #333;
+  margin-right: 5px;
+}
 .value {
   display: block;
   margin-top: 0.25rem;

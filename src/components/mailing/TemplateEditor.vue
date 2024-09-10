@@ -22,6 +22,9 @@
         <InlineMessage severity="info" show v-if="additionalFileName" style="margin-left: 10px;">
           {{ this.$t("ncasigner.chosenFile", {fn: additionalFileName}) }}
         </InlineMessage>
+        <span v-if="additional_file_path" class="icon is-right" @click="deleteFile">
+          <i class="fa-solid fa-trash"></i>
+        </span>
       </div>
     </div>
     </div>
@@ -136,6 +139,7 @@ export default {
         AdditionalFileID: this.additionalFileId,
         MainImagePath: this.main_image_file_url,
         AdditionalFilePath: this.additional_file_path,
+        AdditionalFileName: this.additionalFileName,
         isContentChanged: this.isContentChanged,
         lang: this.$i18n.locale
       };
@@ -175,7 +179,28 @@ export default {
         this.isDefaultTextRemoved = true;
         this.editor.selection.moveToBookmark(bookmark);
       }
-    }
+    },
+    deleteFile() {
+      try {
+        if (this.additional_file_path) {
+          this.additionalFileId = null;
+          this.additionalFileName = '';
+          this.additional_file_path = '';
+          this.toast.add({
+            severity: 'success',
+            detail: this.$t('mailing.deletedSuccessfully'),
+            life: 3000,
+          });
+        }
+      } catch (error) {
+        console.error('Error deleting file:', error);
+        this.toast.add({
+          severity: 'error',
+          detail: this.$t('common.fileDeleteFailed'),
+          life: 3000,
+        });
+      }
+    },
   },
   watch: {
     '$i18n.locale': function(newLocale) {
@@ -224,15 +249,8 @@ export default {
   padding: 20px;
 }
 
-.editor-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.button-group {
-  display: flex;
-  gap: 10px;
+.icon {
+  margin-left: 10px;
 }
 
 .editor-body {
