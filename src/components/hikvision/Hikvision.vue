@@ -117,7 +117,7 @@ import { downloadFile } from "@/config/config";
 import {useI18n} from "vue-i18n";
 import { useConfirm } from "primevue/useconfirm";
 
-
+const currentUser = ref({});
 const confirm = useConfirm()
 const showGenerateReportDialog = ref(false);
 const showWorkScheduleDialog = ref(false);
@@ -154,7 +154,8 @@ const getReports = async () => {
   try {
     const response = await reportService.getReports({
       page: lazyParams.value.page,
-      rows: lazyParams.value.rows
+      rows: lazyParams.value.rows,
+      author_id: currentUser.value.id
     });
     console.log('Полученные данные:', response.data);
 

@@ -40,7 +40,7 @@
         <label>{{ $t('hikvision.employee') }}</label>
         <FindUser
             :placeholder="$t('hikvision.all')"
-            :userType="3"
+            :userType="2"
             v-model="employee"
             :max="1"
             style="width: 100%"
