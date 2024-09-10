@@ -12,11 +12,11 @@
             <i class="fa-solid fa-folder-plus fa-xl" />
           </Button>
           <!-- edit here -->
-          <Button @click="open('folderUploadDialog', selectedNode)" :disabled="!selectedNode || (!isAdmin && (!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId))"
+          <Button @click="open('folderUploadDialog', selectedNode)" :disabled="!selectedNode || selectedNode?.nodeType === 'file' || (!isAdmin && (!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId))"
                   class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-square-pen fa-xl" />
           </Button>
-          <Button @click="deleteFolder()" :disabled="!selectedNode || (!isAdmin && (!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId))"
+          <Button @click="deleteFolder()" :disabled="!selectedNode || selectedNode?.nodeType === 'file' || (!isAdmin && (!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId))"
                   class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-folder-minus fa-xl" />
           </Button>
