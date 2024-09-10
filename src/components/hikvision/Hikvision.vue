@@ -8,7 +8,7 @@
         <template #header>
           <div class="table-header">
             <Button :label="$t('hikvision.generateReport')" icon="pi pi-plus" class="p-button-success mr-2" @click="showGenerateReport" />
-            <!-- <Button :label="$t('hikvision.workSchedule')" icon="pi pi-calendar" class="p-button-info" @click="showWorkSchedule" /> -->
+<!--             <Button :label="$t('hikvision.workSchedule')" icon="pi pi-calendar" class="p-button-info" @click="showWorkSchedule" />-->
           </div>
         </template>
 
@@ -161,8 +161,6 @@ const getReports = async () => {
     if (response.data && response.data.reports) {
       reports.value = response.data.reports;
       totalRecords.value = response.data.total;
-    } else {
-      showError('Данные отчетов недоступны');
     }
   } catch (error) {
     console.error('Не удалось получить отчеты:', error);
@@ -236,9 +234,10 @@ const deleteReport = (id) => {
 <style scoped lang="scss">
 .table-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   padding: 1rem;
+  margin-left: -1rem;
 }
 
 .p-datatable-sm .p-datatable-thead > tr > th,
