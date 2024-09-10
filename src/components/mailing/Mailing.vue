@@ -91,7 +91,7 @@ export default {
     },
     getMailingByID(mailingId, callback) {
       api
-          .post("/mailing/getMailingByID", { mailingId }, { headers: getHeader() })
+          .post("/mailing/getMailingByID", { mailingId, IsView: true}, { headers: getHeader() })
           .then((response) => {
             callback(null, response.data);
           })

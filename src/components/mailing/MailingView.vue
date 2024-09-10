@@ -61,19 +61,6 @@ const emit = defineEmits(['close']);
 
 const { locale } = useI18n();
 
-const statusText = computed(() => {
-  const statusId = props.selectedMailing?.mailing?.statusId;
-  if (!statusId) return 'unknown';
-
-  const statusMap = {
-    1: { kz: "Сақталды", ru: "Сохранен", en: "saved" },
-    2: { kz: "Қаралды", ru: "Черновик", en: "draft" },
-    3: { kz: "Жіберілді", ru: "Отправлено", en: "sent" },
-  };
-
-  return statusMap[statusId][locale.value] || 'unknown';
-});
-
 const getFullName = computed(() => {
   const senderString = props.selectedMailing?.mailing?.senderJSON;
   if (!senderString) return "Full name is incomplete";
