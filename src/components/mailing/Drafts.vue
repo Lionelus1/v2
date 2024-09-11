@@ -3,11 +3,7 @@
     <DataTable :value="mailingList">
       <Column field="title" :header="$t('mailing.title')">
         <template #body="slotProps">
-          <span>
-            {{
-              slotProps.data.TemplateName
-            }}
-          </span>
+          <span>{{ $i18n.locale === "kz" ? slotProps.data.TemplateNameKz : $i18n.locale === "ru" ? slotProps.data.TemplateNameRu : slotProps.data.TemplateNameEn }}</span>
         </template>
       </Column>
       <Column field="categories" :header="$t('mailing.categories')">
