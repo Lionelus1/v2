@@ -19,9 +19,7 @@
         </div>
         <div class="col-12" v-else>
           <div class="card">
-            <Message severity="error">{{
-      $t("common.message.accessDenied")
-    }}</Message>
+            <Message severity="error">{{ $t('common.message.accessDenied') }}</Message>
           </div>
         </div>
       </TabPanel>
@@ -41,9 +39,7 @@
         <div class="mt-2">
           <Panel v-if="!$isMobile">
             <template #header>
-              <InlineMessage severity="info">{{
-      $t("ncasigner.noteMark")
-    }}</InlineMessage>
+              <InlineMessage severity="info">{{ $t('ncasigner.noteMark') }}</InlineMessage>
             </template>
             <div class="flex justify-content-center">
               <Button icon="pi pi-user-edit" :disabled="hideDocSign" class="p-button-primary md:col-5" @click="sign" :label="$t('ncasigner.sign')" :loading="signing" />
@@ -53,10 +49,8 @@
             <Panel>
               <template #header>
                 <div class="d-flex justify-content-center">
-                  <InlineMessage v-if="$isMobile" severity="info" class="mb-1">{{ $t("ncasigner.noteMark") }}</InlineMessage>
-                  <InlineMessage class="" severity="info">{{
-      $t("ncasigner.qrSinging")
-    }}</InlineMessage>
+                  <InlineMessage v-if="$isMobile" severity="info" class="mb-1">{{ $t('ncasigner.noteMark') }}</InlineMessage>
+                  <InlineMessage class="" severity="info">{{ $t('ncasigner.qrSinging') }}</InlineMessage>
                 </div>
               </template>
               <div class="text-center">
@@ -80,14 +74,14 @@
               <div v-if="mgovSignUri && !$isMobile" class="d-flex justify-content-center">
                 <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
               </div>
-              <QrGuideline class="mt-2" />
+              <QrGuideline class="mt-2"/>
             </Panel>
           </div>
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && ((docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
-      (docInfo.docType && (docInfo.docType === Enum.DocType.Contract))) || docInfo.docType === Enum.DocType.WorkPlan
-      || docInfo.docType === Enum.DocType.DocTemplate || docInfo.docType === Enum.DocType.DT_Request || docInfo.docType === Enum.DocType.ScienceWorksList)" :header="$t('common.revision')" :disabled="hideDocRevision">
+        (docInfo.docType && (docInfo.docType === Enum.DocType.Contract))) || docInfo.docType === Enum.DocType.WorkPlan)" :header="$t('common.revision')"
+        :disabled="hideDocRevision">
         <div class="card">
           <label> {{ this.$t("common.comment") }} </label>
           <InputText v-model="revisionComment" style="width: 100%; margin-bottom: 2rem"></InputText>
@@ -149,15 +143,15 @@ export default {
   props: {
     docIdParam: {
       type: String,
-      default: null,
+      default: null
     },
     signerIinParam: {
       type: String,
-      default: null,
+      default: null
     },
     showAllSignsParam: {
       type: Boolean,
-      default: false,
+      default: false
     },
     /**
      * Парамер метки времени
@@ -166,8 +160,8 @@ export default {
      */
     tspParam: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   // emits: ['sentToRevision'],
   data() {
@@ -212,7 +206,6 @@ export default {
     }
   },
   created() {
-    console.log("ERHERHSKJFBN");
     if (this.docIdParam) {
       this.doc_id = this.docIdParam;
     } else {
@@ -243,22 +236,18 @@ export default {
     this.getData();
   },
   mounted() {
-    console.log("HERE1");
-    this.wsconnect();
-    console.log("HERE2");
-    this.emitter.on("downloadCMS", (data) => {
+    this.wsconnect()
+    this.emitter.on('downloadCMS', (data) => {
       if (data !== null) {
         api
-          .post(
-            smartEnuApi + "/doc/downloadCms",
+          .post(smartEnuApi + "/doc/downloadCms",
             { documentUuid: this.doc_id, signatureId: data },
-            { headers: getHeader() }
-          )
-          .then((res) => {
-            console.log(res.data);
-            let result = res.data;
-            var link = document.createElement("a");
-            link.innerHTML = "Download file";
+            { headers: getHeader(), })
+          .then(res => {
+            console.log(res.data)
+            let result = res.data
+            var link = document.createElement('a');
+            link.innerHTML = 'Download file';
             link.download = result.fileName;
             link.href = result.data;
             link.click();
@@ -294,36 +283,32 @@ export default {
       if (this.active == 1 && this.files.length < 1) {
         // showFileTab
         if (this.docInfo.isManifest === true) {
-          api
-            .post(
-              "/downloadManifestFiles",
-              {
-                docId: this.docInfo.id,
-              },
-              {
-                headers: getHeader(),
-              }
-            )
-            .then((response) => {
-              let filesBase64Array = response.data;
+          api.post(
+            "/downloadManifestFiles", {
+            docId: this.docInfo.id
+          }, {
+            headers: getHeader()
+          }
+          )
+            .then(response => {
+              let filesBase64Array = response.data
               for (let i = 0; i < filesBase64Array.length; i++) {
                 this.files.push(this.b64toBlob(filesBase64Array[i]));
               }
             });
         } else {
-          api
-            .post(
-              "/downloadFile",
-              {
-                filePath: this.docInfo.filePath,
-              },
-              {
-                headers: getHeader(),
-              }
-            )
-            .then((response) => {
-              this.files.push(this.b64toBlob(response.data));
-            });
+          api.post(
+            "/downloadFile", {
+            filePath: this.docInfo.filePath
+          }, {
+            headers: getHeader()
+          }
+          )
+            .then(response => {
+              (
+                this.files.push(this.b64toBlob(response.data))
+              )
+            })
         }
       } else if (this.active == 2 && this.loginedUserId === null) {
         this.$store.dispatch("solveAttemptedUrl", this.$route);
@@ -331,141 +316,88 @@ export default {
       }
     },
     getData() {
-      this.loading = true;
-      api
-        .post(
-          `/agreement/getSignInfo`,
-          {
-            doc_uuid: this.doc_id,
-          },
-          {
-            headers: getHeader(),
+      this.loading = true
+      api.post(`/agreement/getSignInfo`, {
+        doc_uuid: this.doc_id,
+      }, {
+        headers: getHeader(),
+      }).then(res => {
+        if (res.data) {
+          this.docInfo = res.data;
+          this.signatures = res.data.signatures;
+
+          if (this.showAllSignsParam) {
+            this.isShow = true;
+          } else {
+            this.isShow = this.findRole(null, RolesEnum.roles.CareerModerator) || this.findRole(null, RolesEnum.roles.UMKAdministrator)
+                || this.findRole(null, RolesEnum.roles.Accountant) ||
+              (this.findRole(null, RolesEnum.roles.Teacher) && this.docInfo.docType === Enum.DocType.Contract) ||
+              (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) ||
+                (this.findRole(null, RolesEnum.roles.OnlineCourseAdministrator) && this.docInfo.docType === Enum.DocType.DT_Request) ||
+              this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
           }
-        )
-        .then((res) => {
-          if (res.data) {
-            this.docInfo = res.data;
-            this.signatures = res.data.signatures;
 
-            if (this.showAllSignsParam) {
-              this.isShow = true;
-            } else {
-              this.isShow =
-                this.findRole(null, RolesEnum.roles.CareerModerator) ||
-                this.findRole(null, RolesEnum.roles.UMKAdministrator) ||
-                this.findRole(null, RolesEnum.roles.Accountant) ||
-                  this.findRole(null, RolesEnum.roles.DormitoryAdministration) ||
-                (this.findRole(null, RolesEnum.roles.Teacher) &&
-                  this.docInfo.docType === Enum.DocType.Contract) ||
-                (this.signatures &&
-                  this.signatures.some(
-                    (x) => x.userId === this.loginedUserId
-                  )) ||
-                (this.findRole(
-                  null,
-                  RolesEnum.roles.OnlineCourseAdministrator
-                ) &&
-                  this.docInfo.docType === Enum.DocType.DT_Request) ||
-                this.docInfo.docHistory.setterId === this.loginedUserId ||
-                this.docInfo.creatorID === this.loginedUserId;
+
+          if (this.signatures) {
+            this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+            this.hideDocRevision = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+
+            let usersign = this.signatures.filter(x => x.userId === this.loginedUserId &&
+              (!x.signature || x.signature === '') && (x.signRight && x.signRight !== ''))
+            if (usersign.length !== 0) {
+              if (usersign[0].signRight === "individual") {
+                this.mobileApp = "eGov Mobile";
+                this.isIndivid = true
+              } else {
+                this.mobileApp = "eGov Business";
+                this.isIndivid = false
+              }
             }
+            this.signatures.map(e => {
+              e.sign = this.chunkString(e.signature, 1200)
+            });
+          }
 
-            if (this.signatures) {
-              this.hideDocSign = !this.signatures.some(
-                (x) =>
-                  x.userId === this.loginedUserId &&
-                  (!x.signature || x.signature === "")
-              );
-              this.hideDocRevision = !this.signatures.some(
-                (x) =>
-                  x.userId === this.loginedUserId &&
-                  (!x.signature || x.signature === "")
-              );
+          if (this.docInfo.needApproval || this.docInfo.sourceType === this.Enum.DocSourceType.FilledDoc) {
+            this.approvalStages = res.data.approvalStages;
 
-              let usersign = this.signatures.filter(
-                (x) =>
-                  x.userId === this.loginedUserId &&
-                  (!x.signature || x.signature === "") &&
-                  x.signRight &&
-                  x.signRight !== ""
-              );
-              if (usersign.length !== 0) {
-                if (usersign[0].signRight === "individual") {
-                  this.mobileApp = "eGov Mobile";
-                  this.isIndivid = true;
-                } else {
-                  this.mobileApp = "eGov Business";
-                  this.isIndivid = false;
+            if (!this.showAllSignsParam && !this.isShow && this.approvalStages) {
+              for (let element of this.approvalStages) {
+                this.isShow = this.isShow || (element.users && element.users.some(x => x.userID === this.loginedUserId));
+                if (this.isShow) {
+                  break;
                 }
               }
-              this.signatures.map((e) => {
-                e.sign = this.chunkString(e.signature, 1200);
+            }
+
+            if (this.approvalStages) {
+              for (let element of this.approvalStages) {
+                if (!element.signatures) {
+                  continue;
+                }
+
+                if (this.hideDocSign) {
+                  this.hideDocSign = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+                }
+
+                if (this.hideDocRevision) {
+                  this.hideDocRevision = !element.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+                }
+              }
+            }
+
+            if (this.approvalStages)
+              this.approvalStages.map(stage => {
+                if (stage.signatures)
+                  stage.signatures.map(e => {
+                    e.sign = this.chunkString(e.signature, 1200)
+                  })
               });
-            }
+          }
 
-            if (
-              this.docInfo.needApproval ||
-              this.docInfo.sourceType === this.Enum.DocSourceType.FilledDoc
-            ) {
-              this.approvalStages = res.data.approvalStages;
-
-              if (
-                !this.showAllSignsParam &&
-                !this.isShow &&
-                this.approvalStages
-              ) {
-                for (let element of this.approvalStages) {
-                  this.isShow =
-                    this.isShow ||
-                    (element.users &&
-                      element.users.some(
-                        (x) => x.userID === this.loginedUserId
-                      ));
-                  if (this.isShow) {
-                    break;
-                  }
-                }
-              }
-
-              if (this.approvalStages) {
-                for (let element of this.approvalStages) {
-                  if (!element.signatures) {
-                    continue;
-                  }
-
-                  if (this.hideDocSign) {
-                    this.hideDocSign = !element.signatures.some(
-                      (x) =>
-                        x.userId === this.loginedUserId &&
-                        (!x.signature || x.signature === "")
-                    );
-                  }
-
-                  if (this.hideDocRevision) {
-                    this.hideDocRevision = !element.signatures.some(
-                      (x) =>
-                        x.userId === this.loginedUserId &&
-                        (!x.signature || x.signature === "")
-                    );
-                  }
-                }
-              }
-
-              if (this.approvalStages)
-                this.approvalStages.map((stage) => {
-                  if (stage.signatures)
-                    stage.signatures.map((e) => {
-                      e.sign = this.chunkString(e.signature, 1200);
-                    });
-                });
-            }
-
-            if (
-              this.docInfo.docType ===
-              this.Enum.DocType.PostAccreditationMonitoringReport
-            ) {
-              this.isShow = true;
-            }
+          if (this.docInfo.docType === this.Enum.DocType.PostAccreditationMonitoringReport) {
+            this.isShow = true
+          }
 
             if (this.docInfo.docType === this.Enum.DocType.ScienceWorks || this.docInfo.folder && this.docInfo.folder.type === Enum.FolderType.Agreement) {
               this.getDocNew();
@@ -507,42 +439,25 @@ export default {
     },
     sign() {
       this.signing = true;
-      api
-        .post(
-          "/downloadFile",
-          {
-            filePath: this.docInfo.filePath,
-          },
-          {
-            headers: getHeader(),
+      api.post("/downloadFile", {
+        filePath: this.docInfo.filePath
+      }, {
+        headers: getHeader()
+      }).then(response => {
+        runNCaLayer(this.$t, this.$toast, response.data, 'cms', this.signerType, this.isTspRequired, this.$i18n.locale).then(sign => {
+          if (sign != undefined) {
+            this.sendRequest(sign)
           }
-        )
-        .then((response) => {
-          runNCaLayer(
-            this.$t,
-            this.$toast,
-            response.data,
-            "cms",
-            this.signerType,
-            this.isTspRequired,
-            this.$i18n.locale
-          )
-            .then((sign) => {
-              if (sign != undefined) {
-                this.sendRequest(sign);
-              }
-            })
-            .catch((e) => {
-              console.log(e);
-              this.signing = false;
-            });
-        })
-        .catch((error) => {
+        }).catch(e => {
+          console.log(e)
           this.signing = false;
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-        });
+        })
+      }).catch(error => {
+        this.signing = false;
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+      })
     },
     sendRequest(signature) {
       var req = {
@@ -553,16 +468,11 @@ export default {
       };
       this.signing = true;
 
-      api
-        .post("/doc/sign", req, { headers: getHeader() })
-        .then((response) => {
-          this.signing = false;
-          this.getData();
-          this.showMessage(
-            "success",
-            this.$t("ncasigner.signDocTitle"),
-            this.$t("ncasigner.success.signSuccess")
-          );
+      api.post("/doc/sign", req, { headers: getHeader() })
+        .then(response => {
+          this.signing = false
+          this.getData()
+          this.showMessage('success', this.$t('ncasigner.signDocTitle'), this.$t('ncasigner.success.signSuccess'));
         })
         .catch((error) => {
           this.signing = false;
@@ -575,37 +485,29 @@ export default {
           }
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
-          } else this.signing = false;
-        });
+          } else
+            this.signing = false;
+        })
     },
     getSignatures() {
-      api
-        .post(
-          `/workPlan/getSignatures`,
-          { doc_id: this.plan.doc_id },
-          { headers: getHeader() }
-        )
-        .then((res) => {
-          if (res.data) {
-            this.signatures = res.data;
-            const signUser = res.data.find(
-              (x) => x.userId === this.loginedUserId
-            );
-            if (signUser) {
-              this.isApproved = true;
-            }
+      api.post(`/workPlan/getSignatures`, { doc_id: this.plan.doc_id }, { headers: getHeader() }).then(res => {
+        if (res.data) {
+          this.signatures = res.data;
+          const signUser = res.data.find(x => x.userId === this.loginedUserId);
+          if (signUser) {
+            this.isApproved = true;
           }
-        })
-        .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
+        }
+      }).catch(error => {
+        this.$toast.add({
+          severity: 'error',
+          summary: error,
+          life: 3000
         });
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+      })
     },
     downloadSignatures() {
       let pdfOptions = {
@@ -674,27 +576,20 @@ export default {
         return;
       }
 
-      this.loading = true;
-      api
-        .post(
-          `/doc/sendtorevision`,
-          {
-            comment: this.revisionComment,
-            docID: this.docInfo.id,
-          },
-          {
-            headers: getHeader(),
-          }
-        )
-        .then((res) => {
-          this.loading = false;
-          // this.$emit('sentToRevision', this.revisionComment)
-          location.reload();
-        })
-        .catch((err) => {
-          if (err.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
+      this.loading = true
+      api.post(`/doc/sendtorevision`, {
+        comment: this.revisionComment,
+        docID: this.docInfo.id,
+      }, {
+        headers: getHeader()
+      }).then(res => {
+        this.loading = false
+        // this.$emit('sentToRevision', this.revisionComment)
+        location.reload()
+      }).catch(err => {
+        if (err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
 
           this.$toast.add({
             severity: "error",
@@ -897,7 +792,7 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       });
-    },
+    }
   }
 }
 </script>

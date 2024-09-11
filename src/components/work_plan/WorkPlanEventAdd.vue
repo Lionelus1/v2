@@ -1,16 +1,12 @@
 <template>
-  <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{ width: '600px' }"
-    @hide="closeBasic" :close-on-escape="true">
+  <Dialog :header="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('workPlan.addTask') : $t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
       <!-- mastersplan -->
       <DoctorsMastersAddEvent :plan="plan" @update-data="updateData" />
       <!-- mastersplan -->
       <div class="field" v-if="!isMastersPlan && !isDoctorsPlan">
-        <label>{{
-          plan?.plan_type?.code === Enum.WorkPlanTypes.Oper
-            ? $t('workPlan.resultIndicator')
-            : $t('workPlan.eventName')
-        }}</label>
+        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
+            plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('workPlan.worksByWeek') : $t('workPlan.eventName') }} </label>
         <InputText v-model="event_name" />
         <small class="p-error" v-if="submitted && formValid.event_name">{{
           $t('workPlan.errors.eventNameError')
@@ -24,6 +20,20 @@
         <label>{{ $t('common.endDate') }}</label>
         <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
+
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('common.startDate') + "(" + $t('workPlan.week') + ")" : $t('common.startDate') }}</label>
+        <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('common.endDate') + "(" + $t('workPlan.week') + ")" : $t('common.endDate') }}</label>
+        <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+        <label>{{ $t('web.note') }}</label>
+        <InputText v-model="comment" />
+      </div>
+
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('common.unit') }}</label>
         <InputText v-model="unit" />
@@ -45,7 +55,7 @@
         }}</small>
       </div>
 
-      <div class="field" v-if="!isSciencePlan && !isMastersPlan && !isDoctorsPlan">
+      <div class="field" v-if="!isSciencePlan && !isMastersPlan && !isDoctorsPlan && !isShedulePlan">
         <label>{{
           plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper
             ? $t('workPlan.summary')
@@ -80,7 +90,7 @@
       <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5"
         @click="addNewUser" />
     </div>
-    <div class="p-fluid" v-if="!isMastersPlan && !isDoctorsPlan">
+    <div class="p-fluid" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan">
       <div class="field" v-if="
         (plan &&
           plan.plan_type.code !== Enum.WorkPlanTypes.Science &&
@@ -98,7 +108,7 @@
         <label>{{ $t('common.suppDocs') }}</label>
         <Textarea v-model="supporting_docs" rows="3" style="resize: vertical" />
       </div>
-      <div class="field" v-if="!isMastersPlan && !isDoctorsPlan">
+      <div class="field" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan">
         <label>{{
           isOperPlan ? $t('common.additionalInfo') : $t('common.result')
           }}</label>
@@ -116,17 +126,17 @@
 </template>
 
 <script>
-import { getHeader, smartEnuApi } from '@/config/config';
 import { WorkPlanService } from '@/service/work.plan.service';
 import Enum from '@/enum/workplan/index';
 import RolesByName from '@/components/smartenu/RolesByName.vue';
 import DoctorsMastersAddEvent from './event_add/DoctorsMastersAddEvent.vue';
 import { ref } from 'vue';
+import FindUser from "../../helpers/FindUser.vue";
 
 export default {
   name: 'WorkPlanEventAdd',
   props: ['visible', 'data', 'isMain', 'items', 'planData'],
-  components: { RolesByName, DoctorsMastersAddEvent },
+  components: {FindUser, RolesByName, DoctorsMastersAddEvent },
   emits: ['hide'],
 
   data() {
@@ -220,6 +230,13 @@ export default {
     this.work_plan_id = parseInt(this.$route.params.id);
   },
   computed: {
+    isShedulePlan() {
+      return (
+          this.plan &&
+          this.plan.plan_type &&
+          this.plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule
+      );
+    },
     isSciencePlan() {
       return (
         this.plan &&
@@ -312,6 +329,7 @@ export default {
         quarter: this.quarter,
         result: this.result,
         resp_person_ids: userIds,
+        comment: this.comment
       };
       if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Oper) {
         data.unit = this.unit;
@@ -320,13 +338,9 @@ export default {
         data.supporting_docs = this.supporting_docs;
       }
 
-      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Science) {
-        data.start_date = this.start_date;
-        data.end_date = this.end_date;
-      }
-      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Science) {
-        data.start_date = this.start_date;
-        data.end_date = this.end_date;
+      if (this.plan && this.plan.plan_type && (this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science || this.plan.plan_type.code === this.Enum.WorkPlanTypes.WorkSchedule)) {
+        data.start_date = this.start_date
+        data.end_date = this.end_date
       }
       if (
         this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters ||
@@ -365,10 +379,10 @@ export default {
       data.quarter = { String: JSON.stringify(this.quarter), Valid: true };
       data.status = {
         work_plan_event_status_id: 1,
-        name_ru: 'Запланировано',
-        name_kz: 'Жоспарланды',
-        name_en: 'Planned',
-      };
+            name_ru: "Запланировано",
+            name_kz: "Жоспарланды",
+            name_en: "Planned"
+      }
       this.parentItems.push(data);
     },
     validateForm() {
@@ -391,6 +405,7 @@ export default {
     },
     clearModel() {
       this.event_name = null;
+      this.comment = null;
       this.parentId = null;
       this.quarter = null;
       this.result = null;

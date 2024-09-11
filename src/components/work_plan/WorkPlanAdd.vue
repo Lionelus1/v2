@@ -18,6 +18,8 @@
       <small class="p-error" v-if="submitted && !formData.plan_type">{{ $t('common.requiredField') }}</small>
     </div>
 
+<!--    {{ params }}-->
+
     <DocParams :params="params"></DocParams>
 
     <template #footer>
@@ -50,7 +52,7 @@ const formData = reactive({
   work_plan_name: null,
   lang: null,
   plan_type: null,
-  science_params: null
+  params: null
 })
 
 const languages = ref([
@@ -83,7 +85,7 @@ const createPlan = () => {
   if (!validate()) return
 
   const fd = new FormData()
-  formData.science_params = params.value?.filter(param => param.component != "file")
+  formData.params = params.value?.filter(param => param.component != "file")
   fd.append("workplan", JSON.stringify(formData))
 
   params.value?.forEach((param) => {

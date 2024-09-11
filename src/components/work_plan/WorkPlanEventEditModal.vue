@@ -1,11 +1,31 @@
 <template>
-  <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
+  <Dialog
+      :header="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('workPlan.editTask') : $t('workPlan.editEvent')"
+      v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
     <div v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
         <div class="field">
-        <label>{{ plan && plan.is_oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
+        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
+          plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('workPlan.worksByWeek') :
+          $t('workPlan.eventName') }} </label>
         <InputText v-model="editData.event_name" />
         <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
       </div>
+
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('common.startDate') + "("
+            +$t('workPlan.week') + ")" : $t('common.startDate') }}</label>
+        <PrimeCalendar v-model="editData.start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('common.endDate') + "("
+            +$t('workPlan.week') + ")" : $t('common.endDate') }}</label>
+        <PrimeCalendar v-model="editData.end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+        <label>{{ $t('web.note') }}</label>
+        <InputText v-model="editData.comment" />
+      </div>
+
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science">
         <label>{{ $t('common.startDate') }}</label>
         <PrimeCalendar v-model="editData.start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
@@ -102,10 +122,11 @@
 import { WorkPlanService } from "@/service/work.plan.service";
 import Enum from "@/enum/workplan/index"
 import RolesByName from "@/components/smartenu/RolesByName.vue";
+import FindUser from "../../helpers/FindUser.vue";
 
 export default {
   name: "WorkPlanEventEditModal", 
-  components: { RolesByName }, 
+  components: {FindUser, RolesByName },
   props: ['visible', 'event', 'planData', 'parent'],
   emits: ['hide'],
   data() {
@@ -148,7 +169,7 @@ export default {
       Enum: Enum,
       inputSets: null,
       semesters: [
-        { 
+        {
           id: 1,
           name: '1'
         },

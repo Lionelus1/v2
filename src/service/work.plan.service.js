@@ -15,6 +15,10 @@ export class WorkPlanService {
         return api.get(`/workPlan/getWorkPlanById/${planId}`, {headers: getHeader()});
     }
 
+    downloadDiaryRepPlanById(planId) {
+        return api.get(`/workPlan/downloadZipDiaryRep/${planId}`, {headers: getHeader()});
+    }
+
     finishEvent(planId) {
         return api.post('/workPlan/finishEvent', {work_plan_id: parseInt(planId)}, {headers: getHeader()});
     }
@@ -110,6 +114,10 @@ export class WorkPlanService {
         return api.get(`/workPlan/getWorkPlanReports/${planId}`, {headers: getHeader()});
     }
 
+    getWorkPlanDiaryReports(planId) {
+        return api.get(`/workPlan/getWorkPlanDiaryReports/${planId}`, {headers: getHeader()});
+    }
+
     deletePlanReport(id) {
         return api.post(`/workPlan/deleteReport/${id}`, null, {headers: getHeader()});
     }
@@ -168,6 +176,18 @@ export class WorkPlanService {
 
     getWorkPlanTypes() {
         return api.get('/workPlan/types', {headers: getHeader()});
+    }
+
+    getStudents(planId) {
+        return api.post('/workPlan/students', {work_plan_id: planId},{headers: getHeader()});
+    }
+
+    getPracticeTypes() {
+        return api.get('/workPlan/practiceTypes', {headers: getHeader()});
+    }
+
+    getEduProgByManagerId() {
+        return api.get('/workPlan/eduProgramsByManagerId', {headers: getHeader()});
     }
 
     updatePlanAttachments(data) {
