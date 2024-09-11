@@ -622,10 +622,16 @@ const routes = [
                 path: '/telegram',
                 name: 'TelegramComponent',
                 component: load('telegram/Questions'),
+                meta: { roles: ['telegram', 'main_administrator'] },
                 beforeEnter: ifUserRoles,
-                meta: { roles: ['telegram'] } // Здесь указываем роли
             },
-            
+            {
+                path: '/hikvision',
+                name: 'HikvisionTemplate',
+                component: load('hikvision/Hikvision'),
+                meta: { roles: ['personal'] },
+                beforeEnter: ifUserRoles,
+            },
 
             {
                 path: '/helpdesk',

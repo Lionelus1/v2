@@ -2001,7 +2001,37 @@ export default {
             applicationObjectives: 'Цели заяки',
             enteredIncorrectly: 'Введен неправильно'
         },
-
+    },
+    hikvision: {
+        employeeName: 'Имя сотрудника',
+        employeeEntryExitReport: 'Отчет по входу и выходу сотрудников в корпус',
+        generateReport: 'Сформировать отчет',
+        workSchedule: 'График работы',
+        generatedReports: 'Список сформированных отчетов',
+        dateRange: 'Дата/Диапазон дат',
+        category: 'Категория',
+        department: 'Структурное подразделение',
+        employee: 'Сотрудник',
+        author: 'Автор',
+        reportGenerationDate: 'Дата формирования отчета',
+        actions: 'Действия',
+        view: 'Просмотр',
+        export: 'Экспорт',
+        delete: 'Удалить',
+        all: 'Все',
+        pps: 'ППС',
+        aup: 'АУП',
+        op: 'ОП',
+        ahp:'АХП',
+        uvp:'УВП',
+        nii: 'НИИ',
+        // add other translations here
+        workScheduleForPPS: 'Режим работы для ППС',
+        workScheduleForEmployees: 'Режим работы для сотрудников',
+        dayOff: 'Выходной',
+        reset: 'Сбросить',
+        save: 'Сохранить',
+        cancel: 'Отмена', // more translations
     },
     error: {
         invalidEmail: "Некорректный адрес электронной почты",
