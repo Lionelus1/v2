@@ -218,10 +218,10 @@ const deleteAddFilePath = (mailingId) => {
             <a :href="additional_file_path" download="true">
               {{ additionalFileName }}
             </a>
-            <button @click="deleteFile" class="delete-file-button">
-              {{ $t('common.delete') }}
-            </button>
           </InlineMessage>
+          <span v-if="additional_file_path" class="icon is-right" @click="deleteFile">
+              <i class="fa-solid fa-trash"></i>
+            </span>
         </div>
       </div>
     </div>
@@ -229,16 +229,7 @@ const deleteAddFilePath = (mailingId) => {
 </template>
 
 <style scoped>
-.delete-file-button {
+.icon {
   margin-left: 10px;
-  background-color: red;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 4px 8px;
-  cursor: pointer;
-}
-.delete-file-button:hover {
-  background-color: darkred;
 }
 </style>
