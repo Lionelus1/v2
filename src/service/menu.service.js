@@ -323,6 +323,7 @@ export class MenuService {
             {
                 label: $t('workPlan.reports'),
                 icon: 'pi pi-fw pi-chart-line',
+                visible: this.findRole("personal"),
                 items: [
                     {
                         label: $t('Hikvision'),
