@@ -436,6 +436,8 @@ export default {
             bin: "БСН",
         },
         orgEmployees: "{org} қызметкерлері",
+        domesticPartners: 'Отандас серіктестер',
+        foreignPartners: 'Шетел серіктестер'
     },
     doctemplate: {
         title: "Құжат үлгісін жасау",
@@ -569,6 +571,11 @@ export default {
             projectPosition: "Жобадағы орны",
             mnvoDate: "БҒЖМ келісімнің күні",
             contractSum: "Шарт сомасы",
+            documentsNotSigned: {
+                label: "Менің қол қоймаған құжаттарым",
+                signedByMe: "Мен қол қойған",
+                notSignedByMe: "Мен қол қоймаған"
+            }
         },
         title: "Келісім-шарттар",
         template: "Келісім-шарт үлгілері",
@@ -673,6 +680,18 @@ export default {
             consultant: "Ғылыми кеңесші",
             projectManager: "Жобаның ғылыми жетекшісі",
         },
+        cooperationDocument: "Ынтымақтастық туралы құжат",
+        name_doc: "Құжаттың атауы",
+        doc_type_kz: "Құжат түрі қазақша",
+        doc_type_ru: "Құжат түрі орысша",
+        doc_type_en: "Құжат түрі ағылшынша",
+        doc_number:"Құжат нөмірі",
+        subject_document: "Құжаттың мәні",
+        date_conclusion: "Жобалар және/немесе шарттар жасалған күн",
+        indefinite: "бессрочный",
+        early_termination: 'Мерзімінен бұрын бұзу',
+        rating: 'Рейтинг',
+        rating_place: 'Рейтингтегі орын'
     },
     hdfs: {
         archiveBtn: "Мұрағаттау",
@@ -828,6 +847,8 @@ export default {
         failToSign: "Құжатқа қол қою мүмкін емес!",
         notEnoughRights: "Құжатқа қол қою құқығыңыз жеткіліксіз!",
         failToSendDoc: "Құжаттың ID-ін серверге жіберу мүмкін емес!",
+        uploadScanDoc: "Құжаттың скан нұсқасын жүктеу",
+        uploadAdditionalDoc: "Қосымша құжат"
 
     },
     publicReception: {
@@ -981,7 +1002,11 @@ export default {
         choiceTime: "Уақыт таңдау бойынша",
         errorFreeOperators: "Бұл уақытқа орын қалған жоқ басқа уақытты таңдаңыз!",
         noLunch: "Түскі үзіліссіз",
-        withoutWeekend: "Демалыссыз"
+        withoutWeekend: "Демалыссыз",
+        notification: "Хабарлама",
+        notificationTextKz: "Қазақ тілінде жазыңыз",
+        notificationTextRu: "Орыс тілінде жазыңыз",
+        notificationTextEn: "Ағылшын тілінде жазыңыз",
     },
 
     dissertation: {
@@ -1756,8 +1781,9 @@ export default {
         responsibilitiesKz: 'Қазақ тіліндегі қызметтік міндеттер',
         responsibilitiesRu: 'Орыс тіліндегі қызметтік міндеттер',
         responsibilitiesEn: 'Ағылшын тіліндегі қызметтік міндеттер',
-
-
+        nameTopicInQazaq: "Тақырып атауы қазақ тілінде",
+        nameTopicInRussian: "Тақырып атауы орыс тілінде",
+        nameTopicInEnglish: "Тақырып атауы ағылшын тілінде",
     },
     personalData: 'Жеке ақпарат',
     yearPeriod: 'Период годов',
@@ -1957,7 +1983,8 @@ export default {
         ssdfgsdfg: 'sdfgsdfg',
     },
     helpDesk: {
-        title: 'Менің өтінімдерім',
+        instructionNumber: "Оқыту тілі",
+        nameOftheTrainingProgram: "Оқыту бағдарламасының атауы", title: 'Менің өтінімдерім',
         creationTime: 'Құру уақыты',
         priority: 'Басымдық',
         responsible: 'Жауапты',
@@ -2043,5 +2070,18 @@ export default {
         crAndUpdEdu: 'Сұрақ-Жауап құру және өзгерту'
 
 
+    },
+    enuTopicSettings: {
+        normalVersion: 'Қалыпты нұсқа',
+        inputType: 'Енгізу Стилі',
+        inputOutlined: 'Көрсетілген',
+        inputFilled: 'Толтырылған',
+        rippleEffect: 'Толқындық Әсер',
+        menuColor: 'Мәзір Түсі',
+        menuColorDark: 'Қараңғы',
+        menuColorLight: 'Жарық',
+        ssdfgsdfg: 'sdfgsdfg',
+        epg: 'Мамандық/БББТ',
+        ep: 'Мамандану/БББ'
     }
 }

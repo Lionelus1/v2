@@ -278,7 +278,7 @@ export default {
           if (parentData.children) {
             parentData.children.map(e => {
               if (e.path) {
-                e.url = `${webEnuDomain}/${this.$i18n.locale}/page/${e.path.replaceAll("/", "%2F")}`
+                e.url = `${this.getSiteUrl}/${this.$i18n.locale}/page/${e.path.replaceAll("/", "%2F")}`
               }
             })
           }

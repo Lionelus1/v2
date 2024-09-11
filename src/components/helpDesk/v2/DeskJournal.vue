@@ -22,8 +22,8 @@
             </div>
             <template #footer>
                 <Button :label="t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger" @click="close('newPublicationDialog')" />
-                <Button :label="t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2" :disabled="!selectedDirection || !selectedPosition"
-                    @click="createHelpDesk" />
+                <Button :label="t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2"
+                    :disabled="!selectedDirection || !selectedPosition || loadingOnCreate" :loading="loadingOnCreate" @click="createHelpDesk" />
             </template>
         </Dialog>
         <div>
@@ -63,7 +63,7 @@
                     <Column field="requestReason" :header="t('helpDesk.application.requestReason')">
                         <template #body="{ data }">
                             {{
-            data.doc.newParams.selectedPosition.value[ALIAS[$i18n.locale]]
+            data.doc.newParams == null ? "" : data.doc.newParams.selectedPosition.value[ALIAS[$i18n.locale]]
         }}
                         </template>
                     </Column>
@@ -81,7 +81,11 @@
         }}</a>
                         </template>
                     </Column>
-
+                    <Column field="fullName" :header="t('web.logUser')">
+                        <template #body="{ data }">
+                            <span>{{ data.doc?.newParams?.not_formal_student_info?.value.fullName }}</span>
+                        </template>
+                    </Column>
                     <Column style="min-width: 50px">
                         <template #body="{ data }">
                             <div v-if="data.doc?.uuid" class="flex flex-wrap column-gap-1 row-gap-1" style="margin-left: 30px">
@@ -102,6 +106,7 @@
                             </div>
                         </template>
                     </Column>
+
                 </DataTable>
             </BlockUI>
         </div>
@@ -558,7 +563,9 @@ const getCategory = () => {
             });
         });
 };
+const loadingOnCreate = ref(false)
 const createHelpDesk = async () => {
+    loadingOnCreate.value = true;
     let currentDate = new Date();
 
     // Extract day, month, and year
@@ -573,7 +580,6 @@ const createHelpDesk = async () => {
     // Construct the formatted date string
     let formattedDate = `${day}.${month}.${year}`;
     delete user.photo;
-
     await camundaServiceInstance.startProcess("scope", {
         application: selectedDirection.value,
         user: user,
@@ -619,6 +625,7 @@ const createHelpDesk = async () => {
 
     //     loading.value = false;
     //   });
+    loadingOnCreate.value = false;
 };
 const getTicket = () => {
     loading.value = true;

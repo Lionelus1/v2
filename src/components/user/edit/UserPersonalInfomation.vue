@@ -135,7 +135,10 @@
         <!-- Внутренний телефон -->
         <div v-if="customType === 'myAccount' || customType === 'viewUser' || customType === 'createUser'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
           <label>{{ t('contact.officePhone') }}</label>
-          <InputText maxlength="5" class="mt-2" :placeholder="t('contact.officePhone')" v-model="user.internalPhone" :readonly="props.readonly" @input="updateUserData"></InputText>
+          <InputMask type="text" :useGrouping="false" mask="99999" class="mt-2"
+                       :placeholder="t('contact.officePhone')" v-model="user.internalPhone"
+                     :readonly="props.readonly" @update:modelValue="updateUserData">
+          </InputMask>
           <small class="p-error" v-if="validation.officePhone">{{ t("common.requiredField") }}</small>
         </div>
         
@@ -157,7 +160,7 @@
       </div>
     </div>
     <Sidebar v-model:visible="organizationCard" position="right" class="p-sidebar-lg">
-      <OrganizationPage :organization="user?.mainPosition?.organization" :sidebar="true"/>
+      <OrganizationPage :id="user?.mainPosition?.organization?.id" :organization="user?.mainPosition?.organization" :sidebar="true"/>
     </Sidebar>
 
     <Sidebar v-model:visible="organizationList" position="right" class="p-sidebar-lg">

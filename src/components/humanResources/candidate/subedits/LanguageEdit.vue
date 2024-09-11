@@ -16,7 +16,8 @@
                          v-model="value.language"
                          :validation="validation.language"
                          :autoLoad="true"
-                         :editMode="true"/>
+                         :editMode="true"
+                         :modelValue="value.language"/>
             <small
                 class="p-error"
                 v-if="validation.language"

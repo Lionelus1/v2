@@ -15,6 +15,14 @@
           <div style="margin-bottom: 10px; width: 100px" v-if="status != undefined" :class="'mb-10 customer-badge status-' + (status ?? 'created')">
             {{ getDocStatus(status ?? "created") }}
           </div>
+          <div v-if="status === 'revision' || status === 'rejected'">
+            <label>{{ $t('common.comment') }}:</label>
+            <div>
+              <Message style="width: 150px;" :closable="false" v-if="ticket != null && ticket?.docHistory != null && ticket?.docHistory != null" severity="warn">
+                {{ ticket?.docHistory?.comment }}
+              </Message>
+            </div>
+          </div>
           <CamundaComponent :components="components" :disabled="status != undefined && isFormDisabled()" style="margin-top: 10px">
           </CamundaComponent>
         </div>
@@ -109,11 +117,11 @@ function updateQueryStatus(newStatus) {
   currentQuery.status = newStatus;
 
   // Replace the route with the updated query parameters
-  router.replace({
-    name: "Request",
-    params: { uuid: uuid.value },
-    query: currentQuery,
-  });
+  // router.replace({
+  //   name: "Request",
+  //   params: { uuid: uuid.value },
+  //   query: currentQuery,
+  // });
 }
 const getDocStatus = (code) => {
   const foundStatus = docStatus.value.find((status) => status.code === code);
@@ -363,7 +371,7 @@ const saveDoc = async () => {
     loading.value = false;
     isDocSaved.value = true;
     status.value = "created";
-    updateQueryStatus("created");
+    // updateQueryStatus("created");
   }
 };
 // const loading = ref();
@@ -763,6 +771,7 @@ const clearStages = () => {
 const isFilled = Object.values(userData.value).every((value) => value !== null);
 const status = ref(null);
 const uuid = ref(null);
+const ticket = ref(null);
 onMounted(async () => {
   uuid.value = route.params.uuid;
   await initTicketInfo(uuid.value)
@@ -770,6 +779,9 @@ onMounted(async () => {
     status.value = null
   } else {
     status.value = ticketInfo.value.ticket[0].doc.docHistory.stateEn;
+    ticket.value = ticketInfo.value.ticket[0].doc;
+    console.log("ticket:", ticket.value);
+
   }
   if (status.value == "created") isDocSaved.value = true;
 

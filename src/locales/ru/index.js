@@ -438,6 +438,8 @@ export default {
             bin: "БИН",
         },
         orgEmployees: "Сотрудники {org}",
+        domesticPartners: 'Отечественные партнеры',
+        foreignPartners: 'Зарубежные партнеры'
     },
     doctemplate: {
         title: "Создание шаблона документа",
@@ -571,6 +573,11 @@ export default {
             projectPosition: "Позиция в проекте",
             mnvoDate: "Дата договора с МНВО",
             contractSum: "Сумма договора",
+            documentsNotSigned: {
+                label: "Документы, не подписанные мной",
+                signedByMe: "Подписанные мной",
+                notSignedByMe: "Не подписанные мной"
+            }
         },
         title: "Договоры",
         autogenerate: "Будет сформировано автоматически при подписании или регистрации",
@@ -606,6 +613,7 @@ export default {
             sendForExecution: "Отправить на исполнение",
             tocontragent: "Отправить контрагенту",
             toSciadvisor: "Отправить научному руководителю",
+            multipleSignature: "Множественное подписание"
         },
         contragentEmail: "Эл.почта контрагента",
         contragentRequest: "На согласовании у контрагента",
@@ -675,6 +683,18 @@ export default {
             consultant: "Научный консультант",
             projectManager: "Научный руководитель проекта",
         },
+        cooperationDocument: "Документ о сотрудничества",
+        name_doc: "Наименование документа",
+        doc_type_kz: "Вид документа на казахском",
+        doc_type_ru: "Вид документа на русском",
+        doc_type_en: "Вид документа на английском",
+        doc_number:"Номер документа",
+        subject_document: "Предмет документа",
+        date_conclusion: "Дата заключения проектов и/или договоров",
+        indefinite: "бессрочный",
+        early_termination: 'Досрочное расторжение договора',
+        rating: 'Рейтинг',
+        rating_place: 'Место в рейтинге'
     },
     hdfs: {
         archiveBtn: "Архивировать",
@@ -816,6 +836,8 @@ export default {
         failToSign: "Не удалось подписать документ!",
         notEnoughRights: "У вас недостаточно прав для подписи документа!",
         failToSendDoc: "Не удалось отправить ID документа на сервер!",
+        uploadScanDoc: "Скан вариант документа",
+        uploadAdditionalDoc: "Дополнительный документ"
 
     },
     publicReception: {
@@ -973,7 +995,11 @@ export default {
         choiceTime: "По выбору времени",
         errorFreeOperators: "Уже нельзя на это время записаться, выберите другую время!",
         noLunch: "Без перерыва на обед",
-        withoutWeekend: "Без выходных"
+        withoutWeekend: "Без выходных",
+        notification: "Уведомление",
+        notificationTextKz: "Напишите на казахском",
+        notificationTextRu: "Напишите на русском",
+        notificationTextEn: "Напишите на английском",
     },
     dissertation: {
         title: "Диссертационный совет",
@@ -1743,6 +1769,9 @@ export default {
         responsibilitiesKz: 'Должностные обязанности на казахском языке',
         responsibilitiesRu: 'Должностные обязанности на русском языке',
         responsibilitiesEn: 'Должностные обязанности на английском языке',
+        nameTopicInQazaq: "Наименование темы на казахском языке",
+        nameTopicInRussian: "Наименование темы на русском языке",
+        nameTopicInEnglish: "Наименование темы на английском языке",
     },
     personalData: 'Персональные сведения',
     yearPeriod: 'Период годов',
@@ -1944,7 +1973,8 @@ export default {
         ssdfgsdfg: 'sdfgsdfg',
     },
     helpDesk: {
-        title: 'Мои заявки',
+        instructionNumber: "Язык обучения",
+        nameOftheTrainingProgram: "Наименование программы обучения", title: 'Мои заявки',
         creationTime: 'Время создания',
         priority: 'Приоритет',
         responsible: 'Ответственный',
@@ -2019,6 +2049,15 @@ export default {
         anwersru: 'Введите ответ на русском',
         author: 'Автор вопроса',
         crAndUpdEdu: 'Создание и редактирование вопроса и ответа'
+    },
+    enuTopicSettings: {
+        normalVersion: 'Нормальный вариант',
+        inputType: 'Стиль ввода',
+        inputOutlined: 'Упомянутый',
+        inputFilled: 'Заполненный',
+        rippleEffect: 'Волновой эффект',
+        menuColor: 'Цвет меню',
+        menuColorDark: 'Темный',
+        menuColorLight: 'Светлый',
     }
-
 }
