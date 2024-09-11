@@ -97,6 +97,13 @@
             <small class="p-error" v-if="validation.approveDate">{{ $t("common.requiredField") }}</small>
           </div>
         </div>
+        <div class="field-checkbox col-12 md:col-6">
+          <Checkbox
+              v-model="file.is_view_only" :binary="true"
+              inputId="viewOnlyCheckbox"
+          />
+          <label for="viewOnlyCheckbox">Показать в режиме просмотра</label>
+        </div>
         <div v-if="showUploader" class="field">
           <label>{{$t('common.doc')}}</label>
           <FileUpload  :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false" fileLimit="1" :accept="accept">
@@ -188,6 +195,12 @@ export default {
   watch: {
     'file.params': {
       handler(params) {
+
+        if (!params) {
+          console.error("params is undefined!");
+          return;
+        }
+
         params.forEach(param => {
           if (param.name === 'saceduprogram') {
             this.selectedSpecialities = param.value;
