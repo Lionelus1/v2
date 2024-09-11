@@ -157,8 +157,6 @@ const getReports = async () => {
       rows: lazyParams.value.rows,
       author_id: currentUser.value.id
     });
-    console.log('Полученные данные:', response.data);
-
     if (response.data && response.data.reports) {
       reports.value = response.data.reports;
       totalRecords.value = response.data.total;

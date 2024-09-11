@@ -10,7 +10,7 @@
         </div>
       </div>
 
-      <div class="field col-12" :binary="true">
+      <div class="field col-12" :binary="true" v-if="FindRole(null,'hikvision') || FindRole(null,'main_administrator')">
         <label>{{ $t('hikvision.category') }}</label>
         <div class="checkbox-group">
           <div class="field-checkbox" v-for="subject in categoriesV2" :key="subject.id">
@@ -20,7 +20,7 @@
         </div>
       </div>
 
-      <div class="p-field pb-3">
+      <div class="p-field pb-3" v-if="FindRole(null,'hikvision') || FindRole(null,'main_administrator')">
         <label>{{ $t('hikvision.department') }}</label>
         <Dropdown
             class="dropdown"
@@ -36,7 +36,7 @@
         />
       </div>
 
-      <div class="form-group">
+      <div class="form-group" v-if="FindRole(null,'hikvision') || FindRole(null,'main_administrator')">
         <label>{{ $t('hikvision.employee') }}</label>
         <FindUser
             :placeholder="$t('hikvision.all')"
@@ -62,6 +62,7 @@ import Dropdown from 'primevue/dropdown';
 import Checkbox from 'primevue/checkbox';
 import { ReportService } from '@/service/report.service';
 import { ContragentService } from '@/service/contragent.service';
+import {findRole} from "@/config/config";
 
 const { t, locale } = useI18n();
 const emit = defineEmits(['reportCreated', 'close']);
@@ -82,7 +83,7 @@ const categoriesV2 = ref([
   { id: 5, name_kz: '', name_ru: '', name_en: '', code: t('hikvision.pps'), is_noted: false },
   { id: 6, name_kz: '', name_ru: '', name_en: '', code: t('hikvision.op'), is_noted: false },
 ]);
-
+const FindRole = findRole
 watch(
     categoriesV2,
     (newCategories) => {
