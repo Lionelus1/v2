@@ -48,7 +48,8 @@
       </div>
 
       <div class="button-group">
-        <button type="submit" class="btn btn-primary" rounded>{{ $t('common.generate') }}</button>
+        <Button type="submit" class="btn btn-close small-button"  rounded @click="emit('close')">{{ $t('hikvision.cancel') }}</Button>
+        <Button type="submit" class="btn btn-primary small-button" rounded>{{ $t('common.generate') }}</Button>
       </div>
     </form>
   </div>
@@ -215,13 +216,20 @@ label {
   cursor: pointer;
 }
 .btn-close {
-  background-color: #dc3545; /* Красный цвет для кнопки отмены */
+  background-color: #dc3545;
   color: #fff;
 }
 
 .btn-primary {
   background-color: #007bff;
   color: #fff;
+}
+
+.small-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  width: auto;
+  min-width: 100px;
 }
 
 .checkbox-group {
