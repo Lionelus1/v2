@@ -85,14 +85,6 @@
       class="p-fluid responsive-dialog"
   >
     <GenerateReportDialog @close="showGenerateReportDialog = false" @reportCreated="getReports" />
-    <template #footer>
-      <Button
-          :label="$t('common.cancel')"
-          icon="fa-solid fa-times"
-          class="p-button-rounded p-button-danger"
-          @click="showGenerateReportDialog = false"
-      />
-    </template>
   </Dialog>
   <Dialog :header="$t('hikvision.workSchedule')" v-model:visible="showWorkScheduleDialog" :style="{ width: '650px' }" class="p-fluid">
     <WorkScheduleDialog @close="showWorkScheduleDialog = false" />
@@ -129,6 +121,7 @@ const toast = useToast();
 const reportService = new ReportService();
 const lazyParams = ref({ page: 0, rows: 10, first: 0 });
 const { t, locale } = useI18n();
+
 
 const showError = (message) => {
   toast.add({ severity: 'error', summary: 'Ошибка', detail: message, life: 3000 });

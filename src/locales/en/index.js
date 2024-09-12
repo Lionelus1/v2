@@ -2139,7 +2139,7 @@ export default {
         reset: 'Reset',
         save: 'Save',
         cancel: 'Cancel',
-        // more translations
+        notification: 'The report is being generated. This may take some time',
     },
     error: {
         invalidEmail: "Invalid email address",
