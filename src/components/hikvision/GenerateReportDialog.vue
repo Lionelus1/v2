@@ -10,7 +10,7 @@
         </div>
       </div>
 
-      <div class="field col-12" :binary="true" v-if="FindRole(null,'hikvision') || FindRole(null,'main_administrator')">
+      <div class="field col-12" :binary="true" v-if="FindRole(null,'hikvision')">
         <label>{{ $t('hikvision.category') }}</label>
         <div class="checkbox-group">
           <div class="field-checkbox" v-for="subject in categoriesV2" :key="subject.id">
@@ -20,7 +20,7 @@
         </div>
       </div>
 
-      <div class="p-field pb-3" v-if="FindRole(null,'hikvision') || FindRole(null,'main_administrator')">
+      <div class="p-field pb-3" v-if="FindRole(null,'hikvision')">
         <label>{{ $t('hikvision.department') }}</label>
         <Dropdown
             class="dropdown"
@@ -36,7 +36,7 @@
         />
       </div>
 
-      <div class="form-group" v-if="FindRole(null,'hikvision') || FindRole(null,'main_administrator')">
+      <div class="form-group" v-if="FindRole(null,'hikvision')">
         <label>{{ $t('hikvision.employee') }}</label>
         <FindUser
             :placeholder="$t('hikvision.all')"
@@ -48,7 +48,8 @@
       </div>
 
       <div class="button-group">
-        <button type="submit" class="btn btn-primary" rounded>{{ $t('common.generate') }}</button>
+        <Button class="btn btn-close small-button"  rounded @click="emit('close')">{{ $t('hikvision.cancel') }}</Button>
+        <Button type="submit" class="btn btn-primary small-button" rounded>{{ $t('common.generate') }}</Button>
       </div>
     </form>
   </div>
@@ -63,9 +64,11 @@ import Checkbox from 'primevue/checkbox';
 import { ReportService } from '@/service/report.service';
 import { ContragentService } from '@/service/contragent.service';
 import {findRole} from "@/config/config";
+import {useToast} from "primevue/usetoast";
 
 const { t, locale } = useI18n();
 const emit = defineEmits(['reportCreated', 'close']);
+const toast = useToast();
 
 const startDate = ref('');
 const endDate = ref('');
@@ -74,6 +77,13 @@ const department = ref(null);
 const employee = ref(null);
 const departments = ref([]);
 const searchText = ref('');
+
+const showError = (message) => {
+  toast.add({ severity: 'error', summary: 'Ошибка', detail: message, life: 3000 });
+};
+const showSuccess = (message) => {
+  toast.add({ severity: 'success', summary: 'Успешно', detail: message, life: 3000 });
+};
 
 const categoriesV2 = ref([
   { id: 1, name_kz: '', name_ru: '', name_en: '', code: t('hikvision.aup'), is_noted: false },
@@ -87,9 +97,7 @@ const FindRole = findRole
 watch(
     categoriesV2,
     (newCategories) => {
-      console.log('Updated categoriesV2:', newCategories);
       categories.value = newCategories.filter(cat => cat.is_noted).map(cat => cat.id);
-      console.log('Updated categories:', categories.value);
     },
     { deep: true }
 );
@@ -139,11 +147,15 @@ const getDepartments = async () => {
 };
 
 const createReports = async () => {
+    if (!startDate.value || !endDate.value) {
+      showError(t('hikvision.dateRequiredError'));
+      return;
+    }
+
   const categoryIds = categories.value.length > 0
       ? categories.value
       : categoriesV2.value.filter(cat => cat.is_noted && cat.id != null).map(cat => cat.id);
 
-  console.log('Category IDs to be sent:', categoryIds);
 
   const data = {
     start_date: startDate.value,
@@ -158,15 +170,12 @@ const createReports = async () => {
   try {
     const response = await reportService.createReport(data);
     console.log('Report created:', response);
+    showSuccess(t('hikvision.notification'))
     emit('reportCreated', response);
     emit('close');
   } catch (error) {
     console.error('Error creating report:', error);
   }
-};
-
-const close = () => {
-  emit('close');
 };
 
 onMounted(() => {
@@ -200,11 +209,11 @@ label {
   font-weight: bold;
 }
 
-
 .button-group {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-top: 20px;
+  gap: 10px;
 }
 
 .btn {
@@ -214,10 +223,21 @@ label {
   border-radius: 4px;
   cursor: pointer;
 }
+.btn-close {
+  background-color: #dc3545;
+  color: #fff;
+}
 
 .btn-primary {
   background-color: #007bff;
   color: #fff;
+}
+
+.small-button {
+  padding: 8px 16px;
+  font-size: 14px;
+  width: auto;
+  min-width: 100px;
 }
 
 .checkbox-group {

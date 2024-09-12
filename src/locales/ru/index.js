@@ -2025,13 +2025,15 @@ export default {
         ahp:'АХП',
         uvp:'УВП',
         nii: 'НИИ',
-        // add other translations here
         workScheduleForPPS: 'Режим работы для ППС',
         workScheduleForEmployees: 'Режим работы для сотрудников',
         dayOff: 'Выходной',
         reset: 'Сбросить',
         save: 'Сохранить',
-        cancel: 'Отмена', // more translations
+        cancel: 'Отмена',
+        notification: 'Отчет формируется. Это может занять некоторое время',
+        dateRequiredError: 'Вы не заполнили Дата/Диапазон дат',
+
     },
     error: {
         invalidEmail: "Некорректный адрес электронной почты",
