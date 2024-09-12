@@ -46,21 +46,27 @@
         <div class="progress-bar">
           <div class="level-item">
             <p class="level-name">{{t('hr.lang.rl')}}</p>
+            <div class="border_lang">
             <svg width="89" height="7" viewBox="0 0 89 7" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect :width="calculateProgressWidth(lang.readingLevel.value)" height="7" fill="#414754"/>
             </svg>
+            </div>
           </div>
           <div class="level-item">
             <p class="level-name">{{t('hr.lang.sl')}}</p>
+            <div class="border_lang">
             <svg width="89" height="7" viewBox="0 0 89 7" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect :width="calculateProgressWidth(lang.speakingLevel.value)" height="7" fill="#414754"/>
             </svg>
           </div>
+          </div>
           <div class="level-item">
             <p class="level-name">{{t('hr.lang.wl')}}</p>
+            <div class="border_lang">
             <svg width="89" height="7" viewBox="0 0 89 7" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect :width="calculateProgressWidth(lang.writingLevel.value)" height="7" fill="#414754"/>
             </svg>
+          </div>
           </div>
         </div>
       </div>
@@ -181,7 +187,16 @@ onMounted(() => {
 });
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+.border_lang {
+  border: 1px solid #ccc;
+  position: relative;
+  height: 7.5px;
+  width: 90px;
+  svg{
+    position: absolute;
+  }
+}
 .resume-container {
   width: 100%;
   max-width: 1035px;
