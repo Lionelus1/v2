@@ -177,6 +177,7 @@ export default {
         }
         this.editor.setContent(content);
         this.isDefaultTextRemoved = true;
+        this.isContentChanged = true;
         this.editor.selection.moveToBookmark(bookmark);
       }
     },
