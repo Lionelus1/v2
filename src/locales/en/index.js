@@ -2140,6 +2140,7 @@ export default {
         save: 'Save',
         cancel: 'Cancel',
         notification: 'The report is being generated. This may take some time',
+        dateRequiredError: 'You have not filled in the Date/Date Range',
     },
     error: {
         invalidEmail: "Invalid email address",

@@ -48,7 +48,7 @@
       </div>
 
       <div class="button-group">
-        <Button type="submit" class="btn btn-close small-button"  rounded @click="emit('close')">{{ $t('hikvision.cancel') }}</Button>
+        <Button class="btn btn-close small-button"  rounded @click="emit('close')">{{ $t('hikvision.cancel') }}</Button>
         <Button type="submit" class="btn btn-primary small-button" rounded>{{ $t('common.generate') }}</Button>
       </div>
     </form>
@@ -78,6 +78,9 @@ const employee = ref(null);
 const departments = ref([]);
 const searchText = ref('');
 
+const showError = (message) => {
+  toast.add({ severity: 'error', summary: 'Ошибка', detail: message, life: 3000 });
+};
 const showSuccess = (message) => {
   toast.add({ severity: 'success', summary: 'Успешно', detail: message, life: 3000 });
 };
@@ -144,6 +147,11 @@ const getDepartments = async () => {
 };
 
 const createReports = async () => {
+    if (!startDate.value || !endDate.value) {
+      showError(t('hikvision.dateRequiredError'));
+      return;
+    }
+
   const categoryIds = categories.value.length > 0
       ? categories.value
       : categoriesV2.value.filter(cat => cat.is_noted && cat.id != null).map(cat => cat.id);

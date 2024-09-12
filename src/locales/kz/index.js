@@ -2043,6 +2043,8 @@ export default {
         save: 'Сақтау',
         cancel: 'Болдырмау',
         notification: 'Есеп жасалуда. Бұл біраз уақыт алуы мүмкін',
+        dateRequiredError: 'Сіз Күн/Күн диапазонын толтырмағансыз',
+
 
     },
     error: {
