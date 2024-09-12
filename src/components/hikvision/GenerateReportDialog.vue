@@ -10,7 +10,7 @@
         </div>
       </div>
 
-      <div class="field col-12" :binary="true" v-if="FindRole(null,'hikvision') || FindRole(null,'main_administrator')">
+      <div class="field col-12" :binary="true" v-if="FindRole(null,'hikvision')">
         <label>{{ $t('hikvision.category') }}</label>
         <div class="checkbox-group">
           <div class="field-checkbox" v-for="subject in categoriesV2" :key="subject.id">
@@ -20,7 +20,7 @@
         </div>
       </div>
 
-      <div class="p-field pb-3" v-if="FindRole(null,'hikvision') || FindRole(null,'main_administrator')">
+      <div class="p-field pb-3" v-if="FindRole(null,'hikvision')">
         <label>{{ $t('hikvision.department') }}</label>
         <Dropdown
             class="dropdown"
@@ -36,7 +36,7 @@
         />
       </div>
 
-      <div class="form-group" v-if="FindRole(null,'hikvision') || FindRole(null,'main_administrator')">
+      <div class="form-group" v-if="FindRole(null,'hikvision')">
         <label>{{ $t('hikvision.employee') }}</label>
         <FindUser
             :placeholder="$t('hikvision.all')"
