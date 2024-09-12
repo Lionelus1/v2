@@ -26,7 +26,7 @@ let templateId = ref()
 const mailingId = ref(route.params.id)
 onMounted(async () => {
   try {
-    const response = await mailingService.getMailingByID(parseInt(route.params.id, 10));
+    const response = await mailingService.getMailingByID(parseInt(route.params.id, 10), true);
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
