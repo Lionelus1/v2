@@ -20,6 +20,8 @@ const additional_file_path = ref('');
 const description = ref("");
 const toast = useToast();
 const mailingService = new MailingService()
+const isContentChanged = ref(false)
+const { locale } = useI18n();
 let selectedCategories = ref()
 let emails = ref()
 let templateId = ref()
@@ -104,6 +106,8 @@ const sendMailing = (statusID) => {
     statusID: statusID,
     AdditionalFilePath: additional_file_path.value,
     AdditionalFileName: additionalFileName.value,
+    isContentChanged: isContentChanged.value,
+    lang: locale.value,
   };
 
   mailingService.mailing(mailingData)
@@ -176,6 +180,10 @@ const deleteFile = async () => {
   }
 };
 
+const handleEditorClick = () => {
+  isContentChanged.value = true;
+};
+
 const deleteAddFilePath = (mailingId) => {
   api
       .post("/mailing/deleteAddFilePath", { mailingId: mailingId }, {
@@ -206,7 +214,7 @@ const deleteAddFilePath = (mailingId) => {
     <ToolbarMenu :data="menu" />
     <div class="editor-body">
       <div class="rich-text-editor">
-        <TinyEditor v-model="description" :height="700" />
+        <TinyEditor v-model="description" :height="700" @click="handleEditorClick"/>
       </div>
     </div>
     <div class="field">
