@@ -93,8 +93,8 @@ export default {
     return {
       showWorkPlanEventEditModal: this.visible,
       editData: JSON.parse(JSON.stringify(this.event)),
-      copyedEvent: JSON.parse(JSON.stringify(this.copiedEvent)),
-      copyedEventUser: JSON.parse(JSON.stringify(this.copiedEvent.user)),
+      copyedEvent: this.copiedEvent ? JSON.parse(JSON.stringify(this.copiedEvent)) : {},
+      copyedEventUser: this.copiedEvent && this.copiedEvent.user ? JSON.parse(JSON.stringify(this.copiedEvent.user)) : {},
       plan: this.planData,
       quarters: [
         {
