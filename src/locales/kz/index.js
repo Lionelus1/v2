@@ -843,7 +843,7 @@ export default {
         catalogNormDocNotFound: "Нормативті құжаттар каталогы табылмады",
         loadingcatalogNormDoc: "Нормативті құжаттар жүктелуде. Өтініш, күте тұрыңыз.",
         category: "Категория",
-        categories: "санаттар",
+        categories: "Санаттар",
         selectCategories: "Санаттарды таңдаңыз",
         newsList: "Жаңалықтар тізімі",
         mailingTitle: "Тарату",

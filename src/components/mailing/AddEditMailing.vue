@@ -5,7 +5,7 @@
     <div>
       <div class="card p-fluid">
         <div class="flex align-items-center">
-          <h4 class="m-0">{{ $t("smartenu.category") }}</h4>
+          <h4 class="m-0">{{ $t("smartenu.categories") }}</h4>
         </div>
         <div class="flex flex-wrap gap-3 pt-4">
           <div v-for="category in categories" :key="category.id" class="flex align-items-center pr-3 pb-1">

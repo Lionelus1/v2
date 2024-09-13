@@ -838,7 +838,7 @@ export default {
         addNormDoc: "Добавить документ",
         editNormDoc: "Редактировать документ",
         delNormDoc: "Удалить документ",
-        categories: "категории",
+        categories: "Категории",
         selectCategories: "Выберите категории",
         newsList: "Список новостей",
         mailingCreateTitle: "Создать рассылку",
