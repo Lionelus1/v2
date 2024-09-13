@@ -102,7 +102,7 @@
               v-model="file.is_view_only" :binary="true"
               inputId="viewOnlyCheckbox"
           />
-          <label for="viewOnlyCheckbox">Показать в режиме просмотра</label>
+          <label for="viewOnlyCheckbox">{{ $t('common.viewOnlyCheckbox') }}</label>
         </div>
         <div v-if="showUploader" class="field">
           <label>{{$t('common.doc')}}</label>

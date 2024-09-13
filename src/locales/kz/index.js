@@ -363,7 +363,8 @@ export default {
         doYouWantApprove: "Сіз шынымен келісім-шартқа келіскіңіз келе ме?",
         changeApprovals: "Бекітуші тұлғаларды ауыстыру",
         sacReportMenuTitle: 'Мемлекеттік аттестаттау комиссиясының есебі',
-        socialMediaIds: 'Әлеуметтік медиа'
+        socialMediaIds: 'Әлеуметтік медиа',
+        viewOnlyCheckbox: 'Көру режимінде көрсету'
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
