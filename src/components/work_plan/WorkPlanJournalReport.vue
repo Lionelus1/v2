@@ -31,7 +31,6 @@
         </div>
       </div>
     </div>
-    <vue-element-loading :active="loading" color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <!--дневник-отчет-->
       <TabPanel :header="$t('workPlan.journalReports')" >
@@ -47,6 +46,7 @@
           <WorkPlanReportApprove v-if="showModal0" :report-fd="fd" :visible="showModal0" :doc-id="dReports[0].doc_id" :approvalStages="approval_users"
                                  :report="dReports[0]" :plan="plan" @sent-to-approve="getReport(0)" @closed="closeApproveModal" />
         </div>
+        {{blobSource}}
         <ToolbarMenu v-if="dReports && checkingSignAllDoc()" :data="toolbarMenus"/>
         <div class="card" v-if="blobSource">
           <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf" />
@@ -162,7 +162,9 @@
       </TabPanel>
     </TabView>
   </div>
-
+  <div class="flex justify-center">
+    <ProgressSpinner v-if="loading" style="width: 50px;" strokeWidth="5" fill="transparent" />
+  </div>
   <Dialog modal :header="$t('workPlan.safetyPrecautions')" v-model:visible="AddTechSecDialog" :style="{width: '600px'}" class="p-fluid">
     <div class="field">
       <label>{{ $t('workPlan.textCS') }}</label>
@@ -694,21 +696,21 @@ const getFile = async (index) => {
     if (res.data && dReports.value && dReports.value[index].doc_info.docHistory.stateId !== 4) {
       //kelisimge jiberilger bolsa daiyn filedi alam
       blobSource.value = URL.createObjectURL(await b64toBlob(res.data));
+      console.log("asnclmc norm")
+
       loading.value = false;
     } else {
       await getData(index);
-      // loading.value = false;
     }
   }).catch(error => {
     loading.value = false;
     toast.add({ severity: 'error', summary: error.message, life: 3000 });
   });
 }
-
 const getData = async (index) => {
   let data = {
     work_plan_id: workPlanId.value,
-    EventUserId: student_id.value,
+    eventUserId: student_id.value,
     halfYearType: null,
     department_id: null,
     report_id: dReports.value[index].id
@@ -720,9 +722,7 @@ const getData = async (index) => {
     loading.value = false;
     toast.add({ severity: 'error', summary: error.message, life: 3000 });
   });
-
 }
-
 const b64toBlob = async (b64Data, sliceSize = 512) => {
   const byteCharacters = window.atob(b64Data);
   const byteArrays = [];
@@ -734,11 +734,9 @@ const b64toBlob = async (b64Data, sliceSize = 512) => {
     for (let i = 0; i < slice.length; i++) {
       byteNumbers[i] = slice.charCodeAt(i);
     }
-
     const byteArray = new Uint8Array(byteNumbers);
     byteArrays.push(byteArray);
   }
-
   return new Blob(byteArrays, {type: "application/pdf"});
 }
 

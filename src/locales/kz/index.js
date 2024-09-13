@@ -938,6 +938,7 @@ export default {
         posterImageKkInvalid: "Қазақша постер таңдалмады",
         posterImageRuInvalid: "Орысша постер таңдалмады",
         posterImageEnInvalid: "Ағылшынша постер таңдалмады",
+        notValid: "Кейбір өрістер толтырылмаған",
     },
     vaccination: {
         title: "Вакциналау",
@@ -1474,7 +1475,6 @@ export default {
         mastersThesisInfo: "Магистрлік диссертация туралы мәлімет",
         mastersThesisGeneralPlan: "Магистрлік диссертациямен жұмыс істеудің жалпы жоспары",
         content: "Мазмұны",
-        viewDoc: "Документті көру",
         expectingResults: "Күтілетін нәтижелер",
         relevance: "Маңыздылығы",
         goal: "Мақсат",

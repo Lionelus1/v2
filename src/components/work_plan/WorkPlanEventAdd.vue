@@ -1,35 +1,35 @@
 <template>
-  <Dialog :header="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('workPlan.addTask') : $t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
+  <Dialog
+      :header="isShedulePlan ? $t('workPlan.addTask') : $t('workPlan.addEvent')"
+      v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
-      <!-- mastersplan -->
-      <DoctorsMastersAddEvent :plan="plan" @update-data="updateData" />
-      <!-- mastersplan -->
+      <DoctorsMastersAddEvent :plan="plan" v-if="!isShedulePlan" @update-data="updateData" />
       <div class="field" v-if="!isMastersPlan && !isDoctorsPlan">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
-            plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('workPlan.worksByWeek') : $t('workPlan.eventName') }} </label>
+            isShedulePlan ? $t('workPlan.worksByWeek') : $t('workPlan.eventName') }} </label>
         <InputText v-model="event_name" />
         <small class="p-error" v-if="submitted && formValid.event_name">{{
           $t('workPlan.errors.eventNameError')
         }}</small>
       </div>
-      <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan)">
+      <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan && !isShedulePlan)">
         <label>{{ $t('common.startDate') }}</label>
         <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan)">
+      <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan && !isShedulePlan)">
         <label>{{ $t('common.endDate') }}</label>
         <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
 
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
-        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('common.startDate') + "(" + $t('workPlan.week') + ")" : $t('common.startDate') }}</label>
+      <div class="field" v-if="isShedulePlan">
+        <label>{{ $t('common.startDate') + "(" + $t('workPlan.week') + ")" }}</label>
         <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
-        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('common.endDate') + "(" + $t('workPlan.week') + ")" : $t('common.endDate') }}</label>
+      <div class="field" v-if="isShedulePlan">
+        <label>{{ $t('common.endDate') + "(" + $t('workPlan.week') + ")" }}</label>
         <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+      <div class="field" v-if="isShedulePlan">
         <label>{{ $t('web.note') }}</label>
         <InputText v-model="comment" />
       </div>

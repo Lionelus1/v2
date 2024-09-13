@@ -46,6 +46,9 @@
         :filter="true"
         :filtered="filtered"
     />
+    <div class="flex justify-center">
+      <ProgressSpinner v-if="!plan" style="width: 50px;" strokeWidth="5" fill="transparent" />
+    </div>
     <div class="card" v-if="plan && planDoc && !isWorkSchedule">
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
                  @nodeExpand="onExpand" scrollHeight="flex"
@@ -373,7 +376,7 @@ export default {
   data() {
     return {
       active: 0,
-      data: [],
+      data: null,
       Enum: Enum,
       DocEnum: DocEnum,
       work_plan_id: parseInt(this.$route.params.id),
@@ -791,8 +794,9 @@ export default {
           if (this.planDoc && this.planDoc.docHistory) {
             this.isRejected = this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value;
           }
-          this.isPlanCreator =
-              !!(this.plan && this.plan.user && this.plan.user.id === this.loginedUserId);
+          // кайта орнына келтырып кою керек
+          this.isPlanCreator =true;
+              // !!(this.plan && this.plan.user && this.plan.user.id === this.loginedUserId);
 
         if (this.isSciencePlan) {
           this.planApprovalStage = [
@@ -1596,7 +1600,6 @@ export default {
     },
     toolbarMenus() {
       return [
-
         {
           label: this.$t('common.addMember'),
           icon: 'pi pi-plus',
@@ -1670,9 +1673,10 @@ export default {
           label: this.$t('workPlan.reports'),
           visible:
             this.isFinish &&
-            !this.isSciencePlan &&
-            (this.isApproval || this.isPlanCreator || this.isAdmin) &&
-            (!(this.isMastersPlan || this.isDoctorsPlan) ||
+              !this.isWorkSchedule &&
+              !this.isSciencePlan &&
+              (this.isApproval || this.isPlanCreator || this.isAdmin) &&
+              (!(this.isMastersPlan || this.isDoctorsPlan) ||
               this.isPlanApproved),
           command: () => {
             this.navigateToReports();

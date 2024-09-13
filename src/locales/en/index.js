@@ -954,6 +954,7 @@ export default {
         posterImageKkInvalid: "The poster in Kazakh not selected",
         posterImageRuInvalid: "The poster in Russian not selected",
         posterImageEnInvalid: "The poster in English not selected",
+        notValid: "Some fields are empty",
     },
     vaccination: {
         title: "Vaccination",

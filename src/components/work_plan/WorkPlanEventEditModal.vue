@@ -1,27 +1,25 @@
 <template>
   <Dialog
-      :header="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('workPlan.editTask') : $t('workPlan.editEvent')"
+      :header="isShedulePlan ? $t('workPlan.editTask') : $t('workPlan.editEvent')"
       v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
     <div v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
         <div class="field">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
-          plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('workPlan.worksByWeek') :
+            isShedulePlan ? $t('workPlan.worksByWeek') :
           $t('workPlan.eventName') }} </label>
         <InputText v-model="editData.event_name" />
         <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
       </div>
 
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
-        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('common.startDate') + "("
-            +$t('workPlan.week') + ")" : $t('common.startDate') }}</label>
+      <div class="field" v-if="isShedulePlan">
+        <label>{{ $t('common.startDate') + "(" + $t('workPlan.week') + ")" }}</label>
         <PrimeCalendar v-model="editData.start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
-        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule ? $t('common.endDate') + "("
-            +$t('workPlan.week') + ")" : $t('common.endDate') }}</label>
+      <div class="field" v-if="isShedulePlan">
+        <label>{{ $t('common.endDate') + "(" + $t('workPlan.week') + ")" }}</label>
         <PrimeCalendar v-model="editData.end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule">
+      <div class="field" v-if="isShedulePlan">
         <label>{{ $t('web.note') }}</label>
         <InputText v-model="editData.comment" />
       </div>
@@ -50,8 +48,8 @@
           <label>{{ $t('workPlan.summaryDepartment') }}</label>
           <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
       </div>
-      <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
-        <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
+      <div class="field" v-if="(plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science) && !isShedulePlan">
+        <label>{{ plan && (plan.plan_type || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
         <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
         <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
       </div>
@@ -75,7 +73,7 @@
         <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser" />
       </div>
       <div class="field"
-        v-if="(plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science) && ((editData && parentData && parentData.quarter === 5) || !parentData)">
+        v-if="(plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science && !isShedulePlan) && ((editData && parentData && parentData.quarter === 5) || !parentData)">
         <label>{{ $t('workPlan.quarter') }}</label>
         <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
         <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
@@ -84,7 +82,7 @@
         <label>{{ $t('common.suppDocs') }}</label>
         <Textarea v-model="editData.supporting_docs" rows="3" style="resize: vertical" />
       </div>
-      <div class="field">
+      <div class="field" v-if="!isShedulePlan">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
         <Textarea v-model="editData.result" rows="3" style="resize: vertical" />
       </div>
@@ -164,6 +162,11 @@ export default {
         users: false,
         quarter: false
       },
+      sheduleFormValid: {
+        workName: false,
+        sDate: false,
+        fDate: false,
+      },
       submitted: false,
       planService: new WorkPlanService(),
       Enum: Enum,
@@ -232,6 +235,15 @@ export default {
       deep: true,
     },
   },
+  computed: {
+    isShedulePlan() {
+      return (
+          this.plan &&
+          this.plan.plan_type &&
+          this.plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule
+      );
+    },
+  },
   unmounted() {
     this.showWorkPlanEventEditModal = false
   },
@@ -242,6 +254,7 @@ export default {
     edit() {
       this.submitted = true;
       if (this.notValid()) {
+        this.$toast.add({ severity: "warn", summary: this.$t('smartenu.notValid'), life: 4000 });
         return;
       }
       let userIds = [];
@@ -271,6 +284,9 @@ export default {
       this.editData.resp_person_id = resp_person_id;
 
       this.editData.resp_person_ids = userIds;
+
+      console.log(this.editData)
+
       this.planService.editEvent(this.editData).then(res => {
         if (res.data.is_success) {
           this.$toast.add({
@@ -285,23 +301,34 @@ export default {
         this.submitted = false;
         if (error && error.error === 'summaryDepartmentadded') {
           this.$toast.add({ severity: "warn", summary: this.$t('workPlan.warnAddingsummaryDepartment'), life: 4000 });
+        } else {
+          this.$toast.add({ severity: "error", summary: error, life: 4000 });
         }
-        
       });
     },
     notValid() {
+      let errors = [];
       if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters) {
         return false
-      }
-      this.formValid.event_name = this.editData.event_name === null || this.editData.event_name === '';
-      this.formValid.users = this.selectedUsers.length === 0;
-      this.formValid.quarter = this.editData.quarter === null;
+      } else if (this.isShedulePlan){
+        this.sheduleFormValid.workName = this.editData.event_name === null || this.editData.event_name === '';
+        this.sheduleFormValid.sDate = this.editData.start_date === null || this.editData.start_date === '';
+        this.sheduleFormValid.fDate = this.editData.end_date === null || this.editData.end_date === '';
 
-      let validation = this.formValid;
-      let errors = [];
-      Object.keys(this.formValid).forEach(function (k) {
-        if (validation[k] === true) errors.push(validation[k])
-      });
+        let validation = this.sheduleFormValid;
+        Object.keys(this.sheduleFormValid).forEach(function (k) {
+          if (validation[k] === true) errors.push(validation[k])
+        });
+      } else {
+        this.formValid.event_name = this.editData.event_name === null || this.editData.event_name === '';
+        this.formValid.users = this.selectedUsers.length === 0;
+        this.formValid.quarter = this.editData.quarter === null;
+
+        let validation = this.formValid;
+        Object.keys(this.formValid).forEach(function (k) {
+          if (validation[k] === true) errors.push(validation[k])
+        });
+      }
       return errors.length > 0
     },
     addNewUser() {

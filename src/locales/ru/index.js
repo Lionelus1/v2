@@ -930,6 +930,7 @@ export default {
         posterImageKkInvalid: "Постер на казахском не выбрана",
         posterImageRuInvalid: "Постер на русском не выбрана",
         posterImageEnInvalid: "Постер на английском не выбрана",
+        notValid: "Некоторые поля не заполнены",
     },
     vaccination: {
         title: "Вакцинация",
@@ -1465,7 +1466,6 @@ export default {
         mastersThesisInfo: "Информация о магистерской диссертации",
         mastersThesisGeneralPlan: "Общий план работы над магистерской диссертацией",
         content: "Содержание",
-        viewDoc: "Просмотр документа",
         expectingResults: "Ожидаемые результаты",
         relevance: "Актуальность",
         goal: "Цель",
