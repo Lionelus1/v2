@@ -322,7 +322,7 @@ export default {
               }
             )
             .then((response) => {
-              this.files.push(this.b64toBlob(response.data));
+              this.files.push(this.b64toBlob(response.data.file));
             });
         }
       } else if (this.active == 2 && this.loginedUserId === null) {
@@ -521,7 +521,7 @@ export default {
           runNCaLayer(
             this.$t,
             this.$toast,
-            response.data,
+            response.data.file,
             "cms",
             this.signerType,
             this.isTspRequired,

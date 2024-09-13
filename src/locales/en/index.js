@@ -2084,15 +2084,10 @@ export default {
         },
 
     },
-    error: {
-        invalidEmail: "Invalid email address",
-        invalidPhoneNumber: "Invalid phone number. It should contain 11 digits",
-        applicationRequirement: "To apply for the position, it is necessary to provide a valid email address or phone number.",
-    },
     telegram: {
         author: 'author',
         question: 'Question',
-        anwers: 'Anwers',
+        anwers: 'Answer',
         questionkz: 'Enter a question in Kazakh',
         questionen: 'Enter a question in English',
         questionru: 'Enter a question in Russian',
@@ -2112,5 +2107,45 @@ export default {
         menuColorLight: 'Light',
         epg: 'Profession/EPG',
         ep: 'Specialization/EP'
+
+    },
+    hikvision: {
+        employeeName: "Employee",
+        generate: 'Generate a report',
+        employeeEntryExitReport: 'Employee Entry and Exit Report',
+        generateReport: 'Generate Report',
+        workSchedule: 'Work Schedule',
+        generatedReports: 'Generated Reports',
+        dateRange: 'Date/Date Range',
+        category: 'Category',
+        department: 'Department',
+        employee: 'Employee',
+        author: 'Author',
+        reportGenerationDate: 'Report Generation Date',
+        actions: 'Actions',
+        view: 'View',
+        export: 'Export',
+        delete: 'Delete',
+        all: 'All',
+        pps: 'PPS',
+        aup: 'AUP',
+        op: 'ОП',
+        ahp:'АХП',
+        uvp:'УВП',
+        nii: 'НИИ',
+        // add other translations here
+        workScheduleForPPS: 'Work Schedule for PPS',
+        workScheduleForEmployees: 'Work Schedule for Employees',
+        dayOff: 'Day Off',
+        reset: 'Reset',
+        save: 'Save',
+        cancel: 'Cancel',
+        notification: 'The report is being generated. This may take some time',
+        dateRequiredError: 'You have not filled in the Date/Date Range',
+    },
+    error: {
+        invalidEmail: "Invalid email address",
+        invalidPhoneNumber: "Invalid phone number. It should contain 11 digits",
+        applicationRequirement: "To apply for the position, it is necessary to provide a valid email address or phone number.",
     }
 }

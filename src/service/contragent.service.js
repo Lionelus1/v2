@@ -41,4 +41,7 @@ export class ContragentService {
     deleteRating(data) {
         return api.post("/organization/rating/delete", data, {headers: getHeader()});
     }
+    getDepartments(data) {
+        return api.post('/departments', data, {headers: getHeader()});
+    }
 }
