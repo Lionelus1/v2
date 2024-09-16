@@ -1,15 +1,14 @@
 <template>
-  <img class="card_img round"
-         v-if="imgData != null && imgData !== ''"
-         :src="'data:image/jpeg;base64,' + imgData"
-         style="max-width: 100%; height: auto;"
-         :key="currentPage"/>
 
-  <div v-if="imgPages > 1" class="pagination">
-    <Button @click="prevPage" :disabled="currentPage === 1">Предыдущая страница</Button>
-    <span>Страница {{ currentPage }} из {{ imgPages }}</span>
-    <Button @click="nextPage" :disabled="currentPage === imgPages">Следующая страница</Button>
-  </div>
+  <DataTable       :value="imgData"  :totalRecords="imgPages"     rows="1"
+              :paginator="true"
+             :lazy="true" :loading="loading"
+              scrollable scrollHeight="flex"  selectionMode="single"
+              :rowHover="true" stripedRows class="flex-grow-1" @page="onPage">
+    <img class="card_img round" v-if="imgData != null && imgData !== ''"
+         :src="'data:image/jpeg;base64,' + imgData" style="max-width: 100%; height: auto;" />
+  </DataTable>
+
 
 </template>
 
@@ -35,6 +34,7 @@
   })
 
   const showDoc = () => {
+    loading.value = true
     const req  = {
       doc_id: Number(props.docId),
       current_page: currentPage.value,
@@ -43,23 +43,17 @@
     docService.showDoc(req).then(res => {
       imgData.value = res.data.img_data
       imgPages.value = res.data.page_count
+      loading.value = false
     }).catch(err => {
-
+      loading.value = false
     })
+
   }
 
-  const nextPage = () => {
-    if (currentPage.value < imgPages.value) {
-      currentPage.value += 1
-      showDoc()
-    }
-  }
 
-  const prevPage = () => {
-    if (currentPage.value > 1) {
-      currentPage.value -= 1
-      showDoc()
-    }
+  const onPage = (event) => {
+    currentPage.value = event.page+1;
+    showDoc();
   }
 
   onMounted(() => {
