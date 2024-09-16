@@ -769,6 +769,7 @@ export default {
         }
 
         this.getEducationalProgramGroups()
+        this.getSpecialities()
       } else {
         this.parentId = null
       }
@@ -783,11 +784,13 @@ export default {
           this.educationalProgramFilter.cafedra_ids.push(this.selectedDepartmentCafedra.id)
           this.educationalProgramFilter.faculty_id = null
           this.getEducationalProgramGroups()
+          this.getSpecialities()
         }
       } else {
         this.cafedraId = null
         if (this.academicDegree) {
           this.getEducationalProgramGroups()
+          this.getSpecialities()
         }
       }
     },
@@ -798,7 +801,9 @@ export default {
             "level" : this.educationLevel,
             "page": this.specialitieFilter?.page,
             "rows": this.specialitieFilter?.rows,
-            "educational_program_group_id": this.specialitieFilter?.educational_program_group_id
+            "educational_program_group_id": this.specialitieFilter?.educational_program_group_id,
+            "faculty_id": this.educationalProgramFilter.faculty_id,
+            "cafedra_ids": this.educationalProgramFilter.cafedra_ids,
           },
       )
           .then(response=>{
