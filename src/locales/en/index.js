@@ -36,6 +36,8 @@ export default {
         updateGES: "Update the list of GES",
         downloadCertificate: "Download The Certificate",
         selectAll: "Select All",
+        saveToDrafts: "Save to drafts",
+        sendMailing: "Send mailing",
         action: {
             submit: "Submit",
             accept: "Accept",
@@ -173,6 +175,7 @@ export default {
         teacher: "Academic personnel",
         student: "Student",
         students: "Students",
+        hintTextEmail: "After entering your email, press Enter",
         registration: "Registration",
         total: "Total",
         all: "All",
@@ -915,6 +918,7 @@ export default {
     },
     mailing: {
         title: "Title",
+        fileTitle: "Attached file",
         categories: "Categories",
         author: "Author",
         dateAndTIme: "Date and Time",
@@ -922,6 +926,15 @@ export default {
         deleteFailed: "Delete Failed",
         unknownSender: "Unknown Sender",
         invalidSenderData: "Invalid Sender Data",
+        text: "text",
+        time: "time",
+        emails: "Emails",
+        sender: "Sender",
+        template: "Template",
+        status: "Status",
+        textCategory: "Please select a category",
+        textEmails: "Please enter your email correctly",
+        textTemplate: "Please select a template"
     },
     vaccination: {
         title: "Vaccination",

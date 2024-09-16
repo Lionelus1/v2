@@ -5,7 +5,7 @@
     <div>
       <div class="card p-fluid">
         <div class="flex align-items-center">
-          <h4 class="m-0">{{ $t("smartenu.category") }}</h4>
+          <h4 class="m-0">{{ $t("smartenu.categories") }}</h4>
         </div>
         <div class="flex flex-wrap gap-3 pt-4">
           <div v-for="category in categories" :key="category.id" class="flex align-items-center pr-3 pb-1">
@@ -18,6 +18,11 @@
           <FloatLabel>
             <Chips v-model="emails" placeholder="Введите почту"/>
           </FloatLabel>
+          <p></p>
+          <div class="hint-container">
+            <i class="fas fa-asterisk required-icon"></i>
+            <h6 class="hintTextEmail">{{ $t("common.hintTextEmail") }}</h6>
+          </div>
         </div>
         <div class="template-selection-container">
           <div class="flex align-items-center">
@@ -30,8 +35,8 @@
                 :class="['template-card', { selected: template.id === selectedTemplate }]"
                 @click="selectTemplate(template.id)"
             >
-              <h4>{{ template.template_name }}</h4>
-              <div v-html="template.template_content_ru.String"></div>
+              <h4>{{ $i18n.locale === "kz" ? template.template_name_kz : $i18n.locale === "ru" ? template.template_name_ru : template.template_name_en }}</h4>
+              <div v-html="getTemplateContent(template)" class="template-content"></div>
             </div>
           </div>
         </div>
@@ -45,11 +50,12 @@
 
 <script>
 import {getHeader, smartEnuApi} from "@/config/config";
+import { useToast } from "primevue/usetoast";
 import 'primeicons/primeicons.css'
 
 export default {
   name: "AddEditMailing",
-  props: ['isVisible','value'],
+  props: ['isVisible'],
   data() {
     return {
       editVisible: this.isVisible,
@@ -59,6 +65,7 @@ export default {
       selectedTemplate: null,
       templates: [],
       showOtherEmailField: false,
+      toast: new useToast(),
       categories: [
         {id: 1, nameen: 'Contractors', namekz: 'Контрагенттер', nameru: 'Контрагенты'},
         {id: 2, nameen: 'Employees', namekz: 'Қызметкерлер', nameru: 'Сотрудники'},
@@ -81,8 +88,93 @@ export default {
         const data = await response.json();
         this.templates = data;
       } catch (error) {
-        console.error('Error fetching templates:', error);
+        console.error('Ошибка при получении шаблонов:', error);
       }
+    },
+    getTemplateContent(template) {
+      const lang = this.$i18n.locale;
+      let content = '';
+
+      switch (lang) {
+        case 'kz':
+          content = template.template_content_kz?.String || '';
+          break;
+        case 'ru':
+          content = template.template_content_ru?.String || '';
+          break;
+        case 'en':
+          content = template.template_content_en?.String || '';
+          break;
+        default:
+          content = template.template_content_en?.String || '';
+      }
+
+      if (template.id === 2) {
+        const style = `
+          <style>
+            .content {
+                text-align: center !important;
+                position: relative !important;
+            }
+            .content .megaphone {
+                position: absolute !important;
+                left: 2% !important;
+                top: 135px !important;
+                width: 100px !important;
+                height: 100px !important;
+            }
+            .content .monitor {
+                top: 10px !important;
+                width: 250px !important;
+                height: 200px !important;
+            }
+            .content .icon1 {
+                position: absolute !important;
+                top: 40px !important;
+                left: 53% !important;
+                transform: translateX(-60%) !important;
+                width: 70px !important;
+                height: 70px !important;
+            }
+            .content h1 {
+                font-size: 24px !important;
+                margin: 20px 0 !important;
+            }
+            .content p {
+                font-size: 16px !important;
+                line-height: 1.5 !important;
+            }
+            .footer {
+                padding-top: 20px !important;
+                text-align: center !important;
+            }
+            .footer p {
+                margin: 5px 0 !important;
+            }
+            .btn {
+                display: inline-block !important;
+                margin-top: 20px !important;
+                padding: 10px 20px !important;
+                text-decoration: none !important;
+                border-radius: 5px !important;
+                transition: background-color 0.3s !important;
+            }
+          </style>
+        `;
+
+        content = content.replace(
+            `<div style="display: flex; justify-content: center; height: 180px; width: max-content; margin: 0 auto;">
+            <img src="assets/layout/images/mailing/mailing.png" alt="Invitation Image" class="monitor" style="aspect-ratio: 16/12; height: 200px; position: absolute; left: 50%; transform: translate(-37%, 0)">
+        </div>`,
+            `<div>
+            <img src="assets/layout/images/mailing/mailing.png" alt="Invitation Image" class="monitor">
+          </div>`
+        );
+
+        content = content.replace('</head>', `${style}</head>`);
+      }
+
+      return content;
     },
     handleCategoryChange(categoryId) {
       if (categoryId === 6) {
@@ -98,26 +190,41 @@ export default {
     },
     nextPage() {
       if (this.selectedCategories.length === 0) {
-        alert('Please select a category')
+        this.toast.add({
+          severity: "error",
+          detail: this.$t('mailing.textCategory'),
+          life: 3000,
+        });
+        return;
+      }
+
+      if (this.selectedCategories[0] === 6 && this.emails.length === 0) {
+        this.toast.add({
+          severity: "error",
+          detail: this.$t('mailing.textEmails'),
+          life: 3000,
+        });
         return
       }
 
-      if (this.selectedTemplate) {
-        this.$router.push({
-          name: 'TemplateEditor2',
-          params: {
-            templateId: this.selectedTemplate,
-            selectedCategories: JSON.stringify(this.selectedCategories),
-            emails: JSON.stringify(this.emails)
-          },
-          query: {
-            value: this.value
-          }
+      if (!this.selectedTemplate) {
+        this.toast.add({
+          severity: "error",
+          detail: this.$t('mailing.textTemplate'),
+          life: 3000,
         });
-        this.editVisible = false
-      } else {
-        alert('Please select a template');
+        return;
       }
+
+      const data = {
+        templateId: this.selectedTemplate,
+        selectedCategories: this.selectedCategories,
+        emails: this.emails,
+      };
+
+      localStorage.setItem('mailingData', JSON.stringify(data));
+
+      this.$router.push({ name: 'TemplateEditor2' });
     },
     hideDialog() {
       this.emitter.emit('addEditMailingDialogHide', true);
@@ -141,13 +248,32 @@ export default {
 .templates-grid {
   display: flex;
   gap: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between; /* Обеспечивает равномерное распределение */
 }
 
 .template-card {
+  flex: 1 1 calc(25% - 20px); /* Подгоняет размер карточки под 4 карточки в ряд с учетом отступов */
   border: 1px solid #ccc;
   padding: 20px;
   cursor: pointer;
   transition: transform 0.2s;
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.template-card h4 {
+  margin: 0 0 10px;
+}
+
+.template-card .template-content {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
 }
 
 .template-card:hover {
@@ -157,6 +283,25 @@ export default {
 .template-card.selected {
   border-color: #007bff;
   background-color: #e9f7fe;
+}
+
+.hint-container {
+  display: flex; /* Использование Flexbox для выравнивания элементов по горизонтали */
+  align-items: center; /* Выравнивание по вертикали по центру */
+}
+
+.hintTextEmail {
+  border-color: #bfc0c3; /* Цвет границы */
+  color: #999;        /* Цвет текста */
+  font-size: 14px;       /* Размер шрифта */
+  font-style: italic;    /* Стиль шрифта (например, курсив) */
+  font-weight: normal;   /* Насыщенность шрифта (например, обычный) */
+  margin: 0; /* Убираем отступы вокруг текста, чтобы лучше выравнивать */
+}
+
+.required-icon {
+  color: #ff3939; /* Цвет иконки */
+  margin-right: 5px; /* Отступ между иконкой и текстом */
 }
 
 .checkbox-container {

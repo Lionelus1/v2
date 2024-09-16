@@ -88,7 +88,12 @@ export class MenuService {
                         icon: 'fa-solid fa-rotate',
                         to: '/integrations',
                         visible: this.findRole("main_administrator")
-                    }
+                    },
+                    {
+                        label: $t('smartenu.mailingTitle'),
+                        icon: 'fa-regular fa-paper-plane',
+                        to: '/mailing'
+                    },
                 ]
             },
             {

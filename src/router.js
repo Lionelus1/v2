@@ -349,14 +349,12 @@ const routes = [
                     //     beforeEnter: ifAuthenticated,
                     // },
                     {
-                        path: '/template/:templateId/:selectedCategories/:emails',
+                        path: '/template',
                         name: 'TemplateEditor2',
-                        props: (route) => ({
-                            value: route.query.value
-                        }),
+                        props: true,
                         component: load('mailing/TemplateEditor'),
                         beforeEnter: ifAuthenticated,
-                    }
+                    },
                 ]
             },
             {
