@@ -49,7 +49,7 @@
     <div class="flex justify-center">
       <ProgressSpinner v-if="!plan" style="width: 50px;" strokeWidth="5" fill="transparent" />
     </div>
-    <div class="card" v-if="plan && planDoc && !isWorkSchedule">
+    <div class="card" v-if="plan && planDoc && !isWorkSchedule && !isMastersPlan && !isDoctorsPlan">
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
                  @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
