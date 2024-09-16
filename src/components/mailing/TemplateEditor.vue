@@ -51,6 +51,7 @@ import { useToast } from "primevue/usetoast";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import { FileService } from "@/service/file.service";
 import tinyEditor from "@/components/TinyEditor.vue";
+import mailing from "@/components/mailing/Mailing.vue";
 
 const categories = [
   { id: 1, nameen: 'counterparty', namekz: 'білім алушы', nameru: 'Контрагенты' },
@@ -91,7 +92,8 @@ export default {
     loadTemplateContent() {
       const data = {
         templateId: parseInt(this.templateId, 10),
-        lang: this.$i18n.locale
+        lang: this.$i18n.locale,
+        data: this.data,
       };
 
       this.mailingService.getMailingTemplateByID(data)
@@ -224,10 +226,11 @@ export default {
   mounted() {
     const storedData = localStorage.getItem('mailingData');
     if (storedData) {
-      const { templateId, selectedCategories, emails } = JSON.parse(storedData);
+      const { templateId, selectedCategories, emails, data } = JSON.parse(storedData);
       this.templateId = templateId;
       this.selectedCategories = selectedCategories;
       this.emails = emails;
+      this.data = data
       this.loadTemplateContent();
     }
   },

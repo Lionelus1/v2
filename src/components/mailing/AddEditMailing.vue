@@ -55,7 +55,7 @@ import 'primeicons/primeicons.css'
 
 export default {
   name: "AddEditMailing",
-  props: ['isVisible'],
+  props: ['isVisible', 'value'],
   data() {
     return {
       editVisible: this.isVisible,
@@ -220,6 +220,7 @@ export default {
         templateId: this.selectedTemplate,
         selectedCategories: this.selectedCategories,
         emails: this.emails,
+        data: this.value,
       };
 
       localStorage.setItem('mailingData', JSON.stringify(data));

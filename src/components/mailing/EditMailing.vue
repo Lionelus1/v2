@@ -9,7 +9,7 @@ import {useRoute, useRouter} from "vue-router";
 import {MailingService} from "@/service/mailing.service";
 import api from "@/service/api";
 import {FileService} from "@/service/file.service";
-const {t, locale} = useI18n()
+const {t} = useI18n()
 
 // const menu = ref([]);
 const route = useRoute()
