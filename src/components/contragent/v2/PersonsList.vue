@@ -294,10 +294,10 @@ export default {
       departmentsGroup: [],
       searchText: null,
       academicDegrees: [
-        {namekz: "Бакалавр", nameru:"Бакалавр",nameen:"Bachelor", value: 'Бакалавр'},
-        {namekz: 'Магистрант (бейіндік бағыт)', nameen: 'Master (specialized)', nameru: 'Магистрант (профильное направление)', value: 'Магистрант (профильное направление)'},
-        {namekz: 'Магистрант (ғылыми-педагогикалық бағыт)', nameen: 'Master (scientific-pedagogical)', nameru: 'Магистрант (научно-педагогическое направление)', value: 'Магистрант (научно-педагогическое направление)'},
-        {namekz: 'Докторант PhD', nameen: 'PhD student', nameru: 'Докторант PhD', value: 'Докторант PhD'},
+        {namekz: "Бакалавр", nameru:"Бакалавр",nameen:"Bachelor", value: 'Бакалавр', id: 1,},
+        {namekz: 'Магистрант (бейіндік бағыт)', nameen: 'Master (specialized)', nameru: 'Магистрант (профильное направление)', value: 'Магистрант (профильное направление)', id: 2,},
+        {namekz: 'Магистрант (ғылыми-педагогикалық бағыт)', nameen: 'Master (scientific-pedagogical)', nameru: 'Магистрант (научно-педагогическое направление)', value: 'Магистрант (научно-педагогическое направление)', id: 2,},
+        {namekz: 'Докторант PhD', nameen: 'PhD student', nameru: 'Докторант PhD', value: 'Докторант PhD', id: 4,},
       ],
       academicDegree: null,
       specialitieFilter: {
@@ -804,6 +804,7 @@ export default {
             "educational_program_group_id": this.specialitieFilter?.educational_program_group_id,
             "faculty_id": this.educationalProgramFilter.faculty_id,
             "cafedra_ids": this.educationalProgramFilter.cafedra_ids,
+            "academic_degree": this.academicDegree?.id || null
           },
       )
           .then(response=>{
