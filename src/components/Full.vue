@@ -41,7 +41,10 @@
     <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange"
                @layout-color-change="onLayoutColorChange"/>
     <AppFooter/>
-    <PositionChangeDialog v-if="loginedUser && loginedUser.userID > 0" ref="positionChangeDialog"></PositionChangeDialog>
+    <Dialog v-model:visible="showModal" :header="`Туған күніңізбен, `+ this.$store.state.loginedUser.fullName + `!`" @hide="closeModal" modal :style="{ width: '800px' }" :breakpoints="{ '800px': '75vw', '640px': '90vw' }">
+      <img width="100%" src="https://www.schladming-appartements.at/deskline/allgemeine_betriebe/schladming-appartements---magic-moments_299279/happy-birthday-my-love_1312697/Happy%20Birthday_1314787.jpeg" alt="">
+    </Dialog>
+    <PositionChangeDialog v-if="!showModal && loginedUser && loginedUser.userID > 0" ref="positionChangeDialog"></PositionChangeDialog>
   </div>
 </template>
 
@@ -84,7 +87,9 @@ export default {
       hasClass: false,
       showOverlay: false,
       showAnymore: false,
-      fixedMenu: localStorage.getItem('fixedMenu') === 'true' || false
+      fixedMenu: localStorage.getItem('fixedMenu') === 'true' || false,
+      birthday: '1996-09-16T00:00:00Z',
+      showModal: false
     }
   },
 
@@ -343,6 +348,23 @@ export default {
           .catch((err) => {
             console.error("Error loading data:", err);
           });
+    },
+    checkBirthday() {
+      const today = new Date();
+      // const userBirthday = new Date(this.$store.state.loginedUser.birthday);
+      const userBirthday = new Date(this.birthday);
+      if (
+          today.getDate() === userBirthday.getUTCDate() &&
+          today.getMonth() === userBirthday.getUTCMonth()
+      ) {
+        if (!localStorage.getItem('birthdayModalShown')) {
+          this.showModal = true;
+          localStorage.setItem('birthdayModalShown', 'true');
+        }
+      }
+    },
+    closeModal() {
+      this.showModal = false;
     }
   },
   computed: {
@@ -396,6 +418,7 @@ export default {
     }
     this.loadMenuIcon()
     this.getThemeStyles()
+    this.checkBirthday();
   },
   beforeUpdate() {
     if (this.mobileMenuActive)
