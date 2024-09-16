@@ -1443,7 +1443,9 @@ export default {
         rejectionMessage: "Сообщение о отказе",
         summaryDepartment: "Сводящее структурное подразделение",
         warnAddingSummaryUser: "Вы не можете добавить пользователя, выбранного в поле «Свод структурный отдел», в поле «Свод/Подтверждение».",
-        topicOfMastersThesis: "Тема магистерской диссертации"
+        topicOfMastersThesis: "Тема магистерской диссертации",
+        changeCreatedPerson: "Изменить созданное лицо",
+        requiredCreatedPerson: "Поле созданное лицо должно быть заполнено"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
