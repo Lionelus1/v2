@@ -1,5 +1,6 @@
 <template>
   <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
+    <!-- remove this text -->
     <div class="field">
       <label>{{ plan && plan.is_oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
       <InputText v-model="editData.event_name" />
