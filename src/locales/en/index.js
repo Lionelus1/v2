@@ -371,6 +371,9 @@ export default {
         doYouWantApprove: "Do you really want to agree to a contract?",
         changeApprovals: "Replacement of approving persons",
         sacReportMenuTitle: 'Report of the State Attestation Commission',
+        added: "Added",
+        removed: "Removed",
+        modified: "Modified",
         socialMediaIds: 'Social Media',
         viewOnlyCheckbox: 'Show in viewing mode'
     },
@@ -1404,6 +1407,9 @@ export default {
             planSentToApprove: "Plan sent for revision",
             planCreated: "Plan successfully created",
             maxFileUploadSize: "You cannot upload more than 10 files at once",
+            planCreatorChanged: "Plan creator has been successfully changed",
+            noChanges: "No changes",
+            noRespPersonChanged: "Responsible person has not been changed",
         },
         reportTypes: {
             year: "Annual",
@@ -1435,9 +1441,10 @@ export default {
         summaryDepartment: "Converging structural unit",
         warnAddingSummaryUser: "You cannot add a user selected in the «Summary structural department» field to the «Summary/Confirmation» field.",
         topicOfMastersThesis: "Topic of master's thesis",
+        editRespUser: "Edit responsive person",
+        modifiedPerson: "Modified",
         changeCreatedPerson: "Change creator",
         requiredCreatedPerson: "The creator field must be filled"
-
     },
     queue: {
         title: "Queue",

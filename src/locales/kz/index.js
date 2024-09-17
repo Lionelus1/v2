@@ -363,6 +363,9 @@ export default {
         doYouWantApprove: "Сіз шынымен келісім-шартқа келіскіңіз келе ме?",
         changeApprovals: "Бекітуші тұлғаларды ауыстыру",
         sacReportMenuTitle: 'Мемлекеттік аттестаттау комиссиясының есебі',
+        added: "Қосылды",
+        removed: "Алынды",
+        modified: "Өзгертілді",
         socialMediaIds: 'Әлеуметтік медиа',
         viewOnlyCheckbox: 'Көру режимінде көрсету'
     },
@@ -1421,7 +1424,10 @@ export default {
             reportSentToApprove: "Есеп келісуге сәтті жіберілді",
             planSentToApprove: "Жоспар қайта қарауға жіберілді",
             planCreated: "Жоспар сәтті құрылды",
-            maxFileUploadSize: "Бір уақытта 10 файлдан артық жүктеуге болмайды"
+            maxFileUploadSize: "Бір уақытта 10 файлдан артық жүктеуге болмайды",
+            planCreatorChanged: "Жоспар құрушы сәтті өзгертілді",
+            noChanges: "Өзгеріс енгізілмеген",
+            noRespPersonChanged: "Жауапты тұлға өзгертілмеген",
         },
         reportTypes: {
             year: "Жылдық",
@@ -1453,6 +1459,8 @@ export default {
         summaryDepartment: "Жинақтаушы құрылымдық бөлім",
         warnAddingSummaryUser: "«Жинақтаушы құрылымдық бөлім» өрісінде таңдалған қолданушыны «Жинақтаушы/Растау» өрісіне қоса алмайсыз.",
         topicOfMastersThesis: "Магистрлік диссертация тақырыбы",
+        editRespUser: "Жауапты тұлғаны өзгерту",
+        modifiedPerson: "Өзгеріс енгізген",
         changeCreatedPerson: "Құрушыны өзгерту",
         requiredCreatedPerson: "Құрушыны өрісін міндетті түрде толтыру керек"
     },

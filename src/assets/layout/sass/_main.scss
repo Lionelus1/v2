@@ -266,3 +266,10 @@ a {
 .fa-pen, .fa-pencil {
     color: #FBC02D;
 }
+.select_wp .p-dropdown, .p-chips, .select_wp .p-button {
+    width: 100%;
+}
+
+.timeline_wp_history .p-timeline-event-opposite {
+    flex:0;
+}

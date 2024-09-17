@@ -25,8 +25,8 @@
         </Column>
         <Column field="status" :header="$t('common.status')">
           <template #body="{ data }">
-            <span :class="'customer-badge status-' + data.doc_info.docHistory.stateEn">
-              {{ getDocStatus(data.doc_info.docHistory.stateEn) }}
+            <span :class="'customer-badge status-' + data?.doc_info?.docHistory?.stateEn">
+              {{ getDocStatus(data?.doc_info?.docHistory?.stateEn) }}
           </span>
           </template>
         </Column>
@@ -37,7 +37,7 @@
         </Column>
         <Column field="status" :header="$t('workPlan.planType')" v-if="isAdmin">
           <template #body="{ data }">
-            <span :class="'customer-badge ' + data.plan_type.code">
+            <span :class="'customer-badge ' + data?.plan_type?.code">
               {{ data.plan_type['name_' + $i18n.locale] }}
             </span>
           </template>
@@ -49,17 +49,27 @@
         </Column>
         <Column field="actions" header="">
           <template #body="{ data }">
-            <Button type="button"
+            <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(data)"/>
+            <!-- <Button type="button"
                     v-if="this.isAdmin || (data.user.id === loginedUserId && (data.doc_info?.docHistory?.stateId === Enum.REVISION.ID
                     || data.doc_info?.docHistory?.stateId === Enum.CREATED.ID || data.doc_info?.docHistory?.stateId === Enum.INAPPROVAL.ID))"
-                    icon="pi pi-trash" class="p-button-danger mr-2" label="" @click="deleteConfirm(data)"></Button>
+                    icon="pi pi-trash" class="p-button-danger mr-2" label="" @click="deleteConfirm(data)"></Button> -->
           </template>
         </Column>
 
       </DataTable>
     </div>
     <WorkPlanAdd v-if="showAddPlanDialog" :visible="showAddPlanDialog" @hide="closeBasic"/>
-
+    <Dialog v-if="isAdmin" :closable="false" v-model:visible="changeCreator" modal :header="$t('workPlan.changeCreatedPerson')">
+      <div class="field">
+                  <FindUser v-model="planCreator" :max="1" editMode="true" :user-type="3"/>
+                  <small class="p-error" v-if="submitted && !planCreator?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+        </div>
+        <div class="flex justify-content-end gap-2">
+                  <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeCreatorChangeDialog"></Button>
+                  <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="changeWorkPlanCreator"></Button>
+        </div>
+      </Dialog>
     <OverlayPanel ref="global-filter">
       <div v-for="(item, index) in types" :key="index" class="flex align-items-center">
         <div class="field-radiobutton">
@@ -74,6 +84,7 @@
         </div>
       </div>
     </OverlayPanel>
+
   </div>
 </template>
 
@@ -85,6 +96,7 @@ import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import Enum from "@/enum/docstates";
 import moment from "moment";
 import {formatDate} from "@/helpers/HelperUtil";
+import DocState from "@/enum/docstates/index";
 
 export default {
   components: {ToolbarMenu, WorkPlanAdd},
@@ -153,6 +165,12 @@ export default {
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
         Enum.StatusesArray.StatusRevision, Enum.StatusesArray.StatusSigning, Enum.StatusesArray.StatusSigned],
       Enum: Enum,
+      deleteData: null,
+      changeCreator: false,
+      planCreator:[],
+      submitted: false,
+      planDoc: null,
+      DocState: DocState,
     }
   },
   mounted() {
@@ -169,6 +187,15 @@ export default {
 
   },
   computed: {
+    isCreatedPlan() {
+      return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.CREATED.Value
+    },
+    isPlanApproved() {
+      return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.APPROVED.Value
+    },
+    isPlanUnderRevision() {
+      return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
+    },
     initMenu() {
       return [
         {
@@ -179,7 +206,34 @@ export default {
           },
         }
       ]
-    }
+    },
+    initItems() {
+      return [
+        {
+          label: this.$t('workPlan.changeCreatedPerson'),
+          icon: 'fa-solid fa-pen',
+          disabled: !(this.isAdmin && this.isCreatedPlan),
+          visible:this.isAdmin,
+          command: () => {
+            this.changeCreator = true
+          }
+        },
+        {
+          label: this.$t('common.delete'),
+          icon: 'fa-solid fa-trash',
+          disabled: !(this.isAdmin || 
+                 (this.data?.user?.id === this.loginedUserId && 
+                  (this.data?.doc_info?.docHistory?.stateId === Enum.REVISION.ID ||
+                   this.data?.doc_info?.docHistory?.stateId === Enum.CREATED.ID ||
+                   this.data?.doc_info?.docHistory?.stateId === Enum.INAPPROVAL.ID))),
+          visible: true,
+          command: () => {
+            this.deleteConfirm(this.deleteData)
+          }
+        },
+      ];
+    },
+    
   },
   created() {
     let oldPath = this.$router.options.history.state.back;
@@ -202,6 +256,52 @@ export default {
   methods: {
     findRole: findRole,
     formatDate: formatDate,
+    closeCreatorChangeDialog(){
+      this.planCreator = [];
+      this.deleteData = null;
+      this.changeCreator = false;
+    },
+    actionsToggle(data) {
+      this.deleteData = null;
+      this.deleteData = data;
+      this.planDoc = data?.doc_info;
+
+      if (data && data.user) {
+          this.planCreator = []
+          this.planCreator.push(data.user.user);
+        }
+    },
+    changeWorkPlanCreator(){
+      this.submitted = true;
+      if (this.planCreator?.length === 0 || this.deleteData?.length === 0 ){
+        return false;
+      }
+
+      let data = {
+        plan_id: this.deleteData?.work_plan_id,
+        user_id: this.planCreator[0].userID,
+      }
+      this.planService.changePlanCreator(data).then(res => {
+        if (res.data) {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t('workPlan.message.planCreatorChanged'),
+            life: 3000,
+          });
+          this.deleteData = null;
+          this.planCreator = [];
+          this.changeCreator = false;
+          this.getPlans();
+          this.submitted = false;
+        }
+      }).catch(error => {
+        this.submitted = false;
+        if (error) {
+          toast.add({severity: "error", summary: error, life: 3000});
+        }
+        
+      });
+    },
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
@@ -218,6 +318,7 @@ export default {
       this.planService.getPlans(this.lazyParams).then(res => {
         this.data = res.data.plans;
         this.total = res.data.total;
+        this.planCreator = [];
         this.loading = false;
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
@@ -241,6 +342,13 @@ export default {
         rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
           this.delete(event);
+          this.planCreator = []; 
+          this.deleteData = null;
+        },
+        reject: () => {
+          this.planCreator = [];
+          this.deleteData = null;
+          
         },
       });
     },
@@ -248,6 +356,8 @@ export default {
       this.planService.deletePlan(event.work_plan_id).then(response => {
         if (response.data.is_success) {
           this.$toast.add({severity: "success", summary: this.$t('common.success'), life: 3000});
+          this.deleteData = null;
+          this.planCreator = [];
           this.getPlans();
         }
       }).catch(error => {

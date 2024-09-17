@@ -365,6 +365,9 @@ export default {
         doYouWantApprove: "Вы действительно хотите согласовать договор?",
         changeApprovals: "Замена согласующих лиц",
         sacReportMenuTitle: 'Отчеты Государственной аттестационной комиссии',
+        added: "Добавлен",
+        removed: "Исключен",
+        modified: "Измененный",
         socialMediaIds: 'Социальные медиа',
         viewOnlyCheckbox: 'Показать в режиме просмотра'
     },
@@ -1412,7 +1415,10 @@ export default {
             reportSentToApprove: "Отчет успешно отправлен на согласование",
             planSentToApprove: "План отправлен на корректировку",
             planCreated: "План успешно создан",
-            maxFileUploadSize: "Вы не можете загружать более 10 файлов одновременно"
+            maxFileUploadSize: "Вы не можете загружать более 10 файлов одновременно",
+            planCreatorChanged: "Создатель плана успешно изменено",
+            noChanges: "Не изменений",
+            noRespPersonChanged: "Ответственное лицо не изменено",
         },
         reportTypes: {
             year: "Годовой",
@@ -1444,6 +1450,8 @@ export default {
         summaryDepartment: "Сводящее структурное подразделение",
         warnAddingSummaryUser: "Вы не можете добавить пользователя, выбранного в поле «Свод структурный отдел», в поле «Свод/Подтверждение».",
         topicOfMastersThesis: "Тема магистерской диссертации",
+        editRespUser: "Изменить ответственное лицо",
+        modifiedPerson: "Изменить",
         changeCreatedPerson: "Изменить созданное лицо",
         requiredCreatedPerson: "Поле созданное лицо должно быть заполнено"
     },
