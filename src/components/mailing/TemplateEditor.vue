@@ -147,7 +147,7 @@ export default {
         userID: null,
         docTemplateID: parseInt(this.templateId, 10),
         description: this.templateContent,
-        emails: processedEmails,
+        emails:"`"+ processedEmails + "`",
         filePath: null,
         statusID: statusID,
         mainImageID: this.main_image_id,
