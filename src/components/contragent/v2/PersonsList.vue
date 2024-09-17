@@ -113,7 +113,7 @@
                   :optionLabel="localizeSpecialities" :placeholder="this.$t('common.select')"
                   :filter="true" :showClear="true"
                   dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"
-                  @filter="handleSelectionChange"/>
+                  @filter="handleFilterSpecialities"/>
       </div>
           <div v-if="personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
               <label>{{ $t('hr.edu.receiptDate') }}</label>
@@ -304,7 +304,7 @@ export default {
         searchText: null,
         page: 0,
         rows: 25,
-        educational_program_group_id: null
+        educational_program_group_id: null,
       },
       specialists: [],
       specialist: null,
@@ -825,8 +825,8 @@ export default {
           });
     },
     handleFilterSpecialities(event) {
-      if (event && event.length > 1) {
-        this.specialitieFilter.searchText = event
+      if (event && event.value.length > 1) {
+        this.specialitieFilter.searchText = event.value
         this.getSpecialities()
       } else {
         this.specialitieFilter.searchText = null
@@ -834,13 +834,22 @@ export default {
       }
     },
     localizeSpecialities(specialist) {
-      const localizedText = this.$t(specialist['nameIn'+this.capitalize(this.$i18n.locale)])
+      if (!specialist) {
+        return ''
+      }
+
+      let localizedText = ''
+
+      const nameKey = 'nameIn' + this.capitalize(this.$i18n.locale)
+
+      localizedText = specialist[nameKey] !== null ? this.$t(specialist[nameKey]) : this.$t(specialist['nameInKz'])
+
       return specialist?.code + " " + localizedText
     },
     getEducationalProgramGroups() {
       let url = "/educational/program/group/get";
       api.post(url, {
-            "id" : this.educationalProgramFilter?.searchText,
+            "id" : this.educationalProgramFilter?.id,
             "searchText" : this.educationalProgramFilter.searchText,
             "page": this.educationalProgramFilter?.page,
             "rows": this.educationalProgramFilter?.rows,
@@ -865,8 +874,8 @@ export default {
           });
     },
     handleFilterGetEducationalProgramGroup(event) {
-      if (event && event.length > 1) {
-        this.educationalProgramFilter.searchText = event
+      if (event && event.value.length > 1) {
+        this.educationalProgramFilter.searchText = event.value
         this.getEducationalProgramGroups()
       } else {
         this.educationalProgramFilter.searchText = null

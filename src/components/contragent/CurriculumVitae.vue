@@ -22,7 +22,7 @@
             <div class="details">
               <p>{{ edu.institution }}</p>
               <p>{{ edu.faculty }}</p>
-              <p>Специальность: {{ edu.speciality }}</p>
+              <p>{{$t('common.speciality')}}: {{ edu.speciality }}</p>
             </div>
           </div>
         </div>
