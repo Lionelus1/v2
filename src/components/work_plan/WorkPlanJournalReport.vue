@@ -31,7 +31,6 @@
         </div>
       </div>
     </div>
-    {{plan}}
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <!--дневник-отчет-->
       <TabPanel :header="$t('workPlan.journalReports')" >
@@ -46,7 +45,6 @@
           <WorkPlanReportApprove v-if="showModal0" :report-fd="fd" :visible="showModal0" :doc-id="dReports[0].doc_id" :approvalStages="approval_users"
                                  :report="dReports[0]" :plan="plan" @sent-to-approve="getReport(0)" @closed="closeApproveModal" />
         </div>
-        {{blobSource}}
         <ToolbarMenu v-if="dReports && checkingSignAllDoc()" :data="toolbarMenus"/>
         <div class="card" v-if="blobSource">
           <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf" />
@@ -696,8 +694,6 @@ const getFile = async (index) => {
     if (res.data && dReports.value && dReports.value[index].doc_info.docHistory.stateId !== 4) {
       //kelisimge jiberilger bolsa daiyn filedi alam
       blobSource.value = URL.createObjectURL(await b64toBlob(res.data));
-      console.log("asnclmc norm")
-
       loading.value = false;
     } else {
       await getData(index);
@@ -715,10 +711,14 @@ const getData = async (index) => {
     department_id: null,
     report_id: dReports.value[index].id
   };
+  console.log("iiiiiiiiinnnnnnn")
+  console.log(data)
   planService.getWorkPlanData(data).then(async res => {
+    console.log("iiinn")
     loading.value = false;
     blobSource.value = URL.createObjectURL(await b64toBlob(res.data));
   }).catch(error => {
+    console.log("error")
     loading.value = false;
     toast.add({ severity: 'error', summary: error.message, life: 3000 });
   });

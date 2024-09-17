@@ -160,7 +160,7 @@
         :total="total"
         :loading="loading"
     />
-    <WorkPlanScheduleEventTree v-if="plan && planDoc && isWorkSchedule" :data="data" :loading="loading" :members="members"
+    <WorkPlanScheduleEventTree v-if="plan && planDoc && isWorkSchedule && members" :data="data" :loading="loading" :members="members"
                                :menus="initItems" :total="total" :isPlanCreator="isPlanCreator"
                                @expand="onExpand" @onToggle="actionsToggle" @onPage="onPage" @updateActive="handleActive"/>
   </div>
