@@ -368,7 +368,6 @@ export default {
         added: "Добавлен",
         removed: "Исключен",
         modified: "Измененный",
-        sacReportMenuTitle: 'Отчеты Государственной аттестационной комиссии',
         socialMediaIds: 'Социальные медиа',
         viewOnlyCheckbox: 'Показать в режиме просмотра'
     },
@@ -1453,8 +1452,6 @@ export default {
         topicOfMastersThesis: "Тема магистерской диссертации",
         editRespUser: "Изменить ответственное лицо",
         modifiedPerson: "Изменить",
-        changeCreatedPerson: "Изменить созданное лицо",
-        topicOfMastersThesis: "Тема магистерской диссертации",
         changeCreatedPerson: "Изменить созданное лицо",
         requiredCreatedPerson: "Поле созданное лицо должно быть заполнено"
     },

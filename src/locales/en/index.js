@@ -374,7 +374,6 @@ export default {
         added: "Added",
         removed: "Removed",
         modified: "Modified",
-        sacReportMenuTitle: 'Report of the State Attestation Commission',
         socialMediaIds: 'Social Media',
         viewOnlyCheckbox: 'Show in viewing mode'
     },
@@ -1411,7 +1410,6 @@ export default {
             planCreatorChanged: "Plan creator has been successfully changed",
             noChanges: "No changes",
             noRespPersonChanged: "Responsible person has not been changed",
-            maxFileUploadSize: "You cannot upload more than 10 files at once",
         },
         reportTypes: {
             year: "Annual",
@@ -1446,10 +1444,7 @@ export default {
         editRespUser: "Edit responsive person",
         modifiedPerson: "Modified",
         changeCreatedPerson: "Change creator",
-        topicOfMastersThesis: "Topic of master's thesis",
-        changeCreatedPerson: "Change creator",
         requiredCreatedPerson: "The creator field must be filled"
-
     },
     queue: {
         title: "Queue",

@@ -366,7 +366,6 @@ export default {
         added: "Қосылды",
         removed: "Алынды",
         modified: "Өзгертілді",
-        sacReportMenuTitle: 'Мемлекеттік аттестаттау комиссиясының есебі',
         socialMediaIds: 'Әлеуметтік медиа',
         viewOnlyCheckbox: 'Көру режимінде көрсету'
     },
@@ -1462,9 +1461,6 @@ export default {
         topicOfMastersThesis: "Магистрлік диссертация тақырыбы",
         editRespUser: "Жауапты тұлғаны өзгерту",
         modifiedPerson: "Өзгеріс енгізген",
-        changeCreatedPerson: "Құрушыны өзгерту",
-
-        topicOfMastersThesis: "Магистрлік диссертация тақырыбы",
         changeCreatedPerson: "Құрушыны өзгерту",
         requiredCreatedPerson: "Құрушыны өрісін міндетті түрде толтыру керек"
     },
