@@ -365,7 +365,8 @@ export default {
         doYouWantApprove: "Вы действительно хотите согласовать договор?",
         changeApprovals: "Замена согласующих лиц",
         sacReportMenuTitle: 'Отчеты Государственной аттестационной комиссии',
-        socialMediaIds: 'Социальные медиа'
+        socialMediaIds: 'Социальные медиа',
+        viewOnlyCheckbox: 'Показать в режиме просмотра'
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -1442,7 +1443,9 @@ export default {
         rejectionMessage: "Сообщение о отказе",
         summaryDepartment: "Сводящее структурное подразделение",
         warnAddingSummaryUser: "Вы не можете добавить пользователя, выбранного в поле «Свод структурный отдел», в поле «Свод/Подтверждение».",
-        topicOfMastersThesis: "Тема магистерской диссертации"
+        topicOfMastersThesis: "Тема магистерской диссертации",
+        changeCreatedPerson: "Изменить созданное лицо",
+        requiredCreatedPerson: "Поле созданное лицо должно быть заполнено"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
