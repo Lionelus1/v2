@@ -142,7 +142,7 @@
           </div>
         </div>
           <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <label>Статус заполнения резюме</label>
+            <label>{{ $t('status_resume') }}</label>
             <Dropdown class="dropdown" v-model="resumeView" :options="resumeViews"
                       :optionLabel="'name'+this.$i18n.locale" :placeholder="this.$t('common.select')"
                       :showClear="true" dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"/>
@@ -151,7 +151,7 @@
       </div>
 
       <div v-if="personType == 3 || personType == 4">
-        <Checkbox v-model="checked" :binary="true" /> Люди с особыми потребностями
+        <Checkbox inputId="special_needs" v-model="special_needs" :binary="true" /> <label for="special_needs">{{$t('people_special_needs')}}</label>
       </div>
 
       <div class="flex justify-content-end">
@@ -336,6 +336,7 @@ export default {
       isVisible: false,
       resumeContainer: null,
       shareData: null,
+      special_needs: false
     }
   },
   watch: {

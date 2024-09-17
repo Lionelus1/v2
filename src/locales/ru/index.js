@@ -2033,5 +2033,7 @@ export default {
     error: {
         invalidEmail: "Некорректный адрес электронной почты",
         invalidPhoneNumber: "Некорректный номер телефона. Должен содержать 11 цифр"
-    }
+    },
+    status_resume: "Статус заполнения резюме",
+    people_special_needs: "Люди с особыми потребностями"
 }

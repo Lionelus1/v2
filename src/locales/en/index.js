@@ -2032,5 +2032,7 @@ export default {
     error: {
         invalidEmail: "Invalid email address",
         invalidPhoneNumber: "Invalid phone number. It should contain 11 digits"
-    }
+    },
+    status_resume: "Status of filling out the resume",
+    people_special_needs: "People with special needs"
 }
