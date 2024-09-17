@@ -130,7 +130,7 @@ export default {
         move: "Орнын ауыстыру",
         myData: "Менің мәліметтерім",
         myResume: 'Менің түйіндемем',
-        theResume: 'Түйіндемем',
+        theResume: 'Түйіндеме',
         myVacancy: 'Менің вакансияларым',
         nameIn: "Атауы",
         nameInQazaq: "Қазақша атауы",
