@@ -5,99 +5,93 @@
     </div>
     <h4 class="m-0">{{ t("helpDesk.application.applicationName") }}</h4>
   </div>
-  <ToolbarMenu v-if="request" :data="menu"/>
+  <ToolbarMenu v-if="request" :data="menu" />
   <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
-      <BlockUI  :blocked="loading" class="card">
-<!--        <div v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'">-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--            <label>{{ t('helpDesk.application.categoryApplication') }}</label>-->
-<!--            <InputText type="text" v-model="selectedDirection['name_' + locale]" disabled />-->
-<!--          </div>-->
-<!--          <div v-if="selectedDirection && selectedDirection.code === 'office_booking'">-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.choseAudience') }}</label>-->
-<!--              <Dropdown v-model="choseAudience" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />-->
-<!--            </div>-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.date') }}</label>-->
-<!--              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"-->
-<!--                :yearNavigator="true" yearRange="1990:2050" />-->
-<!--            </div>-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.dateTime') }}</label>-->
-<!--              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div v-if="selectedDirection && selectedDirection.code === 'appointment'">-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.selectSpecialist') }}</label>-->
-<!--              <Dropdown v-model="specialization" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />-->
-<!--            </div>-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.date') }}</label>-->
-<!--              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"-->
-<!--                :yearNavigator="true" yearRange="1990:2050" />-->
-<!--            </div>-->
-<!--            <div class="p-fluid md:col-6">-->
-<!--              <label>{{ t('helpDesk.application.dateTime') }}</label>-->
-<!--              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />-->
-<!--            </div>-->
-<!--          </div>-->
-<!--          <div class="p-fluid md:col-6">-->
-<!--            <label>{{ t('helpDesk.application.description') }}</label>-->
-<!--            <Textarea class="mt-2" v-model="request.description_ru" autoResize rows="5" cols="30" />-->
-<!--          </div>-->
-<!--          <div class="p-fluid md:col-6">-->
-<!--            <label>{{ t('helpDesk.application.contactNumber') }}</label>-->
-<!--            <InputText class="mt-2" v-model="contactNumber" />-->
-<!--          </div>-->
-<!--        </div>-->
+      <BlockUI :blocked="loading" class="card">
+        <!--        <div v-if="haveAccess && selectedDirection && selectedDirection.code !== 'course_application'">-->
+        <!--            <div class="p-fluid md:col-6">-->
+        <!--            <label>{{ t('helpDesk.application.categoryApplication') }}</label>-->
+        <!--            <InputText type="text" v-model="selectedDirection['name_' + locale]" disabled />-->
+        <!--          </div>-->
+        <!--          <div v-if="selectedDirection && selectedDirection.code === 'office_booking'">-->
+        <!--            <div class="p-fluid md:col-6">-->
+        <!--              <label>{{ t('helpDesk.application.choseAudience') }}</label>-->
+        <!--              <Dropdown v-model="choseAudience" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />-->
+        <!--            </div>-->
+        <!--            <div class="p-fluid md:col-6">-->
+        <!--              <label>{{ t('helpDesk.application.date') }}</label>-->
+        <!--              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"-->
+        <!--                :yearNavigator="true" yearRange="1990:2050" />-->
+        <!--            </div>-->
+        <!--            <div class="p-fluid md:col-6">-->
+        <!--              <label>{{ t('helpDesk.application.dateTime') }}</label>-->
+        <!--              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />-->
+        <!--            </div>-->
+        <!--          </div>-->
+        <!--          <div v-if="selectedDirection && selectedDirection.code === 'appointment'">-->
+        <!--            <div class="p-fluid md:col-6">-->
+        <!--              <label>{{ t('helpDesk.application.selectSpecialist') }}</label>-->
+        <!--              <Dropdown v-model="specialization" optionLabel="name" optionValue="id" :placeholder="t('common.select')" />-->
+        <!--            </div>-->
+        <!--            <div class="p-fluid md:col-6">-->
+        <!--              <label>{{ t('helpDesk.application.date') }}</label>-->
+        <!--              <PrimeCalendar v-model="request.date_ranges" dateFormat="dd.mm.yy" :placeholder="t('common.select')" :monthNavigator="true"-->
+        <!--                :yearNavigator="true" yearRange="1990:2050" />-->
+        <!--            </div>-->
+        <!--            <div class="p-fluid md:col-6">-->
+        <!--              <label>{{ t('helpDesk.application.dateTime') }}</label>-->
+        <!--              <PrimeCalendar id="calendar-timeonly" :placeholder="t('common.select')" v-model="request.dateTime" timeOnly />-->
+        <!--            </div>-->
+        <!--          </div>-->
+        <!--          <div class="p-fluid md:col-6">-->
+        <!--            <label>{{ t('helpDesk.application.description') }}</label>-->
+        <!--            <Textarea class="mt-2" v-model="request.description_ru" autoResize rows="5" cols="30" />-->
+        <!--          </div>-->
+        <!--          <div class="p-fluid md:col-6">-->
+        <!--            <label>{{ t('helpDesk.application.contactNumber') }}</label>-->
+        <!--            <InputText class="mt-2" v-model="contactNumber" />-->
+        <!--          </div>-->
+        <!--        </div>-->
         <CourseRegistration :courseRequest="request" :validationRequest="validationRequest" @onCheckboxChecked="onChecked" @childInputData="childInput"
-                            @validateInput="validateInput" v-if="selectedDirection && selectedDirection.code === 'course_application'" />
+          @validateInput="validateInput" v-if="selectedDirection && selectedDirection.code === 'course_application'" />
       </BlockUI>
       <!-- sendToApproveDialog -->
-      <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog"
-              :style="{ width: '50vw' }">
-        <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
+      <Dialog :header="t('common.action.sendToApprove')" v-model:visible="visibility.sendToApproveDialog" :style="{ width: '50vw' }">
+        <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em" />
         <div class="p-fluid" v-if="stages">
-          <ApprovalUsers :approving="loading" v-model="selectedUsers" @closed="close('sendToApproveDialog')"
-                         @approve="sendToApprove($event)"
-                         :stages="stages" mode="standard"></ApprovalUsers>
+          <ApprovalUsers :approving="loading" v-model="selectedUsers" @closed="close('sendToApproveDialog')" @approve="sendToApprove($event)" :stages="stages" mode="standard">
+          </ApprovalUsers>
         </div>
       </Dialog>
       <!-- revisionDialog -->
-      <Dialog :header="$t('common.revision')" :modal="true" v-model:visible="visibility.revisionDialog"
-              style="width: 30vw;">
+      <Dialog :header="$t('common.revision')" :modal="true" v-model:visible="visibility.revisionDialog" style="width: 30vw;">
         <div class="p-fluid col-12">
-          <Textarea v-model="revisionText" autoResize rows="5" cols="30"/>
+          <Textarea v-model="revisionText" autoResize rows="5" cols="30" />
         </div>
         <template #footer>
-          <Button class="p-button-danger" :disabled="!revisionText" :label="t('common.revision')" @click="revision()"/>
-          <Button :label="t('hdfs.cancelBtn')" @click="close('revisionDialog')"/>
+          <Button class="p-button-danger" :disabled="!revisionText" :label="t('common.revision')" @click="revision()" />
+          <Button :label="t('hdfs.cancelBtn')" @click="close('revisionDialog')" />
         </template>
       </Dialog>
 
       <!--      rejectedDialog-->
-      <Dialog :header="$t('common.action.notAccept')" :modal="true" v-model:visible="visibility.rejectedDialog"
-              style="width: 30vw;">
+      <Dialog :header="$t('common.action.notAccept')" :modal="true" v-model:visible="visibility.rejectedDialog" style="width: 30vw;">
         <div class="p-fluid col-12">
-          <Textarea v-model="rejectedText" autoResize rows="5" cols="30"/>
+          <Textarea v-model="rejectedText" autoResize rows="5" cols="30" />
         </div>
         <template #footer>
-          <Button class="p-button-danger" :disabled="!rejectedText" :label="t('common.action.notAccept')"
-                  @click="rejected()"/>
-          <Button :label="t('hdfs.cancelBtn')" @click="close('rejectedDialog')"/>
+          <Button class="p-button-danger" :disabled="!rejectedText" :label="t('common.action.notAccept')" @click="rejected()" />
+          <Button :label="t('hdfs.cancelBtn')" @click="close('rejectedDialog')" />
         </template>
       </Dialog>
       <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg">
         <DocSignaturesInfo :docIdParam="request.doc.uuid"></DocSignaturesInfo>
       </Sidebar>
     </TabPanel>
-    <TabPanel :header="t('common.show')"
-              :disabled="!request || !request.doc || !request.doc.filePath || request.doc.filePath.length < 1">
+    <TabPanel :header="t('common.show')" :disabled="!request || !request.doc || !request.doc.filePath || request.doc.filePath.length < 1">
       <div class="flex-grow-1 flex flex-row align-items-stretch">
-        <embed :src="pdf" style="width: 100%; height: 100vh;" v-if="pdf" type="application/pdf"/>
+        <embed :src="pdf" style="width: 100%; height: 100vh;" v-if="pdf" type="application/pdf" />
       </div>
     </TabPanel>
   </TabView>
@@ -108,23 +102,23 @@
 
 <script setup>
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
-import {HelpDeskService} from "../../service/helpdesk.service";
+import { HelpDeskService } from "../../service/helpdesk.service";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
-import {ref, computed, onMounted} from 'vue';
-import {useI18n} from "vue-i18n";
-import {useToast} from "primevue/usetoast";
-import {useStore} from "vuex";
-import {useRouter, useRoute} from "vue-router";
+import { ref, computed, onMounted } from 'vue';
+import { useI18n } from "vue-i18n";
+import { useToast } from "primevue/usetoast";
+import { useStore } from "vuex";
+import { useRouter, useRoute } from "vue-router";
 import CourseRegistration from "./CourseRegistration.vue";
-import {b64toBlob} from "@/config/config";
-import {downloadFile, findRole} from "../../config/config";
-import {DocService} from "@/service/doc.service";
+import { b64toBlob } from "@/config/config";
+import { downloadFile, findRole } from "../../config/config";
+import { DocService } from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 import DocEnum from "@/enum/docstates/index";
-import {ContragentService} from "@/service/contragent.service";
+import { ContragentService } from "@/service/contragent.service";
 
 // Переменные для работы с i18n, хранилищем, уведомлениями и маршрутизацией ↓
-const {t, locale} = useI18n()
+const { t, locale } = useI18n()
 const toast = useToast()
 const router = useRouter();
 const route = useRoute();
@@ -180,21 +174,21 @@ const visibility = ref({
 });
 // Список статусов документа с переводами
 const docStatus = ref([
-  {name_kz: "құрылды", name_en: "created", name_ru: "создан", code: "created"},
-  {name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval"},
-  {name_kz: "келісілді", name_en: "approved", name_ru: "согласован", code: "approved"},
-  {name_kz: "түзетуге", name_en: "revision", name_ru: "на доработку", code: "revision"},
-  {name_kz: "қабылданбады", name_en: "rejected", name_ru: "отклонен", code: "rejected"},
-  {name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing"},
-  {name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed"},
+  { name_kz: "құрылды", name_en: "created", name_ru: "создан", code: "created" },
+  { name_kz: "келісуде", name_en: "inapproval", name_ru: "на согласовании", code: "inapproval" },
+  { name_kz: "келісілді", name_en: "approved", name_ru: "согласован", code: "approved" },
+  { name_kz: "түзетуге", name_en: "revision", name_ru: "на доработку", code: "revision" },
+  { name_kz: "қабылданбады", name_en: "rejected", name_ru: "отклонен", code: "rejected" },
+  { name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing" },
+  { name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed" },
   {
     name_kz: "қайта бекітуге жіберілді",
     name_en: "sent for re-approval",
     name_ru: "отправлен на переутверждение",
     code: "sent for re-approval"
   },
-  {name_kz: "жаңартылды", name_en: "updated", name_ru: "обновлен", code: "updated"},
-  {name_kz: "берілді", name_en: "issued", name_ru: "выдан", code: "issued"},
+  { name_kz: "жаңартылды", name_en: "updated", name_ru: "обновлен", code: "updated" },
+  { name_kz: "берілді", name_en: "issued", name_ru: "выдан", code: "issued" },
 ]);
 const codesToExclude = ["inapproval", "approved", "rejected", "signing", "signed", "sent for re-approval", "updated", "issued"];
 const sort = ref(null);
@@ -230,7 +224,7 @@ const menu = computed(() => [
     label: t("common.save"),
     icon: "pi pi-fw pi-save",
     disabled: !isUserDataVaild() || (request.value.doc?.docHistory?.stateId != DocEnum.CREATED.ID &&
-        request.value.doc?.docHistory?.stateId != DocEnum.REVISION.ID && request.value.doc?.docHistory?.stateId != null),
+      request.value.doc?.docHistory?.stateId != DocEnum.REVISION.ID && request.value.doc?.docHistory?.stateId != null),
     command: saveDocument
   },
 
@@ -243,21 +237,21 @@ const menu = computed(() => [
         label: t("common.tosign"),
         icon: "pi pi-user-edit",
         visible: request.value && (currentUser.value?.userID == request.value?.sender_id) && (request.value.doc?.docHistory?.stateId === DocEnum.CREATED.ID ||
-            request.value.doc?.docHistory?.stateId === DocEnum.REVISION.ID),
+          request.value.doc?.docHistory?.stateId === DocEnum.REVISION.ID),
         command: () => open('sendToApproveDialog')
       },
       {
         label: t("common.revision"),
         icon: "fa-regular fa-circle-xmark",
         visible: request.value && request.value.doc?.docHistory?.stateId === DocEnum.INAPPROVAL.ID &&
-            needMySign(),
+          needMySign(),
         command: () => open('revisionDialog')
       },
       {
         label: t("common.action.notAccept"),
         icon: "fa-regular fa-circle-xmark",
         visible: request.value && request.value.doc?.docHistory?.stateId === DocEnum.INAPPROVAL.ID &&
-            needMySign(),
+          needMySign(),
         command: () => open('rejectedDialog')
       },
     ]
@@ -383,21 +377,21 @@ const helpDeskTicketGet = () => {
     Rows: 10,
     uuid: route.params.uuid,
   }).then((res) => {
-        request.value = res.data.ticket[0]
-        selectedDirection.value = res.data.ticket[0].category;
-        loading.value = false
-      })
-      .catch((err) => {
-        loading.value = false
-        if (err.response.status == 401) {
-          store.dispatch('logLout');
-        }
-        toast.add({
-          severity: 'error',
-          detail: t('common.message.saveError'),
-          life: 3000,
-        });
+    request.value = res.data.ticket[0]
+    selectedDirection.value = res.data.ticket[0].category;
+    loading.value = false
+  })
+    .catch((err) => {
+      loading.value = false
+      if (err.response.status == 401) {
+        store.dispatch('logLout');
+      }
+      toast.add({
+        severity: 'error',
+        detail: t('common.message.saveError'),
+        life: 3000,
       });
+    });
 }
 const sendToApprove = (approvalUsers) => {
   if (changed.value) {
@@ -449,17 +443,17 @@ const saveDocument = () => {
     request.value.is_saved = 1
 
     service.helpDeskTicketCreate(request.value)
-        .then(res => {
-          isSaved.value = true
-          changed.value = false;
-          request.value = res.data
-        }).catch(err => {
-      if (err.response && err.response.status == 401) {
-        store.dispatch("logLout")
-      } else if (err.response && err.response.data && err.response.data.localized) {
-        showMessage('error', t(err.response.data.localizedPath), null)
-      }
-    });
+      .then(res => {
+        isSaved.value = true
+        changed.value = false;
+        request.value = res.data
+      }).catch(err => {
+        if (err.response && err.response.status == 401) {
+          store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          showMessage('error', t(err.response.data.localizedPath), null)
+        }
+      });
     isSend.value = true;
   } else {
     request.value.doc.newParams = {}
@@ -490,17 +484,17 @@ const saveDocument = () => {
 
     request.value.is_saved = 1
     service.helpDeskTicketCreate(request.value)
-        .then(res => {
-          isSaved.value = true
-          changed.value = false;
-          request.value = res.data
-        }).catch(err => {
-      if (err.response && err.response.status == 401) {
-        store.dispatch("logLout")
-      } else if (err.response && err.response.data && err.response.data.localized) {
-        showMessage('error', t(err.response.data.localizedPath), null)
-      }
-    });
+      .then(res => {
+        isSaved.value = true
+        changed.value = false;
+        request.value = res.data
+      }).catch(err => {
+        if (err.response && err.response.status == 401) {
+          store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          showMessage('error', t(err.response.data.localizedPath), null)
+        }
+      });
     isSend.value = true;
   }
 };
@@ -531,14 +525,14 @@ const downloadContract = () => {
 const isUserDataVaild = () => {
   if (findRole(null, "student")) {
     if (
-        userData.value !== null &&
-        userData.value.fullName &&
-        userData.value.speciality &&
-        userData.value.course &&
-        userData.value.email &&
-        userData.value.phone &&
-        selectedCourses.value &&
-        selectedCourses.value.length > 0
+      userData.value !== null &&
+      userData.value.fullName &&
+      userData.value.speciality &&
+      userData.value.course &&
+      userData.value.email &&
+      userData.value.phone &&
+      selectedCourses.value &&
+      selectedCourses.value.length > 0
     ) {
       return true;
     } else {
@@ -546,13 +540,13 @@ const isUserDataVaild = () => {
     }
   } else {
     if (
-        userData.value !== null &&
-        userData.value.discipline &&
-        userData.value.fullName &&
-        userData.value.speciality &&
-        userData.value.course &&
-        userData.value.email &&
-        userData.value.phone
+      userData.value !== null &&
+      userData.value.discipline &&
+      userData.value.fullName &&
+      userData.value.speciality &&
+      userData.value.course &&
+      userData.value.email &&
+      userData.value.phone
     ) {
       return true;
     } else {
@@ -616,8 +610,9 @@ const initStages = () => {
 
     let reqInstitute = {
       filter: {
-        "name":"Палымбетов Нурбол Шаменович"
-      }}
+        "name": "Палымбетов Нурбол Шаменович"
+      }
+    }
 
     contragentService.getPersons(reqInstitute).then(res => {
       userInstitute = res.data.foundUsers
@@ -672,7 +667,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 .arrow-icon {
   cursor: pointer;
   font-size: 1.25rem;

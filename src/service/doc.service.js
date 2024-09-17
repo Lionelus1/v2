@@ -96,4 +96,7 @@ export class DocService {
     getDocParams(id){
         return api.get(`/doc/getDocParams/${id}`, {headers: getHeader()});
     }
+    showDoc(data) {
+        return api.post(`/document/show`, data, {headers: getHeader()});
+    }
 }

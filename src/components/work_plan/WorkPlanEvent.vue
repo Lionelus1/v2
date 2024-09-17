@@ -1402,7 +1402,7 @@ export default {
         {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
-          visible: this.showMySign(this.plan?.doc_info?.approvalStages) && this.isFinish && this.planDoc && !(this.isCreatedPlan || this.isPlanUnderRevision),
+          visible: this.isFinish && this.planDoc && !(this.isCreatedPlan || this.isPlanUnderRevision),
           command: () => {
             this.showDialog(this.dialog.planView)
           }

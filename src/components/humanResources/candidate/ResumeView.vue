@@ -8,13 +8,20 @@
       <div class="col-12 lg:col-9">
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.general')}} </em></b>
+          <Button v-if="!readonly" icon="pi pi-pencil" class="p-button-rounded p-button-outlined"
+                  :onclick="editGeneralInfo"></Button>
         </p>
         <hr>
         <span style="white-space: pre-line">
           <b>{{ $t('common.fullName') }}:</b> <em><b>{{ candidate.user.fullName + '\n' }}</b></em>
           <b>{{ $t('contact.birthday') }}:</b> <em>{{ candidate.user.birthday + '\n' }}</em>
-          <b>{{ $t('contact.email') }}:</b> <em>{{ candidate.user.email }}</em>
+          <b>{{ $t('contact.email') }}:</b> <em>{{ candidate?.email + '\n'}}</em>
+          <b>{{ $t('contact.phone') }}:</b> <em>{{ candidate?.phoneNumber + '\n\n' }}</em>
         </span>
+
+        <Checkbox v-model="candidate.isResumeVerified" @change="update" :binary="true" /> Люди с особыми потребностями
+        <br>
+        <Checkbox v-model="candidate.hasSpecialNeeds" @change="update" :binary="true" /> Ознакомлен и подтверждаю, что данные в моем персональном резюме корректные. Даю согласие на обработку предоставленных данных.
         <hr>
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.id') + ' '}}</em></b>
@@ -33,7 +40,7 @@
       </div>
       <div class="col-12 lg:col-2">
         <div class="card">
-<!--          <img :src="'data:image/jpeg;base64,' + candidate.user.photo" style="width: 150px"/>-->
+          <!--          <img :src="'data:image/jpeg;base64,' + candidate.user.photo" style="width: 150px"/>-->
         </div>
       </div>
       <div class="col-12">
@@ -186,7 +193,7 @@
         <Timeline style="align-content: flex-start" :value="languages">
           <template #opposite="slotProps">
             <div class="secondary">
-              <em>{{ slotProps.item.language['name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)] }}</em>
+              <em>{{ slotProps?.item?.language['name' + ($i18n.locale)?.charAt(0)?.toUpperCase() + ($i18n.locale).slice(1)] }}</em>
             </div>
           </template>
           <template #content="slotProps">
@@ -288,12 +295,40 @@
       v-model:visible="exchange.editMode"
       position="right"
       class="p-sidebar-lg"
-      style="overflow-y: scroll"
-  >
+      style="overflow-y: scroll">
     <h3>{{exchange.title}}</h3>
     <Menubar :model="menu" :key="active"
              style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
-    <ResumeEdit :section="exchange.section" :value="exchange.value" :title-value="exchange.titleValue"/>
+    <ResumeEdit v-if="exchange.section !== section.generalInfo" :section="exchange.section" :value="exchange.value" :title-value="exchange.titleValue"/>
+    <div v-else class="col-12 md:col-12 p-fluid">
+      <div class="grid formgrid">
+        <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+          <label>{{ $t('contact.email') }}<span class="p-error" v-if="!readonly">*</span></label>
+          <InputText
+              :readonly="readonly"
+              class="mt-2"
+              :class="{'p-invalid': validation.email}"
+              type="text"
+              :placeholder="$t('contact.email')"
+              v-model="candidate.email"
+          ></InputText>
+          <small v-if="validation.email" class="p-error">{{ validationMessages.email }}</small>
+        </div>
+        <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+          <label>{{ $t('contact.phone') }}<span class="p-error" v-if="!readonly">*</span></label>
+          <InputText
+              :readonly="readonly"
+              class="mt-2"
+              :class="{'p-invalid': validation.phoneNumber}"
+              type="text"
+              :placeholder="$t('contact.phone')"
+              v-model="candidate.phoneNumber"
+          ></InputText>
+          <small v-if="validation.phoneNumber" class="p-error">{{ validationMessages.phoneNumber }}</small>
+        </div>
+      </div>
+    </div>
+
   </Sidebar>
   <Dialog v-model:visible="fileView" :style="{ width: '650px' }" :modal="true">
     <div style="padding: 0 100px">
@@ -312,12 +347,14 @@
 </template>
 
 <script>
-import ResumeService from "./ResumeService";
+import ResumeService from "@/service/resume.service";
 import ResumeEdit from "./ResumeEdit";
+import api from "@/service/api";
+import {getHeader} from "@/config/config";
 
 export default {
   name: "ResumeView",
-  components: {ResumeEdit},
+  components: { ResumeEdit},
   props: {
     value: null,
     readonly: Boolean,
@@ -328,6 +365,7 @@ export default {
   },
   data() {
     return {
+      menuVisible: false,
       fileData: null,
       fileView: false,
       progressed: false,
@@ -354,7 +392,8 @@ export default {
         referee: 'referee',
         id: 'id',
         academicDetail: 'academicDetail',
-        info: 'info'
+        info: 'info',
+        generalInfo: 'generalInfo'
       },
       titles: {
         education: this.$t('hr.title.education'),
@@ -365,7 +404,8 @@ export default {
         referee: this.$t('hr.title.referee'),
         id: this.$t('hr.title.id'),
         academicDetail: this.$t('hr.title.academicDetail'),
-        info: this.$t('hr.title.info')
+        info: this.$t('hr.title.info'),
+        generalInfo: this.$t('hr.title.general')
       },
       exchange: {
         editMode: false,
@@ -373,7 +413,31 @@ export default {
         section: null,
         value: null,
         titleValue: null,
+      },
+      menu: [
+        {
+          label: this.$t("common.save"),
+          icon: "pi pi-fw pi-save",
+          visible: this.menuVisible,
+          disabled: !this.isFormValid,
+          command: () => {
+            this.update()
+          },
+        },
+      ],
+      validation: {
+        email: false,
+        phone: false,
+      },
+      validationMessages: {
+        email: '',
+        phoneNumber: ''
       }
+    }
+  },
+  computed: {
+    isFormValid() {
+      return !this.validation.email && !this.validation.phoneNumber && this.candidate.email && this.candidate.phoneNumber;
     }
   },
   mounted() {
@@ -439,6 +503,20 @@ export default {
         this.getCandidate();
       }
     });
+    this.menuVisible = this.exchange.section === this.section.generalInfo;
+    this.menu[0].visible = this.menuVisible;
+  },
+  watch: {
+    'exchange.section': function (newVal) {
+      this.menuVisible = newVal === this.section.generalInfo;
+      this.menu[0].visible = this.menuVisible;
+    },
+    'candidate.email': function () {
+      this.validateEmail();
+    },
+    'candidate.phoneNumber': function () {
+      this.validatePhoneNumber();
+    }
   },
   methods: {
     startProgress() {
@@ -635,7 +713,52 @@ export default {
       this.exchange.section = this.section.info
       this.exchange.editMode = true
       this.exchange.title = this.titles.info
-    }
+    },
+    editGeneralInfo() {
+      this.exchange.section = this.section.generalInfo
+      this.exchange.editMode = true
+      this.exchange.title = this.titles.generalInfo
+    },
+    update() {
+      console.log(this.candidate.email, this.candidate.phoneNumber)
+      let path = "/candidate/info/update"
+      api
+          .post(path, this.candidate, {headers: getHeader(),})
+          .then(res => {
+            this.exchange.editMode = false
+          }).catch(error => {
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      });
+    },
+    validateEmail() {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!this.candidate.email.match(emailPattern)) {
+        this.validation.email = true;
+        this.validationMessages.email = this.$t('error.invalidEmail');
+      } else {
+        this.validation.email = false;
+        this.validationMessages.email = '';
+      }
+      this.updateMenuState()
+    },
+    validatePhoneNumber() {
+      const phonePattern = /^\d{11}$/;
+      if (!this.candidate.phoneNumber.match(phonePattern)) {
+        this.validation.phoneNumber = true;
+        this.validationMessages.phoneNumber = this.$t('error.invalidPhoneNumber');
+      } else {
+        this.validation.phoneNumber = false;
+        this.validationMessages.phoneNumber = '';
+      }
+      this.updateMenuState()
+    },
+    updateMenuState() {
+      this.menu[0].disabled = !(this.candidate.email && !this.validation.email && this.candidate.phoneNumber && !this.validation.phoneNumber);
+    },
   }
 }
 </script>

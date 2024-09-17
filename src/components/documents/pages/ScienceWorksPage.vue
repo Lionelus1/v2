@@ -30,7 +30,7 @@
 
             <template v-if="'publicationCategory' === param.description">
               <Dropdown v-model="param.value" :options="publicationCategories" class="w-full" @change="input"
-                        :option-label="publicationCategoriesLabel" :option-value="publicationCategoriesLabel"
+                        :option-label="publicationCategoriesLabel" :option-value="publicationCategoriesValue"
                         :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID && scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)">
               </Dropdown>
             </template>
@@ -48,7 +48,7 @@
               scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" @input="input"/>
           </div>
           <div class="p-fluid md:col-6" v-if="'date' === param.name">
-            <PrimeCalendar @change="input" v-model="param.value" dateFormat="dd.mm.yy" :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
+            <PrimeCalendar @change="input" v-model="param.value" dateFormat="yy" view="year" :disabled="this.needMySign() || (scienceWork.docHistory.stateId !== DocEnum.CREATED.ID &&
               scienceWork.docHistory.stateId !== DocEnum.REVISION.ID)" @dateSelect="input"></PrimeCalendar>
           </div>
           <div class="p-fluid md:col-6" v-if="'persons' === param.name">
@@ -210,7 +210,7 @@ export default {
 
       editionTypes: ['digital', 'printed'],
       koksnvoEditions: [],
-      publicationCategories: ['beforeMastersThesis', 'afterMastersThesis', 'afterScientificWorks', 'others'],
+      publicationCategories: ['beforeMastersThesis', 'afterMastersThesis', 'beforeDoctoralDissertation', 'afterDoctoralDissertation', 'others'],
       validation: {
         filePath: false,
       }
@@ -464,7 +464,7 @@ export default {
       this.attachments = {};
 
       let paramsName = ["publicationType", "publicationCategory", "publicationName", "publicationDate",
-        "editionType", "editionFullName",  "editionName", "editionNumber", "editionYear", "editionPages", "subtypeDescription",
+        "editionType", "editionFullName",  "editionName", "editionNumber", "editionPages", "subtypeDescription",
         "issn", "isbn", "koksnvo", "link", "printedPages", "participationInGroup", "recommendedBy",
         "coauthorsInternal", "coauthorsExternal", "attachments",];
 
@@ -549,27 +549,27 @@ export default {
           stage: 1,
           users: null,
           titleRu: "Соискатель",
-          titleKz: "Соискатель",
-          titleEn: "Соискатель",
+          titleKz: "Өтініш беруші",
+          titleEn: "Applicant",
           certificate: DocEnum.CertificatesArray.Individual,
         }
       ];
 
-      if ([DocEnum.ScienceWorkType.Monograph, DocEnum.ScienceWorkType.ScopusArticle, DocEnum.ScienceWorkType.PublicationKOKSNVO].includes(this.getScienceWorkType())) {
+      if ([DocEnum.ScienceWorkType.ScopusArticle, DocEnum.ScienceWorkType.PublicationKOKSNVO].includes(this.getScienceWorkType())) {
         this.stages.push(
             {
               stage: 2,
               users: null,
               titleRu: "Начальник Управление научных изданий и наукометрических ресурсов",
-              titleKz: "Начальник Управление научных изданий и наукометрических ресурсов",
-              titleEn: "Начальник Управление научных изданий и наукометрических ресурсов",
+              titleKz: "Ғылыми басылымдар және ғылымометриялық ресурстар басқармасының бастығы",
+              titleEn: "Head of the Department of Scientific Publications and Scientometric Resources",
               certificate: DocEnum.CertificatesArray.Internal,
             },
             {
               stage: 3,
               users: null,
               titleRu: "Директор Департамента науки",
-              titleKz: "Директор Департамента науки",
+              titleKz: "Ғылым департаментінің директоры",
               titleEn: "Директор Департамента науки",
               certificate: DocEnum.CertificatesArray.Internal,
             },
@@ -597,6 +597,9 @@ export default {
     },
     publicationCategoriesLabel(data) {
       return this.$t('scienceWorks.publicationCategories.' + data);
+    },
+    publicationCategoriesValue(data) {
+      return data;
     },
   }
 }

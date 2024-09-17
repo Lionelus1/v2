@@ -61,10 +61,10 @@
         <div class="p-fluid">
           <Button :label="$t('common.save')" :disabled="!(template.name && template.name.trim() != '')" @click="saveCertificateTemplate" class="p-button-primary"/>
           <Button :label="$t('common.cancel')" @click="newTemplateDialogVisible=false"  class="mt-1 p-button-secondary p-button-outlined"/>
-        </div> 
+        </div>
       </template>
     </Dialog>
-    
+
 	</div>
 </template>
 <script>
@@ -108,13 +108,13 @@ export default {
         onPage(event) {
           this.lazyParams = event;
           this.getJournal();
-        }, 
+        },
         closeTemplateEditor() {
           this.templateEditorVisilble = false;
           this.getJournal();
         },
         inittialNewTemplate() {
-          this.template =  { 
+          this.template =  {
               name: "",
               params: [
                   {id: -1, name: "img", description:"common", isDeleted:false, value: { url: "enu_logo/bg-orange.jpg", title: "background", rectelement: {z:0, x:0,y:0, w:840, h:593}}},
@@ -122,15 +122,15 @@ export default {
                   {id: -1, name: "txt", description:"common", active: false, isDeleted:false, value: { name: "certificate", title: "СERTIFICATE", titlekz: "СЕРТИФИКАТ", titleru: "CЕРТИФИКАТ", rectelement: { z:2,x:306,y:120, w:230, h:50}, style:"text-align:center;font-size:32px;color:#007dbe;letter-spacing:2px"}},
                   {id: -1, name: "img", description:"common", active: false, isDeleted:false, value: {url: "enu_logo/qr.png", name: "qr", rectelement: {z:3, x:643,y:380, w:70, h:70}}},
                   {id: -1, name: "img", description:"common", active: false, isDeleted:false, value: {url: "enu_logo/build.png", name: "build", rectelement: {z:4, x:585,y:470, w:170, h:70}}},
-                  {id: -1, name: "txt", description:"common", active: false, isDeleted:false, value: { name: "mainText", title: "mainInfo", 
-                  titlekz: "Тыңдаушы @тыңдаушыныңТолықАтыЖөні <br>«@курстыңТолықАтауы» онлайн курсын <br> @сағатСаны сағат көлемінде @оқығанКезеңі аралығында<br> сәтті өтті.", 
-                  titleru: "Слушатель @полноеИмяСлушателя <br> усепшно прошел(а) <br> онлайн курс «@полноеНаименованиеКурса» <br> @периодОбучения в объеме @количествоЧасов часов.", 
-                  titleen: "Listener @listenerFullName <br> has succesfully completed<br> the online course «@fullNameOfCourse» <br> @studyPeriod for @hoursCount hours.", 
+                  {id: -1, name: "txt", description:"common", active: false, isDeleted:false, value: { name: "mainText", title: "mainInfo",
+                  titlekz: "Тыңдаушы @тыңдаушыныңТолықАтыЖөні <br>«@курстыңТолықАтауы» онлайн курсын <br> @сағатСаны сағат көлемінде @оқығанКезеңі аралығында<br> сәтті өтті.",
+                  titleru: "Слушатель @полноеИмяСлушателя <br> усепшно прошел(а) <br> онлайн курс «@полноеНаименованиеКурса» <br> @периодОбучения в объеме @количествоЧасов часов.",
+                  titleen: "Listener @listenerFullName <br> has succesfully completed<br> the online course «@fullNameOfCourse» <br> @studyPeriod for @hoursCount hours.",
                   rectelement: {z:5, x:90,y:190, w:660, h:180}, style:"text-align:center;font-size:24px;color:#000000;letter-spacing:0px"}},
-                  {id: -1, name: "txt", description:"common",  value: { name: "number", title: "details", 
-                  titlekz: "№ @certificateNumber<br> @certificateDate <br> Астана қаласы", 
-                  titleru: "№ @certificateNumber<br> @certificateDate <br> город Астана", 
-                  titleen: "№ @certificateNumber<br> @certificateDate <br> Astana city", 
+                  {id: -1, name: "txt", description:"common",  value: { name: "number", title: "details",
+                  titlekz: "№ @certificateNumber<br> @certificateDate <br> Астана қаласы",
+                  titleru: "№ @certificateNumber<br> @certificateDate <br> город Астана",
+                  titleen: "№ @certificateNumber<br> @certificateDate <br> Astana city",
                   rectelement: {z:6, x:90,y:490, w:160, h:60}, style:"font-size:10px;color:#000000;letter-spacing:0px"}},
                   {id: -1, name: "img", description:"kz", active: false, isDeleted:false,  value: {url:  "enu_logo/logo-kz.png", title: "logo", rectelement: {z:7, x:340,y:15, w:163, h:60}}},
                   {id: -1, name: "img", description:"ru", active: false, isDeleted:false,  value:{url:  "enu_logo/logo-en.png", title: "logo", rectelement: {z:8, x:349,y:15, w:144, h:60}}},
@@ -138,9 +138,9 @@ export default {
                   {id: -1, name: "text", description:"kz", active: false, isDeleted:false,  value: ""},
                   {id: -1, name: "text", description:"en", active: false, isDeleted:false,  value: ""},
                   {id: -1, name: "text", description:"ru", active: false, isDeleted:false,  value: ""},
-                  
+
             ],
-            };  
+            };
         },
     },
     created() {
@@ -163,7 +163,7 @@ export default {
         {icon: 'pi pi-align-justify', value: 'Justify', command: () => { this.activeElement.textAlign = "justify"; this.calcStyle() }}
       ]}
     },
-    
+
 }
 </script>
 <style scoped>

@@ -119,6 +119,7 @@ const store = createStore({
     getters: {
         isAuthenticated: state => !!state.token,
         isMainAdministrator: state => state.loginedUser && state.loginedUser.roles && state.loginedUser.roles.some(role => role.name === 'main_administrator'),
+        userRoles: state => state.loginedUser && state.loginedUser.roles ? state.loginedUser.roles.map(role => role.name) : [],
         getSelectedPositionDesk(state){
             return state.selectedPosition
         }

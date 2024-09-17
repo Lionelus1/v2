@@ -69,6 +69,19 @@
 
                 </div>
                 <div class="field">
+                  <label>{{ $t('common.socialMediaIds') }}</label>
+                  <div class="flex flex-column">
+                    <div v-for="(platform, index) in socialPlatforms" :key="index" class="mb-3">
+                      <InputGroup>
+                        <InputGroupAddon>
+                          <i :class="iconClasses(platform)"></i>
+                        </InputGroupAddon>
+                        <InputText v-model="socialMediaIds[platform]" :placeholder="platform" />
+                      </InputGroup>
+                    </div>
+                  </div>
+                </div>
+                <div class="field">
                   <label>{{ $t('web.bgImg') }}</label>
                   <FileUpload mode="basic" :customUpload="true" @uploader="uploadBg" :auto="true"
                               v-bind:chooseLabel="$t('hdfs.chooseFile')" accept="image/*"/>
@@ -106,10 +119,15 @@ import {useStore} from "vuex";
 import {FileService} from "@/service/file.service";
 import TitleBlock from "@/components/TitleBlock.vue";
 import Access from "@/pages/Access.vue";
+import InputGroup from 'primevue/inputgroup';
+import InputGroupAddon from 'primevue/inputgroupaddon';
+
 
 const store = useStore()
 const formData = ref({})
-const infoData = ref({})
+const infoData = ref({
+
+})
 const isClosed = ref()
 const i18n = useI18n()
 const enuService = new EnuWebService()
@@ -126,6 +144,17 @@ const userParams = ref({user_id: authUser.value.userID})
 const fileService = new FileService()
 const bgImg = ref(null)
 const haveAccess = ref(true)
+const socialMediaIds = ref(
+  {
+    facebook: null,
+    instagram: null,
+    youtube: null,
+    telegram: null,
+    tiktok: null,
+  }
+);
+const socialPlatforms = ['facebook', 'instagram', 'youtube', 'telegram', 'tiktok'];
+const iconClasses = (platform) => `pi pi-${platform}`;
 
 const facultySite = computed(() => {
   return `${enuService.getSiteUrl(store, null)}?mode=preview`
@@ -156,6 +185,10 @@ const getSettings = () => {
       formData.value = res.data.settings;
       infoData.value = res.data.site_info || {}
       formData.value.is_closed = infoData.value.is_closed
+      if (res.data?.site_info?.social_media_ids){
+        socialMediaIds.value = JSON.parse(res.data?.site_info?.social_media_ids)
+      }
+      
       TN.value = res.data.tn_res
 
       initMourning(formData.value)
@@ -252,6 +285,7 @@ const initMourning = (data) => {
 }
 
 const saveSiteInfo = () => {
+  infoData.value.social_media_ids = JSON.stringify(socialMediaIds.value)
   enuService.setSiteInfo(infoData.value).then(res => {
     if (res.data)
       toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});

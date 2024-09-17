@@ -165,6 +165,7 @@ export default {
         idcardgivenorg: false,
         bankaccount: false,
         bank_id: false,
+        internalPhone: false,
       },
 
       items: [
@@ -258,6 +259,11 @@ export default {
     },
     save() {
       if (this.validate()) {
+        if (this.validation.internalPhone) {
+          this.showMessage("error", "Номер рабочего телефона должен состоять из пяти цифр")
+          return;
+        }
+
         this.showMessage("error", this.$t('common.message.fillError'));
         return
       }
@@ -348,10 +354,16 @@ export default {
       this.validation.firstnameEn = !this.per.firstnameEn || this.per.firstnameEn.length < 1;
       this.validation.lastname =  !this.per.thirdName || this.per.thirdName.length < 1;
       this.validation.lastnameEn =  !this.per.thirdnameEn || this.per.thirdnameEn.length < 1;
+      this.validation.internalPhone = !this.per.internalPhone || !/^\d{5}$/.test(this.per.internalPhone);
       this.validation.email = !this.per.email || this.per.email.length < 1;
+
+      if (this.per?.internalPhone === undefined || this.per?.internalPhone?.length === 0) {
+        this.validation.internalPhone = false
+      }
+
       return (this.validation.iin || this.validation.firstname || this.validation.lastname ||
         this.validation.email || this.validation.firstnameEn ||
-        this.validation.lastnameEn);
+        this.validation.lastnameEn || this.validation.internalPhone);
     },
     handlePersonalInformationUpdate(updatedData) {
       if (updatedData != null) {

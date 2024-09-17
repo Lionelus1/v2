@@ -10,9 +10,9 @@
       <Button class="justify-content-center p-button-lg" @click="queue(true)">{{ $t('queue.choiceTime') }}</Button>
     </div>
     <div :class="['flex', 'flex-column', 'm-auto', 'gap-2', {'text-center': !reservation, 'gap-4': !reservation,}]" v-if="currentStep === 2">
-      <div class="flex justify-content-end">
+<!--      <div class="flex justify-content-end">
         <Button class="p-button-outlined" :label="$t('educomplex.tooltip.previous')" @click="previous()" icon="pi pi-arrow-left" />
-      </div>
+      </div>-->
       <template v-if="reservation">
         <h4 class="m-0">{{ $t('contact.lname') }}</h4>
         <InputText class="p-inputtext-lg" v-model="lastName"/>
@@ -179,6 +179,12 @@
                   <span v-if="locale === 'en'">Receiving operator: </span>
                   <b>{{ queinfo.queueName }}</b>
                 </div>
+                <div class="dashed text-left" v-if="queinfo.notification_text">
+                  <span v-if="locale === 'kz'">Хабарлама: </span>
+                  <span v-if="locale === 'ru'">Уведомление: </span>
+                  <span v-if="locale === 'en'">Notification: </span>
+                  <b>{{ queinfo.notification_text	 }}</b>
+                </div>
                 <!--                <div class="flex justify-content-between font-bold">
                                   <div>{{ talonDate }}</div>
                                   <div>{{ talonTime }}</div>
@@ -261,7 +267,7 @@ const phoneNumber = ref('');
 const isDisabled = ref(true);
 const queinfo = ref();
 const queuesWS = ref([]);
-const currentStep = ref(1);
+const currentStep = ref(2);
 const reservation = ref(false);
 const talonDate = ref('')
 const talonTime = ref('')
@@ -452,7 +458,7 @@ const registerQueue = async (queueId, queue) => {
           toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
           loading.value = false
           timeList.value = []
-          currentStep.value = 1
+          currentStep.value = 2
           disabledRezervation.value = false
         });
   }
@@ -468,7 +474,8 @@ const getRegisterService = (queueId, queue) => {
     categoryName.value = JSON.parse(localStorage.getItem('queueCategory'))
     const phoneNumber = localStorage.getItem('phoneNumber')
     const req = {
-      phoneNumber: phoneNumber
+      phoneNumber: phoneNumber,
+      ParentId: parentId.value,
     }
     if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && email.value && selectedDay.value && selectedTime.value) {
       req.queueID = queueId
@@ -496,7 +503,7 @@ const getRegisterService = (queueId, queue) => {
           console.log(error)
           toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
           loading.value = false
-          currentStep.value = 1
+          currentStep.value = 2
           disabledRezervation.value = false
         });
   }
@@ -513,7 +520,7 @@ const refusal = () => {
       .then((response) => {
         refusalVisible.value = false
         localStorage.removeItem('queueKey')
-        currentStep.value = 1
+        currentStep.value = 2
         disabledRezervation.value = false
       })
       .catch((error) => {
@@ -551,6 +558,7 @@ const formatTime= (date) => {
 const previous = () => {
   currentStep.value = 1
 }
+
 onMounted(() => {
   if (parentId.value !== parseInt(localStorage.getItem('queueParentId'))) {
     localStorage.removeItem('phoneNumber')
@@ -567,7 +575,7 @@ onMounted(() => {
       currentStep.value = 4
     }
   } else if (localStorage.getItem('phoneNumber') !== null) {
-    currentStep.value = 1
+    currentStep.value = 2
   }
 })
 </script>
