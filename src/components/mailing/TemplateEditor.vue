@@ -146,7 +146,7 @@ export default {
         },
         userID: null,
         docTemplateID: parseInt(this.templateId, 10),
-        description: encodeURIComponent("`"+ this.templateContent + "`"),
+        description: "`"+ this.templateContent + "`",
         emails:processedEmails,
         filePath: null,
         statusID: statusID,
