@@ -274,6 +274,9 @@ onMounted(() => {
 .details {
   margin-left: 20px;
   font-size: 14px;
+  p{
+    margin: 5px
+  }
 }
 .language-container {
   margin-bottom: 0.1px;
