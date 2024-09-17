@@ -32,6 +32,8 @@
       </div>
     </div>
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
+
+
       <!--дневник-отчет-->
       <TabPanel :header="$t('workPlan.journalReports')" >
         <span v-if="!loading && dReports" :class="'ml-3 customer-badge status-' + dReports[0].doc_info.docHistory.stateEn">
