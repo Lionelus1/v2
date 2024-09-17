@@ -382,7 +382,6 @@ export default {
         if (!data) {
           parent.children = null
           this.getFiles(parent)
-          this.loading = false
           return
         }
 
@@ -402,12 +401,13 @@ export default {
 
         if (parent === null) {
           this.catalog = data
+          this.loading = false
         } else {
           parent.children = data
           this.getFiles(parent)
         }
 
-        this.loading = false
+
       }).catch(err => {
         if (err.response && err.response.status == 401) {
           this.$store.dispatch("logLout")
@@ -771,12 +771,14 @@ export default {
       }
 
       for (let i = 0; i < nodes.children.length; i++) {
+
         if (nodes.children[i].key === key) {
-          nodes.children.splice(i, 1)
-          return
-        } else if (key.startsWith(nodes.children[i].key)) {
-          this.deleteNode(nodes.children[i], key)
-          return
+          nodes.children.splice(i, 1);
+          return;
+        }
+
+        if (key.startsWith(nodes.children[i].key)) {
+          this.deleteNode(nodes.children[i], key);
         }
       }
     },
