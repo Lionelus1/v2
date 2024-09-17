@@ -138,7 +138,7 @@ export default {
       }).filter(role => role !== null);
 
       const processedEmails = this.emails.map(email => email.trim());
-    console.log("this.templateContent: ", this.templateContent)
+    console.log("this.templateContent: ", this.templateContent.length)
       const mailingData = {
         mailingID: null,
         filters: {
@@ -146,7 +146,7 @@ export default {
         },
         userID: null,
         docTemplateID: parseInt(this.templateId, 10),
-        description: "`"+ this.templateContent + "`",
+        description: this.templateContent,
         emails:processedEmails,
         filePath: null,
         statusID: statusID,
