@@ -1,14 +1,23 @@
 <template>
   <div class="col-12">
     <h3>{{ $t('hikvision.employeeEntryExitReport') }}</h3>
+    <div class="card">
     <BlockUI>
       <DataTable selectionMode="single" v-model:selection="selectedReport" :lazy="true" :value="reports"
                    :loading="loading" :paginator="true" :rows="10" :totalRecords="totalRecords"
                    @page="onPageChange" class="p-datatable-sm wider-table">
         <template #header>
-          <div class="table-header">
-            <Button :label="$t('hikvision.generateReport')" icon="pi pi-plus" class="p-button-success mr-2" @click="showGenerateReport" />
-<!--             <Button :label="$t('hikvision.workSchedule')" icon="pi pi-calendar" class="p-button-info" @click="showWorkSchedule" />-->
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <Button
+                v-for="item in visibleMenuItems"
+                :key="item.label || item.icon"
+                :label="item.label"
+                :icon="item.icon"
+                :disabled="item.disabled"
+                @click="item.command"
+                class="p-button-text"
+                :class="{'p-button-success': item.icon.includes('plus'),'blue-text': item.icon.includes('plus')}"
+            />
           </div>
         </template>
 
@@ -30,7 +39,10 @@
 
         <Column :field="'department'" :header="$t('hikvision.department')">
           <template #body="slotProps">
-            {{ slotProps.data.department?.name || $t('common.all') }}
+            {{
+              $i18n.locale === "kz" ? slotProps.data.department.nameKz : $i18n.locale === "ru"
+                  ? slotProps.data.department.name : slotProps.data.department.nameEn
+                  || $t('common.all')}}
           </template>
         </Column>
 
@@ -76,6 +88,7 @@
         </Column>
       </DataTable>
     </BlockUI>
+    </div>
   </div>
   <Dialog
       v-model:visible="showGenerateReportDialog"
@@ -95,7 +108,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import BlockUI from 'primevue/blockui';
 import Dialog from 'primevue/dialog';
@@ -106,7 +119,7 @@ import WorkScheduleDialog from '@/components/hikvision/WorkScheduleDialog.vue';
 import GenerateReportDialog from "@/components/hikvision/GenerateReportDialog.vue";
 import { ReportService } from "@/service/report.service";
 import { downloadFile } from "@/config/config";
-import {useI18n} from "vue-i18n";
+import { useI18n } from "vue-i18n";
 import { useConfirm } from "primevue/useconfirm";
 
 const currentUser = ref({});
@@ -129,6 +142,9 @@ const showError = (message) => {
 const showSuccess = (message) => {
   toast.add({ severity: 'success', summary: 'Успешно', detail: message, life: 3000 });
 };
+
+const visibleMenuItems = computed(() => menuItems.filter(item => item.visible !== false));
+
 const categoriesV2 = ref([
   { id: 1, name_kz: '', name_ru: '', name_en: '', code: t('hikvision.aup'), is_noted: false },
   { id: 2, name_kz: '', name_ru: '', name_en: '', code: t('hikvision.ahp'), is_noted: false },
@@ -221,20 +237,39 @@ const deleteReport = (id) => {
     },
   });
 };
+const menuItems = [
+  {
+    icon: "pi pi-fw pi-refresh",
+    command: getReports,
+    visible: true,
+  },
+  {
+    label: t("hikvision.generateReport"),
+    icon: "pi pi-plus",
+    command: showGenerateReport,
+    visible: true,
+  },
+];
 </script>
 
-<style scoped lang="scss">
-.table-header {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 1rem;
-  margin-left: -1rem;
-}
 
-.p-datatable-sm .p-datatable-thead > tr > th,
+<style scoped lang="scss">
+.p-datatable-sm .p-datatable-thead > tr > th {
+  background-color: #343a40;
+  font-weight: bold;
+  text-align: center;
+}
 .p-datatable-sm .p-datatable-tbody > tr > td {
   padding: 0.5rem;
+}
+
+.p-datatable-sm .p-datatable-thead {
+  background-color: #343a40;
+}
+
+.p-datatable-sm .p-datatable-thead > tr > th {
+  font-weight: bold;
+  text-align: center;
 }
 
 .p-datatable-sm .p-datatable-tbody > tr > td .p-button-text {
@@ -244,12 +279,11 @@ const deleteReport = (id) => {
 .wider-table {
   width: 100%;
 }
-
-
-.p-button-blue {
-  background-color: #007bff !important;
-  border-color: #007bff !important;
-  color: #fff !important;
+.p-button-success {
+  color:  #007bff ;
+}
+.blue-text {
+  color:  #007bff ;
 }
 
 .responsive-dialog {
@@ -268,5 +302,4 @@ const deleteReport = (id) => {
     width: 90vw;
   }
 }
-
 </style>
