@@ -3,7 +3,7 @@
     @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
       <!-- mastersplan -->
-      <DoctorsMastersAddEvent :plan="plan" @update-data="updateData" />
+      <DoctorsMastersAddEvent :plan="plan" @update-data="updateData"  v-if="isMastersPlan || isDoctorsPlan"/>
       <!-- mastersplan -->
       <div class="field" v-if="!isMastersPlan && !isDoctorsPlan">
         <label>{{
