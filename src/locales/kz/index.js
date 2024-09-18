@@ -33,8 +33,8 @@ export default {
         nextIssue: 'Сертификаттар тізбегі осы нөмерден басталады',
         goToTheCourse: "Курсқа өту",
         addCertificate: "Сертификат қажет етіледі",
-        updateGES:"ЖББП тізімін жаңарту",
-        downloadCertificate:"Сертификат жүктеп алу",
+        updateGES: "ЖББП тізімін жаңарту",
+        downloadCertificate: "Сертификат жүктеп алу",
         selectAll: "Барлығын таңдау",
         action: {
             submit: 'Жіберу',
@@ -213,9 +213,11 @@ export default {
         author: "Әзірлеуші",
         personalInfo: 'Жеке ақпарат',
         myAddress: 'Мекенжайы',
+        creationAndEditing: 'Сақтау және өңдеу',
+        users: 'Пайдаланушылар',
+        selectPhoto: 'Фотосуретті таңдаңыз',
+        scanCopy: 'Скан копия',
         dataSavedSuccessfully:'Деректер сәтті сақталды',
-        creationAndEditing:'Сақтау және өңдеу',
-        users:'Пайдаланушылар',
         group: 'Топ',
         paymentForm: 'Төлем нысаны',
         downloadResume: 'Түйіндемені жүктеп алу',
@@ -248,7 +250,7 @@ export default {
                 selectreportyear: "Жылын таңдаған жоқсыз",
                 yearlessthancurrentyear: "Таңдаған жылыңыздың мәні ағымдағы жылдан кіші немесе тең болу керек",
                 selectreportquarter: "Тоқсанды таңдаған жоқсыз",
-                pleaseselectdateranges : "Күндер ауқымын таңдаған жоқсыз",
+                pleaseselectdateranges: "Күндер ауқымын таңдаған жоқсыз",
                 reportalreadyexists: "Бұл есеп әлдеқашан шығарылған",
                 filternotfound: "Сүзгі табылмады"
             },
@@ -372,7 +374,11 @@ export default {
         doYouWantApprove: "Сіз шынымен келісім-шартқа келіскіңіз келе ме?",
         changeApprovals: "Бекітуші тұлғаларды ауыстыру",
         sacReportMenuTitle: 'Мемлекеттік аттестаттау комиссиясының есебі',
-        socialMediaIds: 'Әлеуметтік медиа'
+        added: "Қосылды",
+        removed: "Алынды",
+        modified: "Өзгертілді",
+        socialMediaIds: 'Әлеуметтік медиа',
+        viewOnlyCheckbox: 'Көру режимінде көрсету'
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -419,6 +425,7 @@ export default {
             validEmail: "Дұрыс email адрес көрсетіңіз",
         },
         nameInLatin: "Аты-жөні латынша",
+        officePhone: "Ішкі телефоны"
     },
     cafedra: {
         practiceResponsibles: "Практикаға жауаптылар",
@@ -444,6 +451,8 @@ export default {
             bin: "БСН",
         },
         orgEmployees: "{org} қызметкерлері",
+        domesticPartners: 'Отандас серіктестер',
+        foreignPartners: 'Шетел серіктестер'
     },
     doctemplate: {
         title: "Құжат үлгісін жасау",
@@ -577,6 +586,11 @@ export default {
             projectPosition: "Жобадағы орны",
             mnvoDate: "БҒЖМ келісімнің күні",
             contractSum: "Шарт сомасы",
+            documentsNotSigned: {
+                label: "Менің қол қоймаған құжаттарым",
+                signedByMe: "Мен қол қойған",
+                notSignedByMe: "Мен қол қоймаған"
+            }
         },
         title: "Келісім-шарттар",
         template: "Келісім-шарт үлгілері",
@@ -684,6 +698,18 @@ export default {
             consultant: "Ғылыми кеңесші",
             projectManager: "Жобаның ғылыми жетекшісі",
         },
+        cooperationDocument: "Ынтымақтастық туралы құжат",
+        name_doc: "Құжаттың атауы",
+        doc_type_kz: "Құжат түрі қазақша",
+        doc_type_ru: "Құжат түрі орысша",
+        doc_type_en: "Құжат түрі ағылшынша",
+        doc_number:"Құжат нөмірі",
+        subject_document: "Құжаттың мәні",
+        date_conclusion: "Жобалар және/немесе шарттар жасалған күн",
+        indefinite: "бессрочный",
+        early_termination: 'Мерзімінен бұрын бұзу',
+        rating: 'Рейтинг',
+        rating_place: 'Рейтингтегі орын'
     },
     hdfs: {
         archiveBtn: "Мұрағаттау",
@@ -839,6 +865,8 @@ export default {
         failToSign: "Құжатқа қол қою мүмкін емес!",
         notEnoughRights: "Құжатқа қол қою құқығыңыз жеткіліксіз!",
         failToSendDoc: "Құжаттың ID-ін серверге жіберу мүмкін емес!",
+        uploadScanDoc: "Құжаттың скан нұсқасын жүктеу",
+        uploadAdditionalDoc: "Қосымша құжат"
 
     },
     publicReception: {
@@ -997,7 +1025,11 @@ export default {
         choiceTime: "Уақыт таңдау бойынша",
         errorFreeOperators: "Бұл уақытқа орын қалған жоқ басқа уақытты таңдаңыз!",
         noLunch: "Түскі үзіліссіз",
-        withoutWeekend: "Демалыссыз"
+        withoutWeekend: "Демалыссыз",
+        notification: "Хабарлама",
+        notificationTextKz: "Қазақ тілінде жазыңыз",
+        notificationTextRu: "Орыс тілінде жазыңыз",
+        notificationTextEn: "Ағылшын тілінде жазыңыз",
     },
     mailing: {
         title: "Атауы",
@@ -1231,7 +1263,7 @@ export default {
         actionID: 'Әрекеттер',
         ipAddress: 'IP мекенжайы',
         logUser: 'Қолданушы аты-жөні',
-        properties:'Қасиеттер',
+        properties: 'Қасиеттер',
         history: 'Тарих',
         optionalField: 'Міндетті емес',
         listType: 'Тізім түрі',
@@ -1244,7 +1276,7 @@ export default {
         gridCardListExample: 'Қарапайым грид карт тізімінің мысалы',
         exampleTitle: 'Тақырып',
         exampleContent: 'Мысалдың мазмұны',
-        mainMenu:'Негізгі мәзір',
+        mainMenu: 'Негізгі мәзір',
         headerMenu: 'Тақырып мәзірі',
         middleMenu: 'Ортаңғы мәзір',
         usefulMenu: 'Пайдалы сілтеме',
@@ -1301,6 +1333,7 @@ export default {
             request: 'Өтініш беру'
         },
         vacancies: "Вакансиялар",
+        archiveVacancies: "Архивтер",
         responsibilitiesLabel: "Функционалдық міндеттері",
         educationLabel: "Білімі",
         qualificationLabel: "Мамандығы бойынша біліктілігі",
@@ -1430,7 +1463,10 @@ export default {
             reportSentToApprove: "Есеп келісуге сәтті жіберілді",
             planSentToApprove: "Жоспар қайта қарауға жіберілді",
             planCreated: "Жоспар сәтті құрылды",
-            maxFileUploadSize: "Бір уақытта 10 файлдан артық жүктеуге болмайды"
+            maxFileUploadSize: "Бір уақытта 10 файлдан артық жүктеуге болмайды",
+            planCreatorChanged: "Жоспар құрушы сәтті өзгертілді",
+            noChanges: "Өзгеріс енгізілмеген",
+            noRespPersonChanged: "Жауапты тұлға өзгертілмеген",
         },
         reportTypes: {
             year: "Жылдық",
@@ -1461,7 +1497,11 @@ export default {
         rejectionMessage: "Бас тарту туралы хабарлама",
         summaryDepartment: "Жинақтаушы құрылымдық бөлім",
         warnAddingSummaryUser: "«Жинақтаушы құрылымдық бөлім» өрісінде таңдалған қолданушыны «Жинақтаушы/Растау» өрісіне қоса алмайсыз.",
-        topicOfMastersThesis: "Магистрлік диссертация тақырыбы"
+        topicOfMastersThesis: "Магистрлік диссертация тақырыбы",
+        editRespUser: "Жауапты тұлғаны өзгерту",
+        modifiedPerson: "Өзгеріс енгізген",
+        changeCreatedPerson: "Құрушыны өзгерту",
+        requiredCreatedPerson: "Құрушыны өрісін міндетті түрде толтыру керек"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
@@ -1556,7 +1596,7 @@ export default {
             work_start_date: 'Жұмыстың басталуы',
         },
     },
-    guide:{
+    guide: {
         guide: 'Анықтама',
         pathName: 'Жолдың атауы',
         guideName: 'Анықтаманың атауы',
@@ -1580,17 +1620,17 @@ export default {
             getQr: "QR алу",
             confirm: "Сертификатты ҚОСЫМШАСЫЗ беру керек пе?",
             confirm2: "Сертификат ҚОСЫМШАМЕН беріледі, қосымша дұрыс толтырылған ба?",
+            certSelect: "Сертификат сұлбасын көрсету"
             issueDate: "Тіркеу күні",
-            certSelect:"Сертификат сұлбасын көрсету"
         },
-        modules:'Курс модульдері',
+        modules: 'Курс модульдері',
         module: 'Модуль',
         modulePosition: '№',
         moduleTitle: 'Белгі',
         moduleHours: 'Сағат',
         moduleGrade: 'Баға',
-        moduleName:'Модуль атауы',
-        modulePeriod:'Модуль кезеңі',
+        moduleName: 'Модуль атауы',
+        modulePeriod: 'Модуль кезеңі',
         users: 'Курсқа қатысушылар',
         user: 'Қатысушы',
         organizers: 'Курс ұйымдастырушылар',
@@ -1599,7 +1639,7 @@ export default {
         addCourse: 'Курсқа қосу',
         completedTraining: 'Оқуды аяқтады',
         course: 'Курс',
-        startDate:'Курстың басталу күні',
+        startDate: 'Курстың басталу күні',
         completionDate: 'Курстың аяқталу күні',
         disciplineCode: "Пән коды",
         disciplineName: "Пән атауы",
@@ -1612,27 +1652,27 @@ export default {
         confirmation: "Растау",
         warning: "Ескерту",
         noGrades: "Баға қойылмаған қатысушылар бар!",
-        noBeenTrained:"Әлі оқуды аяқтамаған қатысушылар бар. Олардың оқуды аяқтағанын қалайсыз ба?" ,
-        noIssuedCertificates:"Кейбір қатысушыларға сертификаттар берілмеді. Курсты аяқтамас бұрын сертификат беруіңізді сұраймыз!",
+        noBeenTrained: "Әлі оқуды аяқтамаған қатысушылар бар. Олардың оқуды аяқтағанын қалайсыз ба?",
+        noIssuedCertificates: "Кейбір қатысушыларға сертификаттар берілмеді. Курсты аяқтамас бұрын сертификат беруіңізді сұраймыз!",
         completeCourse: "Сіз курсты аяқтағыңыз келеді ме?",
         numberParticipants: "Қатысушылар саны",
         сompletedСourse: "Аяқталған курстар",
         moduleCredits: 'Кредиты',
         potok: 'Потоктар',
-        onlineCourse:'Онлайн курс'
+        onlineCourse: 'Онлайн курс'
     },
-    roleControl:{
+    roleControl: {
         addSidebar: 'Жаңа жазбаны қосу',
         userChangeable: 'Әдепкі пайдаланушыларды өзгерту',
-        certificate : 'Сертификат',
-        title : 'Қазақша атауы',
+        certificate: 'Сертификат',
+        title: 'Қазақша атауы',
         menuTitle: 'Ұйымды басқару',
         roleTitle: 'Рөлді басқару',
         rolePosRelTitle: 'Позиция-рөлді басқару',
         rolePosTitle: 'Позицияны басқару',
         giveRole: 'Жаңа роль беру',
         givePosRoleRel: 'Жаңа позиция-роль қарым-қатынасын беру',
-        givePosRel:'Жаңа позиция',
+        givePosRel: 'Жаңа позиция',
         selectOrg: 'Ұйымды таңдаңыз',
         selectPosition: 'Позицияны таңдаңыз',
         selectDep: 'Бөлімді таңдаңыз',
@@ -1645,7 +1685,7 @@ export default {
         roleName: 'Роль аты',
         roleLabel: 'Роль',
         departmentName: 'Департамент атауы',
-        positionName:'Позиция атауы',
+        positionName: 'Позиция атауы',
         noResult: 'Жазбалар табылмады',
         cantDelete: 'Жазбаны өшіру мүмкін емес',
         addNewInstance: 'Жаңа мақұлдаушыларды/қол қоюшыларды қосу',
@@ -1732,31 +1772,31 @@ export default {
         checkIndexStatus: 'Индекстелу күйін тексеру',
         webOfSciencePublication: 'Web of Science халықаралық рецензияланатын ғылыми журналдардағы мақала',
         scopusPublication: 'Scopus халықаралық рецензияланатын ғылыми журналдардағы мақала',
-        recommendedBy:'Ұсынылған (Университеттің ғылыми кеңесі)',
+        recommendedBy: 'Ұсынылған (Университеттің ғылыми кеңесі)',
         linkToPublication: 'Жарияланымға сілтеме',
         source: 'Дереккөз',
-        publisher:'Баспа',
-        documentType:'Құжат түрі',
-        originalLanguage:'Түпнұсқа тілі',
+        publisher: 'Баспа',
+        documentType: 'Құжат түрі',
+        originalLanguage: 'Түпнұсқа тілі',
         indexed: 'Индекстеу күні',
         publicationsRecommendedQACFSHE: 'ҒЖБССҚК ұсынған ғылыми басылымдар',
-        publicationRecommendedQACFSHE:'ҒЖБССҚК ұсынған ғылыми басылым',
+        publicationRecommendedQACFSHE: 'ҒЖБССҚК ұсынған ғылыми басылым',
         sendRequestToAdd: 'Жарияланым қосуға сұраныс жіберіңіз',
         requestToAddPublication: 'Жарияланымды қосуға сұраныс',
-        myRequests:'Менің өтініштерім',
-        edition:'Шығарылым',
-        requestsToAdd:'Қосу туралы өтініштер',
-        recommendedByQACFSHEKazakh:'ҒЖБССҚК ұсынған басылымның қазақ тіліндегі атауы',
-        recommendedByQACFSHERussian:'ҒЖБССҚК ұсынған басылымның орыс тіліндегі басылымы',
-        recommendedByQACFSHEEnglish:'ҒЖБССҚК ұсынған басылымның ағылшын тіліндегі басылымы',
-        requester:'Өтініш беруші',
-        selectedRequest:'Таңдалған өтініш',
-        yourRequestHasBeenApproved:'Сіздің сұранысыңыз мақұлданды',
-        yourRequestHasBeenRejected:'Сіздің сұранысыңыз қабылданбады',
-        scientists:'Университет ғалымдары',
+        myRequests: 'Менің өтініштерім',
+        edition: 'Шығарылым',
+        requestsToAdd: 'Қосу туралы өтініштер',
+        recommendedByQACFSHEKazakh: 'ҒЖБССҚК ұсынған басылымның қазақ тіліндегі атауы',
+        recommendedByQACFSHERussian: 'ҒЖБССҚК ұсынған басылымның орыс тіліндегі басылымы',
+        recommendedByQACFSHEEnglish: 'ҒЖБССҚК ұсынған басылымның ағылшын тіліндегі басылымы',
+        requester: 'Өтініш беруші',
+        selectedRequest: 'Таңдалған өтініш',
+        yourRequestHasBeenApproved: 'Сіздің сұранысыңыз мақұлданды',
+        yourRequestHasBeenRejected: 'Сіздің сұранысыңыз қабылданбады',
+        scientists: 'Университет ғалымдары',
         areaScientificInterests: 'Ғылыми қызығушылықтар саласы',
         laborActivity: 'Еңбек қызметі',
-        awardsAndHonors:'Марапаттар мен құрметті атақтар',
+        awardsAndHonors: 'Марапаттар мен құрметті атақтар',
         professionalDevelopment: 'Біліктілікті арттыру',
         typeOfAward: 'Награда түрі',
         reward: 'Награда',
@@ -1766,24 +1806,24 @@ export default {
         reqardLocale: '',
         qualification: {
             trainingForm: 'Біліктілікті арттыру нысаны',
-            country:'Ел',
+            country: 'Ел',
             city: 'Қала',
-            start:'Басталуы',
+            start: 'Басталуы',
             end: 'Соңы',
-            durationAndScope:'Ұзақтығы мен көлемі (сағат)',
-            fundingSource:'Қаржыландыру көзі',
+            durationAndScope: 'Ұзақтығы мен көлемі (сағат)',
+            fundingSource: 'Қаржыландыру көзі',
             typeSupportingDoc: 'Растайтын құжаттың түрі',
         },
         scientistsProfile: 'Ғалымдардың профилі',
         profileLink: 'Профильге сілтеме',
         academicDegAndAcademicTit: 'Ғылыми дәрежесі және ғылыми атағы',
-        currentPosition:'Ағымдағы лауазым',
+        currentPosition: 'Ағымдағы лауазым',
         customerAndSourceInRussia: 'Тапсырыс беруші және қаржыландыру көзі орыс тілінде',
         customerAndSourceInKazakh: 'Тапсырыс беруші және қаржыландыру көзі қазақ тілінде',
         customerAndSourceInEnglish: 'Тапсырыс беруші және қаржыландыру көзі ағылшын тілінде',
-        customerAndSource:'Тапсырыс беруші және қаржыландыру көзі',
+        customerAndSource: 'Тапсырыс беруші және қаржыландыру көзі',
         contract_sum_kz: 'Шарт сомасы',
-        project_position:'Жобаның позициясы',
+        project_position: 'Жобаның позициясы',
         scientific_grants: "Ғылыми гранттар",
         orgNameKz: 'Ұйымның қазақ тіліндегі атауы',
         orgNameRu: 'Ұйымның орыс тіліндегі атауы',
@@ -1794,11 +1834,12 @@ export default {
         responsibilitiesKz: 'Қазақ тіліндегі қызметтік міндеттер',
         responsibilitiesRu: 'Орыс тіліндегі қызметтік міндеттер',
         responsibilitiesEn: 'Ағылшын тіліндегі қызметтік міндеттер',
-
-
+        nameTopicInQazaq: "Тақырып атауы қазақ тілінде",
+        nameTopicInRussian: "Тақырып атауы орыс тілінде",
+        nameTopicInEnglish: "Тақырып атауы ағылшын тілінде",
     },
     personalData: 'Жеке ақпарат',
-    yearPeriod:'Период годов',
+    yearPeriod: 'Период годов',
     scienceWorks: {
         title: "Ғылыми жұмыстар",
         titleList: "Ғылыми жұмыстар тізімі",
@@ -1811,7 +1852,9 @@ export default {
             beforeMastersThesis: "Магистрлік диссертация қорғауға дейін жарияланған ғылыми жұмыстар",
             afterMastersThesis: "Магистрлік диссертация қорғағаннан кейін жарияланған ғылыми жұмыстар",
             afterScientificWorks: "Қауымдастырылған профессор (доцент)\" ғылыми атағын алғаннан кейін жарияланған ғылыми еңбектері",
-            others: "Өзге"
+            others: "Өзге",
+            beforeDoctoralDissertation: "Докторлық диссертация қорғағанға дейін басылған ғылыми еңбектер",
+            afterDoctoralDissertation: "Докторлық диссертация қорғағаннан кейін басылған ғылыми еңбектер"
         },
         buttons: {
             card: "Карта",
@@ -1846,12 +1889,18 @@ export default {
             years: "Жылдар",
         },
         types: {
-            article: "Мақала",
+            article: "Web of Science Core Collection халықаралық рецензияланатын журналындағы мақалалар",
             monograph: "Монография",
             scopus_article: "Scopus-тағы жарияланымдар",
             publication_koksnvo: "ҒЖБССҚК ұсынған ғылыми басылым",
             textbooks: "Оқулықтар / Оқыту құралдары / Оқыту құралдары / Семинарлар",
-            free: "Ғылыми еңбектер",
+            free: "Өзге",
+            scientific_recommendations: "Ғылыми ұсыныстар",
+            thesis: "Тезистер(конференция)",
+            training_manual: "Оқу құралы",
+            author_certificates_patents: "Авторлық куәліктер, паттентер",
+            conference_proceedings: "Халықаралық ғылыми-практикалық конференциялар жинақтарында",
+            authorized_body_publications: "Уәкілетті орган ұсынған басылымдарда"
         },
         messages: {
             successImport: "Импорттау сұрауы сәтті жіберілді",
@@ -1878,7 +1927,7 @@ export default {
             attachments: "Қосымшалар",
             publicationCategory: "Жарияланым санаты",
             publicationType: "Жарияланым түрі",
-            participationInGroup: "Авторлар ұжымына қатысу",
+            participationInGroup: "Автордың үлесі (Баспа табақтар)",
             subtypeDescription: "Документ типі"
         }
     },
@@ -1902,9 +1951,10 @@ export default {
         addCourse: 'Курсты құру',
         online: 'Онлайн',
         offline: 'Оффлайн',
-        mixed: 'Аралас'
+        mixed: 'Аралас',
+        scienceSchool: 'Ғылыми мектеп'
     },
-    educationalPrograms:{
+    educationalPrograms: {
         name: 'Білім бағдарламасы',
         educationalProgramConstructor: 'Білім бағдарламаларының конструкторы',
         bachelor: 'Бакалавриат',
@@ -2007,6 +2057,8 @@ export default {
         ep: 'Мамандану/БББ'
     },
     helpDesk: {
+        instructionNumber: "Оқыту тілі",
+        nameOftheTrainingProgram: "Оқыту бағдарламасының атауы",
         title: 'Менің өтінімдерім',
         category:'Санаттар',
         creationTime: 'Құру уақыты',
@@ -2023,7 +2075,7 @@ export default {
         createCategory:"Жаңа санат құру",
         application: {
             applicationName: 'Өтінімдер',
-            requestReason: 'Өтінімді Жолдау',
+            requestReason: 'Өтінім бағыты',
             description: 'Сипаттама',
             contactNumber: 'Байланыс нөмірі',
             categoryApplication: 'Өтінім санаты',
@@ -2033,22 +2085,93 @@ export default {
             applicationNumber: 'Өтінім нөмірі:',
             created: 'Құрылды',
             closed: 'Жабық',
-            date:'Күнді таңдаңыз',
-            dateTime:'Уақытты таңдаңыз',
+            date: 'Күнді таңдаңыз',
+            dateTime: 'Уақытты таңдаңыз',
             discipline: 'Сабақты жазыңыз',
             credits: 'Кредит саны',
             codeName: 'Код атауы',
             inputErrorMessage: 'Дұрыс деректерді енгізіңіз',
             applicationObjectives: 'Өтінімнің мақсаттары',
             enteredIncorrectly: 'Қате енгіздіңіз'
-        },
+        }
+    },
+    hikvision: {
+        employeeName: 'Қызметкер',
+        generate: 'Отчет генерациялау',
+        employeeEntryExitReport: 'Қызметкерлердің ғимаратқа кіру және шығуы туралы есеп',
+        generateReport: 'Есеп құрастыру',
+        workSchedule: 'Жұмыс уақыты',
+        generatedReports: 'Список сформированных отчетов',
+        dateRange: 'Күн/Күн диапазоны',
+        category: 'Категория',
+        department: 'Құрылымдық бөлімше',
+        employee: 'Сотрудник',
+        author: 'Автор',
+        reportGenerationDate: 'Есеп құрастырылған күн',
+        actions: 'Действия',
+        view: 'Просмотр',
+        export: 'Экспорт',
+        delete: 'Удалить',
+        all: 'Барлығы',
+        pps: 'ППС',
+        aup: 'АУП',
+        op: 'ОП',
+        ahp:'АХП',
+        uvp:'УВП',
+        nii: 'НИИ',
+        // add other translations here
+        workScheduleForPPS: 'Жұмыс тәртібі для ППС',
+        workScheduleForEmployees: 'Жұмыс тәртібі для сотрудников',
+        dayOff: 'Демалыс күні',
+        reset: 'Қалпына келтіру',
+        save: 'Сақтау',
+        cancel: 'Болдырмау',
+        notification: 'Есеп жасалуда. Бұл біраз уақыт алуы мүмкін',
+        dateRequiredError: 'Сіз Күн/Күн диапазонын толтырмағансыз',
+
 
     },
     error: {
         invalidEmail: "Электрондық поштаның мекенжайы дұрыс емес",
-        invalidPhoneNumber: "Телефон нөмірі дұрыс емес. Ол 11 саннан тұруы керек"
+        invalidPhoneNumber: "Телефон нөмірі дұрыс емес. Ол 11 саннан тұруы керек",
+        applicationRequirement: "Вакансияға өтініш беру үшін жарамды электрондық пошта мекенжайын немесе телефон нөмірін көрсету қажет.",
+    },
+    telegram: {
+        question: 'Сұрақтар',
+
+        anwers: 'Жауаптар',
+
+        author: 'Сұрақтың авторы',
+
+        questionkz: 'Cұрақты қазақша еңгізіңіз',
+
+        questionen: 'Cұрақты ағылшынша еңгізіңіз',
+
+        questionru: 'Cұрақты орысша еңгізіңіз',
+
+        anwerskz: 'Жауапты қазақша еңгізіңіз',
+
+        anwersen: 'Жауапты ағылшынша еңгізіңіз',
+
+        anwersru: 'Жауапты орысша еңгізіңіз',
+
+        crAndUpdEdu: 'Сұрақ-Жауап құру және өзгерту'
+
+
+    },
+    enuTopicSettings: {
+        normalVersion: 'Қалыпты нұсқа',
+        inputType: 'Енгізу Стилі',
+        inputOutlined: 'Көрсетілген',
+        inputFilled: 'Толтырылған',
+        rippleEffect: 'Толқындық Әсер',
+        menuColor: 'Мәзір Түсі',
+        menuColorDark: 'Қараңғы',
+        menuColorLight: 'Жарық',
+        ssdfgsdfg: 'sdfgsdfg',
+        epg: 'Мамандық/БББТ',
+        ep: 'Мамандану/БББ'
     },
     status_resume: "Түйіндемені толтыру статусы",
     people_special_needs: "Ерекше қажеттіліктері бар адамдар"
-
 }

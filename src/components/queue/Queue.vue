@@ -229,8 +229,9 @@ export default {
       },
       
       lazyParams: {
+        page: 0,
         first: 0,
-        rows: 10,
+        rows: 20,
         parentID: null,
       },
       validation: {

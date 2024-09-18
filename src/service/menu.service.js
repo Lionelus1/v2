@@ -43,7 +43,7 @@ export class MenuService {
                                 label: $t('postaccmonrep.title'),
                                 icon: 'pi pi-fw pi-folder',
                                 to: '/documents/catalog/postaccmonrep'
-                            },  
+                            },
                             {
                                 label: $t('common.sacReportMenuTitle'),
                                 icon: 'pi pi-fw pi-folder',
@@ -344,20 +344,28 @@ export class MenuService {
             {
                 label: $t('helpDesk.title'),
                 icon: 'pi pi-spin pi-cog',
+                to: '/helpdesk',
+
+            },
+            {
+                label: $t('Telegram'),
+                icon: 'fa-brands fa-telegram',
+                to: '/telegram',
+                visible: this.findRole('telegram') || this.findRole('main_administrator')
+            },
+            {
+                label: $t('workPlan.reports'),
+                icon: 'pi pi-fw pi-chart-line',
+                visible: this.findRole("personal"),
                 items: [
                     {
-                        label: $t('helpDesk.title'),
-                        icon: 'fa-solid fa-paperclip',
-                        to: '/helpdesk/deskJournal',
-                    },
-                    {
-                        label: $t('helpDesk.category'),
-                        icon: 'fa-solid fa-pen-nib',
-                        to: '/helpdesk/create',
-                        visible: this.findRole("main_administrator") || this.findRole("online_course_administrator")
+                        label: $t('Hikvision'),
+                        icon: 'fa-solid fa-file-signature',
+                        to: '/hikvision',
+
                     }
                 ]
-            }
+            },
         ]
     }
 

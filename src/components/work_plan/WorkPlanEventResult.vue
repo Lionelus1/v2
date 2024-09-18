@@ -157,7 +157,7 @@
                         <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.thirdName + " " + item.user.firstName }}</b></span>
                         <span class="pb-2"><strong>{{ getQuarter(item.result_text[0].quarter) }}</strong> | {{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
                       </div>
-                      <div class="ml-3">
+                      <div class="ml-3" v-if="item?.plan_event_result_history[0]?.state_id !== 9">
                         <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">
                           {{ getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
                         <span style="float: right; margin-top: 0px;">
@@ -305,6 +305,13 @@
                 </span>
               </template>
             </Column>
+            <Column field="user" :header="$t('common.comment')">
+              <template #body="{ data }">
+                <div v-if="data?.state_id == 9">
+                  <Button icon="pi pi-eye" @click="openModiPersonHistory(data)" severity="secondary" alt-text="Resp Person"/>
+                </div>
+              </template>
+            </Column>
           </DataTable>
           <div v-else>
             {{ $t('common.recordsNotFound') }}
@@ -314,6 +321,7 @@
       </TabView>
     </div>
   </div>
+
   <Sidebar v-model:visible="toCorrectSidebar" position="right" class="p-sidebar-lg " style="overflow-y: scroll">
     <h3>{{ $t('workPlan.toCorrect') }}</h3>
     <div class="field">
@@ -349,6 +357,120 @@
       </div>
     </div>
 </Sidebar>
+<Dialog v-model:visible="modifiedHistory" :header="$t('workPlan.editRespUser')" :position="position" modal :style="{ width: '400px' }" class="p-fluid" :breakpoints="{ '960px': '75vw', '640px': '90vw' }">
+  <div class="dialog-content">
+      <div class="field">
+        <label class="bold">{{  $t('queue.time') + ":" }}</label>
+        <span class="value">{{ formatDateMoment(modiDialogData?.modi_date) }}</span>
+      </div>
+      <div class="field">
+        <label class="bold">{{ $t('workPlan.modifiedPerson') + ":" }}</label>
+        <span class="value">{{ modiDialogData?.modi_user?.fullName }}</span>
+      </div>
+      <div class="field">
+        <label class="bold">{{ $t('common.comment') + ":"}}</label>
+        <div v-if="commentParseJson?.comment !== ''">
+          <p class="value" v-if="commentParseJson?.comment && commentParseJson?.comment?.length > 0">{{ commentParseJson?.comment }}</p>
+        </div>
+        <div v-else>{{ $t('common.noComment') }}</div>
+        
+       
+      </div>
+      <div class="field" v-if="commentParseJson?.summary_department">
+        <label class="bold">{{ $t('workPlan.operationalPlan') + ":"}}</label>
+        <p>{{ $t('workPlan.summaryDepartment') }}</p>
+        <Timeline :value="commentParseJson?.summary_department?.modified" class="timeline_wp_history">
+              <template #opposite="slotProps">
+                  <div v-if='$i18n.locale === "kz"'>
+                    <div v-for="(item, index) in slotProps.item" :key="index" style="text-align:right; min-width: 80px;">
+                      <div v-if="item.kz.before">{{ item.kz.before }}</div>
+                      <div v-if="item.kz.after">{{ item.kz.after }}</div>
+                      <div v-if="item.kz.added">{{ item.kz.added }}</div>
+                      <div v-if="item.kz.removed">{{ item.kz.removed }}</div>
+                    </div>
+                  </div>
+                  <div v-if='$i18n.locale === "ru"'>
+                    <div v-for="(item, index) in slotProps.item" :key="index" style="text-align:right; min-width: 80px;">
+                      <div v-if="item.ru.before">{{ item.ru.before }}</div>
+                      <div v-if="item.ru.after">{{ item.ru.after }}</div>
+                      <div v-if="item.ru.added">{{ item.ru.added }}</div>
+                      <div v-if="item.ru.removed">{{ item.ru.removed }}</div>
+                    </div>
+                  </div>
+                  <div v-if='$i18n.locale === "en"'>
+                    <div v-for="(item, index) in slotProps.item" :key="index" style="text-align:right; min-width: 80px;">
+                      <div v-if="item.en.before">{{ item.en.before }}</div>
+                      <div v-if="item.en.after">{{ item.en.after }}</div>
+                      <div v-if="item.en.added">{{ item.en.added }}</div>
+                      <div v-if="item.en.removed">{{ item.en.removed }}</div>
+                    </div>
+                  </div>
+              </template>
+
+              <template #content="slotProps">
+                <div v-if='$i18n.locale === "kz"'>
+                  <div v-if="slotProps?.item?.status?.kz?.user" style="text-align: left;margin-bottom: 15px;">{{ slotProps?.item?.status?.kz?.user }}</div>
+                </div>
+                <div v-if='$i18n.locale === "ru"'>
+                  <div v-if="slotProps?.item?.status?.ru?.user">{{ slotProps?.item?.status?.ru?.user }}</div>
+                </div>
+                <div v-if='$i18n.locale === "en"'>
+                  <div v-if="slotProps?.item?.status?.en?.user">{{ slotProps?.item?.status?.en?.user }}</div>
+                </div>
+              </template>
+            </Timeline>
+      </div>
+      <div class="field">
+        <label class="bold">{{ $t('dissertation.dissReportActions') + ":"}}</label>
+        <div>
+          <Timeline :value="commentParseJson?.responsive_users?.modified" class="timeline_wp_history">
+              <template #opposite="slotProps">
+                  <div v-if='$i18n.locale === "kz"'>
+                    <div v-for="(item, index) in slotProps.item" :key="index" style="text-align:right; min-width: 80px;">
+                      <div v-if="item.kz.before">{{ item.kz.before }}</div>
+                      <div v-if="item.kz.after">{{ item.kz.after }}</div>
+                      <div v-if="item.kz.added">{{ item.kz.added }}</div>
+                      <div v-if="item.kz.removed">{{ item.kz.removed }}</div>
+                    </div>
+                  </div>
+                  <div v-if='$i18n.locale === "ru"'>
+                    <div v-for="(item, index) in slotProps.item" :key="index" style="text-align:right; min-width: 80px;">
+                      <div v-if="item.ru.before">{{ item.ru.before }}</div>
+                      <div v-if="item.ru.after">{{ item.ru.after }}</div>
+                      <div v-if="item.ru.added">{{ item.ru.added }}</div>
+                      <div v-if="item.ru.removed">{{ item.ru.removed }}</div>
+                    </div>
+                  </div>
+                  <div v-if='$i18n.locale === "en"'>
+                    <div v-for="(item, index) in slotProps.item" :key="index" style="text-align:right; min-width: 80px;">
+                      <div v-if="item.en.before">{{ item.en.before }}</div>
+                      <div v-if="item.en.after">{{ item.en.after }}</div>
+                      <div v-if="item.en.added">{{ item.en.added }}</div>
+                      <div v-if="item.en.removed">{{ item.en.removed }}</div>
+                    </div>
+                  </div>
+                  
+                
+              </template>
+
+              <template #content="slotProps">
+                <div v-if='$i18n.locale === "kz"'>
+                  <div v-if="slotProps?.item?.status?.kz?.users" style="text-align: left;margin-bottom: 15px;">{{ slotProps?.item?.status?.kz?.users }}</div>
+                </div>
+                <div v-if='$i18n.locale === "ru"'>
+                  <div v-if="slotProps?.item?.status?.ru?.users">{{ slotProps?.item?.status?.ru?.users }}</div>
+                </div>
+                <div v-if='$i18n.locale === "en"'>
+                  <div v-if="slotProps?.item?.status?.en?.users">{{ slotProps?.item?.status?.en?.users }}</div>
+                </div>
+              </template>
+            </Timeline>
+            
+        </div>
+      </div>
+    </div>
+</Dialog>
+
 </template>
 
 <script>
@@ -405,6 +527,7 @@ export default {
         {name_kz: "Түзетуде", name_ru: "На доработке", name_en: "Under revision", id: 6},
         {name_kz: "Тексерілді", name_ru: "Проверено", name_en: "Inspected", id: 7},
         {name_kz: "Өшірілді", name_ru: "Удалено", name_en: "Deleted", id: 3},
+        {name_kz: "Өзгертілген", name_ru: "Измененный", name_en: "Modified", id: 9},
 
       ],
       historyStatus: [
@@ -415,6 +538,8 @@ export default {
         {name_kz: "Тексерілуде", name_ru: "На проверке", name_en: "On inspection", id: 5},
         {name_kz: "Түзетуде", name_ru: "На доработке", name_en: "Under revision", id: 6},
         {name_kz: "Тексерілді", name_ru: "Проверено", name_en: "Inspected", id: 7},
+        {name_kz: "Өзгертілген", name_ru: "Измененный", name_en: "Modified", id: 9},
+        
 
       ],
       isInspected: true,
@@ -442,7 +567,12 @@ export default {
       validation:{
         quarter: false
       },
-      inputWordCount: 0
+      inputWordCount: 0,
+      modifiedHistory:false,
+      modiDialogData: null,
+      position: 'topright',
+      commentParseJson: null
+
     }
   },
 
@@ -542,6 +672,14 @@ export default {
 
   methods: {
     findRole: findRole,
+    openModiPersonHistory(data) {
+            this.modiDialogData = data;
+            if(this.modiDialogData?.text?.length > 0){
+              this.commentParseJson = JSON.parse(this.modiDialogData.text);
+            }
+            
+            this.modifiedHistory = true;
+    },
     getFirstMonthOfQuarter() {
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1; //1-12
@@ -583,6 +721,9 @@ export default {
     },
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
+    },
+    toggleHistory(ref, data) {
+      this.$refs[ref].toggle(data);
     },
     clearResultFilter(){
       this.resultFilter.responsiveUser = null;
@@ -1316,6 +1457,10 @@ export default {
   letter-spacing: .3px;
   display: inline-block;
   text-align: center;
+  &.status-9 {
+    background: #cc33ff;
+    color: #fff;
+  }
 
   &.status-7 {
     background: #10b981;
@@ -1401,4 +1546,37 @@ td {
     max-width: 90vw; /* Adjust the percentage as needed */
   }
 }
+.dialog-content {
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+.bold {
+  font-weight: bold;
+  color: #333;
+}
+
+.value {
+  display: block;
+  margin-top: 0.25rem;
+  color: #555;
+  font-size: 1rem;
+}
+
+p.value {
+  margin: 0;
+}
+.input-group-wrapper {
+  margin-top: 0.5rem; /* Space between fields and input group */
+}
+
+.input-group-addon {
+  margin-left: 1rem; /* Space between individual input group addons */
+}
+
 </style>

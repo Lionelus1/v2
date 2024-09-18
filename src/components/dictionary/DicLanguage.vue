@@ -75,6 +75,13 @@ import api from "@/service/api";
 
 export default {
   name: "DicLanguage",
+  props: {
+    modelValue: null,
+     editMode: Boolean,
+    placeHolder: String,
+    autoLoad: Boolean,
+    validation: Boolean,
+  },
   data() {
     return {
       value: this.modelValue,
@@ -98,13 +105,6 @@ export default {
         },
       ],
     }
-  },
-  props: {
-    modelValue: null,
-    editMode: Boolean,
-    placeHolder: Text,
-    autoLoad: Boolean,
-    validation: Boolean,
   },
   emits: ['changed'],
   setup(props, context) {

@@ -125,7 +125,9 @@ import InputGroupAddon from 'primevue/inputgroupaddon';
 
 const store = useStore()
 const formData = ref({})
-const infoData = ref({})
+const infoData = ref({
+
+})
 const isClosed = ref()
 const i18n = useI18n()
 const enuService = new EnuWebService()
@@ -183,7 +185,10 @@ const getSettings = () => {
       formData.value = res.data.settings;
       infoData.value = res.data.site_info || {}
       formData.value.is_closed = infoData.value.is_closed
-      socialMediaIds.value = JSON.parse(infoData.value.social_media_ids)
+      if (res.data?.site_info?.social_media_ids){
+        socialMediaIds.value = JSON.parse(res.data?.site_info?.social_media_ids)
+      }
+      
       TN.value = res.data.tn_res
 
       initMourning(formData.value)

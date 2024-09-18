@@ -111,6 +111,12 @@ a {
             cursor: pointer;
         }
     }
+    .accordion_icon.rotate {
+
+        svg{
+            transform: rotate(180deg);
+        }
+    }
 }
 .customer-badge {
     border-radius: 2px;
@@ -262,4 +268,11 @@ a {
 }
 .fa-pen, .fa-pencil {
     color: #FBC02D;
+}
+.select_wp .p-dropdown, .p-chips, .select_wp .p-button {
+    width: 100%;
+}
+
+.timeline_wp_history .p-timeline-event-opposite {
+    flex:0;
 }

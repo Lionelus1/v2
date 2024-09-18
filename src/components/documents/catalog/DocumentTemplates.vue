@@ -323,15 +323,18 @@ export default {
       }).then(res => {
         this.tableTree = [];
         res.data.folders.forEach(folder => {
-          let node = {
-            key: folder.id,
-            nodeType: 'folder',
-            data: folder,
-            leaf: false,
-          };
+          if (folder.namekz	 !== "Студент үйінде орын беру туралы келісімшарт") {
+            console.log(folder.nameru)
+            let node = {
+              key: folder.id,
+              nodeType: 'folder',
+              data: folder,
+              leaf: false,
+            };
 
-          this.tableTree.push(node);
-        })
+            this.tableTree.push(node);
+          }
+        });
 
         this.tableLoading = false;
       }).catch(err => {

@@ -1,5 +1,6 @@
 <template>
   <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
+    <!-- remove this text -->
     <div class="field">
       <label>{{ plan && plan.is_oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
       <InputText v-model="editData.event_name" />
@@ -67,6 +68,11 @@
       <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
       <Textarea v-model="editData.result" rows="3" style="resize: vertical" />
     </div>
+    <div class="field">
+      <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.comment') : $t('common.comment') }}</label>
+      <Textarea v-model="editorComment" rows="3" style="resize: vertical" />
+      <small class="p-error" v-if="submitted && !editorComment?.length > 0">{{ $t('common.requiredField') }}</small>
+    </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeBasic" />
       <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="edit" />
@@ -82,12 +88,14 @@ import RolesByName from "@/components/smartenu/RolesByName.vue";
 export default {
   name: "WorkPlanEventEditModal", 
   components: { RolesByName }, 
-  props: ['visible', 'event', 'planData', 'parent'],
+  props: ['visible', 'event', 'copiedEvent', 'planData', 'parent'],
   emits: ['hide'],
   data() {
     return {
       showWorkPlanEventEditModal: this.visible,
       editData: JSON.parse(JSON.stringify(this.event)),
+      copyedEvent: this.copiedEvent ? JSON.parse(JSON.stringify(this.copiedEvent)) : {},
+      copyedEventUser: this.copiedEvent && this.copiedEvent.user ? JSON.parse(JSON.stringify(this.copiedEvent.user)) : {},
       plan: this.planData,
       quarters: [
         {
@@ -123,6 +131,14 @@ export default {
       planService: new WorkPlanService(),
       Enum: Enum,
       inputSets: null,
+      editorComment: null,
+      addedRespUser: [],
+      removedRespUser: [],
+      removedUserNames: "",
+      addedUserNames: "",
+      copiedEventRespUserNames: "",
+      selectedEventRespUserNames: ""
+
     }
   },
   mounted() {
@@ -131,7 +147,6 @@ export default {
       this.editData.end_date = this.editData.end_date ? new Date(this.editData.end_date) : null
       this.selectedUsers = [];
       this.editData.quarter = parseInt(this.editData.quarter);
-      
       this.editData.user.forEach(e => {
         this.selectedUsers.push(e.user);
         if(e.is_summary_department){
@@ -156,6 +171,7 @@ export default {
         this.inputSets = Array.from(roleMap.values());
       }
     }
+    
   },
   watch: {
     summaryDepartment: {
@@ -181,6 +197,7 @@ export default {
       if (this.notValid()) {
         return;
       }
+      
       let userIds = [];
 
       if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
@@ -199,6 +216,8 @@ export default {
           userIds.push({ user: e, role: null })
         });
       }
+
+      
       let resp_person_id;
       if (this.summaryDepartment && this.summaryDepartment[0]?.userID) {
           resp_person_id = this.summaryDepartment[0].userID;
@@ -208,6 +227,271 @@ export default {
       this.editData.resp_person_id = resp_person_id;
 
       this.editData.resp_person_ids = userIds;
+
+      //resp person history change
+      let commentData = "";
+      let copySummaryDepUser = this.copyedEvent?.user[0]?.user;
+      let currentSummaryDepUser;
+      if (Array.isArray(this.summaryDepartment) && this.summaryDepartment.length > 0) {
+          currentSummaryDepUser = this.summaryDepartment[0];
+      }
+      this.copiedEventRespUserNames = this.copyedEventUser.map(item => {
+                      const user = item.user || {};
+                      const lastName = user.lastName ? user.lastName : '';
+                      const fullName = `${user.thirdName || ''} ${user.firstName || ''} ${lastName}`.trim();
+                      return fullName;
+                    }).filter(name => name).join(', ');
+      
+      
+      
+
+    
+
+      if((this.editorComment && this.editorComment.length > 0)|| (copySummaryDepUser !== null && currentSummaryDepUser !== null) || (this.addedRespUser?.length > 0 || this.removedRespUser?.length > 0)){
+            commentData += "{";
+            let currentDepUserFullName;
+            let copyDepUserFullName;
+          if(this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Oper){
+            if (copySummaryDepUser !== null && currentSummaryDepUser !== null){
+              if (copySummaryDepUser?.userID !== currentSummaryDepUser?.userID){
+                let currentLastName = '';
+                if(currentSummaryDepUser && currentSummaryDepUser?.lastName !== null){
+                  currentLastName += currentSummaryDepUser.lastName;
+                }
+                currentDepUserFullName = currentSummaryDepUser.thirdName + ' ' + currentSummaryDepUser.firstName + ' ' + currentLastName;
+                let copyLastName = '';
+                if(copySummaryDepUser && copySummaryDepUser?.lastName !== null){
+                  copyLastName += copySummaryDepUser.lastName;
+                }
+                copyDepUserFullName = copySummaryDepUser.thirdName + ' ' + copySummaryDepUser.firstName + ' ' + copyLastName;
+                commentData += '"summary_department": {'
+                commentData += '"modified":['
+
+                //before
+                commentData += '{'
+                commentData += '"status":'
+                commentData += '{'
+                commentData += '"kz":{'
+                commentData += '"before":'
+                commentData += '"Бұрын",'
+                commentData += '"user":' + '"' + copyDepUserFullName + '"'
+                commentData += '},'
+                commentData += '"ru":{'
+                commentData += '"before":'
+                commentData += '"До",'
+                commentData += '"user":' + '"' + copyDepUserFullName + '"'
+                commentData += '},'
+                commentData += '"en":{'
+                commentData += '"before":'
+                commentData += '"Before",'
+                commentData += '"user":' + '"' + copyDepUserFullName + '"'
+                commentData += '}'
+                commentData += '}'
+                commentData += '},'
+                //----
+
+                //after
+                commentData += '{'
+                commentData += '"status":'
+                commentData += '{'
+                commentData += '"kz":{'
+                commentData += '"after":'
+                commentData += '"Кейін",'
+                commentData += '"user":' + '"' + currentDepUserFullName + '"'
+                commentData += '},'
+                commentData += '"ru":{'
+                commentData += '"after":'
+                commentData += '"После",'
+                commentData += '"user":' + '"' + currentDepUserFullName + '"'
+                commentData += '},'
+                commentData += '"en":{'
+                commentData += '"after":'
+                commentData += '"After",'
+                commentData += '"user":' + '"' + currentDepUserFullName + '"'
+                commentData += '}'
+                commentData += '}'
+                commentData += '}'
+                //----
+                commentData += ']}'
+              }
+            }
+            
+          }
+
+          this.compareRespUsers();
+          if(this.addedRespUser?.length > 0 || this.removedRespUser?.length > 0){
+            if(currentDepUserFullName?.length > 0 || copyDepUserFullName?.length > 0){
+              commentData += ',"responsive_users": {'
+            }else{
+              commentData += '"responsive_users": {'
+            }
+            
+            commentData += '"modified":['
+            //before
+            commentData += '{'
+                commentData += '"status":'
+                commentData += '{'
+                commentData += '"kz":{'
+                commentData += '"before":'
+                commentData += '"Бұрын",'
+                commentData += '"users":' + '"' + this.copiedEventRespUserNames + '"'
+                commentData += '},'
+                commentData += '"ru":{'
+                commentData += '"before":'
+                commentData += '"До",'
+                commentData += '"users":' + '"' + this.copiedEventRespUserNames + '"'
+                commentData += '},'
+                commentData += '"en":{'
+                commentData += '"before":'
+                commentData += '"Before",'
+                commentData += '"users":' + '"' + this.copiedEventRespUserNames + '"'
+                commentData += '}'
+                commentData += '}'
+                commentData += '},'
+                //----
+                
+                if(this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science){
+                  this.selectedEventRespUserNames = this.inputSets.flatMap(inputSet => 
+                    inputSet.selectedUsers.map(user => {
+                      const thirdName = user.thirdName || '';
+                      const firstName = user.firstName || '';
+                      const lastName = user.lastName || ''; 
+                      const fullName = `${thirdName} ${firstName} ${lastName}`.trim();
+                      return fullName;
+                    })
+                  ).filter(name => name).join(', ');
+                }else{
+                  this.selectedEventRespUserNames = this.selectedUsers.map(item => {
+                  const user = item || {};
+                  const thirdName = user.thirdName || '';
+                  const firstName = user.firstName || '';
+                  const lastName = user.lastName || ''; 
+                  const fullName = `${thirdName} ${firstName} ${lastName}`.trim();
+                  return fullName;
+                }).filter(name => name).join(', ');
+                }
+                
+                //after
+                commentData += '{'
+                commentData += '"status":'
+                commentData += '{'
+                commentData += '"kz":{'
+                commentData += '"after":'
+                commentData += '"Кейін",'
+                commentData += '"users":' + '"' + this.selectedEventRespUserNames + '"'
+                commentData += '},'
+                commentData += '"ru":{'
+                commentData += '"after":'
+                commentData += '"После",'
+                commentData += '"users":' + '"' + this.selectedEventRespUserNames + '"'
+                commentData += '},'
+                commentData += '"en":{'
+                commentData += '"after":'
+                commentData += '"After",'
+                commentData += '"users":' + '"' + this.selectedEventRespUserNames + '"'
+                commentData += '}'
+                commentData += '}'
+                commentData += '},'
+
+                //added
+                this.addedUserNames = this.addedRespUser.map(item => {
+                      const user = item || {};
+                      const lastName = user.lastName ? user.lastName : '';
+                      const fullName = `${user.thirdName || ''} ${user.firstName || ''} ${lastName}`.trim();
+                      return fullName;
+                    }).filter(name => name).join(', ');
+                
+                commentData += '{'
+                commentData += '"status":'
+                commentData += '{'
+                commentData += '"kz":{'
+                commentData += '"added":'
+                commentData += '"Қосылды",'
+                commentData += '"users":' + '"' + this.addedUserNames + '"'
+                commentData += '},'
+                commentData += '"ru":{'
+                commentData += '"added":'
+                commentData += '"Добавлен",'
+                commentData += '"users":' + '"' + this.addedUserNames + '"'
+                commentData += '},'
+                commentData += '"en":{'
+                commentData += '"added":'
+                commentData += '"Added",'
+                commentData += '"users":' + '"' + this.addedUserNames + '"'
+                commentData += '}'
+                commentData += '}'
+                commentData += '},'
+
+                //removed
+                commentData += '{'
+                commentData += '"status":'
+                commentData += '{'
+                commentData += '"kz":{'
+                commentData += '"removed":'
+                commentData += '"Алынды",'
+
+                this.removedUserNames = this.removedRespUser.map(item => {
+                      const user = item.user || {};
+                      const lastName = user.lastName ? user.lastName : '';
+                      const fullName = `${user.thirdName || ''} ${user.firstName || ''} ${lastName}`.trim();
+                      return fullName;
+                    }).filter(name => name).join(', ');
+              
+                commentData += '"users":' + '"' + this.removedUserNames + '"'
+                commentData += '},'
+                commentData += '"ru":{'
+                commentData += '"removed":'
+                commentData += '"Исключен",'
+                commentData += '"users":' + '"' + this.removedUserNames + '"'
+                commentData += '},'
+                commentData += '"en":{'
+                commentData += '"removed":'
+                commentData += '"Removed",'
+                commentData += '"users":' + '"' + this.removedUserNames + '"'
+                commentData += '}'
+                commentData += '}'
+                commentData += '}'
+        
+            commentData += ']'
+            commentData += '},'
+                  
+            if(this.editorComment?.length > 0){  
+              commentData += '"comment":"' + this.editorComment + '"';
+            }else{
+              commentData += '"comment":"' + '' + '"';
+            }
+          }
+          
+          commentData += '}'
+      }
+      if (commentData && commentData.length > 0 && commentData !== "{}" ){
+        this.editData.resp_person_edit_comment = commentData
+      }
+      
+      const noComment = !this.editorComment || this.editorComment.length <= 0;
+      const noChangesInRespUser = this.removedRespUser?.length <= 0 && this.addedRespUser?.length <= 0;
+      const changesInSummaryDepUser = this.copySummaryDepUser?.userID !== this.currentSummaryDepUser?.userID;
+      const isOperPlan = this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Oper
+
+      if (noComment && noChangesInRespUser) {
+        this.$toast.add({ severity: "warn", summary: this.$t('workPlan.message.noChanges'), life: 4000 });
+        return false;
+      }
+
+      if (!noComment && noChangesInRespUser) {
+        this.$toast.add({ severity: "warn", summary: this.$t('workPlan.message.noRespPersonChanged'), life: 4000 });
+        return false;
+      }
+
+      if (noComment && !noChangesInRespUser) {
+        this.$toast.add({ severity: "warn", summary: this.$t('common.noComment'), life: 4000 });
+        return false;
+      }
+      if (isOperPlan && noComment && changesInSummaryDepUser) {
+        this.$toast.add({ severity: "warn", summary: this.$t('workPlan.message.noChanges'), life: 4000 });
+        return false;
+      }
+      
       this.planService.editEvent(this.editData).then(res => {
         if (res.data.is_success) {
           this.$toast.add({
@@ -217,6 +501,7 @@ export default {
           });
           this.closeBasic();
           this.submitted = false;
+          
         }
       }).catch(error => {
         this.submitted = false;
@@ -226,6 +511,24 @@ export default {
         
       });
     },
+    compareRespUsers(){
+      const copiedRespUsersSet = new Set(this.copyedEvent?.user.map(item => item?.user?.userID));
+      let selectedUsersSet;
+      let allSelectedUsers;
+
+      if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
+        allSelectedUsers = this.inputSets.flatMap(inputSet => inputSet?.selectedUsers || []);
+        selectedUsersSet = new Set(allSelectedUsers.map(user => user?.userID));
+      } else {
+        allSelectedUsers = this.selectedUsers;
+        selectedUsersSet = new Set(this.selectedUsers.map(item => item?.userID));
+      }
+
+      this.addedRespUser = allSelectedUsers.filter(item => !copiedRespUsersSet.has(item.userID));
+      this.removedRespUser = this.copyedEvent?.user.filter(item => !selectedUsersSet.has(item.user.userID)) || [];
+      
+    },
+  
     notValid() {
       this.formValid.event_name = this.editData.event_name === null || this.editData.event_name === '';
       this.formValid.users = this.selectedUsers.length === 0;

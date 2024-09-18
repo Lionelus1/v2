@@ -7,7 +7,7 @@
         <img class="round" v-else src="assets/layout/images/default-user.jpg" />
         <FileUpload v-if="(userID === currentUser.userID || findRole(currentUser, 'main_administrator')) && findRole(currentUser, 'teacher')" ref="form" mode="basic" class="mt-2"
                     :customUpload="true" accept="image/*" :class="{'p-invalid': validation.file}"
-                    @uploader="upload($event)" :auto="true" chooseLabel="Выберите фото"/>
+                    @uploader="upload($event)" :auto="true" :chooseLabel="t('common.selectPhoto')"/>
 
         <InlineMessage severity="info" style="font-size: 10px;" class="mt-2" show
                        v-if="file">
@@ -130,7 +130,16 @@
         <div v-if="customType === 'myAccount' || customType === 'viewUser' || customType === 'createUser'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ t('contact.phone') }}</label>
             <InputText class="mt-2" :placeholder="t('contact.phone')" v-model="user.phoneNumber" :readonly="props.readonly" @input="updateUserData"></InputText>
-            <small class="p-error" v-if="validation.address">{{ t("common.requiredField") }}</small>
+        </div>
+
+        <!-- Внутренний телефон -->
+        <div v-if="customType === 'myAccount' || customType === 'viewUser' || customType === 'createUser'" class="col-12 mb-2 mt-2 pb-2 lg:col-6 mb-lg-0">
+          <label>{{ t('contact.officePhone') }}</label>
+          <InputMask type="text" :useGrouping="false" mask="99999" class="mt-2"
+                       :placeholder="t('contact.officePhone')" v-model="user.internalPhone"
+                     :readonly="props.readonly" @update:modelValue="updateUserData">
+          </InputMask>
+          <small class="p-error" v-if="validation.officePhone">{{ t("common.requiredField") }}</small>
         </div>
         
           <!-- Пол -->
@@ -151,7 +160,7 @@
       </div>
     </div>
     <Sidebar v-model:visible="organizationCard" position="right" class="p-sidebar-lg">
-      <OrganizationPage :organization="user?.mainPosition?.organization" :sidebar="true"/>
+      <OrganizationPage :id="user?.mainPosition?.organization?.id" :organization="user?.mainPosition?.organization" :sidebar="true"/>
     </Sidebar>
 
     <Sidebar v-model:visible="organizationList" position="right" class="p-sidebar-lg">
@@ -213,7 +222,8 @@
     thirdNameEn: false,
     birthday: false,
     email: false,
-    address: false
+    address: false,
+    officePhone: false,
   })
   const gender = [
     { id: 1, kz: "еркек", ru: "мужчина", en: "Male" },

@@ -1,7 +1,7 @@
 <template>
   <div id="carddiv" class="grid">
     <div class="col-12">
-      <h3>Научные гранты</h3>
+      <h3>{{ t('science.scientific_grants') }}</h3>
       <div>
         <Menubar :model="menu"  style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
       </div>
@@ -57,13 +57,13 @@
           </div>
 
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <label>{{t('common.nameInQazaq')}}</label>
+            <label>{{t('science.nameTopicInQazaq')}}</label>
             <InputText
                 :readonly="readonly"
                 class="mt-2"
                 :class="{'p-invalid': validation.name_kz}"
                 type="text"
-                :placeholder="t('common.nameInQazaq')"
+                :placeholder="t('science.nameTopicInQazaq')"
                 v-model="payload.name_kz"
             ></InputText>
             <small
@@ -89,13 +89,13 @@
           </div>
 
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <label>{{t('common.nameInRussian')}}</label>
+            <label>{{t('science.nameTopicInRussian')}}</label>
             <InputText
                 :readonly="readonly"
                 class="mt-2"
                 :class="{'p-invalid': validation.name_ru}"
                 type="text"
-                :placeholder="t('common.nameInRussian')"
+                :placeholder="t('science.nameTopicInRussian')"
                 v-model="payload.name_ru"
             ></InputText>
             <small
@@ -121,13 +121,13 @@
           </div>
 
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <label>{{t('common.nameInEnglish')}}</label>
+            <label>{{t('science.nameTopicInEnglish')}}</label>
             <InputText
                 :readonly="readonly"
                 class="mt-2"
                 :class="{'p-invalid': validation.name_en}"
                 type="text"
-                :placeholder="t('common.nameInEnglish')"
+                :placeholder="t('science.nameTopicInEnglish')"
                 v-model="payload.name_en"
             ></InputText>
             <small

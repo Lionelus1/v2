@@ -1,6 +1,6 @@
 <template>
   <div class="card">
-      <Toolbar class="mb-4">
+    <Toolbar class="mb-4">
       <template #start>
         <Button
             v-if="view.modifier"
@@ -66,139 +66,15 @@
         </OverlayPanel>
       </template>
     </Toolbar>
-    <!-- ОСНОВНАЯ ТАБЛИЦА ДАННЫХ -->
-    <DataTable :lazy="true"
-               :value="vacancies"
-               @page="onPage($event)"
-               :totalRecords="count"
-               :paginator="true"
-               paginatorTemplate="FirstPageLink
-                                  PrevPageLink
-                                  PageLinks
-                                  NextPageLink
-                                  LastPageLink
-                                  CurrentPageReport
-                                  RowsPerPageDropdown"
-               :rowsPerPageOptions="[10, 25, 50]"
-               :currentPageReportTemplate="$t('common.showingRecordsCount',
-                                                    { first: '{first}',
-                                                      last: '{last}',
-                                                      totalRecords: '{totalRecords}'
-                                                    })"
-               class="p-datatable-customers"
-               :rows="10"
-               dataKey="id"
-               :rowHover="true"
-               v-model:selection="vacancy"
-               selection-mode="single"
-               @row-select="select($event)"
-               :filters="filters"
-               :loading="loading"
-               filterDisplay="menu"
-               :showFilterMatchModes="false"
-               responsiveLayout="scroll"
-               @sort="onSort($event)">
-      <!--  HEADER -->
-      <template #header>
-        <div class="table-header flex flex-column md:flex-row justify-content-between">
-          <h4 class="mb-2 md:m-0 p-as-md-center">{{ $t("hr.vacancies") }}</h4>
-          <span class="p-input-icon-left">
-            <InputText type="search"
-                       v-model="lazyParams.searchText"
-                       :placeholder="$t('common.search')"
-                       @keyup.enter="getVacancies"
-                       @click="clearData"/>
-              <Button icon="pi pi-search" class="ml-1" @click="getVacancies"/>
-          </span>
-        </div>
-      </template>
-      <!-- EMPTY -->
-      <template #empty> {{ $t('common.noData') }}</template>
-      <!-- ON LOADING -->
-      <template #loading> {{ $t('common.loading') }}</template>
-      <Column>
-        <template #body="slotProps">
-          <Button icon="pi pi-users"
-                  class="p-button-info"
-                  v-if="slotProps.data.candidateRelation && view.modifier"
-                  @click="apply(slotProps.data)"/>
-        </template>
-      </Column>
-      <!-- NAME COLUMN -->
-      <Column :field="'name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)"
-              v-bind:header="$t('common.nameIn')"
-              :sortable="true">
-        <template #body="slotProps">
-          <span>
-            {{
-              $i18n.locale === "kz" ? slotProps.data.nameKz : $i18n.locale === "ru"
-                  ? slotProps.data.nameRu : slotProps.data.nameEn
-            }}
-          </span>
-        </template>
-      </Column>
-      <Column field="org"
-              v-bind:header="$t('common.organizationName')"
-              :sortable="false">
-        <template #body="slotProps">
-          <span>
-            {{
-              $i18n.locale === "kz" ? slotProps.data.organization.name : $i18n.locale === "ru"
-                  ? slotProps.data.organization.nameru : slotProps.data.organization.name
-            }}
-          </span>
-        </template>
-      </Column>
-      <Column field="stp"
-              v-bind:header="$t('common.departmentNameLabel')"
-              :sortable="false">
-        <template #body="slotProps">
-          <span>
-            {{
-              $i18n.locale === "kz" ? slotProps.data.department.nameKz : $i18n.locale === "ru"
-                  ? slotProps.data.department.name : slotProps.data.department.nameEn
-            }}
-          </span>
-        </template>
-      </Column>
-      <!-- STATUS COLUMN -->
-      <Column :field=" $i18n.locale === 'kz' ? `history.status.nameKz` :
-                       $i18n.locale === 'ru' ? `history.status.nameRu` : `history.status.nameEn`"
-              v-bind:header="$t('common.status')"
-      >
-        <template #body="slotProps">
-          <span :class="'customer-badge status-' + slotProps.data.history.status.id">
-            {{
-              $i18n.locale === "kz"
-                  ? slotProps.data.history.status.nameKz
-                  : $i18n.locale === "ru"
-                      ? slotProps.data.history.status.nameRu
-                      : slotProps.data.history.status.nameEn
-            }}
-          </span>
-        </template>
-      </Column>
-      <Column field="date"
-              v-bind:header="$t('common.date')"
-              :sortable="false">
-        <template #body="slotProps">
-          <span>
-            {{
-              new Date(slotProps.data.history.modifyDate).toLocaleDateString()
-            }}
-          </span>
-        </template>
-      </Column>
-      <!-- BUTTON COLUMN -->
-      <Column>
-        <template #body="slotProps">
-          <Button v-if="view.modifier"
-                  icon="pi pi-times"
-                  class="p-button-danger"
-                  @click="openDelete(slotProps.data)"/>
-        </template>
-      </Column>
-    </DataTable>
+    <TabView>
+      <TabPanel :header="$t('hr.vacancies')">
+        <ActualVacancies @select="select"/>
+      </TabPanel>
+      <TabPanel :header="$t('hr.archiveVacancies')">
+        <ArchiveVacancies @select="select"/>
+      </TabPanel>
+    </TabView>
+
     <!--  БОКОВАЯ ПАНЕЛЬ ДОБАВЛЕНИЯ И РЕДАКТИРОВАНИЯ ДАННЫХ  -->
     <Sidebar v-model:visible="isView"
              position="right"
@@ -252,10 +128,15 @@ import {getHeader, smartEnuApi} from "@/config/config";
 import AddVacancy from "./AddVacancy";
 import VacancyCandidateView from "./VacancyCandidateView";
 import VacancyService, {RIGHTS} from "./VacancyService";
+import ActualVacancies from "@/components/humanResources/vacancy/ActualVacancies.vue";
+import ArchiveVacancies from "@/components/humanResources/vacancy/ArchiveVacancies.vue";
 
 export default {
   name: "Vacancies",
-  components: {VacancyCandidateView, AddVacancy},
+  components: {
+    ActualVacancies,
+    ArchiveVacancies,
+    AddVacancy},
   data() {
     return {
       filters: {

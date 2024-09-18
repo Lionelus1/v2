@@ -289,7 +289,7 @@
       default: 0,
     },
     propsCourse: {
-        type: Object, 
+        type: Object,
         default: Object,
     },
     studentState: {
@@ -323,7 +323,7 @@
     }
   )
   const addStudentDialog = ref(false)
-  const organizer = ref(null)  
+  const organizer = ref(null)
   const issueCertificateWithDialog = ref(false)
   const journal = ref(null)
   const journalVisible = ref(false)
@@ -464,7 +464,7 @@
         loading.value = false
         return
     }
-    
+
     if (!courseHistory.value || courseHistory.value.length <= 0) {
       loading.value = false
       return
@@ -556,7 +556,7 @@
         loading.value = false
     });
   }
-  
+
   const closeJournal = () => {
       journalVisible.value = false;
   }
@@ -798,8 +798,8 @@
       loading.value = false
     }).catch(err => {
       loading.value=false
-      if (err.response.status === 404) {
-        toast.add({severity: 'error', summary: t(err.response.data.localizedPath), life: 3000})
+      if (err?.response?.status === 404) {
+        toast.add({severity: 'error', summary: t(err?.response?.data.localizedPath), life: 3000})
       } else {
         toast.add({severity: 'error', summary: t('common.error'), life: 3000})
       }

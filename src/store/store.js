@@ -129,6 +129,7 @@ const store = createStore({
         getParentVariable(state) {
             return state.activeItem;
         },
+        userRoles: state => state.loginedUser && state.loginedUser.roles ? state.loginedUser.roles.map(role => role.name) : [],
         getSelectedPositionDesk(state){
             return state.selectedPosition
         }

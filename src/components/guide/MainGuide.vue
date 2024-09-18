@@ -14,7 +14,7 @@
           <TabPanel header="Қазақша">
             <div class="field">
               <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-              <TinyEditor v-model="guide.content" :height="500"/>
+              <TinyEditor v-model="guide.content" :height="500" :accordion="true"/>
               <small class="p-error" v-show="formValid.content && submitted">
                 {{ $t("smartenu.contentKzInvalid") }}
               </small>
@@ -23,7 +23,7 @@
           <TabPanel header="Русский">
             <div class="field">
               <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-              <TinyEditor v-model="guide.contentRu" :height="500"/>
+              <TinyEditor v-model="guide.contentRu" :height="500" :accordion="true"/>
               <small class="p-error" v-show="formValid.contentRu && submitted">
                 {{ $t("smartenu.contentRuInvalid") }}
               </small>
@@ -32,7 +32,7 @@
           <TabPanel header="English">
             <div class="field">
               <label for="en-content">{{ $t("common.contentInEnglish") }}</label>
-              <TinyEditor v-model="guide.contentEn" :height="500"/>
+              <TinyEditor v-model="guide.contentEn" :height="500" :accordion="true"/>
               <small class="p-error" v-show="formValid.contentEn && submitted">
                 {{ $t("smartenu.contentEnInvalid") }}
               </small>
@@ -42,7 +42,7 @@
         <Button v-bind:label="$t('common.save')" icon="pi pi-check"
             class="p-button p-component p-button-success mr-2" @click="insertGuide" />
       </div>
-      <div class="text_guide" v-show="!role" v-html=
+      <div class="text_guide" ref="dynamicContent" v-show="!role" v-html=
           "$i18n.locale === 'kz' ? guide.content : $i18n.locale === 'ru' ? guide.contentRu : guide.contentEn">
       </div>
       <div v-show="notGuide && !guide.name" style="text-align: center">
@@ -57,8 +57,7 @@
 <script>
 import api from "@/service/api";
 import {findRole} from "../../config/config";
-import {getHeader, smartEnuApi} from "@/config/config";
-import {resizeImages} from "../../helpers/HelperUtil";
+import {getHeader} from "@/config/config";
 import EditGuide from "./EditGuide";
 import AddGuide from "./AddGuide";
 import {MenuService} from "../../service/menu.service";
@@ -94,7 +93,7 @@ export default {
         nameEn: null,
       },
       parentGuide: null,
-      isGlobal: true
+      isGlobal: true,
     };
   },
   methods: {
@@ -117,6 +116,7 @@ export default {
                 }
                 if (data.parent)
                   this.getGuideByPageLink(data.parent.label)
+
               }
 
               this.selectedGuide = this.guide;
@@ -130,6 +130,16 @@ export default {
               this.emitter.emit("expandParentGuide", this.guide.parentId);
             }
             this.loading = false;
+            setTimeout(() => {
+              if (this.guide && this.$refs.dynamicContent) {
+                const accordionEl = this.$refs.dynamicContent.querySelectorAll('accordion_header');
+                if (accordionEl.length !== 0) {
+                  accordionEl.forEach(el => {
+                    el.addEventListener('click', this.openAccordion);
+                  });
+                }
+              }
+            }, 50)
           })
           .catch((error) => {
             console.log(error)
@@ -277,15 +287,31 @@ export default {
       });
     },
     generateRandomString(length) {
-      var result = '';
-      var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      var charactersLength = characters.length;
-      for (var i = 0; i < length; i++) {
+      let result = '';
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      const charactersLength = characters.length;
+      for (let i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() * charactersLength));
       }
       return result;
-    }
+    },
+    openAccordion(event) {
 
+      let accordionNode = event.target.closest('accordion');
+      if (accordionNode) {
+        let bodyNode = accordionNode.querySelector('.body');
+        let header = accordionNode.querySelector('.accordion_icon');
+        if (bodyNode) {
+          if (bodyNode.classList.contains('fade-in')) {
+            bodyNode.classList.remove('fade-in');
+            header.classList.remove('rotate');
+          } else {
+            bodyNode.classList.add('fade-in');
+            header.classList.add('rotate');
+          }
+        }
+      }
+    },
   },
   created() {
     this.getGuide();
@@ -300,6 +326,7 @@ export default {
       this.addViewVisible = false;
       //this.getGuide();
     });
+
   },
   watch: {
     $route(to, from) {
@@ -307,6 +334,9 @@ export default {
       this.formValid = [];
       this.getGuide();
       this.role = this.findRole(null, "manual_moderator")
+    },
+    '$i18n.locale'(newLocale, oldLocale) {
+      this.getGuide();
     }
   }
 
@@ -317,6 +347,11 @@ export default {
 .text_guide {
   ::v-deep .ql-align-center {
     text-align: center;
+  }
+  ::v-deep img{
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ccc;
   }
 }
 

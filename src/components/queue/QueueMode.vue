@@ -35,6 +35,18 @@
         </div>
         <span class="title">{{ $t('queue.interval') }}</span>
         <Dropdown v-model="workDays.appointment_duration" :options="intervals" :placeholder="$t('common.select')"/>
+        <div>
+          <Checkbox class="mr-2" id="notification" name="notification" v-model="workDays.notification" :binary="true"/>
+          <label for="notification">{{$t('queue.notification')}}</label>
+        </div>
+        <div v-if="workDays.notification">
+          <span class="title">{{ $t('queue.notificationTextKz') }}</span>
+          <InputText style="width: 100%; margin-top: 8px; margin-bottom: 8px" class=" notification_text" v-model="workDays.notification_text_kz" type="text"/>
+          <span class="title">{{ $t('queue.notificationTextRu') }}</span>
+          <InputText style="width: 100%; margin-top: 5px; margin-bottom: 8px" class=" notification_text" v-model="workDays.notification_text_ru" type="text"/>
+          <span  class="title">{{ $t('queue.notificationTextEn') }}</span>
+          <InputText style="width: 100%; margin-top: 5px" class=" notification_text" v-model="workDays.notification_text_en" type="text"/>
+        </div>
         <Button :label="$t('common.edit')" @click="workDaysFunc()"></Button>
       </div>
     </div>
@@ -71,8 +83,11 @@ const workDays = ref({
   lunch_start_time: lunchStartTime,
   lunch_final_time: lunchEndTime,
   without_days_off: false,
-  without_lunch: false
-
+  without_lunch: false,
+  notification: false,
+  notification_text_kz: null,
+  notification_text_ru: null,
+  notification_text_en: null,
 })
 const submitted = ref(false)
 const loading = ref(false)

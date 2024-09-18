@@ -179,6 +179,12 @@
                   <span v-if="locale === 'en'">Receiving operator: </span>
                   <b>{{ queinfo.queueName }}</b>
                 </div>
+                <div class="dashed text-left" v-if="queinfo.notification_text">
+                  <span v-if="locale === 'kz'">Хабарлама: </span>
+                  <span v-if="locale === 'ru'">Уведомление: </span>
+                  <span v-if="locale === 'en'">Notification: </span>
+                  <b>{{ queinfo.notification_text	 }}</b>
+                </div>
                 <!--                <div class="flex justify-content-between font-bold">
                                   <div>{{ talonDate }}</div>
                                   <div>{{ talonTime }}</div>
@@ -263,7 +269,7 @@ const queinfo = ref();
 const queError = ref();
 const queuesWS = ref([]);
 const currentStep = ref(2);
-const reservation = ref(true);
+const reservation = ref(false);
 const talonDate = ref('')
 const talonTime = ref('')
 const queueKey = ref()
@@ -470,7 +476,8 @@ const getRegisterService = (queueId, queue) => {
     categoryName.value = JSON.parse(localStorage.getItem('queueCategory'))
     const phoneNumber = localStorage.getItem('phoneNumber')
     const req = {
-      phoneNumber: phoneNumber
+      phoneNumber: phoneNumber,
+      ParentId: parentId.value,
     }
     if (reservation.value && name.value.trim() !== '' && lastName.value.trim() !== '' && email.value && selectedDay.value && selectedTime.value) {
       req.queueID = queueId
@@ -603,6 +610,7 @@ const formatTime= (date) => {
 const previous = () => {
   currentStep.value = 1
 }
+
 onMounted(() => {
   useRealtimeStream(parentId.value)
   if (parentId.value !== parseInt(localStorage.getItem('queueParentId'))) {

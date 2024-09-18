@@ -181,4 +181,8 @@ export class WorkPlanService {
         return api.post('/workPlan/updateWorkPlanEventFact', data, {headers: getHeader()});
     }
 
+    changePlanCreator(data){
+        return api.post('/workPlan/changeWorkPlanCreator', data, {headers: getHeader()});
+    }
+
 }

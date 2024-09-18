@@ -1,4 +1,4 @@
-import {createRouter, createWebHashHistory} from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import Full from './components/Full.vue';
 import store from '@/store/store';
 
@@ -18,9 +18,9 @@ const ifAuthenticated = (to, from, next) => {
     if (store.getters.isAuthenticated) {
         next()
         return
-    }else{
+    } else {
         console.log(to)
-        store.dispatch("solveAttemptedUrl",to);
+        store.dispatch("solveAttemptedUrl", to);
         next('/login')
         return
     }
@@ -42,16 +42,34 @@ const ifMainAdministrator = (to, from, next) => {
     }
 }
 
+const ifUserRoles = (to, from, next) => {
+    if (store.getters.isAuthenticated) {
+        const roles = to.meta.roles;
+        if (roles.some(role => store.getters.userRoles.includes(role))) {
+            next();
+            return;
+        } else {
+            next('/access');
+            return;
+        }
+    } else {
+        store.dispatch("solveAttemptedUrl", to);
+        next('/login');
+        return;
+    }
+}
+
+
 const routes = [
     {
-        path:'/login',
-        name:'Login',
+        path: '/login',
+        name: 'Login',
         component: load('Login'),
         beforeEnter: ifNotAuthenticated
     },
     {
-        path:'/outqr',
-        name:'OutQr',
+        path: '/outqr',
+        name: 'OutQr',
         component: load('OutQr'),
     },
     {
@@ -82,13 +100,13 @@ const routes = [
     },
     {
         path: '/login',
-        redirect:'/login',
+        redirect: '/login',
         name: '/login',
         component: Full,
-        children:[
+        children: [
             {
-                path:'/',
-                name:'Welcome',
+                path: '/',
+                name: 'Welcome',
                 component: load('Welcome'),
                 beforeEnter: ifAuthenticated,
             },
@@ -109,6 +127,10 @@ const routes = [
                 name: '/documents/catalog/contracts',
                 component: load('documents/catalog/Contracts'),
                 beforeEnter: ifAuthenticated,
+                props: route => ({
+                    readonly: route.query.readonly === 'true',
+                    showBackButton: route.query.showBackButton === 'true'
+                })
             },
             {
                 path: '/documents/catalog/educomplex/:docType',
@@ -302,8 +324,15 @@ const routes = [
             },
             {
                 path: '/contragent/organizations',
-                name: 'organizations',
-                component: load('contragent/Organizations'),
+                name: 'OrganizationList',
+                component: load('contragent/v2/OrganizationList'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/contragent/organization/:id?',
+                name: 'OrganizationPage',
+                component: load('contragent/v2/OrganizationPage'),
+                props: true,
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -570,8 +599,8 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path:'/references',
-                name:'References',
+                path: '/references',
+                name: 'References',
                 component: load('references/References'),
                 beforeEnter: ifAuthenticated,
             },
@@ -659,6 +688,20 @@ const routes = [
                 component: load('documents/certificates/Template'),
                 beforeEnter: ifAuthenticated,
             },
+            {
+                path: '/telegram',
+                name: 'TelegramComponent',
+                component: load('telegram/Questions'),
+                meta: { roles: ['telegram', 'main_administrator'] },
+                beforeEnter: ifUserRoles,
+            },
+            {
+                path: '/hikvision',
+                name: 'HikvisionTemplate',
+                component: load('hikvision/Hikvision'),
+                meta: { roles: ['personal'] },
+                beforeEnter: ifUserRoles,
+            },
 
             {
                 path: '/helpdesk/',
@@ -694,6 +737,26 @@ const routes = [
                         path: 'add',
                         name: 'AddCategories',
                         component: load('helpDesk/EditCategories'),
+                        beforeEnter: ifAuthenticated,
+                    }
+                ]
+            },
+            {
+                path: '/helpdesk/v2',
+                name: 'HelpDeskComponent2',
+                component: load('helpDesk/v2/HelpDeskComponent'),
+                beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'DeskJournal2',
+                        component: load('helpDesk/v2/DeskJournal'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/request/v2/:uuid',
+                        name: 'Request2',
+                        component: load('helpDesk/v2/Request'),
                         beforeEnter: ifAuthenticated,
                     }
                 ]
@@ -912,13 +975,13 @@ const routes = [
             },
             {
                 path: '/science/scientists',
-                name:'ScientistsList',
+                name: 'ScientistsList',
                 component: load('science/ScientistsList'),
                 beforeEnter: ifAuthenticated,
             },
             {
                 path: '/science/scientists/:id',
-                name:'ScientistsProfile',
+                name: 'ScientistsProfile',
                 component: load('science/ScientistsProfile'),
                 beforeEnter: ifAuthenticated,
             },
@@ -938,8 +1001,8 @@ const routes = [
         beforeEnter: ifAuthenticated,
         children: [
             {
-                path:':id',
-                name:'MainGuide',
+                path: ':id',
+                name: 'MainGuide',
                 component: load('guide/MainGuide'),
                 beforeEnter: ifAuthenticated,
             },

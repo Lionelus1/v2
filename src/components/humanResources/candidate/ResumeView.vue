@@ -40,7 +40,7 @@
       </div>
       <div class="col-12 lg:col-2">
         <div class="card">
-<!--          <img :src="'data:image/jpeg;base64,' + candidate.user.photo" style="width: 150px"/>-->
+          <!--          <img :src="'data:image/jpeg;base64,' + candidate.user.photo" style="width: 150px"/>-->
         </div>
       </div>
       <div class="col-12">
@@ -193,7 +193,7 @@
         <Timeline style="align-content: flex-start" :value="languages">
           <template #opposite="slotProps">
             <div class="secondary">
-              <em>{{ slotProps.item.language['name' + ($i18n.locale).charAt(0).toUpperCase() + ($i18n.locale).slice(1)] }}</em>
+              <em>{{ slotProps?.item?.language['name' + ($i18n.locale)?.charAt(0)?.toUpperCase() + ($i18n.locale).slice(1)] }}</em>
             </div>
           </template>
           <template #content="slotProps">
@@ -507,14 +507,14 @@ export default {
     this.menu[0].visible = this.menuVisible;
   },
   watch: {
-    'exchange.section': function(newVal) {
+    'exchange.section': function (newVal) {
       this.menuVisible = newVal === this.section.generalInfo;
       this.menu[0].visible = this.menuVisible;
     },
-    'candidate.email': function() {
+    'candidate.email': function () {
       this.validateEmail();
     },
-    'candidate.phoneNumber': function() {
+    'candidate.phoneNumber': function () {
       this.validatePhoneNumber();
     }
   },
