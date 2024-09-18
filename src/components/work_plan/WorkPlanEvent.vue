@@ -796,10 +796,10 @@ export default {
           if (this.planDoc && this.planDoc.docHistory) {
             this.isRejected = this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value;
           }
+
           // кайта орнына келтырып кою керек
           this.isPlanCreator =true;
               // !!(this.plan && this.plan.user && this.plan.user.id === this.loginedUserId);
-
         if (this.isSciencePlan) {
           this.planApprovalStage = [
             {
@@ -858,11 +858,7 @@ export default {
           this.getRelatedFiles()
           this.getWorkPlanApprovalUsers(this.work_plan_id)
         }
-
-
-
           if (this.isWorkSchedule) {
-
             this.planApprovalStage = [
               {
                 stage: 1,
