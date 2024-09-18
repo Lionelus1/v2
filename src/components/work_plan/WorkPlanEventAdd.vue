@@ -3,7 +3,9 @@
       :header="isShedulePlan ? $t('workPlan.addTask') : $t('workPlan.addEvent')"
       v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
-      <DoctorsMastersAddEvent :plan="plan" v-if="!isShedulePlan" @update-data="updateData" />
+      <!-- mastersplan -->
+      <DoctorsMastersAddEvent :plan="plan" @update-data="updateData"  v-if="isMastersPlan || isDoctorsPlan"/>
+      <!-- mastersplan -->
       <div class="field" v-if="!isMastersPlan && !isDoctorsPlan">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
             isShedulePlan ? $t('workPlan.worksByWeek') : $t('workPlan.eventName') }} </label>
