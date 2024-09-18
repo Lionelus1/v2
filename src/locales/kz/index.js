@@ -1620,7 +1620,7 @@ export default {
             getQr: "QR алу",
             confirm: "Сертификатты ҚОСЫМШАСЫЗ беру керек пе?",
             confirm2: "Сертификат ҚОСЫМШАМЕН беріледі, қосымша дұрыс толтырылған ба?",
-            certSelect: "Сертификат сұлбасын көрсету"
+            certSelect: "Сертификат сұлбасын көрсету",
             issueDate: "Тіркеу күні",
         },
         modules: 'Курс модульдері',
@@ -2158,19 +2158,6 @@ export default {
         crAndUpdEdu: 'Сұрақ-Жауап құру және өзгерту'
 
 
-    },
-    enuTopicSettings: {
-        normalVersion: 'Қалыпты нұсқа',
-        inputType: 'Енгізу Стилі',
-        inputOutlined: 'Көрсетілген',
-        inputFilled: 'Толтырылған',
-        rippleEffect: 'Толқындық Әсер',
-        menuColor: 'Мәзір Түсі',
-        menuColorDark: 'Қараңғы',
-        menuColorLight: 'Жарық',
-        ssdfgsdfg: 'sdfgsdfg',
-        epg: 'Мамандық/БББТ',
-        ep: 'Мамандану/БББ'
     },
     status_resume: "Түйіндемені толтыру статусы",
     people_special_needs: "Ерекше қажеттіліктері бар адамдар"
