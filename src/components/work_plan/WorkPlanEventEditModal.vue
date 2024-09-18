@@ -19,6 +19,7 @@
         <label>{{ $t('common.endDate') + "(" + $t('workPlan.week') + ")" }}</label>
         <PrimeCalendar v-model="editData.end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
+
       <div class="field" v-if="isShedulePlan">
         <label>{{ $t('web.note') }}</label>
         <InputText v-model="editData.comment" />
@@ -109,6 +110,7 @@
         <Textarea v-model="editData.result" rows="3" style="resize: vertical"/>
       </div>
     </div>
+
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeBasic" />
       <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="edit" />
@@ -282,11 +284,7 @@ export default {
           resp_person_id = null;
       }
       this.editData.resp_person_id = resp_person_id;
-
       this.editData.resp_person_ids = userIds;
-
-      console.log(this.editData)
-
       this.planService.editEvent(this.editData).then(res => {
         if (res.data.is_success) {
           this.$toast.add({
