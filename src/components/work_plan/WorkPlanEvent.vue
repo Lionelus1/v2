@@ -800,6 +800,8 @@ export default {
           // кайта орнына келтырып кою керек
           this.isPlanCreator =true;
               // !!(this.plan && this.plan.user && this.plan.user.id === this.loginedUserId);
+
+        console.log("test")
         if (this.isSciencePlan) {
           this.planApprovalStage = [
             {
