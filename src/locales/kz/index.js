@@ -1983,7 +1983,8 @@ export default {
         formStudy: 'Оқыту нысаны',
         specialization: 'Мамандандыру',
         groupEP: 'ББ тобы',
-        sdfgdfggg: 'asdasdasd',
+        epg: ' Мамандық/БББТ',
+        ep: ' Мамандану/БББ'
     },
     finance: {
         title: 'Қызметтер каталогы',

@@ -1970,7 +1970,8 @@ export default {
         formStudy: 'Form of study',
         specialization: 'Specialization',
         groupEP: 'Group of educational programs',
-        eeeeeeeeee: 'asdasdasd',
+        epg: 'Profession/EPG',
+        ep: 'Specialization/EP'
     },
     finance: {
         title: 'Catalog of services',

@@ -1883,7 +1883,6 @@ export default {
         formStudy: 'Форма обучения',
         specialization: 'Специализация',
         groupEP: 'Группа образовательных программ',
-        ssdfgsdfg: 'sdfgsdfg',
         epg: 'Специальность/ГОП',
         ep: 'Специализация/ОП'
     },

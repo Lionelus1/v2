@@ -620,6 +620,9 @@ export default {
         cafedra_ids: [],
       }
       this.educationalProgramGroup = null
+      this.resumeView = null
+      this.paymentForm = null
+      this.academicDegree = null
       this.getPersons()
     },
     saveFilter() {
@@ -970,7 +973,7 @@ export default {
 
     async getResume(studentId) {
       try {
-        const response = await this.service.getResume({ userID: studentId });
+        const response = await this.service.getResume({ userID: studentId, lang: this.$i18n.locale });
         if (!response.data) {
           throw new Error('Пустой ответ от сервера');
         }

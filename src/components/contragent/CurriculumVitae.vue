@@ -16,7 +16,7 @@
     <div class="content">
       <div class="column">
         <div class="section" v-if="educations?.length > 0">
-          <h2>Образование</h2>
+          <h2>{{ t('hr.educationLabel') }}</h2>
           <div class="entry" v-for="edu in educations" :key="edu.id">
             <div class="year">{{ formatYear(edu.receiptDate) }} - {{ formatYear(edu.expirationDate) }} {{ edu.isStillStudying ? 'Учится' : '' }}</div>
             <div class="details">
@@ -27,7 +27,7 @@
           </div>
         </div>
         <div class="section" v-if="experiences?.length > 0">
-          <h2>Опыт работы</h2>
+          <h2>{{ t('hr.educationLabel') }}</h2>
           <div class="entry" v-for="exp in experiences" :key="exp.id">
             <div class="year">{{ formatDate(exp.startDate) }} - {{ exp.isStillWorking ? 'До настоящего времени' : formatDate(exp.endDate) }}</div>
             <div class="details">
