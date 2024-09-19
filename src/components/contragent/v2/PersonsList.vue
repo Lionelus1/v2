@@ -11,7 +11,7 @@
   <h3 v-else-if="personType == 4">{{$t('common.graduates')}}</h3>
   <h3 v-else-if="!organization">{{ $t("common.individualEntrepreneur") }}</h3>
   <h3 v-else>{{ $t("contragent.orgEmployees", {"org": getOrganizationName(organization)}) }}</h3>
-  <ToolbarMenu class="m-0 pt-0 pb-0" :data="menu" @filter="toggle('filterOverlayPanel', $event)" :filter="true" :filtered="filtered"></ToolbarMenu>
+  <ToolbarMenu class="m-0 pt-0 pb-0" :data="menu" @filter="toggle('filterOverlayPanel', $event)" :filter="findRole(null, 'personal')" :filtered="filtered"></ToolbarMenu>
   <div class="card">
     <DataTable :value="persons" dataKey="userID" :rows="rows" :totalRecords="total"
       :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
@@ -68,14 +68,14 @@
     <AddEditMailing :isVisible="visibility.shareResume" :value="shareData"></AddEditMailing>
   </div>
 
-  <OverlayPanel ref="filterOverlayPanel">
+  <OverlayPanel  ref="filterOverlayPanel">
     <div class="col-12 md:col-12 p-fluid">
         <div class="grid formgrid">
         <div :class="(personType != 3 && personType != 4) ? 'col-12' : 'col-6 mb-2 pb-2 lg:col-6 mb-lg-0'">
         <label>{{ $t('common.fullName') }}</label>
         <InputText  @keyup.enter="getPersons" v-model="filter.name" :placeholder="$t('common.search')"/>
       </div>
-      <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+      <div v-if="findRole(null, 'personal') && personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ $t('web.degreeLevel') }}</label>
         <Dropdown class="dropdown" v-model="academicDegree" :options="academicDegrees"
                   :optionLabel="'name'+this.$i18n.locale" :placeholder="this.$t('common.select')"
@@ -83,7 +83,7 @@
                   dataKey="value" :emptyFilterMessage="this.$t('roleControl.noResult')"
                   @filter="handleFilterDepartment" @change="handleSelectionChange"/>
       </div>
-      <div v-if="personType == 3" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+      <div v-if="findRole(null, 'personal') && personType == 3" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ $t('common.faculty') }}</label>
         <Dropdown class="dropdown" v-model="selectedDepartment" :options="departments"
                   :optionLabel="localizeDepartment" :placeholder="this.$t('common.select')"
@@ -91,7 +91,7 @@
                   dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"
                   @filter="handleFilterDepartment" @change="handleSelectionChange"/>
       </div>
-      <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+      <div v-if="findRole(null, 'personal') && personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ $t('educationalPrograms.epg') }}</label>
         <Dropdown class="dropdown" v-model="educationalProgramGroup" :options="educationalProgramGroups"
                   :optionLabel="localizeEducationalProgramGroup" :placeholder="this.$t('common.select')"
@@ -99,7 +99,7 @@
                   dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"
                   @filter="handleFilterGetEducationalProgramGroup" @change="handleEducationalProgramGroupChange"/>
       </div>
-      <div v-if="personType == 3" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+      <div v-if="findRole(null, 'personal') && personType == 3" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ $t('common.cafedra') }}</label>
         <Dropdown class="dropdown" v-model="selectedDepartmentCafedra" :options="departmentsCafedra"
                   :optionLabel="localizeDepartment" :placeholder="this.$t('common.select')"
@@ -107,7 +107,7 @@
                   dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"
                   @filter="handleFilterDepartmentCafedra" @change="handleSelectionChange"/>
       </div>
-      <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+      <div v-if="findRole(null, 'personal') && personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ $t('educationalPrograms.ep') }}</label>
         <Dropdown class="dropdown" v-model="specialist" :options="specialists"
                   :optionLabel="localizeSpecialities" :placeholder="this.$t('common.select')"
@@ -115,7 +115,7 @@
                   dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"
                   @filter="handleFilterSpecialities"/>
       </div>
-          <div v-if="personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+          <div v-if="findRole(null, 'personal') && personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
               <label>{{ $t('hr.edu.receiptDate') }}</label>
               <PrimeCalendar  v-model="filter.admissionYear" view="year" dateFormat="yy" />
             </div>
@@ -126,7 +126,7 @@
       </div>
       <hr>
 
-      <div v-if="personType == 3 || personType == 4" class="col-12 md:col-12 p-fluid">
+      <div v-if="findRole(null, 'personal') && personType == 3 || personType == 4" class="col-12 md:col-12 p-fluid">
         <div class="grid formgrid">
         <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
           <label>{{ $t('common.paymentForm') }}</label>
@@ -134,14 +134,14 @@
                     :optionLabel="'name'+this.$i18n.locale" :placeholder="this.$t('common.select')"
                     :showClear="true" dataKey="id" :emptyFilterMessage="this.$t('roleControl.noResult')"/>
         </div>
-        <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+        <div v-if="findRole(null, 'personal') && personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>GPA</label>
             <div class="col-3 mb-2 pb-2 lg:col-3 mb-lg-0 flex justify-content-space-between">
               <label class="mt-2">Min</label><InputNumber v-model="gpaMin" mode="decimal" :minFractionDigits="2" :maxFractionDigits="2" class="col-12 mb-lg-0"></InputNumber>
               <label class="mt-2">Max</label><InputNumber v-model="gpaMax" mode="decimal" :minFractionDigits="2" :maxFractionDigits="2" class="col-12 lg:col-12 mb-lg-0"></InputNumber>
           </div>
         </div>
-          <div v-if="personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
+          <div v-if="findRole(null, 'personal') && personType == 3 || personType == 4" class="col-6 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('status_resume') }}</label>
             <Dropdown class="dropdown" v-model="resumeView" :options="resumeViews"
                       :optionLabel="'name'+this.$i18n.locale" :placeholder="this.$t('common.select')"
@@ -150,7 +150,7 @@
         </div>
       </div>
 
-      <div v-if="personType == 3 || personType == 4">
+      <div v-if="findRole(null, 'personal') && personType == 3 || personType == 4">
         <Checkbox inputId="special_needs" v-model="special_needs" :binary="true" /> <label for="special_needs">{{$t('people_special_needs')}}</label>
       </div>
 
@@ -204,19 +204,22 @@ export default {
         command: () => {
           this.addPerson()
         },
-        disabled: !(this.personType != 3 && this.personType != 4 && this.personType != 2)
+        disabled: !(this.findRole(null, 'main_administrator') && this.personType != 3 && this.personType != 4 && this.personType != 2),
+        visible: this.findRole(null, 'main_administrator')
       },
       {
         label: this.$t("common.downloadResume"),
         icon: "pi pi-fw pi-download",
         command: () => { this.downloadResume(); },
-        disabled: !(this.isVisible && !(this.personType === 3 || this.personType === 4))
+        disabled: !(this.isVisible && !(this.personType === 3 || this.personType === 4)),
+        visible: this.findRole(null, 'personal')
       },
       {
         label: this.$t("common.share"),
         icon: "pi pi-fw pi-share-alt",
         command: () => { this.shareResults(); },
-        disabled: !(this.isVisible && !(this.personType === 3 || this.personType === 4))
+        disabled: !(this.isVisible && !(this.personType === 3 || this.personType === 4)),
+        visible: this.findRole(null, 'personal')
       },
       // {
       //   label: this.$t("students.report")disabled,
