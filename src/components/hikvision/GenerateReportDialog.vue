@@ -77,6 +77,7 @@ const department = ref(null);
 const employee = ref(null);
 const departments = ref([]);
 const searchText = ref('');
+const lang = locale.value;
 
 const showError = (message) => {
   toast.add({ severity: 'error', summary: 'Ошибка', detail: message, life: 3000 });
@@ -158,6 +159,7 @@ const createReports = async () => {
 
 
   const data = {
+    lang: lang,
     start_date: startDate.value,
     end_date: endDate.value,
     category_ids: categoryIds,
