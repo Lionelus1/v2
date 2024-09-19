@@ -111,6 +111,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path:'/finance',
+                name:'Finance',
+                component: load('finance/Finance'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/catalog/normdoc',
                 name: '/documents/catalog/normdoc',
                 component: load('documents/catalog/NormativeDocuments'),
@@ -222,6 +228,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/scientific-works',
+                name: 'ScientificWorks',
+                component: load('documents/ScientificWorks'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/docrequests',
                 name: 'DocumentRequests',
                 component: load('references/ReferenceRequests'),
@@ -324,6 +336,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/user/cv/:uuid',
+                name: 'CurriculumVitae',
+                component: load('contragent/CurriculumVitae'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/contragent/persons/:type',
                 name: 'PersonsList',
                 component: load('contragent/v2/PersonsList'),
@@ -335,7 +353,53 @@ const routes = [
                 component: () => import('./components/hdfs/HdfsMain.vue'),
                 beforeEnter: ifAuthenticated,
             },
-
+            {
+                path: '/mailing',
+                name: 'MailingTable',
+                component: load('mailing/MailingComponent'),
+                beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'MailingTable',
+                        component: load('mailing/MailingTable'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: ':id',
+                        name: 'AddEditMailing',
+                        component: load('mailing/AddEditMailing'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    // {
+                    //     path: 'add',
+                    //     name: 'AddMailing',
+                    //     component: load('mailing/AddEditMailing'),
+                    //     beforeEnter: ifAuthenticated,
+                    // },
+                    {
+                        path: '/template',
+                        name: 'TemplateEditor2',
+                        props: true,
+                        component: load('mailing/TemplateEditor'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                ]
+            },
+            {
+                path: '/editMailing/:id',
+                name: 'EditMailing',
+                component: load('mailing/EditMailing'),
+                props: true,
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/deleteMailing/:id',
+                name: 'DeleteMailing',
+                component: load('mailing/DeleteMailing'),
+                props: true,
+                beforeEnter: ifAuthenticated,
+            },
             {
                 path: '/news',
                 name: 'NewsComponent',
@@ -587,6 +651,12 @@ const routes = [
                 name: '/queueMode',
                 component: load('queue/QueueMode'),
                 beforeEnter: ifAuthenticated,
+
+            },
+            {
+                path: '/queue/qr/:id',
+                name: '/queueQR',
+                component: load('queue/QueueQR'),
             },
             {
                 path: '/reception',
@@ -634,21 +704,39 @@ const routes = [
             },
 
             {
-                path: '/helpdesk',
+                path: '/helpdesk/',
                 name: 'HelpDeskComponent',
                 component: load('helpDesk/HelpDeskComponent'),
                 beforeEnter: ifAuthenticated,
                 children: [
                     {
-                        path: '',
+                        path: 'deskJournal',
                         name: 'DeskJournal',
                         component: load('helpDesk/DeskJournal'),
                         beforeEnter: ifAuthenticated,
                     },
                     {
-                        path: '/request/:uuid',
+                        path: 'request/:uuid',
                         name: 'Request',
                         component: load('helpDesk/Request'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'create',
+                        name: 'CreateCategory',
+                        component: load('helpDesk/CreateCategory'),
+                        beforeEnter: ifAuthenticated
+                    },
+                    {
+                        path: 'edit/:id',
+                        name: 'EditCategories',
+                        component: load('helpDesk/EditCategories'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'add',
+                        name: 'AddCategories',
+                        component: load('helpDesk/EditCategories'),
                         beforeEnter: ifAuthenticated,
                     }
                 ]
@@ -877,6 +965,12 @@ const routes = [
                 path: '/integrations/params',
                 name: 'IntegrationParams',
                 component: load('integration/IntegrationParams'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/service-catalog',
+                name: 'ServiceCatalog',
+                component: load('service-catalog/ServiceCatalog'),
                 beforeEnter: ifAuthenticated,
             },
             {

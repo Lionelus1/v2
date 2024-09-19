@@ -48,11 +48,13 @@
   </Sidebar>
 </template>
 <script>
-import { findRole } from "@/config/config";
-import Enum from "@/enum/docstates/index";
-import { DocService } from "@/service/doc.service";
-import PostFile from "./PostFile.vue"
-import DocumentTemplates from "@/components/documents/catalog/DocumentTemplates.vue";
+
+  import { smartEnuApi, getHeader, findRole } from "@/config/config";
+  import Enum from "@/enum/docstates/index";
+  import { DocService } from "@/service/doc.service";
+  import PostFile from "./PostFile.vue"
+  import { AgreementService } from "@/service/agreement.service";
+  import DocumentTemplates from "@/components/documents/catalog/DocumentTemplates.vue";
 
 export default {
   components: { DocumentTemplates, PostFile },
@@ -89,6 +91,7 @@ export default {
         docType: Enum.DocType.Contract,
         sourceType: Enum.DocSourceType.FilledDoc,
       },
+      agreementService: new AgreementService()
     }
   },
   mounted() {

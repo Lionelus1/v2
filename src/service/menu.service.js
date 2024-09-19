@@ -88,7 +88,12 @@ export class MenuService {
                         icon: 'fa-solid fa-rotate',
                         to: '/integrations',
                         visible: this.findRole("main_administrator")
-                    }
+                    },
+                    {
+                        label: $t('smartenu.mailingTitle'),
+                        icon: 'fa-regular fa-paper-plane',
+                        to: '/mailing'
+                    },
                 ]
             },
             {
@@ -114,6 +119,11 @@ export class MenuService {
                         label: $t('common.students'),
                         icon: 'fa-solid fa-graduation-cap',
                         to: '/contragent/persons/' + Enum.PersonType.Student
+                    },
+                    {
+                        label: $t('common.graduates'),
+                        icon: 'fa-solid fa-graduation-cap',
+                        to: '/contragent/persons/' + Enum.PersonType.Graduate
                     }
                 ]
             },
@@ -138,6 +148,11 @@ export class MenuService {
                 label: $t('smartenu.eventsTitle'),
                 icon: 'fa-solid fa-calendar-days',
                 to: '/events'
+            },
+            {
+                label: $t('smartenu.mailingTitle'),
+                icon: 'fa-solid fa-calendar-days',
+                to: '/mailing'
             },
             // {
             //     label: $t('vaccination.title'),
@@ -303,10 +318,28 @@ export class MenuService {
                         label: $t('course.courses'),
                         icon: 'fa-solid fa-chalkboard',
                         to: '/categories-courses',
-
                     },
 
                 ]
+            },
+            {
+                label: $t('educationalPrograms.educationalProgramConstructor'), icon: 'fa-solid fa-diagram-project',
+                items: [
+                    {
+                        label: $t('educationalPrograms.bachelor'), to: '/educational-programs/bachelor',
+                    },
+                    {
+                        label: $t('educationalPrograms.master'), to: '/educational-programs/master',
+                    },
+                    {
+                        label: $t('educationalPrograms.doctoral'), to: '/educational-programs/doctoral',
+                    },
+                ]
+            },
+            {
+                label: 'Каталог услуг',
+                icon: 'fa-solid fa-briefcase',
+                to: '/service-catalog'
             },
             {
                 label: $t('helpDesk.title'),

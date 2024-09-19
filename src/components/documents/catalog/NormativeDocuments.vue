@@ -792,7 +792,7 @@ export default {
       this.loading = true
 
       api.post('/downloadFile', {
-        filePath: this.selectedNode.filePath
+        filePath: this.selectedNode ? this.selectedNode.filePath : this.currentDocument.filePath,
       }, {
         headers: getHeader()
       }).then(res => {

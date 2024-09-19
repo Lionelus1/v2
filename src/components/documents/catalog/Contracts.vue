@@ -627,6 +627,18 @@ export default {
 
       return false;
     },
+    havePracticeLeaderRequest(contract) {
+      if (contract.requests) {
+        for (let i = 0; i < contract.requests.length; i++) {
+          if (contract.requests[i].type === this.Enum.DocumentRequestType.PracticeLeaderRequest &&
+              contract.requests[i].status === 0) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
     agreementApprovalExpired(contract) {
       if (contract.folder && contract.folder.type === Enum.FolderType.Agreement) {
         if (contract.docHistory && contract.docHistory.stateId === Enum.INAPPROVAL.ID &&
@@ -942,7 +954,6 @@ export default {
           visible: (this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.CREATED.ID ||this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === this.actionsNode.creatorID,
           command: () => {this.currentDocument=this.actionsNode;this.deleteFile()},
         }
-
       ]
     },
   }

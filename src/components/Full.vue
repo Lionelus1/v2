@@ -538,6 +538,7 @@ export default {
   border-radius: 5px;
   animation: jump 2s ease-in-out 2;
 }
+
 .hint-popup:before {
   content: "";
   border: solid transparent;
@@ -548,6 +549,7 @@ export default {
   border-width: 9px;
   margin-left: 0;
 }
+
 @media (max-width: 500px) {
   .hint-popup {
     right: 2%;
@@ -556,6 +558,7 @@ export default {
     right: 53%;
   }
 }
+
 @keyframes jump {
   0%, 20%, 50%, 80%, 100% {
     transform: translateY(0);

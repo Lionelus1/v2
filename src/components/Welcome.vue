@@ -79,11 +79,11 @@
               <template #body="slotProps">
                 <a href="javascript:void(0)" @click="eventView(slotProps.data)">
                   {{
-                    $i18n.locale === "kz"
-                        ? slotProps.data.titleKz
-                        : $i18n.locale === "ru"
-                            ? slotProps.data.titleRu
-                            : slotProps.data.titleEn
+                  $i18n.locale === "kz"
+                  ? slotProps.data.titleKz
+                  : $i18n.locale === "ru"
+                  ? slotProps.data.titleRu
+                  : slotProps.data.titleEn
                   }}
                 </a>
               </template>
@@ -150,13 +150,16 @@ export default {
         });
         this.total = response.data.total;
         this.loading = false;
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-          life: 3000,
-        });
-      });
+      })
+          .catch((error) => {
+            console.log(error, 'test')
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+              life: 3000,
+            });
+            this.loading = false;
+          });
     },
     getAllEvents() {
       this.allEvents = [];
@@ -167,13 +170,15 @@ export default {
           e.imageUrl = smartEnuApi + fileRoute + fileUrl
         });
         this.loading = false;
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-          life: 3000,
-        });
-      });
+      })
+          .catch((error) => {
+            this.$toast.add({
+              severity: "error",
+              summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
+              life: 3000,
+            });
+            this.loading = false;
+          });
     },
     formatDateMoment(date) {
       return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm")
@@ -190,7 +195,15 @@ export default {
       this.lazyParams = event
       this.getAllNews();
     },
-  },
+  getFullname(user) {
+                let fullname = user.thirdName + ' ' + user.firstName;
+
+                if (user.lastName && user.lastName.length > 0) {
+                    fullname += ' ' + user.lastName;
+                }
+
+                return fullname
+            }},
   created() {
     this.getAllNews();
     this.getAllEvents();

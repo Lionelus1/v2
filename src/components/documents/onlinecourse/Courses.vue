@@ -26,7 +26,7 @@
               </div>
             </div>-->
       <template v-if="allCourses">
-        <DataView :value="allCourses.courses" :layout="layout" :loading="loading" :lazy="true" :paginator="true"
+        <DataView :value="allCourses.courses || allCourses" :layout="layout" :loading="loading" :lazy="true" :paginator="true"
                   :rows="lazyParams.rows" @page="onPage($event)" :totalRecords="total" :first="first">
           <template #header>
             <div class="flex justify-content-between">
@@ -40,7 +40,7 @@
               <div v-for="(item, index) in slotProps?.items" :key="index" class="flex flex-column sm:flex-row sm:align-items-center p-3 gap-3">
                 <div class="md:w-10rem relative">
                   <div class="cursor-pointer" v-if="item.logo" @click="selectCourse(item)">
-                    <img class="border-round w-full" src="https://thesette.co/wp-content/uploads/sites/9173/2017/09/graduation-cap.png"/>
+                    <img style="height: 85px;object-fit: cover" class="border-round w-full" src="https://thesette.co/wp-content/uploads/sites/9173/2017/09/graduation-cap.png"/>
                   </div>
                   <div v-else class="cursor-pointer flex justify-content-center bg-blue-50 py-5" @click="selectCourse(item)">
                     <i class="fa-solid fa-chalkboard-user size text-blue-100" style="font-size: 30px"></i>
@@ -96,7 +96,7 @@
                   <div class="course_grid_card p-3 border-1 surface-border surface-card border-round flex flex-column justify-content-between">
                     <div class="cursor-pointer" @click="selectCourse(item)">
                       <div class="" v-if="item.logo">
-                        <img style="height: 170px" class="border-round w-full" :src="item.filePath"/>
+                        <img style="height: 170px;object-fit: cover" class="border-round w-full" :src="item.filePath"/>
                       </div>
                       <div v-else class="flex justify-content-center bg-blue-50 py-8 cursor-pointer" @click="selectCourse(item)">
                         <i class="fa-solid fa-chalkboard-user size text-blue-100" style="font-size: 30px"></i>
@@ -128,7 +128,7 @@
                           </div>
                         </div>
                         <div class="flex justify-content-between align-items-center">
-                          <Tag v-if="item.history[0].state" :value="item.history[0].state['name' + $i18n.locale]" severity="success"></Tag>
+                          <Tag v-if="item.history && item.history[0].state" :value="item.history[0].state['name' + $i18n.locale]" severity="success"></Tag>
                           <div class="icons">
                             <i v-if="findRole(null,'online_course_administrator')" class="pi pi-pencil text-primary-500 cursor-pointer mr-4" @click="editCourse(item.id)"></i>
                             <i v-if="findRole(null,'online_course_administrator')" class="pi pi-trash text-red-500 cursor-pointer" @click="deleteCourse(item.id)"></i>
@@ -227,18 +227,18 @@ export default {
     findRole,
     formatDate,
     getCourses() {
-      this.loading = true;
-      this.service.getCourseFieldId(this.fieldId).then(response => {
-        this.courses = response.data
-        this.courses.map(e => {
-          e.filePath = smartEnuApi + fileRoute + e.logo
-          this.title = e.field[0]['name_' + this.$i18n.locale]
-        });
-        this.total = response.data.total
-        this.loading = false
-      }).catch(_ => {
-        this.loading = false
-      });
+      this.loading = true
+          this.service.getCourseFieldId(this.fieldId).then(response => {
+            this.allCourses = response.data
+            this.allCourses.map(e => {
+              e.filePath = smartEnuApi + fileRoute + e.logo
+              this.title = e.field[0]['name_' + this.$i18n.locale]
+            });
+            this.total = response.data.total
+            this.loading = false
+          }).catch(_ => {
+            this.loading = false
+          });
     },
     getAllCourses() {
       this.service.getCourses(this.lazyParams).then(response => {

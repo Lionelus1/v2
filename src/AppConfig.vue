@@ -68,8 +68,8 @@
         </div>
       </div>
 
-      <h5>{{ $t("enuTopicSettings.rippleEffect") }}</h5>
-      <InputSwitch :modelValue="rippleActive" @update:modelValue="changeRipple" />
+			<h5>{{ $t("enuTopicSettings.rippleEffect") }}</h5>
+			<InputSwitch :modelValue="rippleActive" @update:modelValue="changeRipple" />
 
       <!-- <h5>Menu Type</h5>
       <div class="p-formgroup-inline">

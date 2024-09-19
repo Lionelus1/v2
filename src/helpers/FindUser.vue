@@ -52,6 +52,7 @@
 <script>
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
 import axios from 'axios';
+import { UserService } from "../service/user.service";
 
 import { ContragentService } from "@/service/contragent.service";
 
@@ -136,6 +137,7 @@ export default {
         bank: {}
         
       },
+      userService: new UserService(),
       cancelToken : null,
       requests: [],
       request: null,
@@ -156,7 +158,7 @@ export default {
     }
   },
   methods: {
-    userCreated(user) { 
+    userCreated(user) {
       const event = new Event('userCreated');
       this.addItem(event,user,true)
     },
@@ -172,16 +174,16 @@ export default {
         if (user.thirdnameEn) {
           fullname += ' ' + user.thirdnameEn
         }
-      } 
-      
+      }
+
       if (fullname.length > 0) {
         return fullname
       }
-      
-      fullname += user.thirdName + ' ' + user.firstName 
+
+      fullname += user.thirdName + ' ' + user.firstName
 
       if (user.lastName) {
-        fullname += ' ' + user.lastName 
+        fullname += ' ' + user.lastName
       }
 
       return fullname
