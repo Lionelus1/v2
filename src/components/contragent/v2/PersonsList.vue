@@ -467,6 +467,12 @@ export default {
           facultyId: null,
           name: this.filter?.name ?? '',
         }
+        this.gpaMin = null
+        this.gpaMax = null
+        this.academicDegree = null
+        this.resumeView = null
+        this.educationalProgramGroup = null
+        this.special_needs = false
       }
 
       if (this.personType != 4) {
@@ -623,6 +629,10 @@ export default {
       this.resumeView = null
       this.paymentForm = null
       this.academicDegree = null
+      this.gpaMax = null
+      this.gpaMin = null
+      this.resumeView = null
+      this.special_needs = false
       this.getPersons()
     },
     saveFilter() {
