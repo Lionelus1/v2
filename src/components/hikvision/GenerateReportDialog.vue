@@ -249,15 +249,25 @@ label {
   align-items: center;
 }
 
+input[type="checkbox"] {
+  vertical-align: middle;
+  margin: 0;
+}
+label {
+  line-height: 1.5;
+}
+
+
 .field-checkbox {
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  gap: 5px;
   margin-right: 15px;
 }
 
 .field-checkbox label {
-  margin-left: 5px;
-  line-height: normal;
+  line-height: 1.2;
+  margin: 0;
 }
 
 .calendar-group {
