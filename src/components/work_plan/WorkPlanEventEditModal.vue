@@ -64,7 +64,7 @@
       <label>{{ $t('common.suppDocs') }}</label>
       <Textarea v-model="editData.supporting_docs" rows="3" style="resize: vertical" />
     </div>
-    <div class="field" v-if="!isEditResponsiveUsers">
+    <div class="field" v-if="!isShedulePlan && !isEditResponsiveUsers">
       <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
       <Textarea v-model="editData.result" rows="3" style="resize: vertical" />
     </div>
@@ -248,7 +248,7 @@ export default {
                     }).filter(name => name).join(', ');
       }
 
-      if((this.editorComment && this.editorComment.length > 0 && this.isEditResponsiveUsers)|| (copySummaryDepUser !== null && currentSummaryDepUser !== null  && this.isEditResponsiveUsers) || (this.addedRespUser?.length > 0 || this.removedRespUser?.length > 0  && this.isEditResponsiveUsers)){
+      if((this.editorComment && this.editorComment.length > 0 && this.isEditResponsiveUsers) || (copySummaryDepUser !== null && currentSummaryDepUser !== null  && this.isEditResponsiveUsers) || (this.addedRespUser?.length > 0 || this.removedRespUser?.length > 0  && this.isEditResponsiveUsers)){
             commentData += "{";
             let currentDepUserFullName;
             let copyDepUserFullName;
