@@ -27,9 +27,9 @@
           </div>
         </div>
         <div class="section" v-if="experiences?.length > 0">
-          <h2>{{ t('hr.educationLabel') }}</h2>
+          <h2>{{ t('hr.title.experience') }}</h2>
           <div class="entry" v-for="exp in experiences" :key="exp.id">
-            <div class="year">{{ formatDate(exp.startDate) }} - {{ exp.isStillWorking ? 'До настоящего времени' : formatDate(exp.endDate) }}</div>
+            <div class="year">{{ formatDate(exp.startDate) }} - {{ exp.isStillWorking ? t('hr.we.untilNow') : formatDate(exp.endDate) }}</div>
             <div class="details">
               <p>{{ exp.organizationName }}</p>
               <p>{{ exp.position }}</p>
@@ -42,7 +42,7 @@
       <div class="section" v-if="languages?.length > 0">
       <h2>{{t('hr.title.language')}}</h2>
       <div class="language-container" v-for="lang in languages" :key="lang.language.nameKz">
-        <p class="level-title">{{ lang.language.nameKz }}</p>
+        <p class="level-title">{{ lang.language['name'+capitalize(locale)] }}</p>
         <div class="progress-bar">
           <div class="level-item">
             <p class="level-name">{{t('hr.lang.rl')}}</p>
@@ -181,6 +181,12 @@ const calculateProgressWidth = (level) => {
   const scaledWidth = (level / 5) * maxWidth; // Scale level to a 0-100% range
   return `${scaledWidth}%`;
 };
+
+const capitalize=(locale) => {
+  if (!locale) return '';
+  return locale.charAt(0).toUpperCase() + locale.slice(1);
+}
+
 
 onMounted(() => {
   getCandidate();
