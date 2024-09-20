@@ -99,8 +99,8 @@
         <TabPanel v-bind:header="$t('smartenu.eventsTitle')">
           <div class="calendar_buttons flex justify-content-end mb-2">
       <span class="p-buttonset">
-    <Button class="p-button-outlined calendar_btn_left" :class="{'active': !isCalendar}" icon="pi pi-list" @click="getAllEvents(false)"/>
-    <Button class="p-button-outlined calendar_btn_right" :class="{'active': isCalendar}" icon="pi pi-calendar" @click="getAllEvents(true)"/>
+    <Button class="p-button-outlined calendar_btn_left" :class="{'active': !isCalendar}" icon="pi pi-list" @click="isCalendarBool(false)"/>
+    <Button class="p-button-outlined calendar_btn_right" :class="{'active': isCalendar}" icon="pi pi-calendar" @click="isCalendarBool(true)"/>
       </span>
           </div>
           <template v-if="isCalendar">
@@ -174,6 +174,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import kkLocale from '@fullcalendar/core/locales/kk';
 import ruLocale from '@fullcalendar/core/locales/ru';
+import {ref} from "vue";
 
 export default {
   name: "Welcome",
@@ -208,12 +209,15 @@ export default {
       },
       allNews: [],
       allEvents: [],
+      calendarEvents: [],
       notifications: [],
       newsService: new NewsService(),
       eventService: new EventsService(),
       mobile: false,
       isCalendar: false,
       isGrid: true,
+      currentMonth:  new Date().getMonth()+1,
+      currentYear:  new Date().getFullYear()
     };
   },
 
@@ -246,14 +250,16 @@ export default {
         });
       });
     },
-    getAllEvents(data) {
+    async getAllEvents(data) {
       this.isCalendar = data
       this.allEvents = [];
       this.loadingEvents = true
       if(data) {
-        this.eventParams = {}
-        this.eventParams.eventType = "publish";
-        this.eventParams.rows = this.totalEvents;
+        delete this.eventParams.countMode
+        delete this.eventParams.first
+        delete this.eventParams.page
+        delete this.eventParams.sortField
+        delete this.eventParams.sortOrder
       }else {
         this.eventParams.rows = 10;
       }
@@ -264,7 +270,12 @@ export default {
           e.imageUrl = smartEnuApi + fileRoute + fileUrl
         });
         if(data){
-          this.getCalendar()
+          this.calendarEvents = this.allEvents
+          this.calendarEvents.map(i => {
+            i.title = this.$i18n.locale === "kz" ? i.titleKz : this.$i18n.locale === "ru" ? i.titleRu : i.titleEn
+            i.start = this.formatDateCalendar(i.eventDate)
+            i.url = this.eventView
+          })
         }
         this.totalEvents = response.data.total;
         this.loadingEvents = false;
@@ -286,54 +297,65 @@ export default {
       this.eventViewVisible = true;
     },
     getCalendar() {
+        setTimeout(() => {
           const calendarEl = document.getElementById('full_calendar');
           this.allEvents.map(i => {
                 i.title = this.$i18n.locale === "kz" ? i.titleKz : this.$i18n.locale === "ru" ? i.titleRu : i.titleEn
                 i.start = this.formatDateCalendar(i.eventDate)
               })
-          let kazakhLocale = {
-            code: 'kz',
-            week: {
-              dow: 1,
-              doy: 4
-            },
-            buttonText: {
-              prev: 'Алдыңғы',
-              next: 'Келесі',
-              today: 'Бүгін',
-              month: 'Ай',
-              week: 'Апта',
-              day: 'Күн',
-              list: 'Күн тәртібі'
-            },
-            weekText: 'Апта',
-            allDayText: 'Күні бойы',
-            moreLinkText: function(n) {
-              return '+ тағы ' + n;
-            },
-            noEventsText: 'Көрсету үшін оқиғалар жоқ',
-            months: ['Қаңтар', 'Ақпан', 'Наурыз', 'Сәуір', 'Мамыр', 'Маусым', 'Шілде', 'Тамыз', 'Қыркүйек', 'Қазан', 'Қараша', 'Желтоқсан'],
-            monthNamesShort: ['Қаң', 'Ақп', 'Нау', 'Сәу', 'Мам', 'Мау', 'Шіл', 'Там', 'Қыр', 'Қаз', 'Қар', 'Жел'],
-            dayNames: ['Жексенбі', 'Дүйсенбі', 'Сейсенбі', 'Сәрсенбі', 'Бейсенбі', 'Жұма', 'Сенбі'],
-            dayNamesShort: ['Жк', 'Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб']
-          };
-
+          let month = this.currentMonth;
+          let year = this.currentYear;
           const calendar = new Calendar(calendarEl, {
-
             plugins: [dayGridPlugin, timeGridPlugin],
-            events: this.allEvents,
+            events: this.calendarEvents,
             eventClick: this.eventView,
             locales: [kkLocale, ruLocale],
             locale: this.$i18n.locale === "kz" ? 'kk' : this.$i18n.locale,
             initialView: 'dayGridMonth',
             header: {
-              left: 'prev,next',
+              left: 'customprev,customnext',
               center: 'title',
               right: ''
             },
-            // dayHeaderContent: (arg) => locale.value === 'kz' ? customLocale.dayNamesShort[arg.date.getUTCDay()]: null,
+            customButtons: {
+              customprev: {
+                icon: 'pi pi-chevron-left',
+                click: () => {
+                  month--;
+                  if (month < 1) {
+                    month = 12;
+                    year--;
+                  }
+                  this.eventParams.month = month;
+                  this.eventParams.year = year;
+                  this.getAllEvents(true).then(() => {
+                    calendar.prev();
+                    calendar.removeAllEvents();
+                    calendar.addEventSource(this.calendarEvents);
+                  });
+                }
+              },
+              customnext: {
+                icon: 'pi pi-chevron-right',
+                click: () =>  {
+                  month++;
+                  if (month > 12) {
+                    month = 1;
+                    year++;
+                  }
+                  this.eventParams.month = month;
+                  this.eventParams.year = year;
+                  this.getAllEvents(true).then(() => {
+                    calendar.next();
+                    calendar.removeAllEvents();
+                    calendar.addEventSource(this.calendarEvents);
+                  });
+                }
+              }
+            }
           });
           calendar.render();
+    },500)
     },
     formatDateMoment(date) {
       return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm")
@@ -365,6 +387,21 @@ export default {
       this.eventParams.first = event.first
       this.getAllEvents();
     },
+    isCalendarBool(bool){
+      if (bool) {
+        this.eventParams.month = this.currentMonth
+        this.eventParams.year = this.currentYear
+        this.eventParams.eventType = "publish";
+        this.getAllEvents(true)
+        this.getCalendar()
+        this.isCalendar = bool
+      } else {
+        delete this.eventParams.month
+        delete this.eventParams.year
+        this.getAllEvents(false)
+        this.isCalendar = bool
+      }
+    }
   },
   created() {
     this.getAllNews();
