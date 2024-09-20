@@ -1,28 +1,28 @@
 <template>
   <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
-    <!-- remove this text -->
     <div class="field">
+      <!-- --- -->
       <label>{{ plan && plan.is_oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
-      <InputText v-model="editData.event_name" />
+      <InputText v-model="editData.event_name" :disabled="isEditResponsiveUsers" />
       <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
     </div>
-    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science">
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science && !isEditResponsiveUsers">
       <label>{{ $t('common.startDate') }}</label>
       <PrimeCalendar v-model="editData.start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
     </div>
-    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science">
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science && !isEditResponsiveUsers">
       <label>{{ $t('common.endDate') }}</label>
       <PrimeCalendar v-model="editData.end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
     </div>
-    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper && !isEditResponsiveUsers">
       <label>{{ $t('common.unit') }}</label>
       <InputText v-model="editData.unit" />
     </div>
-    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper && !isEditResponsiveUsers">
       <label>{{ $t('common.planNumber') }}</label>
       <InputText v-model="editData.plan_number" />
     </div>
-    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ">
       <label>{{ $t('workPlan.approvalUsers') }}</label>
       <InputText v-model="editData.responsible_executor" />
     </div>
@@ -55,23 +55,23 @@
       <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser" />
     </div>
     <div class="field"
-      v-if="(plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science) && ((editData && parentData && parentData.quarter === 5) || !parentData)">
+      v-if="(plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science && !isEditResponsiveUsers) && ((editData && parentData && parentData.quarter === 5 && !isEditResponsiveUsers) || !parentData)">
       <label>{{ $t('workPlan.quarter') }}</label>
       <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
       <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
     </div>
-    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper && !isEditResponsiveUsers">
       <label>{{ $t('common.suppDocs') }}</label>
       <Textarea v-model="editData.supporting_docs" rows="3" style="resize: vertical" />
     </div>
-    <div class="field">
+    <div class="field" v-if="!isShedulePlan && !isEditResponsiveUsers">
       <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
       <Textarea v-model="editData.result" rows="3" style="resize: vertical" />
     </div>
-    <div class="field">
+    <div class="field" v-if="isEditResponsiveUsers">
       <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.comment') : $t('common.comment') }}</label>
       <Textarea v-model="editorComment" rows="3" style="resize: vertical" />
-      <small class="p-error" v-if="submitted && !editorComment?.length > 0">{{ $t('common.requiredField') }}</small>
+      <small class="p-error" v-if="submitted && isEditResponsiveUsers && !editorComment?.length > 0">{{ $t('common.requiredField') }}</small>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeBasic" />
@@ -88,7 +88,7 @@ import RolesByName from "@/components/smartenu/RolesByName.vue";
 export default {
   name: "WorkPlanEventEditModal", 
   components: { RolesByName }, 
-  props: ['visible', 'event', 'copiedEvent', 'planData', 'parent'],
+  props: ['visible', 'event', 'copiedEvent', 'planData', 'parent', 'isEditResponsiveUsers'],
   emits: ['hide'],
   data() {
     return {
@@ -230,24 +230,25 @@ export default {
 
       //resp person history change
       let commentData = "";
-      let copySummaryDepUser = this.copyedEvent?.user[0]?.user;
+      let copySummaryDepUser = ""
+      if(this.isEditResponsiveUsers){
+        copySummaryDepUser = this.copyedEvent?.user[0]?.user;
+      }
+      
       let currentSummaryDepUser;
-      if (Array.isArray(this.summaryDepartment) && this.summaryDepartment.length > 0) {
+      if (Array.isArray(this.summaryDepartment) && this.summaryDepartment.length > 0 && this.isEditResponsiveUsers) {
           currentSummaryDepUser = this.summaryDepartment[0];
       }
-      this.copiedEventRespUserNames = this.copyedEventUser.map(item => {
+      if(this.isEditResponsiveUsers){
+        this.copiedEventRespUserNames = this.copyedEventUser.map(item => {
                       const user = item.user || {};
                       const lastName = user.lastName ? user.lastName : '';
                       const fullName = `${user.thirdName || ''} ${user.firstName || ''} ${lastName}`.trim();
                       return fullName;
                     }).filter(name => name).join(', ');
-      
-      
-      
+      }
 
-    
-
-      if((this.editorComment && this.editorComment.length > 0)|| (copySummaryDepUser !== null && currentSummaryDepUser !== null) || (this.addedRespUser?.length > 0 || this.removedRespUser?.length > 0)){
+      if((this.editorComment && this.editorComment.length > 0 && this.isEditResponsiveUsers) || (copySummaryDepUser !== null && currentSummaryDepUser !== null  && this.isEditResponsiveUsers) || (this.addedRespUser?.length > 0 || this.removedRespUser?.length > 0  && this.isEditResponsiveUsers)){
             commentData += "{";
             let currentDepUserFullName;
             let copyDepUserFullName;
@@ -473,21 +474,21 @@ export default {
       const changesInSummaryDepUser = this.copySummaryDepUser?.userID !== this.currentSummaryDepUser?.userID;
       const isOperPlan = this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Oper
 
-      if (noComment && noChangesInRespUser) {
+      if (noComment && noChangesInRespUser && this.isEditResponsiveUsers) {
         this.$toast.add({ severity: "warn", summary: this.$t('workPlan.message.noChanges'), life: 4000 });
         return false;
       }
 
-      if (!noComment && noChangesInRespUser) {
+      if (!noComment && noChangesInRespUser && this.isEditResponsiveUsers) {
         this.$toast.add({ severity: "warn", summary: this.$t('workPlan.message.noRespPersonChanged'), life: 4000 });
         return false;
       }
 
-      if (noComment && !noChangesInRespUser) {
+      if (noComment && !noChangesInRespUser && this.isEditResponsiveUsers) {
         this.$toast.add({ severity: "warn", summary: this.$t('common.noComment'), life: 4000 });
         return false;
       }
-      if (isOperPlan && noComment && changesInSummaryDepUser) {
+      if (isOperPlan && noComment && changesInSummaryDepUser && this.isEditResponsiveUsers) {
         this.$toast.add({ severity: "warn", summary: this.$t('workPlan.message.noChanges'), life: 4000 });
         return false;
       }

@@ -242,7 +242,7 @@
   </OverlayPanel>
   <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null"
                        :isMain="!!selectedEvent" :plan-data="plan" @hide="hideDialog(dialog.add)"/>
-  <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :event="selectedEvent" :copiedEvent="selectedEvent" @hide="hideDialog(dialog.edit)"/>
+  <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :isEditResponsiveUsers="editRespUser" :event="selectedEvent" :copiedEvent="selectedEvent" @hide="hideDialog(dialog.edit)"/>
   <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport"
                          :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan" @sentToApprove="hideDialog(dialog.reportApprove)"/>
   <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state" :approval-stages="planApprovalStage" :plan="plan" :events="data"
@@ -284,6 +284,7 @@ export default {
     ActionButton,
     RolesByName
   },
+  props:['isEditResponsiveUsers'],
   data() {
     return {
       data: [],
@@ -434,6 +435,7 @@ export default {
       inputSets: null,
       submitted: false,
       selectedUsers: [],
+      editRespUser:false
     }
   },
   created() {
@@ -1203,8 +1205,9 @@ export default {
       this.isCreator = node.creator_id === this.loginedUserId
       this.selectedEvent = node
     },
-    showDialog(dialog) {
+    showDialog(dialog, isEditPerson) {
       dialog.state = true
+      this.editRespUser = isEditPerson
     },
     hideDialog(dialog) {
       this.selectedEvent = null
@@ -1329,7 +1332,7 @@ export default {
           disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
-            this.showDialog(this.dialog.edit)
+            this.showDialog(this.dialog.edit, false)
           }
         },
         {
@@ -1338,7 +1341,7 @@ export default {
           disabled: !((this.isPlanCreator || this.isAdmin) && this.isPlanApproved),
           visible: this.isPlanApproved && (this.isPlanCreator || this.isAdmin),
           command: () => {
-            this.showDialog(this.dialog.edit)
+            this.showDialog(this.dialog.edit, true)
           }
         },
         {
