@@ -363,7 +363,9 @@ export default {
         doYouWantApprove: "Сіз шынымен келісім-шартқа келіскіңіз келе ме?",
         changeApprovals: "Бекітуші тұлғаларды ауыстыру",
         sacReportMenuTitle: 'Мемлекеттік аттестаттау комиссиясының есебі',
-        socialMediaIds: 'Әлеуметтік медиа'
+        socialMediaIds: 'Әлеуметтік медиа',
+        specialNeedsJobs: 'Ерекше қажеттіліктері бар адамдарға арналған жұмыс орындары',
+        availabilityForSpecialNeeds: 'Ерекше қажеттіліктері бар адамдар үшін қол жетімді'
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -437,7 +439,10 @@ export default {
         },
         orgEmployees: "{org} қызметкерлері",
         domesticPartners: 'Отандас серіктестер',
-        foreignPartners: 'Шетел серіктестер'
+        foreignPartners: 'Шетел серіктестер',
+        companyCategory: 'Кәсіпорын санаты"',
+        organizationIndustry: 'Ұйымның қызмет саласы',
+        otherParameters: 'Басқа параметрлер',
     },
     doctemplate: {
         title: "Құжат үлгісін жасау",

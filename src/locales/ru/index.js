@@ -365,7 +365,9 @@ export default {
         doYouWantApprove: "Вы действительно хотите согласовать договор?",
         changeApprovals: "Замена согласующих лиц",
         sacReportMenuTitle: 'Отчеты Государственной аттестационной комиссии',
-        socialMediaIds: 'Социальные медиа'
+        socialMediaIds: 'Социальные медиа',
+        specialNeedsJobs: 'Вакансии для людей с особыми потребностями',
+        availabilityForSpecialNeeds: 'Доступно для людей с особыми потребностями'
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -439,7 +441,10 @@ export default {
         },
         orgEmployees: "Сотрудники {org}",
         domesticPartners: 'Отечественные партнеры',
-        foreignPartners: 'Зарубежные партнеры'
+        foreignPartners: 'Зарубежные партнеры',
+        сompanyСategory: 'Категория предприятия',
+        organizationIndustry: 'Сфера деятельности организации',
+        otherParameters: 'Другие параметры',
     },
     doctemplate: {
         title: "Создание шаблона документа",

@@ -41,4 +41,7 @@ export class ContragentService {
     deleteRating(data) {
         return api.post("/organization/rating/delete", data, {headers: getHeader()});
     }
+    getOrganizationIndustries(data) {
+        return api.post("/organization/industries", data, {headers: getHeader()});
+    }
 }

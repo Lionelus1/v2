@@ -371,7 +371,9 @@ export default {
         doYouWantApprove: "Do you really want to agree to a contract?",
         changeApprovals: "Replacement of approving persons",
         sacReportMenuTitle: 'Report of the State Attestation Commission',
-        socialMediaIds: 'Social Media'
+        socialMediaIds: 'Social Media',
+        specialNeedsJobs: 'Jobs for People with Special Needs',
+        availabilityForSpecialNeeds: 'Available for People with Special Needs'
     },
     positions: {
         menuTitle: "Change position",
@@ -446,7 +448,10 @@ export default {
         },
         orgEmployees: "{org} employees",
         domesticPartners: 'Domestic Partners',
-        foreignPartners: 'Foreign Partners'
+        foreignPartners: 'Foreign Partners',
+        companyCategory: 'Категория предприятия',
+        organizationIndustry: 'Organization Industry',
+        otherParameters: 'Other Parameters',
     },
     doctemplate: {
         title: "Document template creation",

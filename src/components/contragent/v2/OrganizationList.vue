@@ -52,6 +52,20 @@
         </Dropdown>
       </div>
 
+      <div class="field">
+        <label>{{ $t('contragent.organizationIndustry') }}</label>
+        <MultiSelect v-model="tempFilter.organizationIndustry" :options="organizationIndustry"
+                     :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name')"
+                     :placeholder="$t('common.select')"/>
+      </div>
+
+      <div class="field">
+        <label>{{ $t('contragent.otherParameters') }}</label>
+        <MultiSelect v-model="tempFilter.otherParameters" :options="otherParameters"
+                     :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name')"
+                     :placeholder="$t('common.select')"/>
+      </div>
+
       <div v-if="activeTabIndex === 1" class="field">
         <label>{{ $t('science.qualification.country') }}</label>
         <Dropdown filter v-model="tempFilter.country_id" option-value="id" :placeholder="$t('common.select')" :options="countries" class="w-full"
@@ -118,6 +132,8 @@ export default {
         country_id:null,
         form_id: null,
         address: null,
+        organizationIndustry: null,
+        otherParameters: null
       },
       tempFilter: {
         name: null,
@@ -125,6 +141,8 @@ export default {
         localeSearchText: null,
         form_id: null,
         address: null,
+        organizationIndustry: null,
+        otherParameters: null
       },
 
       activeTabIndex: 0,
@@ -135,7 +153,9 @@ export default {
       filtered: false,
       countries: [],
       countryTotal: 0,
-      org_forms: []
+      org_forms: [],
+      organizationIndustry: null,
+      otherParameters: null,
     }
   },
   computed: {
@@ -203,8 +223,10 @@ export default {
     }
 
     this.getOrganizations();
-    this.getOrgForms()
-  },
+    this.getOrgForms();
+    this.getOrganizationIndustries();
+    this.getAdditionalParameters();
+    },
   beforeUnmount() {
     if (!this.sidebar) {
       this.$emit('apply-flex', false);
@@ -266,6 +288,8 @@ export default {
           country_id: this.activeTabIndex === 1 ? this.filter.country_id : null,
           form_id: this.filter.form_id,
           address: this.filter.address,
+          organization_industry_id: this.tempFilter?.organizationIndustry?.map(ind => ind.id) || null,
+          otherParameters: this.tempFilter?.otherParameters?.map(ind => ind.id) || null
         }
       }).then(res => {
         this.organizations = res.data.organizations;
@@ -338,6 +362,8 @@ export default {
         resident: 0,
         country_id:  null,
         address: null,
+        organizationIndustry: null,
+        otherParameters: null
       };
       this.filtered = false;
     },
@@ -422,6 +448,46 @@ export default {
       }
 
       return data.name
+    },
+    getOrganizationIndustries() {
+      const req = {
+        org_organization_id: 3,
+        industry_type: 1,
+      }
+      this.service.getOrganizationIndustries(req).then(res => {
+        this.organizationIndustry= res.data;
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null);
+        } else {
+          console.log(err);
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+        }
+      })
+    },
+    getAdditionalParameters() {
+      const req = {
+        org_organization_id: 3,
+        industry_type: 2,
+      }
+      this.service.getOrganizationIndustries(req).then(res => {
+        this.otherParameters = res.data;
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null);
+        } else {
+          console.log(err);
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+        }
+      })
     }
   }
 }

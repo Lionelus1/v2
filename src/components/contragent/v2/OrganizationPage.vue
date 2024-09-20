@@ -44,9 +44,31 @@
       </div>
       <div class="field col-12 md:col-6">
         <label>{{ $t("contragent.form") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
-        <Dropdown :disabled="pageReadonly" v-model="org.form" dataKey="id" :placeholder="$t('common.select')" :options="orgforms" 
+        <Dropdown :disabled="pageReadonly" v-model="org.form" dataKey="id" :placeholder="$t('common.select')" :options="orgforms"
           :optionLabel="($i18n.locale === 'kz' ? 'name' : $i18n.locale === 'ru' ? 'namerus' : 'nameen')" @change="input"></Dropdown>
         <small class="p-error" v-if="validation.form">{{$t('common.requiredField')}}</small>
+      </div>
+      <div class="field col-12 md:col-6">
+        <label>{{ $t("contragent.сompanyСategory") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
+        <Dropdown :disabled="pageReadonly" v-model="org.companyCategory" dataKey="id" :placeholder="$t('common.select')" :options="orgCompanyCategory"
+                  :optionLabel="($i18n.locale === 'kz' ? 'name' : $i18n.locale === 'ru' ? 'namerus' : 'nameen')" @change="input"></Dropdown>
+        <small class="p-error" v-if="validation.companyCategory">{{$t('common.requiredField')}}</small>
+      </div>
+      <div v-if="!loading" class="field col-12 md:col-6">
+        <label>{{ $t("contragent.organizationIndustry") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
+        <MultiSelect :disabled="pageReadonly" v-model="org.organizationIndustry" :options="organizationIndustry"
+                     :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name')"
+                     :placeholder="$t('common.select')"
+                     @change="input" />
+        <small class="p-error" v-if="validation.organizationIndustry">{{$t('common.requiredField')}}</small>
+      </div>
+      <div v-if="!loading" class="field col-12 md:col-6">
+        <label>{{ $t("contragent.otherParameters") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
+        <MultiSelect :disabled="pageReadonly" v-model="org.otherParameters" :options="workOpportunities"
+                     :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name_en')"
+                     :placeholder="$t('common.select')"
+                     @change="input" />
+        <small class="p-error" v-if="validation.otherParameters">{{$t('common.requiredField')}}</small>
       </div>
       <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ this.$t("common.head") }}</label>
@@ -302,7 +324,29 @@ export default {
       pageReadonly: false,
 
       org: null,
-      orgforms: [],
+      orgCompanyCategory: [
+        {
+          id: 0,
+          name: "Крупный бизнес",
+          namerus: "Крупный бизнес",
+          nameen: "Large Business"
+        },
+        {
+          id: 1,
+          name: "Средний бизнес",
+          namerus: "Средний бизнес",
+          nameen: "Medium Business"
+        },
+        {
+          id: 2,
+          name: "Малый бизнес",
+          namerus: "Малый бизнес",
+          nameen: "Small Business"
+        }
+      ],
+      workOpportunities: null,
+      organizationIndustry: [],
+      otherParameters:null,
       validation: {
         bin: false,
         namekz: false,
@@ -312,6 +356,9 @@ export default {
         email: false,
         country: false,
         swift: false,
+        companyCategory: false,
+        organizationIndustry: false,
+        otherParameters: false,
       },
 
       menu: [
@@ -460,6 +507,8 @@ export default {
       this.getCooperations(this.org_id)
     } else {
       this.org = this.createEmptyOrganization()
+      this.getOrganizationIndustries()
+      this.getAdditionalParameters()
     }
   },
   mounted() {
@@ -521,6 +570,31 @@ export default {
       this.loading = true;
       this.org.bank = this.bank
 
+      if (this.org.organizationIndustry && this.org.otherParameters) {
+
+        this.org.industrySubject = [
+          ...this.org.organizationIndustry.map(item => ({
+            id: item?.id || null,
+            name_kz: item?.name_kz || '',
+            name_ru: item?.name_ru || '',
+            name_en: item?.name || '',
+            is_noted: true,
+            type: 1
+          })),
+          ...this.org.otherParameters.map(item => ({
+            id: item?.id || null,
+            name_kz: item?.name_kz || '',
+            name_ru: item?.name_ru || '',
+            name_en: item?.name || '',
+            is_noted: true,
+            type: 2
+          }))
+        ];
+      }
+
+      this.org.enterprise_category_id = this.org.companyCategory?.id || null;
+
+
       if (this.localityId > 0) {
         this.org.locality = {
           id: this.localityId
@@ -570,6 +644,58 @@ export default {
         }
       })
     },
+    getOrganizationIndustries() {
+      this.loading = true;
+      const req = {
+        org_organization_id: this.org_id,
+        industry_type: 1,
+      }
+      this.service.getOrganizationIndustries(req).then(res => {
+        if (res.data && res.data.length > 0) {
+          this.org.organizationIndustry = []
+          this.organizationIndustry = res.data;
+          this.org.organizationIndustry = this.organizationIndustry.filter(item => item.is_noted === true);
+          console.log("Filtered organizationIndustry:", this.org.organizationIndustry); // Логируйте результат
+        } else {
+          console.error("Данные не загружены или пусты", res.data);
+        }
+        this.loading = false;
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null);
+        } else {
+          console.log(err);
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+        }
+      })
+    },
+    getAdditionalParameters() {
+      this.loading = true;
+      const req = {
+        org_organization_id: this.org_id,
+        industry_type: 2,
+      }
+      this.service.getOrganizationIndustries(req).then(res => {
+        this.workOpportunities = res.data;
+        this.org.otherParameters = res.data.filter(item => item.is_noted === true);
+        this.loading = false;
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null);
+        } else {
+          console.log(err);
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+        }
+      })
+    },
     validate() {
       if (this.org.resident === -1) {
         this.validation.bin = false
@@ -583,7 +709,9 @@ export default {
       this.validation.nameen =  !this.org.nameen || this.org.nameen.length < 1;
       this.validation.form = !this.org.form || this.org.form.id < 1;
       this.validation.email = !this.org.email || this.org.email.length < 1;
-
+      this.validation.companyCategory = !this.org.companyCategory || this.org.companyCategory.length < 1;
+      this.validation.organizationIndustry = !this.org.organizationIndustry || this.org.organizationIndustry.length < 1;
+      this.validation.otherParameters = !this.org.otherParameters || this.org.otherParameters.length < 1;
       if (this.org.type === 2) {
         this.validation.swift = !this.bank.swift || this.bank.swift.length < 1;
       } else {
@@ -617,7 +745,7 @@ export default {
           this.org = res.data.organizations[0];
 
           if (this.org.bank) {
-            this.bank = this.org.bank
+            this.bank = this.org.banks
           }
 
           if (this.org.locality){
@@ -627,7 +755,17 @@ export default {
             this.getRatings()
           }
 
+          if (this.org.enterprise_category_id) {
+            const category = this.orgCompanyCategory.find(c => c.id === this.org.enterprise_category_id);
+            if (category) {
+              this.org.companyCategory = category;
+            }
+          }
+
+          this.getOrganizationIndustries()
+          this.getAdditionalParameters()
         }
+
       }).catch(err => {
         if (err.response && err.response.status == 401) {
           this.$store.dispatch("logLout");
@@ -678,7 +816,7 @@ export default {
         this.banks = res.data;
       }).catch(err => {
         if (err?.response?.status !== 404) {
-          this.$toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+          this.$toast.add({severity: 'error', summary: this.$t('common.error'), life: 3000})
         }
       })
     },
