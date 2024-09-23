@@ -263,21 +263,23 @@ export default {
       }else {
         this.eventParams.rows = 10;
       }
-      this.eventService.getPublishEvents(this.eventParams).then((response) => {
-        this.allEvents = response.data.events;
-        this.allEvents.map(e => {
-          let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
-          e.imageUrl = smartEnuApi + fileRoute + fileUrl
-        });
-        if(data){
-          this.calendarEvents = this.allEvents
-          this.calendarEvents.map(i => {
-            i.title = this.$i18n.locale === "kz" ? i.titleKz : this.$i18n.locale === "ru" ? i.titleRu : i.titleEn
-            i.start = this.formatDateCalendar(i.eventDate)
-            i.url = this.eventView
-          })
+      await this.eventService.getPublishEvents(this.eventParams).then((response) => {
+        this.allEvents = response.data.events ? this.allEvents.concat(response.data.events) : this.allEvents;
+        if (this.allEvents.length !== 0) {
+          this.allEvents.map(e => {
+            let fileUrl = e.main_image_file ? e.main_image_file.filepath : e.image1
+            e.imageUrl = smartEnuApi + fileRoute + fileUrl
+          });
+          if (data) {
+            this.calendarEvents = this.allEvents
+            this.calendarEvents.map(i => {
+              i.title = this.$i18n.locale === "kz" ? i.titleKz : this.$i18n.locale === "ru" ? i.titleRu : i.titleEn
+              i.start = this.formatDateCalendar(i.eventDate)
+              i.url = this.eventView
+            })
+          }
+          this.totalEvents = response.data.total;
         }
-        this.totalEvents = response.data.total;
         this.loadingEvents = false;
       }).catch((error) => {
         this.loadingEvents = false;
@@ -289,6 +291,10 @@ export default {
       });
     },
     eventView(item) {
+      if(item.jsEvent){
+        item.jsEvent.preventDefault();
+        item.jsEvent.stopPropagation();
+      }
       if(item.event){
         this.selectedEvent = item.event.extendedProps;
       }else {
@@ -385,13 +391,14 @@ export default {
     onPageEvents(event) {
       this.eventParams.page = event.page
       this.eventParams.first = event.first
-      this.getAllEvents();
+      this.getAllEvents(false);
     },
     isCalendarBool(bool){
       if (bool) {
         this.eventParams.month = this.currentMonth
         this.eventParams.year = this.currentYear
         this.eventParams.eventType = "publish";
+        this.eventParams.rows = 160;
         this.getAllEvents(true)
         this.getCalendar()
         this.isCalendar = bool
