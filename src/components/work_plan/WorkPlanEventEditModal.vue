@@ -1,8 +1,6 @@
 <template>
-  <Dialog
-      :header="isShedulePlan ? $t('workPlan.editTask') : $t('workPlan.editEvent')"
-      v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
-    <div v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
+  <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
+    <div v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters && plan?.plan_type?.code !==  Enum.WorkPlanTypes.Doctors">
         <div class="field">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
             isShedulePlan ? $t('workPlan.worksByWeek') :
@@ -47,7 +45,7 @@
       </div>
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
           <label>{{ $t('workPlan.summaryDepartment') }}</label>
-          <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
+          <FindUser v-model="resp_person" :max="1" editMode="true" :user-type="3"/>
       </div>
       <div class="field" v-if="(plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science) && !isShedulePlan">
         <label>{{ plan && (plan.plan_type || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
@@ -88,10 +86,14 @@
         <Textarea v-model="editData.result" rows="3" style="resize: vertical" />
       </div>
     </div>
-    <div v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
-      <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
+    <div v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || Enum.WorkPlanTypes.Doctors">
+      <div class="field">
         <label>{{$t("educationalPrograms.semester")}}</label>
         <Dropdown v-model="editData.semester" :options="semesters" optionLabel="name" optionValue="id" :placeholder="$t('educationalPrograms.semester')" />
+      </div>
+      <div class="field">
+        <label>{{ $t('workPlan.approvalUsers') }}</label>
+        <FindUser v-model="resp_person" :editMode="true" :user-type="3"></FindUser>
       </div>
       <div class="field" >
         <label>{{$t("workPlan.content")}}</label>
@@ -122,7 +124,8 @@
 import { WorkPlanService } from "@/service/work.plan.service";
 import Enum from "@/enum/workplan/index"
 import RolesByName from "@/components/smartenu/RolesByName.vue";
-import FindUser from "../../helpers/FindUser.vue";
+import { ContragentService } from "@/service/contragent.service";
+import axios from 'axios';
 
 export default {
   name: "WorkPlanEventEditModal", 
@@ -131,6 +134,7 @@ export default {
   emits: ['hide'],
   data() {
     return {
+      service: new ContragentService(),
       showWorkPlanEventEditModal: this.visible,
       editData: JSON.parse(JSON.stringify(this.event)),
       plan: this.planData,
@@ -191,6 +195,7 @@ export default {
           name: '4'
         },
       ],
+      resp_person: []
     }
   },
   mounted() {
@@ -223,6 +228,37 @@ export default {
         this.inputSets = Array.from(roleMap.values());
       }
     }
+    if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
+      this.semesters.push(
+        ...[
+          {
+            id: 5,
+            name: '5',
+          },
+          {
+            id: 6,
+            name: '6',
+          },
+        ]
+      );
+    }
+    this.service.getPersons({
+        "filter": {
+          "userIds": [this.editData?.summary_department_id],
+        },
+        "searchMode": this.userType == 1 ? "student" : this.userType == 2 ? "staff" : "all",
+        "ldap": this.searchMode == 'ldap' ? true : false,
+        "page": 0,
+        "rows": 15
+      }).then(
+        response => {
+            this.resp_person.push(response.data.foundUsers[0])
+        },
+      ).catch(
+        (error) => {
+          console.log(error)
+        }
+    );
   },
   watch: {
     summaryDepartment: {
@@ -260,7 +296,7 @@ export default {
       }
       let userIds = [];
 
-      if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
+      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Science) {
         userIds = this.inputSets.reduce((acc, inputSet) => {
           inputSet.selectedUsers.forEach(user => {
             acc.push({
@@ -283,6 +319,15 @@ export default {
           resp_person_id = null;
       }
       this.editData.resp_person_id = resp_person_id;
+
+      if(this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters || this.Enum.WorkPlanTypes.Doctors){
+        if (this.resp_person.length !== 0) {
+          this.editData.resp_person_id = this.resp_person[0].userID
+          this.editData.responsible_executor = this.resp_person[0].fullName
+        }
+      }
+
+
       this.editData.resp_person_ids = userIds;
       this.planService.editEvent(this.editData).then(res => {
         if (res.data.is_success) {
@@ -304,8 +349,7 @@ export default {
       });
     },
     notValid() {
-      let errors = [];
-      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters) {
+      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters || Enum.WorkPlanTypes.Doctors) {
         return false
       } else if (this.isShedulePlan){
         this.sheduleFormValid.workName = this.editData.event_name === null || this.editData.event_name === '';
