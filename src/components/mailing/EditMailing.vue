@@ -50,11 +50,11 @@ onMounted(async () => {
 });
 
 const categories = [
-  { id: 87, nameen: 'counterparty', namekz: 'Контрагенттер', nameru: 'Контрагенты' },
+  { id: 89, nameen: 'counterparty', namekz: 'Контрагенттер', nameru: 'Контрагенты' },
   { id: 19, nameen: 'personal', namekz: 'Қызметкерлер', nameru: 'Сотрудники' },
   { id: 57, nameen: 'individual_entrepreneur', namekz: 'Жеке тұлға', nameru: 'Частные лица' },
   { id: 20, nameen: 'student', namekz: 'Білім алушы', nameru: 'Обучающиеся' },
-  { id: 86, nameen: 'others', namekz: 'Басқа', nameru: 'Другое' },
+  { id: 88, nameen: 'others', namekz: 'Басқа', nameru: 'Другое' },
   { id: 85, nameen: 'graduate', namekz: 'Түлектер', nameru: 'Выпускники' },
 ];
 
