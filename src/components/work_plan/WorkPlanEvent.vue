@@ -796,12 +796,9 @@ export default {
           if (this.planDoc && this.planDoc.docHistory) {
             this.isRejected = this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value;
           }
-
           // кайта орнына келтырып кою керек
           this.isPlanCreator =true;
               // !!(this.plan && this.plan.user && this.plan.user.id === this.loginedUserId);
-
-        console.log("test")
         if (this.isSciencePlan) {
           this.planApprovalStage = [
             {
@@ -860,52 +857,52 @@ export default {
           this.getRelatedFiles()
           this.getWorkPlanApprovalUsers(this.work_plan_id)
         }
-          if (this.isWorkSchedule) {
-            this.planApprovalStage = [
-              {
-                stage: 1,
-                users: [],
-                titleRu: "Руководитель практики кафедры",
-                titleKz: "Кафедрасының практика меңгерушісі",
-                titleEn: "Head of Department Practice",
-                certificate: {
-                  namekz: "Жеке тұлғаның сертификаты",
-                  nameru: "Сертификат физического лица",
-                  nameen: "Certificate of an individual",
-                  value: "individual"
-                }
+        if (this.isWorkSchedule) {
+          this.planApprovalStage = [
+            {
+              stage: 1,
+              users: [],
+              titleRu: "Руководитель практики кафедры",
+              titleKz: "Кафедрасының практика меңгерушісі",
+              titleEn: "Head of Department Practice",
+              certificate: {
+                namekz: "Жеке тұлғаның сертификаты",
+                nameru: "Сертификат физического лица",
+                nameen: "Certificate of an individual",
+                value: "individual"
+              }
+            },
+            {
+              stage: 2,
+              users: [],
+              titleRu: "Заведующий кафедрой",
+              titleKz: "Кафедра меңгерушісі",
+              titleEn: "Head of the department",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
               },
-              {
-                stage: 2,
-                users: [],
-                titleRu: "Заведующий кафедрой",
-                titleKz: "Кафедра меңгерушісі",
-                titleEn: "Head of the department",
-                certificate: {
-                  namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-                  nameru: "Для внутреннего документооборота (ГОСТ)",
-                  nameen: "For internal document management (GOST)",
-                  value: "internal"
-                },
+            },
+            {
+              stage: 3,
+              users: [],
+              titleRu: "Декан",
+              titleKz: "Декан",
+              titleEn: "Dean",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
               },
-              {
-                stage: 3,
-                users: [],
-                titleRu: "Декан",
-                titleKz: "Декан",
-                titleEn: "Dean",
-                certificate: {
-                  namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
-                  nameru: "Для внутреннего документооборота (ГОСТ)",
-                  nameen: "For internal document management (GOST)",
-                  value: "internal"
-                },
-              },
-            ];
-            this.getRelatedFiles()
-            this.getWorkPlanApprovalUsers(this.work_plan_id)
-          }
-          if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || Enum.WorkPlanTypes.Doctors) {
+            },
+          ];
+          this.getRelatedFiles()
+          this.getWorkPlanApprovalUsers(this.work_plan_id)
+        }
+        if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters) {
             this.planApprovalStage = [
               {
                 stage: 1,
@@ -961,7 +958,6 @@ export default {
               },
             ];
           }
-
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
