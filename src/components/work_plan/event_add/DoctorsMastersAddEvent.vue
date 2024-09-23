@@ -14,7 +14,6 @@
   </div>
   <div
     class="field"
-    v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors"
   >
     <label>{{ $t('workPlan.approvalUsers') }}</label>
     <FindUser v-model="resp_person" :editMode="true" :user-type="3"></FindUser>

@@ -658,7 +658,7 @@ export default {
             this.getRelatedFiles();
             this.getWorkPlanApprovalUsers(this.work_plan_id);
           }
-          if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters) {
+          if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || Enum.WorkPlanTypes.Doctors) {
             this.planApprovalStage = [
               {
                 stage: 1,
@@ -1267,7 +1267,7 @@ export default {
             this.isCreator ||
             (this.isUserResp(this.selectedEvent?.user) && !this.isFinish)
           ),
-          visible: !this.isFinish,
+          visible: !this.isFinish && !this.isMastersPlan && !this.isDoctorsPlan,
           command: () => {
             this.showDialog(this.dialog.add);
           },
