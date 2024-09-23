@@ -9,7 +9,7 @@
       <Column field="categories" :header="$t('mailing.categories')">
         <template #body="slotProps">
           <span v-if="slotProps.data.Roles">
-            {{ slotProps.data.Roles.map(role => $i18n.locale === "kz" ? role.kz : $i18n.locale === "ru" ? role.ru : role.en).join(', ') }}
+            {{ slotProps.data.Roles.map(role => $i18n.locale === "kz" ? role.name_kz : $i18n.locale === "ru" ? role.name_ru : role.name_en).join(', ') }}
           </span>
           <span v-else>-</span>
         </template>
