@@ -102,7 +102,7 @@ export default {
         status: "Статус",
         show: "Көру",
         saveToDrafts: "Қараламаға сақтау",
-        sendMailing: "Ақпараттық бюллетень жіберу",
+        sendMailing: "Таратылымды жіберу",
         save: "Cақтау",
         speciality: "Мамандығы",
         download: "Жүктеп алу",
