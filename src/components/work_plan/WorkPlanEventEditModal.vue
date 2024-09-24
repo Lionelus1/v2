@@ -94,6 +94,7 @@
       <div class="field">
         <label>{{ $t('workPlan.approvalUsers') }}</label>
         <FindUser v-model="resp_person" :editMode="true" :user-type="3"></FindUser>
+        <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
       </div>
       <div class="field" >
         <label>{{$t("workPlan.content")}}</label>
@@ -126,6 +127,7 @@ import Enum from "@/enum/workplan/index"
 import RolesByName from "@/components/smartenu/RolesByName.vue";
 import { ContragentService } from "@/service/contragent.service";
 import axios from 'axios';
+import FindUser from "@/helpers/FindUser";
 
 export default {
   name: "WorkPlanEventEditModal", 
@@ -166,7 +168,7 @@ export default {
       formValid: {
         event_name: false,
         users: false,
-        quarter: false
+        quarter: false,
       },
       sheduleFormValid: {
         workName: false,
@@ -244,7 +246,7 @@ export default {
     }
     this.service.getPersons({
         "filter": {
-          "userIds": [this.editData?.summary_department_id],
+          "userIds": [this.editData?.resp_person_id],
         },
         "searchMode": this.userType == 1 ? "student" : this.userType == 2 ? "staff" : "all",
         "ldap": this.searchMode == 'ldap' ? true : false,
@@ -252,7 +254,9 @@ export default {
         "rows": 15
       }).then(
         response => {
+          if (response.data.foundUsers[0]) {
             this.resp_person.push(response.data.foundUsers[0])
+          }
         },
       ).catch(
         (error) => {
@@ -349,8 +353,14 @@ export default {
       });
     },
     notValid() {
+      let validation = this.formValid;
+      let errors = [];
       if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters || Enum.WorkPlanTypes.Doctors) {
-        return false
+        this.formValid.users = this.resp_person.length === 0;
+        Object.keys(this.formValid).forEach(function (k) {
+          if (validation[k] === true) errors.push(validation[k])
+        });
+        return errors.length > 0
       } else if (this.isShedulePlan){
         this.sheduleFormValid.workName = this.editData.event_name === null || this.editData.event_name === '';
         this.sheduleFormValid.sDate = this.editData.start_date === null || this.editData.start_date === '';
@@ -365,7 +375,6 @@ export default {
         this.formValid.users = this.selectedUsers.length === 0;
         this.formValid.quarter = this.editData.quarter === null;
 
-        let validation = this.formValid;
         Object.keys(this.formValid).forEach(function (k) {
           if (validation[k] === true) errors.push(validation[k])
         });

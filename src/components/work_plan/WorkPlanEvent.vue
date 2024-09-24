@@ -1519,7 +1519,7 @@ export default {
           label: this.$t('common.addMember'),
           icon: 'fa-solid fa-plus',
           disabled: !(this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent?.user) && !this.isFinish),
-          visible: !this.isFinish && !this.isWorkSchedule,
+          visible: !this.isFinish && !this.isWorkSchedule && !this.isMastersPlan && !this.isDoctorsPlan,
           command: () => {
             this.showDialog(this.dialog.addMember)
           }
