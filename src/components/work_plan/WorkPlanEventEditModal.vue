@@ -77,6 +77,7 @@
       <div class="field">
         <label>{{ $t('workPlan.approvalUsers') }}</label>
         <FindUser v-model="resp_person" :editMode="true" :user-type="3"></FindUser>
+        <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
       </div>
       <div class="field" >
         <label>{{$t("workPlan.content")}}</label>
@@ -148,7 +149,7 @@ export default {
       formValid: {
         event_name: false,
         users: false,
-        quarter: false
+        quarter: false,
       },
       submitted: false,
       planService: new WorkPlanService(),
@@ -230,7 +231,9 @@ export default {
         "rows": 15
       }).then(
         response => {
+          if (response.data.foundUsers[0]) {
             this.resp_person.push(response.data.foundUsers[0])
+          }
         },
       ).catch(
         (error) => {
@@ -316,15 +319,20 @@ export default {
       });
     },
     notValid() {
+      let validation = this.formValid;
+      let errors = [];
       if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters || Enum.WorkPlanTypes.Doctors) {
-        return false
+        this.formValid.users = this.resp_person.length === 0;
+        Object.keys(this.formValid).forEach(function (k) {
+          if (validation[k] === true) errors.push(validation[k])
+        });
+        return errors.length > 0
       }
       this.formValid.event_name = this.editData.event_name === null || this.editData.event_name === '';
       this.formValid.users = this.selectedUsers.length === 0;
       this.formValid.quarter = this.editData.quarter === null;
 
-      let validation = this.formValid;
-      let errors = [];
+
       Object.keys(this.formValid).forEach(function (k) {
         if (validation[k] === true) errors.push(validation[k])
       });

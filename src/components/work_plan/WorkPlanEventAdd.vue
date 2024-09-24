@@ -3,7 +3,7 @@
     @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
       <!-- mastersplan -->
-      <DoctorsMastersAddEvent :plan="plan" @update-data="updateData"  v-if="isMastersPlan || isDoctorsPlan"/>
+      <DoctorsMastersAddEvent :plan="plan" @update-data="updateData" :form-valid="formValid"  v-if="isMastersPlan || isDoctorsPlan"/>
       <!-- mastersplan -->
       <div class="field" v-if="!isMastersPlan && !isDoctorsPlan">
         <label>{{
@@ -334,6 +334,7 @@ export default {
       ) {
         data = { ...data, ...this.comingData };
       }
+
       this.planService
         .createEvent(data)
         .then((res) => {
@@ -373,7 +374,8 @@ export default {
     },
     validateForm() {
       if (this.isMastersPlan || this.isDoctorsPlan) {
-        return true;
+        this.formValid.users = this.comingData?.resp_person_id === null;
+        return !this.formValid.users
       }
       this.formValid.event_name = !this.event_name;
       this.formValid.summaryUser = !this.summaryDepartment.length === 0;
