@@ -103,6 +103,7 @@ export default {
         show: "Көру",
         saveToDrafts: "Қараламаға сақтау",
         sendMailing: "Таратылымды жіберу",
+        next: "Келесі",
         save: "Cақтау",
         speciality: "Мамандығы",
         download: "Жүктеп алу",

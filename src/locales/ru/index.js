@@ -103,6 +103,7 @@ export default {
         show: "Просмотр",
         saveToDrafts: "Сохранить в черновики",
         sendMailing: "Отправить рассылку",
+        next: "Далее",
         save: "Сохранить",
         speciality: "Специальность",
         download: "Скачать",

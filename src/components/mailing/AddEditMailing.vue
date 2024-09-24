@@ -41,7 +41,7 @@
           </div>
         </div>
         <div class="flex justify-content-end pt-2">
-          <Button class="p-button p-component w-max" label="Submit" @click="nextPage">Далее</Button>
+          <Button class="p-button p-component w-max" label="Submit" @click="nextPage">{{$t('common.next')}}</Button>
         </div>
       </div>
     </div>

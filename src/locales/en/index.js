@@ -39,6 +39,7 @@ export default {
         selectAll: "Select All",
         saveToDrafts: "Save to drafts",
         sendMailing: "Send mailing",
+        next: "next",
         action: {
             submit: "Submit",
             accept: "Accept",
