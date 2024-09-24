@@ -3,6 +3,15 @@
     <div class="card">
       <h4 class="m-0">{{ $t("common.welcome") }}, {{ loginedUser.fullName }} !</h4>
     </div>
+    <div class="capabilities flex">
+        <div v-for="i of videos" :key="i" class="p-2">
+          <video poster="https://old.enu.kz/pictures/fevral-2021/po-tsifrovizacii-3.PNG" style="border-radius: 15px" width="100%" controls>
+            <source :src="i.video" type="video/mp4">
+            <source :src="i.video" type="video/ogg">
+          </video>
+        </div>
+    </div>
+
     <div class="card card_bottom">
       <TabView ref="templateView" v-model:activeIndex="active">
         <TabPanel v-bind:header="$t('smartenu.newsTitle')">
@@ -217,7 +226,18 @@ export default {
       isCalendar: false,
       isGrid: true,
       currentMonth:  new Date().getMonth()+1,
-      currentYear:  new Date().getFullYear()
+      currentYear:  new Date().getFullYear(),
+      videos: [
+        {
+          video: 'https://media.istockphoto.com/id/1411820941/video/global-business-teamwork-brainstorm-idea-sharing-communication-network-technology-data.mp4?s=mp4-640x640-is&k=20&c=1L-BEb_tUCds_eOMGhbp8uL9BcuehVFwXm86FMO4l78=',
+        },
+        {
+          video: 'https://media.istockphoto.com/id/1453963806/video/time-lapse-low-angle-of-tall-corporate-buildings-skyscraper-with-reflection-of-clouds-among.mp4?s=mp4-640x640-is&k=20&c=RIpYsVqpNXm-KOaMcpsMY80maM3p2SyEbjTTMxTqzz8=',
+        },
+        {
+          video: 'https://media.istockphoto.com/id/1411820941/video/global-business-teamwork-brainstorm-idea-sharing-communication-network-technology-data.mp4?s=mp4-640x640-is&k=20&c=1L-BEb_tUCds_eOMGhbp8uL9BcuehVFwXm86FMO4l78=',
+        }
+      ]
     };
   },
 
