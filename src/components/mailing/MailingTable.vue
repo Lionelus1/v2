@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
     <h3>{{ $t("smartenu.mailingTitle") }}</h3>
-    <ToolbarMenu :data="menu" @search="getAllMailing" :search="true"/>
+    <ToolbarMenu :data="menu" />
     <div class="card">
       <TabView>
         <TabPanel :header="$t('smartenu.mailings')">

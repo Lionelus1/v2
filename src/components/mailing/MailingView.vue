@@ -78,10 +78,10 @@ const getCategories = computed(() => {
   const categories = props.selectedMailing?.categories
   console.log("categories: ", categories)
   return locale.value === "kz"
-      ? categories?.map(category => category.kz || '-').join(', ')
+      ? categories?.map(category => category.name_kz || '-').join(', ')
       : locale.value === "ru"
-          ? categories?.map(category => category.ru || '-').join(', ')
-          : categories?.map(category => category.en || '-').join(', ')
+          ? categories?.map(category => category.name_ru || '-').join(', ')
+          : categories?.map(category => category.name_en || '-').join(', ')
 });
 
 const categoryExists = (id) => {
