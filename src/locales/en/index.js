@@ -2109,7 +2109,8 @@ export default {
 
     },
     hikvision: {
-        employeeName: "Employee",
+        reportDeleted: 'Report successfully deleted',
+        employeeName: 'Employee',
         generate: 'Generate a report',
         employeeEntryExitReport: 'Employee Entry and Exit Report',
         generateReport: 'Generate Report',

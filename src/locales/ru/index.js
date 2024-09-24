@@ -2003,6 +2003,7 @@ export default {
         },
     },
     hikvision: {
+        reportDeleted: 'Отчет успешно удален',
         employeeName: 'Имя сотрудника',
         employeeEntryExitReport: 'Отчет по входу и выходу сотрудников в корпус',
         generateReport: 'Сформировать отчет',

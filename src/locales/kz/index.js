@@ -2012,6 +2012,7 @@ export default {
         }
     },
     hikvision: {
+        reportDeleted: 'Есеп сәтті жойылды',
         employeeName: 'Қызметкер',
         generate: 'Отчет генерациялау',
         employeeEntryExitReport: 'Қызметкерлердің ғимаратқа кіру және шығуы туралы есеп',

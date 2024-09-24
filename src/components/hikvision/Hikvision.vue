@@ -36,13 +36,17 @@
           ) : $t('common.untilNow')) }}
           </template>
         </Column>
-
         <Column :field="'department'" :header="$t('hikvision.department')">
           <template #body="slotProps">
             {{
-              $i18n.locale === "kz" ? slotProps.data.department.nameKz : $i18n.locale === "ru"
-                  ? slotProps.data.department.name : slotProps.data.department.nameEn
-                  || $t('common.all')}}
+              slotProps.data.department
+                  ? ($i18n.locale === "kz"
+                      ? slotProps.data.department.nameKz
+                      : $i18n.locale === "ru"
+                          ? slotProps.data.department.name
+                          : slotProps.data.department.nameEn)
+                  : $t('common.all')
+            }}
           </template>
         </Column>
 
@@ -137,10 +141,10 @@ const { t, locale } = useI18n();
 
 
 const showError = (message) => {
-  toast.add({ severity: 'error', summary: 'Ошибка', detail: message, life: 3000 });
+  toast.add({ severity: 'error', detail: message, life: 3000 });
 };
 const showSuccess = (message) => {
-  toast.add({ severity: 'success', summary: 'Успешно', detail: message, life: 3000 });
+  toast.add({ severity: 'success', detail: message, life: 3000 });
 };
 
 const visibleMenuItems = computed(() => menuItems.filter(item => item.visible !== false));
@@ -229,7 +233,7 @@ const deleteReport = (id) => {
       try {
         await reportService.deleteReport({ id });
         reports.value = reports.value.filter(report => report.id !== id);
-        showSuccess('Отчет успешно удален');
+        showSuccess(t('hikvision.reportDeleted'));
         getReports();
       } catch (error) {
         showError('Не удалось удалить отчет');
