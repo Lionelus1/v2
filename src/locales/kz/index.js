@@ -1512,6 +1512,8 @@ export default {
         filter: "Сүзгі",
         years: "Жылдар",
         globalFilter: "Жаһандық сүзгі",
+        search: "Іздеу",
+        show: "Көру",
         tooltip: {
             home: "Бастапқы тізім",
             previous: "Артқа",
@@ -1531,6 +1533,14 @@ export default {
             delete: "Қалтаны жою",
             hide: "Қалтаны жасыру",
             show: "Қалтаны көрсету",
+        },
+        file: {
+            add: "Файл қосу",
+            edit: "Файлды өңдеу",
+            delete: "Файлды жою",
+            hide: "Файлды жасыру",
+            show: "Файлды көрсету",
+            download: "Файлды жүктеу",
         },
         columns: {
             faculties: "Факультеттер",

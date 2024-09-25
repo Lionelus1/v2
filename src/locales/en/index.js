@@ -1549,6 +1549,8 @@ export default {
         filter: "Filter",
         years: "Years",
         globalFilter: "Global filter",
+        search: "Search",
+        show: "Show",
         tooltip: {
             home: "Main list",
             previous: "Back",
@@ -1568,6 +1570,14 @@ export default {
             delete: "Delete folder",
             hide: "Hide folder",
             show: "Show folder",
+        },
+        file: {
+            add: "Add file",
+            edit: "Edit file",
+            delete: "Delete file",
+            hide: "Hide file",
+            show: "Show file",
+            download: "download file",
         },
         columns: {
             faculties: "Faculties",

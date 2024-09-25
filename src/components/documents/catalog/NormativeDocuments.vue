@@ -1,5 +1,5 @@
 <template>
-  <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
+  <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="3"/>
   <div class="flex flex-row mb-3">
     <h3 class="m-0">{{ $t("smartenu.catalogNormDoc") }}</h3>
   </div>
@@ -40,34 +40,34 @@
       <template #end>
         <div v-if="findRole(null, 'normative_docs_admin')">
           <Button @click="open('fileUploadDialog')" :disabled="!tooltip.folder"
-                  v-tooltip="$t('educomplex.folder.show')" class="p-button-text p-button-info p-1">
+                  v-tooltip="$t('educomplex.file.add')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-circle-plus fa-xl"/>
           </Button>
           <Button @click="open('fileUploadDialog', selectedNode)"  :disabled="!tooltip.file || loginedUser.userID != selectedNode.creatorID"
-                  v-tooltip="$t('educomplex.folder.show')" class="p-button-text p-button-info p-1">
+                  v-tooltip="$t('educomplex.file.edit')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-pen fa-xl" />
           </Button>
           <Button @click="deleteFile()" :disabled="!tooltip.file || loginedUser.userID != selectedNode.creatorID"
-                  v-tooltip="$t('educomplex.folder.show')" class="p-button-text p-button-info p-1">
+                  v-tooltip="$t('educomplex.file.delete')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-circle-minus fa-xl" />
           </Button>
           <Button v-if="tooltip.file && !selectedNode.isHidden && loginedUser.userID === selectedNode.creatorID"
-                  @click="hideFile()" v-tooltip="$t('educomplex.folder.show')" class="p-button-text p-button-info p-1">
+                  @click="hideFile()" v-tooltip="$t('educomplex.file.hide')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye-slash fa-xl" />
           </Button>
           <Button v-if="tooltip.file && selectedNode.isHidden && loginedUser.userID === selectedNode.creatorID"
-                  @click="showFile()" class="p-button-text p-button-info p-1">
+                  @click="showFile()" v-tooltip="$t('educomplex.file.show')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye fa-xl" />
           </Button>
         </div>
         <div>
-          <Button @click="toggle" aria:haspopup="true" aria-controls="overlay_panel" class="p-button-text p-button-info p-1">
+          <Button @click="toggle" aria:haspopup="true" aria-controls="overlay_panel" v-tooltip="$t('educomplex.search')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-search fa-xl" />
           </Button>
-          <Button v-if="selectedNode && !selectedNode.is_view_only" @click="downloadFile()" :disabled="!tooltip.file && !currentDocument" class="p-button-text p-button-info p-1">
+          <Button v-if="selectedNode && !selectedNode.is_view_only" @click="downloadFile()" :disabled="!tooltip.file && !currentDocument" v-tooltip="$t('educomplex.file.download')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-arrow-down fa-xl" />
           </Button>
-          <Button v-if="selectedNode && selectedNode.is_view_only" @click="openSidebar(selectedNode)" :disabled="!tooltip.file && !currentDocument" class="p-button-text p-button-info p-1">
+          <Button v-if="selectedNode && selectedNode.is_view_only" @click="openSidebar(selectedNode)" :disabled="!tooltip.file && !currentDocument" v-tooltip="$t('educomplex.show')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye fa-xl"></i>
           </Button>
         </div>
@@ -75,7 +75,7 @@
     </Toolbar>
     <div class="flex-grow-1" style="height: 300px;">
       <TreeTable :value="catalog" :expandedKeys="expandedKeys" selectionMode="single" v-model:selectionKeys="selectedNodeKey"
-                 :lazy="true" :loading="loading" scrollable scrollHeight="flex" class="p-treetable-sm"
+                 :lazy="true" scrollable scrollHeight="flex" class="p-treetable-sm"
                  @node-select="onNodeSelect($event)" @node-expand="onNodeExpand($event)"  v-if="!filterApplied">
         <Column :header="$t('common.name')" :expander="true" :pt="{rowToggler: {style: 'flex-shrink: 0;'}}">
           <template #body="slotProps">

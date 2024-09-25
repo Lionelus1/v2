@@ -1504,6 +1504,8 @@ export default {
         filter: "Фильтр",
         years: "Годы",
         globalFilter: "Глобальный фильтр",
+        search: "Поиск",
+        show: "Показывать",
         tooltip: {
             home: "Главный список",
             previous: "Назад",
@@ -1523,6 +1525,14 @@ export default {
             delete: "Удалить папку",
             hide: "Скрыть папку",
             show: "Показать папку",
+        },
+        file: {
+            add: "Добавить файл",
+            edit: "Редактировать файл",
+            delete: "Удалить файл",
+            hide: "Скрыть файл",
+            show: "Показать файл",
+            download: "Скачать файл",
         },
         columns: {
             faculties: "Факультеты",
