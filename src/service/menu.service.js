@@ -92,7 +92,8 @@ export class MenuService {
                     {
                         label: $t('smartenu.mailingTitle'),
                         icon: 'fa-regular fa-paper-plane',
-                        to: '/mailing'
+                        to: '/mailing',
+                        visible: this.findRole("mailing_manager")
                     },
                 ]
             },
