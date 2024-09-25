@@ -219,7 +219,7 @@ export default {
         icon: "pi pi-fw pi-share-alt",
         command: () => { this.shareResults(); },
         disabled: !(this.isVisible && !(this.personType === 3 || this.personType === 4)),
-        visible: this.findRole(null, 'personal')
+        visible: this.findRole(null, 'mailing_manager')
       },
       // {
       //   label: this.$t("students.report")disabled,
