@@ -1517,6 +1517,13 @@ export default {
             revision: "Информация о доработке",
             delete: "Удалить документ",
         },
+        folder: {
+            add: "Добавить папку",
+            edit: "Редактировать папку",
+            delete: "Удалить папку",
+            hide: "Скрыть папку",
+            show: "Показать папку",
+        },
         columns: {
             faculties: "Факультеты",
             cafedras: "Кафедры {faculty}",

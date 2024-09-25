@@ -1525,6 +1525,13 @@ export default {
             revision: "Түзету ақпараты",
             delete: "Құжатты өшіру",
         },
+        folder: {
+            add: "Қалта қосу",
+            edit: "Қалтаны өңдеу",
+            delete: "Қалтаны жою",
+            hide: "Қалтаны жасыру",
+            show: "Қалтаны көрсету",
+        },
         columns: {
             faculties: "Факультеттер",
             cafedras: "{faculty} кафедралары",

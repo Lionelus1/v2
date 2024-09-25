@@ -7,26 +7,28 @@
     <Toolbar class="m-0 p-1">
       <template #start>
         <div v-if="findRole(null, 'normative_docs_admin') || isAdmin">
-          <Button @click="open('folderUploadDialog')" :disabled="!tooltip.folder"
+          <Button @click="open('folderUploadDialog')"
+                  :disabled="!tooltip.folder"
+                  v-tooltip="$t('educomplex.folder.add')"
                   class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-folder-plus fa-xl" />
           </Button>
           <!-- edit here -->
           <Button @click="open('folderUploadDialog', selectedNode)" :disabled="!selectedNode || selectedNode?.nodeType === 'file' || (!isAdmin && (!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId))"
-                  class="p-button-text p-button-info p-1">
+                  v-tooltip="$t('educomplex.folder.edit')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-square-pen fa-xl" />
           </Button>
           <Button @click="deleteFolder()" :disabled="!selectedNode || selectedNode?.nodeType === 'file' || (!isAdmin && (!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId))"
-                  class="p-button-text p-button-info p-1">
+                  v-tooltip="$t('educomplex.folder.delete')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-folder-minus fa-xl" />
           </Button>
           <Button v-if="tooltip.folder && !selectedNode.hidden && selectedNode.ownerId === loginedUser.userID"
                   @click="hideFolder()" :disabled="!tooltip.folder || selectedNode.parentID == null"
-                  class="p-button-text p-button-info p-1">
+                  v-tooltip="$t('educomplex.folder.hide')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye-slash fa-xl" />
           </Button>
           <Button v-if="tooltip.folder && selectedNode.hidden && selectedNode.ownerId === loginedUser.userID"
-                  @click="showFolder()" :disabled="selectedNode.parentID == null" class="p-button-text p-button-info p-1">
+                  @click="showFolder()" :disabled="selectedNode.parentID == null" v-tooltip="$t('educomplex.folder.show')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye fa-xl" />
           </Button>
           <!-- <Button @click="open('folderMoveDialog')" :disabled="!tooltip.folder || selectedNode.parentID == null
@@ -38,19 +40,19 @@
       <template #end>
         <div v-if="findRole(null, 'normative_docs_admin')">
           <Button @click="open('fileUploadDialog')" :disabled="!tooltip.folder"
-                  class="p-button-text p-button-info p-1">
+                  v-tooltip="$t('educomplex.folder.show')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-circle-plus fa-xl"/>
           </Button>
           <Button @click="open('fileUploadDialog', selectedNode)"  :disabled="!tooltip.file || loginedUser.userID != selectedNode.creatorID"
-                  class="p-button-text p-button-info p-1">
+                  v-tooltip="$t('educomplex.folder.show')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-pen fa-xl" />
           </Button>
           <Button @click="deleteFile()" :disabled="!tooltip.file || loginedUser.userID != selectedNode.creatorID"
-                  class="p-button-text p-button-info p-1">
+                  v-tooltip="$t('educomplex.folder.show')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-circle-minus fa-xl" />
           </Button>
           <Button v-if="tooltip.file && !selectedNode.isHidden && loginedUser.userID === selectedNode.creatorID"
-                  @click="hideFile()" class="p-button-text p-button-info p-1">
+                  @click="hideFile()" v-tooltip="$t('educomplex.folder.show')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye-slash fa-xl" />
           </Button>
           <Button v-if="tooltip.file && selectedNode.isHidden && loginedUser.userID === selectedNode.creatorID"
@@ -77,8 +79,12 @@
                  @node-select="onNodeSelect($event)" @node-expand="onNodeExpand($event)"  v-if="!filterApplied">
         <Column :header="$t('common.name')" :expander="true" :pt="{rowToggler: {style: 'flex-shrink: 0;'}}">
           <template #body="slotProps">
-            <span v-if="slotProps.node.hidden || slotProps.node.isHidden"><i class="fa-solid fa-eye-slash"></i>&nbsp;{{slotProps.node["name"+$i18n.locale]}}</span>
-            <span v-else><i :class="'fa-solid fa-' + (slotProps.node.nodeType)"></i>&nbsp;{{ slotProps.node["name"+$i18n.locale] }}</span>
+  <span v-if="slotProps.node.hidden || slotProps.node.isHidden">
+    <i class="fa-solid fa-eye-slash"></i>&nbsp;{{ slotProps.node['name'+$i18n.locale] }}
+  </span>
+            <span v-else>
+    <i :class="getFileIconClass(slotProps.node.name)"></i>&nbsp;{{ slotProps.node['name'+$i18n.locale] }}
+  </span>
           </template>
         </Column>
       </TreeTable>
@@ -349,7 +355,7 @@ export default {
         file: false,
         folder: false
       }
-      
+
       if (node.nodeType === 'file') {
         this.tooltip.file = true
       } else {
@@ -523,6 +529,27 @@ export default {
         this.selectedNode.is_view_only = event.is_view_only
       }
 
+    },
+    getFileIconClass(fileName) {
+
+      if (!fileName || typeof fileName !== 'string') {
+        return 'fa-solid fa-folder';
+      }
+
+      const extension = fileName.split('.').pop().toLowerCase();
+
+      switch (extension) {
+        case 'pdf':
+          return 'fa-solid fa-file-pdf';
+        case 'doc':
+        case 'docx':
+          return 'fa-solid fa-file-word';
+        case 'xls':
+        case 'xlsx':
+          return 'fa-solid fa-file-excel';
+        default:
+          return 'fa-solid fa-file';
+      }
     },
     folderUpdated(event) {
       this.close('folderUploadDialog')

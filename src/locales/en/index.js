@@ -1562,6 +1562,13 @@ export default {
             revision: "Revision information",
             delete: "Delete document",
         },
+        folder: {
+            add: "Add folder",
+            edit: "Edit folder",
+            delete: "Delete folder",
+            hide: "Hide folder",
+            show: "Show folder",
+        },
         columns: {
             faculties: "Faculties",
             cafedras: "Cafedras of the {faculty}",
