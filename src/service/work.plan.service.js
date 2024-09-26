@@ -15,10 +15,6 @@ export class WorkPlanService {
         return api.get(`/workPlan/getWorkPlanById/${planId}`, {headers: getHeader()});
     }
 
-    downloadDiaryRepPlanById(planId) {
-        return api.get(`/workPlan/downloadZipDiaryRep/${planId}`, {headers: getHeader()});
-    }
-
     finishEvent(planId) {
         return api.post('/workPlan/finishEvent', {work_plan_id: parseInt(planId)}, {headers: getHeader()});
     }
