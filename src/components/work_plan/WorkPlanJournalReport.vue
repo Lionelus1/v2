@@ -650,6 +650,7 @@ const getDiaryReports = async () => {
   async function createDiaryReports(wpId, name, type) {
     let data = {
       work_plan_id: wpId,
+      creator_id: student_id.value,
       report_name: name,
       report_type: type,
       quarter: null,
