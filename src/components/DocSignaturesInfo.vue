@@ -306,8 +306,7 @@ export default {
           )
             .then(response => {
               (
-                this.files.push(this.b64toBlob(response.data)) // мынау ескы код тестте документ карау ушын
-                // this.files.push(this.b64toBlob(response.data.file)) //мастерде осы код болу керек
+                this.files.push(this.b64toBlob(response.data.file))
               )
             })
         }
