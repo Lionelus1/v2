@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
     <TitleBlock :title="$t('workPlan.journalReports')" :show-back-button="true" />
-    <div class="card" v-if="dReports && dReports[active].doc_info.docHistory.stateEn === DocState.REVISION.Value">
+    <div class="card" v-if="dReports && dReports[active].doc_info && dReports[active].doc_info.docHistory.stateEn === DocState.REVISION.Value">
       <div class="p-fluid">
         <div class="field">
           <label>{{ $t('common.state') }}:</label>
@@ -32,14 +32,12 @@
       </div>
     </div>
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
-
-
       <!--дневник-отчет-->
       <TabPanel :header="$t('workPlan.journalReports')" >
-        <span v-if="!loading && dReports" :class="'ml-3 customer-badge status-' + dReports[0].doc_info.docHistory.stateEn">
+        <span v-if="!loading && dReports && dReports[0].doc_info" :class="'ml-3 customer-badge status-' + dReports[0].doc_info.docHistory.stateEn">
           {{ $t('common.states.' + dReports[0].doc_info.docHistory.stateEn) }}
         </span>
-        <div class="card" v-if="!loading && dReports && dReports[0].doc_info && !(dReports[0].doc_info.docHistory.stateId === 1 || dReports[0].doc_info.docHistory.stateId === 4)">
+        <div class="card" v-if="!loading && dReports  && dReports[0].doc_info && !(dReports[0].doc_info.docHistory.stateId === 1 || dReports[0].doc_info.docHistory.stateId === 4)">
           <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc0"></Button>
         </div>
         <div class="card" v-if="visibleSendToApprove()">
@@ -57,7 +55,7 @@
       </TabPanel>
       <!--Техника безоп<-->
       <TabPanel :header="$t('workPlan.safetyPrecautions')">
-        <span v-if="!loading && dReports" :class="'ml-3 customer-badge status-' + dReports[1].doc_info.docHistory.stateEn">
+        <span v-if="!loading && dReports && dReports[1].doc_info" :class="'ml-3 customer-badge status-' + dReports[1].doc_info.docHistory.stateEn">
           {{ $t('common.states.' + dReports[1].doc_info.docHistory.stateEn) }}
         </span>
         <div class="card" v-if="dReports && dReports[1].doc_info && !(dReports[1].doc_info.docHistory.stateId === 1 || dReports[1].doc_info.docHistory.stateId === 4)">
@@ -96,7 +94,7 @@
       <!--Закл Контр-->
       <TabPanel :header="$t('workPlan.conclusionCounterparty')">
         <vue-element-loading :active="contrConcLoading" color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
-        <span v-if="!loading && dReports" :class="'ml-3 customer-badge status-' + dReports[2].doc_info.docHistory.stateEn">
+        <span v-if="!loading && dReports && dReports[2].doc_info" :class="'ml-3 customer-badge status-' + dReports[2].doc_info.docHistory.stateEn">
           {{ $t('common.states.' + dReports[2].doc_info.docHistory.stateEn) }}
         </span>
         <div class="card" v-if="dReports && dReports[2].doc_info && !(dReports[2].doc_info.docHistory.stateId === 1 || dReports[2].doc_info.docHistory.stateId === 4)">
@@ -118,7 +116,7 @@
       <!--Заключение руководителя-->
       <TabPanel :header="$t('workPlan.conclusionHeadDepartment')">
         <vue-element-loading :active="headConcLoading" color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
-        <span v-if="!loading && dReports" :class="'ml-3 customer-badge status-' + dReports[3].doc_info.docHistory.stateEn">
+        <span v-if="!loading && dReports && dReports[3].doc_info" :class="'ml-3 customer-badge status-' + dReports[3].doc_info.docHistory.stateEn">
           {{ $t('common.states.' + dReports[3].doc_info.docHistory.stateEn) }}
         </span>
         <div class="card" v-if="dReports && dReports[3].doc_info && !(dReports[3].doc_info.docHistory.stateId === 1 || dReports[3].doc_info.docHistory.stateId === 4)">
@@ -140,7 +138,7 @@
       <!--Оценка практики-->
       <TabPanel :header="$t('workPlan.practiceAssessment')">
         <vue-element-loading :active="assignLoading" color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
-        <span v-if="!loading && dReports" :class="'ml-3 customer-badge status-' + dReports[4].doc_info.docHistory.stateEn">
+        <span v-if="!loading && dReports && dReports[4].doc_info" :class="'ml-3 customer-badge status-' + dReports[4].doc_info.docHistory.stateEn">
           {{ $t('common.states.' + dReports[4].doc_info.docHistory.stateEn) }}
         </span>
         <div class="card" v-if="dReports && dReports[4].doc_info && !(dReports[4].doc_info.docHistory.stateId === 1 || dReports[4].doc_info.docHistory.stateId === 4)">
@@ -575,8 +573,8 @@ const downloadDiaryRep = async () => {
     };
 
     for (const report of dReports.value) {
-      if(report.doc_info){
-        const fileBlob = await fetchFile(report.doc_info.filePath);
+      if(report?.doc_info){
+        const fileBlob = await fetchFile(report?.doc_info.filePath);
         zip.file(report.report_name.replace('.', '_') + '.pdf', fileBlob);  // Добавляем файл в архив с его именем
       }
     }
@@ -667,7 +665,11 @@ const getDiaryReports = async () => {
 
   try {
     loading.value = true;
-    const dRes = await planService.getWorkPlanDiaryReports(workPlanId.value);
+    let data = {
+      work_plan_id: workPlanId.value,
+      student_id: student_id.value,
+    };
+    const dRes = await planService.getWorkPlanDiaryReports(data);
     if (dRes && dRes.data && dRes.data.length > 0) {
       dReports.value = dRes.data;
       calcCC(); //для заключения контрагента
@@ -693,6 +695,8 @@ const getDiaryReports = async () => {
 
 const getFile = async (index) => {
   await planService.getPlanReportFile(dReports.value[index].doc_id).then(async res => {
+    console.log("lksdnvlsdnvksdvksdvnksdnv")
+    console.log(res.data)
     if (res.data && dReports.value && dReports.value[index].doc_info.docHistory.stateId !== 4) {
       //kelisimge jiberilger bolsa daiyn filedi alam
       blobSource.value = URL.createObjectURL(await b64toBlob(res.data));
