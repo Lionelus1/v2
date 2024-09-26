@@ -902,7 +902,7 @@ export default {
           this.getRelatedFiles()
           this.getWorkPlanApprovalUsers(this.work_plan_id)
         }
-        if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters) {
+        if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
             this.planApprovalStage = [
               {
                 stage: 1,
