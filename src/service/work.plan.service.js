@@ -114,8 +114,8 @@ export class WorkPlanService {
         return api.get(`/workPlan/getWorkPlanReports/${planId}`, {headers: getHeader()});
     }
 
-    getWorkPlanDiaryReports(planId) {
-        return api.get(`/workPlan/getWorkPlanDiaryReports/${planId}`, {headers: getHeader()});
+    getWorkPlanDiaryReports(data) {
+        return api.post(`/workPlan/getWorkPlanDiaryReports`, data, {headers: getHeader()});
     }
 
     deletePlanReport(id) {

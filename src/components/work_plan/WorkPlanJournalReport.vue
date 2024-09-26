@@ -665,7 +665,11 @@ const getDiaryReports = async () => {
 
   try {
     loading.value = true;
-    const dRes = await planService.getWorkPlanDiaryReports(workPlanId.value);
+    let data = {
+      work_plan_id: workPlanId.value,
+      student_id: student_id.value,
+    };
+    const dRes = await planService.getWorkPlanDiaryReports(data);
     if (dRes && dRes.data && dRes.data.length > 0) {
       dReports.value = dRes.data;
       calcCC(); //для заключения контрагента
