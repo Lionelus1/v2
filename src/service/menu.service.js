@@ -344,8 +344,8 @@ export class MenuService {
 
             },
             {
-                label: $t('Telegram'),
-                icon: 'fa-brands fa-telegram',
+                label: $t('telegram.title'),
+                icon: 'fa-solid fa-robot',
                 to: '/telegram',
                 visible: this.findRole('telegram') || this.findRole('main_administrator')
             },
