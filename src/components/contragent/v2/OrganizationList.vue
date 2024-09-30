@@ -54,14 +54,14 @@
 
       <div class="field">
         <label>{{ $t('contragent.organizationIndustry') }}</label>
-        <MultiSelect v-model="tempFilter.organizationIndustry" :options="organizationIndustry"
+        <MultiSelect maxSelectedLabels="2" class="w-full md:w-50" display="chip" v-model="tempFilter.organizationIndustry" :options="organizationIndustry"
                      :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name')"
                      :placeholder="$t('common.select')"/>
       </div>
 
       <div class="field">
         <label>{{ $t('contragent.otherParameters') }}</label>
-        <MultiSelect v-model="tempFilter.otherParameters" :options="otherParameters"
+        <MultiSelect maxSelectedLabels="1" class="w-full md:w-50" display="chip" v-model="tempFilter.otherParameters" :options="otherParameters"
                      :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name')"
                      :placeholder="$t('common.select')"/>
       </div>
@@ -288,8 +288,8 @@ export default {
           country_id: this.activeTabIndex === 1 ? this.filter.country_id : null,
           form_id: this.filter.form_id,
           address: this.filter.address,
-          organization_industry_id: this.tempFilter?.organizationIndustry?.map(ind => ind.id) || null,
-          otherParameters: this.tempFilter?.otherParameters?.map(ind => ind.id) || null
+          organization_industry_id: this.filter?.organizationIndustry?.map(ind => ind.id) || null,
+          other_parameters_id: this.filter?.otherParameters?.map(ind => ind.id) || null
         }
       }).then(res => {
         this.organizations = res.data.organizations;

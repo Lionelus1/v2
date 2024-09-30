@@ -49,26 +49,26 @@
         <small class="p-error" v-if="validation.form">{{$t('common.requiredField')}}</small>
       </div>
       <div class="field col-12 md:col-6">
-        <label>{{ $t("contragent.сompanyСategory") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
+        <label>{{ $t("contragent.сompanyСategory") }}</label>
         <Dropdown :disabled="pageReadonly" v-model="org.companyCategory" dataKey="id" :placeholder="$t('common.select')" :options="orgCompanyCategory"
                   :optionLabel="($i18n.locale === 'kz' ? 'name' : $i18n.locale === 'ru' ? 'namerus' : 'nameen')" @change="input"></Dropdown>
-        <small class="p-error" v-if="validation.companyCategory">{{$t('common.requiredField')}}</small>
+<!--        <small class="p-error" v-if="validation.companyCategory">{{$t('common.requiredField')}}</small>-->
       </div>
       <div v-if="!loading" class="field col-12 md:col-6">
-        <label>{{ $t("contragent.organizationIndustry") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
-        <MultiSelect :disabled="pageReadonly" v-model="org.organizationIndustry" :options="organizationIndustry"
+        <label>{{ $t("contragent.organizationIndustry") }}</label>
+        <MultiSelect maxSelectedLabels="5" class="w-full md:w-50" display="chip" :disabled="pageReadonly" v-model="org.organizationIndustry" :options="organizationIndustry"
                      :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name')"
                      :placeholder="$t('common.select')"
                      @change="input" />
-        <small class="p-error" v-if="validation.organizationIndustry">{{$t('common.requiredField')}}</small>
+<!--        <small class="p-error" v-if="validation.organizationIndustry">{{$t('common.requiredField')}}</small>-->
       </div>
       <div v-if="!loading" class="field col-12 md:col-6">
-        <label>{{ $t("contragent.otherParameters") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
-        <MultiSelect :disabled="pageReadonly" v-model="org.otherParameters" :options="workOpportunities"
+        <label>{{ $t("contragent.otherParameters") }}</label>
+        <MultiSelect maxSelectedLabels="5" class="w-full md:w-50" display="chip" :disabled="pageReadonly" v-model="org.otherParameters" :options="workOpportunities"
                      :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name_en')"
                      :placeholder="$t('common.select')"
                      @change="input" />
-        <small class="p-error" v-if="validation.otherParameters">{{$t('common.requiredField')}}</small>
+<!--        <small class="p-error" v-if="validation.otherParameters">{{$t('common.requiredField')}}</small>-->
       </div>
       <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ this.$t("common.head") }}</label>
@@ -709,9 +709,9 @@ export default {
       this.validation.nameen =  !this.org.nameen || this.org.nameen.length < 1;
       this.validation.form = !this.org.form || this.org.form.id < 1;
       this.validation.email = !this.org.email || this.org.email.length < 1;
-      this.validation.companyCategory = !this.org.companyCategory || this.org.companyCategory.length < 1;
-      this.validation.organizationIndustry = !this.org.organizationIndustry || this.org.organizationIndustry.length < 1;
-      this.validation.otherParameters = !this.org.otherParameters || this.org.otherParameters.length < 1;
+      // this.validation.companyCategory = !this.org.companyCategory || this.org.companyCategory.length < 1;
+      // this.validation.organizationIndustry = !this.org.organizationIndustry || this.org.organizationIndustry.length < 1;
+      // this.validation.otherParameters = !this.org.otherParameters || this.org.otherParameters.length < 1;
       if (this.org.type === 2) {
         this.validation.swift = !this.bank.swift || this.bank.swift.length < 1;
       } else {

@@ -94,26 +94,30 @@ export class MenuService {
             {
                 label: $t('common.contragents'),
                 icon: 'pi pi-fw pi-users',
-                visible: this.isEnuWorker(),
                 items: [
                     {
                         label: $t('common.organizations'),
                         icon: 'pi pi-fw pi-home',
-                        to: '/contragent/organizations'},
+                        to: '/contragent/organizations',
+                        visible: this.findRole('student') || this.findRole('personal'),
+                    },
                     {
                       label: $t('common.individualEntrepreneur'),
                       icon: 'pi pi-fw pi-briefcase',
-                      to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
+                      to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur,
+                        visible: this.isEnuWorker(),
                     },
                     {
                         label: $t('common.personal'),
                         icon: 'fa-solid fa-person-shelter',
-                        to: '/contragent/persons/' + Enum.PersonType.OrganizationMember
+                        to: '/contragent/persons/' + Enum.PersonType.OrganizationMember,
+                        visible: this.isEnuWorker(),
                     },
                     {
                         label: $t('common.students'),
                         icon: 'fa-solid fa-graduation-cap',
-                        to: '/contragent/persons/' + Enum.PersonType.Student
+                        to: '/contragent/persons/' + Enum.PersonType.Student,
+                        visible: this.isEnuWorker(),
                     }
                 ]
             },
