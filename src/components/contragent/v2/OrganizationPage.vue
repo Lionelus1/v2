@@ -57,7 +57,7 @@
       <div v-if="!loading" class="field col-12 md:col-6">
         <label>{{ $t("contragent.organizationIndustry") }}</label>
         <MultiSelect maxSelectedLabels="5" class="w-full md:w-50" display="chip" :disabled="pageReadonly" v-model="org.organizationIndustry" :options="organizationIndustry"
-                     :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name')"
+                     :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name_en')"
                      :placeholder="$t('common.select')"
                      @change="input" />
 <!--        <small class="p-error" v-if="validation.organizationIndustry">{{$t('common.requiredField')}}</small>-->

@@ -55,14 +55,14 @@
       <div class="field">
         <label>{{ $t('contragent.organizationIndustry') }}</label>
         <MultiSelect maxSelectedLabels="2" class="w-full md:w-50" display="chip" v-model="tempFilter.organizationIndustry" :options="organizationIndustry"
-                     :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name')"
+                     :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name_en')"
                      :placeholder="$t('common.select')"/>
       </div>
 
       <div class="field">
         <label>{{ $t('contragent.otherParameters') }}</label>
         <MultiSelect maxSelectedLabels="1" class="w-full md:w-50" display="chip" v-model="tempFilter.otherParameters" :options="otherParameters"
-                     :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name')"
+                     :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name_en')"
                      :placeholder="$t('common.select')"/>
       </div>
 
