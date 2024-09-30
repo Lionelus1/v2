@@ -502,7 +502,8 @@ export default {
           gpa_max: this.gpaMax,
           resumeView: this.resumeView?.id,
           admissionYear: this.filter.admissionYear,
-          graduationYear: this.filter.graduationYear
+          graduationYear: this.filter.graduationYear,
+          hasSpecialNeeds: this.special_needs,
         },
         searchMode: searchMode,
         searchCookie: this.searchCookie,
