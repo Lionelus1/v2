@@ -277,9 +277,6 @@ export default {
           this.planCreator = []
           this.planCreator.push(data.user.user);
       }
-      if(data && data.plan_type && data.plan_type.code === WPEnum.WorkPlanTypes.Science){
-        this.isSciPlan = true
-      }
     },
     changeWorkPlanCreator(){
       this.submitted = true;
