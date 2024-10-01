@@ -211,13 +211,12 @@ export default {
     },
     initItems() {
       return (data) => {
-        const isSciPlan = this.isSciencePlan(data); 
         return [
           {
             label: this.$t('workPlan.changeCreatedPerson'),
             icon: 'fa-solid fa-pen',
             disabled: !(this.isAdmin && this.isPlanApproved),
-            visible:this.isAdmin && !isSciPlan,
+            visible:this.isAdmin && !this.isSciencePlan(data),
             command: () => {
               this.changeCreator = true
             }
