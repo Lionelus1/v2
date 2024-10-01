@@ -65,14 +65,6 @@ const menu = computed(() => {
         icon: "pi pi-fw pi-save",
         disabled: false,
         command: () => {
-          sendMailing(1);
-        },
-      },
-      {
-        label: t("common.saveToDrafts"),
-        icon: "fa-solid fa-download",
-        disabled: false,
-        command: () => {
           sendMailing(2);
         },
       },
