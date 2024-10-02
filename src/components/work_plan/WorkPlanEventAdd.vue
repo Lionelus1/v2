@@ -34,7 +34,7 @@
       </div>
       <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
-        <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
+        <FindUser v-model="selectedUsers" :editMode="true" searchMode="local" :user-type="3"></FindUser>
         <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
       </div>
       <template v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
