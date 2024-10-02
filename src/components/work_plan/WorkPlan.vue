@@ -49,7 +49,7 @@
         </Column>
         <Column field="actions" header="">
           <template #body="{ data }">
-            <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(data)"/>
+            <ActionButton :items="initItems(data)" :show-label="true" @toggle="actionsToggle(data)"/>
             <!-- <Button type="button"
                     v-if="this.isAdmin || (data.user.id === loginedUserId && (data.doc_info?.docHistory?.stateId === Enum.REVISION.ID
                     || data.doc_info?.docHistory?.stateId === Enum.CREATED.ID || data.doc_info?.docHistory?.stateId === Enum.INAPPROVAL.ID))"
@@ -94,6 +94,7 @@ import {findRole} from "@/config/config";
 import {WorkPlanService} from "@/service/work.plan.service";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import Enum from "@/enum/docstates";
+import WPEnum from "@/enum/workplan"
 import moment from "moment";
 import {formatDate} from "@/helpers/HelperUtil";
 import DocState from "@/enum/docstates/index";
@@ -165,6 +166,7 @@ export default {
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
         Enum.StatusesArray.StatusRevision, Enum.StatusesArray.StatusSigning, Enum.StatusesArray.StatusSigned],
       Enum: Enum,
+      WPEnum: WPEnum,
       deleteData: null,
       changeCreator: false,
       planCreator:[],
@@ -208,30 +210,32 @@ export default {
       ]
     },
     initItems() {
-      return [
-        {
-          label: this.$t('workPlan.changeCreatedPerson'),
-          icon: 'fa-solid fa-pen',
-          disabled: !(this.isAdmin && this.isCreatedPlan),
-          visible:this.isAdmin,
-          command: () => {
-            this.changeCreator = true
-          }
-        },
-        {
-          label: this.$t('common.delete'),
-          icon: 'fa-solid fa-trash',
-          disabled: !(this.isAdmin || 
-                 (this.data?.user?.id === this.loginedUserId && 
-                  (this.data?.doc_info?.docHistory?.stateId === Enum.REVISION.ID ||
-                   this.data?.doc_info?.docHistory?.stateId === Enum.CREATED.ID ||
-                   this.data?.doc_info?.docHistory?.stateId === Enum.INAPPROVAL.ID))),
-          visible: true,
-          command: () => {
-            this.deleteConfirm(this.deleteData)
-          }
-        },
-      ];
+      return (data) => {
+        return [
+          {
+            label: this.$t('workPlan.changeCreatedPerson'),
+            icon: 'fa-solid fa-pen',
+            disabled: !(this.isAdmin && this.isPlanApproved),
+            visible:this.isAdmin && !this.isSciencePlan(data),
+            command: () => {
+              this.changeCreator = true
+            }
+          },
+          {
+            label: this.$t('common.delete'),
+            icon: 'fa-solid fa-trash',
+            disabled: !(this.isAdmin || 
+                  (this.data?.user?.id === this.loginedUserId && 
+                    (this.data?.doc_info?.docHistory?.stateId === Enum.REVISION.ID ||
+                    this.data?.doc_info?.docHistory?.stateId === Enum.CREATED.ID ||
+                    this.data?.doc_info?.docHistory?.stateId === Enum.INAPPROVAL.ID))),
+            visible: true,
+            command: () => {
+              this.deleteConfirm(this.deleteData)
+            }
+          },
+        ];
+      };
     },
     
   },
@@ -256,6 +260,9 @@ export default {
   methods: {
     findRole: findRole,
     formatDate: formatDate,
+    isSciencePlan(data) {
+      return data && data.plan_type && data.plan_type.code === WPEnum.WorkPlanTypes.Science
+    },
     closeCreatorChangeDialog(){
       this.planCreator = [];
       this.deleteData = null;
@@ -269,7 +276,7 @@ export default {
       if (data && data.user) {
           this.planCreator = []
           this.planCreator.push(data.user.user);
-        }
+      }
     },
     changeWorkPlanCreator(){
       this.submitted = true;
