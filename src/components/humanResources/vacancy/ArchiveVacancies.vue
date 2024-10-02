@@ -207,7 +207,7 @@ export default {
         sortField: "",
         sortOrder: 0,
         right: null,
-        isDeleted: true,
+        isArchive: true,
       },
       view: {
         candidates: false,
