@@ -73,56 +73,21 @@
         </div>
       </template>
     </Toolbar>
-<!--    v-if="!filterApplied"-->
     <div class="flex-grow-1" style="height: 300px;">
-      <TreeTable
-          :value="catalog"
-          :expandedKeys="expandedKeys"
-          selectionMode="single"
-          v-model:selectionKeys="selectedNodeKey"
-          :lazy="true"
-          scrollable
-          scrollHeight="flex"
-          class="p-treetable-sm"
-          @node-select="onNodeSelect($event)"
-          @node-expand="onNodeExpand($event)"
-          @node-collapse="onNodeCollapse($event)"
-          v-if="!filterApplied"
-      >
-        <Column :header="$t('common.name')" :expander="true">
+      <TreeTable :value="catalog" :expandedKeys="expandedKeys" selectionMode="single" v-model:selectionKeys="selectedNodeKey"
+                 :lazy="true" scrollable scrollHeight="flex" class="p-treetable-sm"
+                 @node-select="onNodeSelect($event)" @node-expand="onNodeExpand($event)"  v-if="!filterApplied">
+        <Column :header="$t('common.name')" :expander="true" :pt="{rowToggler: {style: 'flex-shrink: 0;'}}">
           <template #body="slotProps">
-      <span v-if="slotProps.node.hidden || slotProps.node.isHidden">
-        <i class="fa-solid fa-eye-slash"></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
-      </span>
+  <span v-if="slotProps.node.hidden || slotProps.node.isHidden">
+    <i class="fa-solid fa-eye-slash"></i>&nbsp;{{ slotProps.node['name'+$i18n.locale] }}
+  </span>
             <span v-else>
-        <i :class="getFileIconClass(slotProps.node.name)"></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
-      </span>
-
-            <!-- Toggle Button Logic -->
-            <button
-                type="button"
-                class="p-treetable-toggler p-link"
-                :style="{ visibility: slotProps.node.expanded ? 'visible' : 'hidden' }"
-                @click="toggleNodeState(slotProps.node)">
-              <svg
-                  v-if="isNodeExpanded(slotProps.node)"
-                  width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"
-                  class="p-icon p-tree-toggler-icon" aria-hidden="true">
-                <!-- Expanded icon path -->
-                <path d="M7.01744 10.398C6.91269 10.3985 6.8089 10.378 6.71215 10.3379C6.61541 10.2977 6.52766 10.2386 6.45405 10.1641L1.13907 4.84913C1.03306 4.69404 0.985221 4.5065 1.00399 4.31958C1.02276 4.13266 1.10693 3.95838 1.24166 3.82747C1.37639 3.69655 1.55301 3.61742 1.74039 3.60402C1.92777 3.59062 2.11386 3.64382 2.26584 3.75424L7.01744 8.47394L11.769 3.75424C11.9189 3.65709 12.097 3.61306 12.2748 3.62921C12.4527 3.64535 12.6199 3.72073 12.7498 3.84328C12.8797 3.96582 12.9647 4.12842 12.9912 4.30502C13.0177 4.48162 12.9841 4.662 12.8958 4.81724L7.58083 10.1322C7.50996 10.2125 7.42344 10.2775 7.32656 10.3232C7.22968 10.3689 7.12449 10.3944 7.01744 10.398Z" fill="currentColor"></path>
-              </svg>
-              <svg
-                  v-else
-                  width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"
-                  class="p-icon p-tree-toggler-icon" aria-hidden="true">
-                <!-- Collapsed icon path -->
-                <path d="M4.38708 13C4.28408 13.0005 4.18203 12.9804 4.08691 12.9409C3.99178 12.9014 3.9055 12.8433 3.83313 12.7701C3.68634 12.6231 3.60388 12.4238 3.60388 12.2161C3.60388 12.0084 3.68634 11.8091 3.83313 11.6622L8.50507 6.99022L3.83313 2.31827C3.69467 2.16968 3.61928 1.97313 3.62287 1.77005C3.62645 1.56698 3.70872 1.37322 3.85234 1.22959C3.99596 1.08597 4.18972 1.00371 4.3928 1.00012C4.59588 0.996539 4.79242 1.07192 4.94102 1.21039L10.1669 6.43628C10.3137 6.58325 10.3962 6.78249 10.3962 6.99022C10.3962 7.19795 10.3137 7.39718 10.1669 7.54416L4.94102 12.7701C4.86865 12.8433 4.78237 12.9014 4.68724 12.9409C4.59212 12.9804 4.49007 13.0005 4.38708 13Z" fill="currentColor"></path>
-              </svg>
-            </button>
+    <i :class="getFileIconClass(slotProps.node.name)"></i>&nbsp;{{ slotProps.node['name'+$i18n.locale] }}
+  </span>
           </template>
         </Column>
       </TreeTable>
-
       <DataTable :value="documents" dataKey="id" :rows="rows" :totalRecords="total" :first="first"
                  :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
                  :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading"
@@ -212,7 +177,7 @@
     </template>
   </Dialog>
   <Dialog v-model:visible="showDoc" class="p-sidebar-lg" style="width: 50%;">
-  <ShowDocument :docId="docId"></ShowDocument>
+    <ShowDocument :docId="docId"></ShowDocument>
   </Dialog>
 
 </template>
@@ -232,8 +197,10 @@ import ShowDocument from "@/components/documents/ShowDocument.vue";
 
 export default {
   name: 'NormativeDocuments',
-  components: {ShowDocument, PostFolder, PostFile, DepartmentList},
-  props: {},
+  components: {ShowDocument, PostFolder, PostFile, DepartmentList },
+  props: {
+
+  },
   emits: [],
   data() {
     return {
@@ -315,7 +282,7 @@ export default {
     this.isAdmin = this.findRole(null, 'main_administrator')
   },
   methods: {
-    openSidebar(selectedNode) {
+    openSidebar(selectedNode){
       this.docId = selectedNode.id
       this.showDoc = true
     },
@@ -373,7 +340,7 @@ export default {
           createdDate: null,
           updatedDate: null,
           approvedBy: null,
-          approveDate: null,
+          approveDate : null,
           author: null,
         }
       }
@@ -399,52 +366,7 @@ export default {
       this.selectedMoveNode = node
     },
     onNodeExpand(node) {
-      if (!node || !node.key) {
-        console.warn('Node or node key is undefined on expand');
-        return;  // Prevent the function from running if node or key is undefined
-      }
-      // Your existing logic for expanding the node
-      this.getFolders(node);
-    },
-    isNodeExpanded(node) {
-      if (!node || !node.key) {
-        return false;  // Prevents the error if node or node.key is undefined
-      }
-      return this.expandedKeys[node.key];
-    },
-    toggleNodeState(node) {
-      if (!node || !node.key) {
-        console.warn('Node or node key is undefined');
-        return;  // Exits early if node or node.key is undefined
-      }
-
-      if (this.isNodeExpanded(node)) {
-        // Collapse the node
-        this.$delete(this.expandedKeys, node.key);
-      } else {
-        // Expand the node
-        this.$set(this.expandedKeys, node.key, true);
-        this.onNodeExpand(node);
-      }
-    },
-    onNodeCollapse(event) {
-      if (!event.node || !event.node.key) {
-        console.warn('Node or node key is undefined on collapse');
-        return;
-      }
-      this.$delete(this.expandedKeys, event.node.key);
-      this.removeChildrenKeys(event.node);
-    },
-    removeChildrenKeys(node) {
-      // Your existing logic to recursively remove children
-      if (node.children) {
-        node.children.forEach(child => {
-          this.$delete(this.expandedKeys, child.key);
-          if (child.children) {
-            this.removeChildrenKeys(child);
-          }
-        });
-      }
+      this.getFolders(node)
     },
     getFolders(parent = null) {
       this.loading = true;
