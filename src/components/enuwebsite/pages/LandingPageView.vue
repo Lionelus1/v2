@@ -134,7 +134,8 @@ export default {
     const onRowReorder = (event) => {
       let data = {
         drag_id: pageBlocks.value[event.dragIndex].id,
-        drop_id: pageBlocks.value[event.dropIndex].id
+        drop_id: pageBlocks.value[event.dropIndex].id,
+        is_position: 'landing'
       }
       enuService.orderBlockIntoPage(data).then(res => {
         if (res.data && res.data.is_success) {

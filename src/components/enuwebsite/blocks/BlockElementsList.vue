@@ -4,10 +4,11 @@
     <Button :label="$t('web.createElement')" @click="openDialog"/>
   </div>
   <div class="card">
-    <DataTable :lazy="true" :value="blockElements" dataKey="id" :rowHover="true" :loading="loading"
+    <DataTable  @rowReorder="onRowReorderBlock" :lazy="true" :value="blockElements" dataKey="id" :rowHover="true" :loading="loading"
                responsiveLayout="scroll">
       <template #empty>{{ $t("common.noData") }}</template>
       <template #loading>{{ $t("common.loading") }}</template>
+      <Column :rowReorder="true" headerStyle="width: 3rem" :reorderableColumn="false"/>
       <Column field="title" :header="$t('common.nameIn')">
         <template #body="{ data }">
           <span>
@@ -216,6 +217,7 @@ export default {
 
       if (!isValid()) return;
       formData.value.block_id = parseInt(blockId);
+      formData.value.position = blockElements.value ? blockElements.value[blockElements.value.length - 1].position + 1 : 0,
       enuService.addBlockContentListElement(formData.value).then(res => {
         if (res.data && res.data.is_success) {
           toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
@@ -403,6 +405,23 @@ export default {
       return errors.length === 0
     };
 
+    const onRowReorderBlock = (event) => {
+      let data = {
+        drag_id: blockElements.value[event.dragIndex].block_list_id,
+        drop_id: blockElements.value[event.dropIndex].block_list_id,
+        is_position: 'block'
+      }
+      enuService.orderBlockIntoPage(data).then(res => {
+        if (res.data && res.data.is_success) {
+          getBlockElements()
+        } else {
+          toast.add({severity: "error", summary: i18n.t('common.error'), life: 3000});
+        }
+      }).catch(error => {
+        toast.add({severity: "error", summary: error, life: 3000});
+      });
+    }
+
     onMounted(() => {
       getBlockElements()
     });
@@ -410,7 +429,7 @@ export default {
     return {
       loading, blockElements, isCreateModal, formData, selectedData, hideDialog, openDialog,
       submitted, add, edit, confirmRemove, uploadFile, openEdit, onAfterUpload,
-      onCopy, copyToClipboard, deleteFileConfirm, downloadFile, removeMainImageFile
+      onCopy, copyToClipboard, deleteFileConfirm, downloadFile, removeMainImageFile, onRowReorderBlock
     }
   }
 }
