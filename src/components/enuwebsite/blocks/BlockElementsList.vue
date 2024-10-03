@@ -217,7 +217,7 @@ export default {
 
       if (!isValid()) return;
       formData.value.block_id = parseInt(blockId);
-      formData.value.position = blockElements.value ? blockElements.value.length + 1 : 0;
+      formData.value.position = blockElements.value ? blockElements.value[blockElements.value.length - 1].position + 1 : 0,
       enuService.addBlockContentListElement(formData.value).then(res => {
         if (res.data && res.data.is_success) {
           toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
