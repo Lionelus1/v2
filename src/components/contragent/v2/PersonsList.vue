@@ -219,7 +219,7 @@ export default {
         icon: "pi pi-fw pi-share-alt",
         command: () => { this.shareResults(); },
         disabled: !(this.isVisible && !(this.personType === 3 || this.personType === 4)),
-        visible: this.findRole(null, 'personal')
+        visible: this.findRole(null, 'mailing_manager')
       },
       // {
       //   label: this.$t("students.report")disabled,
@@ -502,7 +502,8 @@ export default {
           gpa_max: this.gpaMax,
           resumeView: this.resumeView?.id,
           admissionYear: this.filter.admissionYear,
-          graduationYear: this.filter.graduationYear
+          graduationYear: this.filter.graduationYear,
+          hasSpecialNeeds: this.special_needs,
         },
         searchMode: searchMode,
         searchCookie: this.searchCookie,

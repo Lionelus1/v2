@@ -65,14 +65,6 @@ const menu = computed(() => {
         icon: "pi pi-fw pi-save",
         disabled: false,
         command: () => {
-          sendMailing(1);
-        },
-      },
-      {
-        label: t("common.saveToDrafts"),
-        icon: "fa-solid fa-download",
-        disabled: false,
-        command: () => {
           sendMailing(2);
         },
       },
@@ -230,7 +222,7 @@ const deleteAddFilePath = (mailingId) => {
       <div class="grid align-items-center">
         <div class="col-12 md:col-3" style="display: flex; align-items: center; width: auto;">
           <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true"
-                      v-bind:chooseLabel="this.$t('smartenu.chooseAdditionalFile')"/>
+                      v-bind:chooseLabel="$t('smartenu.chooseAdditionalFile')"/>
           <InlineMessage :href="additional_file_path" severity="info" show v-if="additionalFileName" style="margin-left: 10px;">
             <a :href="additional_file_path" download="true">
               {{ additionalFileName }}
