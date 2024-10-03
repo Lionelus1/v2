@@ -319,25 +319,6 @@ export class MenuService {
                 ]
             },
             {
-                label: $t('educationalPrograms.educationalProgramConstructor'), icon: 'fa-solid fa-diagram-project',
-                items: [
-                    {
-                        label: $t('educationalPrograms.bachelor'), to: '/educational-programs/bachelor',
-                    },
-                    {
-                        label: $t('educationalPrograms.master'), to: '/educational-programs/master',
-                    },
-                    {
-                        label: $t('educationalPrograms.doctoral'), to: '/educational-programs/doctoral',
-                    },
-                ]
-            },
-            {
-                label: 'Каталог услуг',
-                icon: 'fa-solid fa-briefcase',
-                to: '/service-catalog'
-            },
-            {
                 label: $t('helpDesk.title'),
                 icon: 'pi pi-spin pi-cog',
                 to: '/helpdesk',

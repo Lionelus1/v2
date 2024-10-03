@@ -41,7 +41,7 @@
         <div v-for="(inputSet, index) in inputSets" :key="index">
           <div class="field">
             <label>{{ $t('workPlan.scienceParticipants') }}</label>
-            <FindUser v-model="inputSet.selectedUsers" :editMode="true" :user-type="3"></FindUser>
+            <FindUser v-model="inputSet.selectedUsers" :editMode="true" searchMode="local" :user-type="3"></FindUser>
             <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
           </div>
           <div class="field">
