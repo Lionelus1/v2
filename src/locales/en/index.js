@@ -2156,9 +2156,10 @@ export default {
 
     },
     telegram: {
+        title: 'ChatBot E-curator',
         author: 'author',
         question: 'Question',
-        anwers: 'Answer',
+        anwers: 'Answers',
         questionkz: 'Enter a question in Kazakh',
         questionen: 'Enter a question in English',
         questionru: 'Enter a question in Russian',

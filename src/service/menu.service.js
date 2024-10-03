@@ -92,7 +92,8 @@ export class MenuService {
                     {
                         label: $t('smartenu.mailingTitle'),
                         icon: 'fa-regular fa-paper-plane',
-                        to: '/mailing'
+                        to: '/mailing',
+                        visible: this.findRole("mailing_manager")
                     },
                 ]
             },
@@ -318,33 +319,14 @@ export class MenuService {
                 ]
             },
             {
-                label: $t('educationalPrograms.educationalProgramConstructor'), icon: 'fa-solid fa-diagram-project',
-                items: [
-                    {
-                        label: $t('educationalPrograms.bachelor'), to: '/educational-programs/bachelor',
-                    },
-                    {
-                        label: $t('educationalPrograms.master'), to: '/educational-programs/master',
-                    },
-                    {
-                        label: $t('educationalPrograms.doctoral'), to: '/educational-programs/doctoral',
-                    },
-                ]
-            },
-            {
-                label: 'Каталог услуг',
-                icon: 'fa-solid fa-briefcase',
-                to: '/service-catalog'
-            },
-            {
                 label: $t('helpDesk.title'),
                 icon: 'pi pi-spin pi-cog',
                 to: '/helpdesk',
 
             },
             {
-                label: $t('Telegram'),
-                icon: 'fa-brands fa-telegram',
+                label: $t('telegram.title'),
+                icon: 'fa-solid fa-robot',
                 to: '/telegram',
                 visible: this.findRole('telegram') || this.findRole('main_administrator')
             },
