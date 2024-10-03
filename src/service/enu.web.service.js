@@ -117,10 +117,6 @@ export class EnuWebService {
         return api.post(`/web/swapPageBlockPosition`, data,  {headers: getHeader()});
     }
 
-    swapBlockListPositions(data) {
-        return api.post(`/web/SwapBlockListPositions`, data,  {headers: getHeader()});
-    }
-
     orderMenuList(data){
         return api.post(`/web/swapMenuPosition`, data,  {headers: getHeader()});
     }

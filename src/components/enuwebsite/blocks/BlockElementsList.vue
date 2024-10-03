@@ -217,6 +217,7 @@ export default {
 
       if (!isValid()) return;
       formData.value.block_id = parseInt(blockId);
+      formData.value.position = blockElements.value ? blockElements.value.length + 1 : 0;
       enuService.addBlockContentListElement(formData.value).then(res => {
         if (res.data && res.data.is_success) {
           toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
@@ -405,12 +406,12 @@ export default {
     };
 
     const onRowReorderBlock = (event) => {
-      console.log(event)
-      /*let data = {
-        drag_id: blockElements.value[event.dragIndex].id,
-        drop_id: blockElements.value[event.dropIndex].id
+      let data = {
+        drag_id: blockElements.value[event.dragIndex].block_list_id,
+        drop_id: blockElements.value[event.dropIndex].block_list_id,
+        is_position: 'block'
       }
-      enuService.swapBlockListPositions(data).then(res => {
+      enuService.orderBlockIntoPage(data).then(res => {
         if (res.data && res.data.is_success) {
           getBlockElements()
         } else {
@@ -418,7 +419,7 @@ export default {
         }
       }).catch(error => {
         toast.add({severity: "error", summary: error, life: 3000});
-      });*/
+      });
     }
 
     onMounted(() => {
