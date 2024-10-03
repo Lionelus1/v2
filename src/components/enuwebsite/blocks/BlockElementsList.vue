@@ -16,6 +16,13 @@
           </span>
         </template>
       </Column>
+      <Column field="title" header="Position">
+        <template #body="{ data }">
+          <span>
+            {{ data.position}}
+          </span>
+        </template>
+      </Column>
       <Column class="text-right">
         <template #body="{ data }">
           <div class="grid">
@@ -104,6 +111,10 @@
       <OptionalMessage :message="$t('web.optionalField')"/>
       <InputText type="text" v-model="formData.block_list_link"/>
       <small class="p-error" v-if="!formData.block_list_link && submitted"></small>
+    </div>
+    <div class="field" v-if="formData && formData.title_kz ">
+      <label>Position</label><br>
+      <InputNumber class="w-fit" type="number" v-model="formData.position"/>
     </div>
     <div class="card">
       <div class="card-title">{{ $t('common.image') }}</div>
@@ -217,7 +228,7 @@ export default {
 
       if (!isValid()) return;
       formData.value.block_id = parseInt(blockId);
-      formData.value.position = blockElements.value ? blockElements.value[blockElements.value.length - 1].position + 1 : 0,
+      formData.value.position = blockElements.value ? blockElements.value[blockElements.value.length - 1].position + 1 : 0;
       enuService.addBlockContentListElement(formData.value).then(res => {
         if (res.data && res.data.is_success) {
           toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
