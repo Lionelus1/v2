@@ -4,10 +4,11 @@
     <Button :label="$t('web.createElement')" @click="openDialog"/>
   </div>
   <div class="card">
-    <DataTable :lazy="true" :value="blockElements" dataKey="id" :rowHover="true" :loading="loading"
+    <DataTable  @rowReorder="onRowReorderBlock" :lazy="true" :value="blockElements" dataKey="id" :rowHover="true" :loading="loading"
                responsiveLayout="scroll">
       <template #empty>{{ $t("common.noData") }}</template>
       <template #loading>{{ $t("common.loading") }}</template>
+      <Column :rowReorder="true" headerStyle="width: 3rem" :reorderableColumn="false"/>
       <Column field="title" :header="$t('common.nameIn')">
         <template #body="{ data }">
           <span>
@@ -403,6 +404,23 @@ export default {
       return errors.length === 0
     };
 
+    const onRowReorderBlock = (event) => {
+      console.log(event)
+      /*let data = {
+        drag_id: blockElements.value[event.dragIndex].id,
+        drop_id: blockElements.value[event.dropIndex].id
+      }
+      enuService.swapBlockListPositions(data).then(res => {
+        if (res.data && res.data.is_success) {
+          getBlockElements()
+        } else {
+          toast.add({severity: "error", summary: i18n.t('common.error'), life: 3000});
+        }
+      }).catch(error => {
+        toast.add({severity: "error", summary: error, life: 3000});
+      });*/
+    }
+
     onMounted(() => {
       getBlockElements()
     });
@@ -410,7 +428,7 @@ export default {
     return {
       loading, blockElements, isCreateModal, formData, selectedData, hideDialog, openDialog,
       submitted, add, edit, confirmRemove, uploadFile, openEdit, onAfterUpload,
-      onCopy, copyToClipboard, deleteFileConfirm, downloadFile, removeMainImageFile
+      onCopy, copyToClipboard, deleteFileConfirm, downloadFile, removeMainImageFile, onRowReorderBlock
     }
   }
 }
