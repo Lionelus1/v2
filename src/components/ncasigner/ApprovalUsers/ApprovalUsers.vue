@@ -1,8 +1,8 @@
 <template>
   <div class="field">
     <label>{{ $t('common.select') }}</label>
-    <StepComponent v-if="approval_users" v-model="approval_users" :stages="stageList" :mode="mode" :readonly="readMode"
-      @clearStages="clearStages" @update:modelValue="updateModel($event)"></StepComponent>
+    <StepComponent v-if="approval_users" v-model="approval_users" :stages="stageList" :mode="mode" :readonly="readMode" 
+      @clearStages="clearStages" @update:modelValue="updateModel($event)" :searchMode="searchMode"></StepComponent>
     <Toolbar style="border:none;background:none">
       <template #end>
         <Button v-if="!readMode && (mode == 'standard' || mode == 'doc_template')" :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger mr-2" @click="close" />
@@ -26,6 +26,10 @@ export default {
     stages: null,
     mode: null, // 'standard', 'doc_template', 'doc_template_creating'
     readonly: null,
+    searchMode:{
+      type: String,
+      default: 'ldap'
+    }
   },
   emits: ['closed', 'approve', 'save'],
   data() {
