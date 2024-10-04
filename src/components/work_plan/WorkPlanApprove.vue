@@ -5,7 +5,7 @@
     <BlockUI :blocked="approving">
       <div class="field">
         <ApprovalUsers :approving="approving" v-model="approval_users" @closed="closeModal"
-                       @approve="approve($event)" :stages="stages" :mode="'standard'"></ApprovalUsers>
+                       @approve="approve($event)" :stages="stages" :mode="'standard'" :searchMode="localSearchMode"></ApprovalUsers>
       </div>
     </BlockUI>
   </Dialog>
@@ -20,7 +20,18 @@ import Enum from "@/enum/workplan/index"
 export default {
   name: "WorkPlanApprove",
   components: {ApprovalUsers},
-  props: ['visible', 'docId', 'plan', 'events', 'approvalStages'],
+  //props: ['visible', 'docId', 'plan', 'events', 'approvalStages'],
+  props: {
+  visible: null,
+  docId: null,
+  plan: null,
+  events: null,
+  approvalStages: null,
+  searchMode: {
+    type: String,
+    default: 'ldap'
+    }
+  },
   emits: ['isSent', 'hide'],
   data() {
     return {
@@ -50,13 +61,17 @@ export default {
       approving: false,
       stages: this.approvalStages || null,
       enum: Enum,
-      file: null
+      file: null,
+      localSearchMode: this.searchMode
     }
   },
   created() {
     //this.loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
     this.approveComponentKey++;
     this.getWorkPlanContentData();
+    if(this.plan?.plan_type?.code === this.enum.WorkPlanTypes.Science){
+      this.localSearchMode = 'local';
+    }
   },
   methods: {
     closeModal() {
