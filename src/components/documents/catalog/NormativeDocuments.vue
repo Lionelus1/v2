@@ -74,20 +74,32 @@
       </template>
     </Toolbar>
     <div class="flex-grow-1" style="height: 300px;">
-      <TreeTable :value="catalog" :expandedKeys="expandedKeys" selectionMode="single" v-model:selectionKeys="selectedNodeKey"
-                 :lazy="true" scrollable scrollHeight="flex" class="p-treetable-sm"
-                 @node-select="onNodeSelect($event)" @node-expand="onNodeExpand($event)"  v-if="!filterApplied">
-        <Column :header="$t('common.name')" :expander="true" :pt="{rowToggler: {style: 'flex-shrink: 0;'}}">
+      <TreeTable
+          :value="catalog"
+          :expandedKeys="expandedKeys"
+          selectionMode="single"
+          v-model:selectionKeys="selectedNodeKey"
+          :lazy="true"
+          scrollable
+          scrollHeight="flex"
+          class="p-treetable-sm"
+          @node-select="onNodeSelect($event)"
+          @node-expand="onNodeExpand($event)"
+          v-if="!filterApplied"
+      >
+        <Column :header="$t('common.name')" :expander="true">
           <template #body="slotProps">
-  <span v-if="slotProps.node.hidden || slotProps.node.isHidden">
-    <i class="fa-solid fa-eye-slash"></i>&nbsp;{{ slotProps.node['name'+$i18n.locale] }}
-  </span>
+      <span v-if="slotProps.node.hidden || slotProps.node.isHidden">
+        <i class="fa-solid fa-folder"></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
+      </span>
             <span v-else>
-    <i :class="getFileIconClass(slotProps.node.name)"></i>&nbsp;{{ slotProps.node['name'+$i18n.locale] }}
-  </span>
+        <i :class="getFileIconClass(slotProps.node.name)"></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
+      </span>
+
           </template>
         </Column>
       </TreeTable>
+
       <DataTable :value="documents" dataKey="id" :rows="rows" :totalRecords="total" :first="first"
                  :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
                  :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading"
@@ -394,7 +406,6 @@ export default {
         for (let i = 0; i < data.length; i++) {
           data[i].nodeType = 'folder'
           data[i].key = parent !== null ? parent.key + '-' + i.toString() : i.toString()
-          data[i].leaf = false
 
           if (!data[i].groups) {
             continue
