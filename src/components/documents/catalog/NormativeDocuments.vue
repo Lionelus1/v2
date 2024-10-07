@@ -1,5 +1,4 @@
 <template>
-  <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="3"/>
   <div class="flex flex-row mb-3">
     <h3 class="m-0">{{ $t("smartenu.catalogNormDoc") }}</h3>
   </div>
@@ -76,6 +75,7 @@
     <div class="flex-grow-1" style="height: 300px;">
       <TreeTable
           :value="catalog"
+          :loading="loading"
           :expandedKeys="expandedKeys"
           selectionMode="single"
           v-model:selectionKeys="selectedNodeKey"
