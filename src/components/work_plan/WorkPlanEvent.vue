@@ -165,7 +165,7 @@
   </Dialog>
 
   <Dialog v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" :closable="false" v-model:visible="respPersonDialog" modal :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
-              <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
                   <label>{{ $t('workPlan.summaryDepartment') }}</label>
                   <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
                   <small class="p-error" v-if="submitted && !summaryDepartment?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
@@ -179,7 +179,7 @@
                 <div v-for="(inputSet, index) in inputSets" :key="index">
                   <div class="field">
                     <label>{{ $t('workPlan.scienceParticipants') }}</label>
-                    <FindUser class="select_wp" v-model="inputSet.selectedUsers" :editMode="true" :user-type="3" :max="1"></FindUser>
+                    <FindUser class="select_wp" v-model="inputSet.selectedUsers" :editMode="true" searchMode="local" :user-type="3" :max="1"></FindUser>
                     <small class="p-error" v-if="submitted && !inputSet.selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
                   </div>
                   <div class="field">
