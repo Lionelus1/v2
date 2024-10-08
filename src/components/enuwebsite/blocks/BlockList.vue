@@ -2,7 +2,7 @@
   <div class="col-12">
     <TitleBlock :title="$t('web.blocks')"/>
 
-    <BlockUI v-if="haveAccess" :blocked="loading">
+    <BlockUI v-if="haveAccess" >
       <ToolbarMenu :data="toolbarMenus" @search="initSearch($event)" :search="true"/>
 
       <div class="card" v-if="isWebAdmin">
@@ -33,7 +33,7 @@
                   {{ data.note }}
                 </template>
               </Column>
-              <Column :header="$t('faq.createDate')">
+              <Column :header="$t('faq.createDate')" sortable>
                 <template #body="{ data }">
                   {{ formatDate(data.create_date) }}
                 </template>
