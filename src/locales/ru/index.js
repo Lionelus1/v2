@@ -915,7 +915,7 @@ export default {
         dataAndTime: "Дата и время проведения: {fn}",
         eventFormat: "формат проведения",
         eventFormatView: "Формат проведения: {fn}",
-        participantsCategory: "категория участников",
+        participantsCategory: "Категория участников",
         participantsCategoryView: "Категория участников: {fn}",
         meetingLink: "ссылка видеоконференции",
         meetingLinkView: "Ссылка видеоконференции:",

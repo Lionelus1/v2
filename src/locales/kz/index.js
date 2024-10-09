@@ -921,7 +921,7 @@ export default {
         dataAndTime: "Күні мен уақыты: {fn}",
         eventFormat: "өткізу форматы",
         eventFormatView: "Өткізу форматы: {fn}",
-        participantsCategory: "қатысушылардың санаты",
+        participantsCategory: "Қатысушылардың санаты",
         participantsCategoryView: "Қатысушылардың санаты: {fn}",
         meetingLink: "бейнеконференция сілтемесі",
         meetingLinkView: "Бейнеконференция сілтемесі:",

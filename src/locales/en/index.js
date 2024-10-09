@@ -945,7 +945,7 @@ export default {
         dataAndTime: "Date and time: {fn}",
         eventFormat: "format",
         eventFormatView: "Format: {fn}",
-        participantsCategory: "participant category",
+        participantsCategory: "Participant category",
         participantsCategoryView: "Participant category: {fn}",
         meetingLink: "link to video conference",
         meetingLinkView: "Video conference link:",
