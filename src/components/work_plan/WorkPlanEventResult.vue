@@ -850,7 +850,7 @@ export default {
       if (this.isOperPlan) {
         this.wordLimit = 0
       }
-      if (!this.isStandartPlan && (this.inputWordCount > this.wordMaxLimit || this.inputWordCount < this.wordLimit)) {
+      if (!this.isStandartPlan && !this.isMastersPlan && !this.isDoctorsPlan && (this.inputWordCount > this.wordMaxLimit || this.inputWordCount < this.wordLimit)) {
         this.$toast.add({severity: 'warn', detail: this.$t('workPlan.maxWordCount', this.wordMaxLimit), life: 3000})
         this.isBlockUI = false;
         return;
