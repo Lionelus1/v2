@@ -319,7 +319,7 @@ export default {
             );
             this.selectedDepartments = [];
             for (let i = 0; i < this.selectedFaculties.length; i++) {
-                let array = this.participantsCategories.filter(
+                let array = this.event.participantsCategory.filter(
                     (category) => category.parentId === this.selectedFaculties[i].id
                 );
                 this.selectedDepartments = this.selectedDepartments.concat(array);
