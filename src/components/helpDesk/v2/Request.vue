@@ -301,7 +301,7 @@ const activeTab = ref(0);
 // });
 const isAdmin = ref(false);
 const saveDoc = async () => {
-  console.log("HERS");
+
 
   // isDataValid();
   var isValid = true;
@@ -377,7 +377,7 @@ const saveDoc = async () => {
     status.value = "created";
     // updateQueryStatus("created");
   } else {
-    console.log('INVALID');
+
   }
 };
 // const loading = ref();
@@ -486,8 +486,8 @@ const validate = (pattern, str) => {
   if (!pattern && str) {
     return true;
   }
-  console.log("str:", str);
-  console.log(pattern);
+
+
 
 
 
@@ -786,7 +786,7 @@ onMounted(async () => {
   } else {
     status.value = ticketInfo.value.ticket[0].doc.docHistory.stateEn;
     ticket.value = ticketInfo.value.ticket[0].doc;
-    console.log("ticket:", ticket.value);
+
 
   }
   if (status.value == "created") isDocSaved.value = true;
@@ -854,12 +854,12 @@ const initForm = async (
   components.value = camundaServiceInstance.currentSchema.components;
   if (!camundaServiceInstance.isEdit) return;
   const variables = await camundaServiceInstance.getProcessVariable();
-  console.log("variables:", variables);
+
 
   if (variables == undefined) return;
   for (var i = 0; i < components.value.length; i++) {
     if (components.value[i].type == "checklist") {
-      console.log("CHECKKK:", components.value[i]);
+
 
       components.value[i].values = variables[components.value[i].key];
       components.value[i].value = variables[components.value[i].key];
@@ -903,12 +903,12 @@ const initForm = async (
       variables[components.value[i].key];
   }
   components.value["initialized"] = true;
-  console.log('INITIALIZED :', components.value["initialized"]);
+
 
 
 };
 const isValidDateFormat = (dateString) => {
-  console.log("INSIDE isValidDateFormat:", dateString);
+
 
   // Regular expression to check if the string is in YYYY-MM-DD format
   const regex = /^\d{4}-\d{2}-\d{2}$/;
@@ -919,15 +919,15 @@ const isValidDateFormat = (dateString) => {
 
     // Check if the date is valid
     if (!isNaN(date.getTime())) {
-      console.log("VALID:", date);
+
 
       return date;
     } else {
-      console.log("Invalid date.");
+
       return null;
     }
   } else {
-    console.log("Invalid format. Use YYYY-MM-DD.");
+
     return null;
   }
 }

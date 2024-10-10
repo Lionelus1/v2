@@ -276,8 +276,8 @@ export default {
 
     for (var component of this.components) {
       var isInitialized = !(this.components.initialized == undefined) && this.components.initialized;
-      console.log("isInitialized:", isInitialized);
-      console.log("this.disabled:", this.disabled);
+
+
       var isReady = true;
 
       if (!isInitialized && this.disabled) return;
@@ -285,7 +285,7 @@ export default {
         isReady = isInitialized;
       }
       if (isReady && component.properties && component.properties.withAdditionalCalendar && !component.isCalendarRendered) {
-        console.log("this.isComponentsInitialized:", this.isComponentsInitialized);
+
         if (this.calendar) {
           this.calendar.destroy();
         }
@@ -318,8 +318,8 @@ export default {
   },
   methods: {
     handleChange(component) {
-      console.log("component:", component);
-      console.log("isArray:", Array.isArray(this.components));
+
+
       component.value[component.key] = component.values;
       // Find the index of the component in the array
       const index = this.components.findIndex(obj => obj.id === component.id);  // Assuming components have an 'id' to identify them
@@ -328,36 +328,36 @@ export default {
         // Directly replace the component at the found index
         this.components[index] = { ...component, updated: true };  // Modify or replace as needed
 
-        console.log("Updated components:", this.components);
+
       } else {
-        console.log("Component not found!");
+
       }
     },
     getCalendar(component) {
-      console.log("componentcalendar:", component);
-      console.log("component.value:", component.value);
-      console.log("component.key:", component.key);
-      console.log("component.value[component.key]:", component.value[component.key]);
+
+
+
+
       // var e = true
       // while (e) {
       //   if (component.value[component.key] != null) {
       //     e = false;
       //   }
       // }
-      console.log("componentcalendar:", component.value[component.key]);
+
 
       if (!Array.isArray(component.value[component.key])) {
         component.value[component.key] = []
       }
       var length = component.value[component.key].length;
       for (var i = 0; i < component.value[component.key].length; i++) {
-        console.log("I'm IN");
+
 
         component.value[component.key][i] = { title: 'Выбрано вами', start: component.value[component.key][i] }
       }
       // }
-      console.log("componentcalendar FINAL:", component.value[component.key]);
-      console.log("componentcalendar FINAL1:", component.value[component.key].length);
+
+
       const calendarEl = document.getElementById('full_calendar');
       if (!calendarEl) {
         return;
@@ -384,23 +384,23 @@ export default {
         eventClick: function (info) {
           if (this.disabled) return;
           // Handle event click
-          console.log('Event clicked: ' + info.event.title);
+
         },
         displayEventTime: false
       });
       calendar.render();
       this.calendar = calendar;
-      console.log("LLLL:", length);
+
 
       for (var i = 0; i < component.value[component.key].length; i++) {
-        console.log("expresso");
+
 
         component.value[component.key][i] = { title: 'Выбрано вами', start: component.value[component.key][i] }
         // calendar.addEvent({ title: 'Вы заняли', start: component.value[component.key][i] })
       }
     },
     dateClick(info, component) {
-      console.log("info.date: ", info);
+
       if (component.value[component.key].includes(info.dateStr)) {
         this.removeEventsOnDate(info.dateStr);
         component.value[component.key] = component.value[component.key].filter(item => item !== info.dateStr);  // Filter out the object with id 2
@@ -409,7 +409,7 @@ export default {
       component.value[component.key].push(info.dateStr)
       // Triggered when a date is clicked
       this.calendar.addEvent({ title: 'Вы заняли', start: info.date });
-      console.log("component.value:", component.value);
+
 
     },
     removeEventsOnDate(dateStr) {
@@ -426,7 +426,7 @@ export default {
 
     },
     eventView(item) {
-      console.log("item:", item);
+
 
       if (item.event) {
         this.selectedEvent = item.event.extendedProps;
