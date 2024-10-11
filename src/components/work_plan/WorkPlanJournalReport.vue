@@ -82,7 +82,7 @@
               </template>
             </Column>
             <Column style="width: 80%" field="txt" :header="$t('workPlan.textCS')"></Column>
-            <Column style="width: 10%; text-align: center;" field="actions" header="" >
+            <Column v-if="findRole(null, 'student')" style="width: 10%; text-align: center;" field="actions" header="" >
               <template #body="{ data: node, index }">
                 <ActionButton :items="actionMenus" :show-label="true" @toggle="actionsToggle(node, index)"/>
               </template>
@@ -108,10 +108,10 @@
         <Sidebar v-model:visible="showReportDocInfo2" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal2">
           <DocSignaturesInfo :docIdParam="dReports[2].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 2)"></DocSignaturesInfo>
         </Sidebar>
-        <div class="field">
+        <div class="field" v-if="!findRole(null, 'student')">
           <TinyEditor v-model="contrConcModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
         </div>
-        <ToolbarMenu :data="toolbarMenus"/>
+        <ToolbarMenu v-if="!findRole(null, 'student')" :data="toolbarMenus"/>
       </TabPanel>
       <!--Заключение руководителя-->
       <TabPanel :header="$t('workPlan.conclusionHeadDepartment')">
@@ -130,10 +130,10 @@
         <Sidebar v-model:visible="showReportDocInfo3" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal3">
           <DocSignaturesInfo :docIdParam="dReports[3].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 3)"></DocSignaturesInfo>
         </Sidebar>
-        <div class="field">
+        <div class="field" v-if="!findRole(null, 'student')">
           <TinyEditor v-model="headConcModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
         </div>
-        <ToolbarMenu :data="toolbarMenus"/>
+        <ToolbarMenu v-if="!findRole(null, 'student')" :data="toolbarMenus"/>
       </TabPanel>
       <!--Оценка практики-->
       <TabPanel :header="$t('workPlan.practiceAssessment')">
@@ -153,7 +153,7 @@
           <DocSignaturesInfo :docIdParam="dReports[4].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 4)"></DocSignaturesInfo>
         </Sidebar>
 
-        <div class="field" >
+        <div class="field" v-if="!findRole(null, 'student')">
           <TinyEditor v-model="assignModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
           <ToolbarMenu :data="toolbarMenus"  v-if="loginedUser && (dReports && dReports[4].doc_info && (dReports[4].doc_info.docHistory.stateId === 1 || dReports[4].doc_info.docHistory.stateId === 4))"/>
         </div>
@@ -194,6 +194,7 @@ import DocState from "@/enum/docstates/index";
 import moment from "moment/moment";
 import JSZip, {forEach} from "jszip";
 import { saveAs } from 'file-saver';
+import {findRole} from "../../config/config";
 
 const {t, locale} = useI18n()
 
@@ -237,7 +238,7 @@ const toolbarMenus = computed(() => {
       label: t('common.add'),
       icon: 'pi pi-plus',
       color: 'blue',
-      visible: active.value === 1,
+      visible: findRole(null, 'student') && active.value === 1,
       command: () => {
         AddTechSecDialog.value = true
       },
@@ -516,7 +517,8 @@ const visibleSendToApprove = () => {
 }
 
 const visibleSendToApproveTB = () => {
-  return !loading.value && loginedUser && (dReports.value && dReports.value[1].doc_info && (dReports.value[1].doc_info.docHistory.stateId === 1 || dReports.value[1].doc_info.docHistory.stateId === 4));
+  return findRole(null, 'student') && !loading.value && loginedUser && (dReports.value && dReports.value[1].doc_info && (dReports.value[1].doc_info.docHistory.stateId === 1 ||
+      dReports.value[1].doc_info.docHistory.stateId === 4));
 }
 
 const visibleSendToApproveContrConc = () => {
@@ -524,11 +526,11 @@ const visibleSendToApproveContrConc = () => {
 }
 
 const visibleSendToApproveHeadConc = () => {
-  return !loading.value && loginedUser && (dReports.value && dReports.value[3].doc_info && (dReports.value[3].doc_info.docHistory.stateId === 1 || dReports.value[3].doc_info.docHistory.stateId === 4));
+  return !findRole(null, 'student') && !loading.value && loginedUser && (dReports.value && dReports.value[3].doc_info && (dReports.value[3].doc_info.docHistory.stateId === 1 || dReports.value[3].doc_info.docHistory.stateId === 4));
 }
 
 const visibleSendToApproveAssign = () => {
-  return !loading.value && loginedUser && (dReports.value && dReports.value[4].doc_info && (dReports.value[4].doc_info.docHistory.stateId === 1 || dReports.value[4].doc_info.docHistory.stateId === 4));
+  return !findRole(null, 'student') && !loading.value && loginedUser && (dReports.value && dReports.value[4].doc_info && (dReports.value[4].doc_info.docHistory.stateId === 1 || dReports.value[4].doc_info.docHistory.stateId === 4));
 }
 // проверка подписания всех документов
 const checkingSignAllDoc = () => {

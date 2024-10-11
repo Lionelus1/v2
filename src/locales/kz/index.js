@@ -1399,6 +1399,7 @@ export default {
     },
     workPlan: {
         plans: "Жоспарлар",
+        planCheckApprove: "Бұл жоспар әлі келісілмеген, сізде рұқсат жоқ",
         planName: "Жоспар атауы",
         addPlan: "Жоспар қосу",
         addEvent: "Іс-шара қосу",

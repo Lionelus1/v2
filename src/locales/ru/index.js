@@ -1390,6 +1390,7 @@ export default {
     },
     workPlan: {
         plans: "Планы",
+        planCheckApprove: "Данный план еще не согласован, у вас нет доступа",
         planName: "Название плана",
         addPlan: "Добавить план",
         addEvent: "Добавить мероприятие",

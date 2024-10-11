@@ -1,20 +1,22 @@
 <template>
   <div class="col-12">
     <h3>{{ $t('workPlan.plans') }}</h3>
-    <ToolbarMenu v-model:search-model="filter.searchText" :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin"
+    <ToolbarMenu v-if="!isStudent()" v-model:search-model="filter.searchText" :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin"
                  :filtered="filter.filtered"/>
     <div class="card">
       <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
                  :loading="loading" responsiveLayout="scroll" :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows" :totalRecords="total" @page="onPage">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
-        <Column field="content" :header="$t('workPlan.planName')" sortable>
-          <template #body="{ data }">
-            <router-link :to="{ name: 'WorkPlanEvent', params: { id: data.work_plan_id }, query: {first: lazyParams.first, page: lazyParams.page, rows: lazyParams.rows} }" tag="a">
-              {{ data.work_plan_name }}
-            </router-link>
-          </template>
-        </Column>
+        <template>
+          <Column field="content" :header="$t('workPlan.planName')" sortable>
+            <template #body="slotProps">
+              <a href="#" @click.prevent="handleClick(slotProps.data, slotProps.data.doc_info.docHistory.stateEn)">
+                {{ slotProps.data.work_plan_name }}
+              </a>
+            </template>
+          </Column>
+        </template>
         <Column field="sing" :header="$t('ncasigner.sign')">
           <template #body="{ data }">
             <div v-if="showMySign(data.doc_info.approvalStages)">
@@ -268,6 +270,49 @@ export default {
       this.selectedPlanType = null;
       this.filter.filtered = false;
       this.getPlans();
+    },
+    handleClick(data, code) {
+      // Проверка, что параметр id существует
+      if (!data.work_plan_id) {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t('common.error'),
+          detail: this.$t('workPlan.missingIdError'),
+          life: 3000
+        });
+        return; // Прерываем выполнение, если нет id
+      }
+
+      // Выполняем проверку если студент и согласованный ли план
+      if (this.isStudent() && code !== "approved") {
+        // Обработка ошибки planCheckApprove
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t('workPlan.planCheckApprove'),
+          life: 3000
+        });
+      } else {
+        // Если проверка пройдена, показываем тост
+        this.$toast.add({
+          severity: "success",
+          summary: this.$t('common.success'),
+          life: 3000
+        });
+
+        // Переход по маршруту
+        this.$router.push({
+          name: 'WorkPlanEvent',
+          params: { id: data.work_plan_id }, // Здесь проверяем, что id не пустой
+          query: {
+            first: this.lazyParams.first,
+            page: this.lazyParams.page,
+            rows: this.lazyParams.rows
+          }
+        });
+      }
+    },
+    isStudent(){
+      return findRole(null, 'student');
     },
     getDocStatus(code) {
       const foundStatus = this.docStatus.find(status => status.code === code);

@@ -738,28 +738,6 @@ export default {
     },
     //осы жерден адамдардын списогын алып алу керек
     getWorkPlanApprovalUsers() {
-      this.planService.getWorkPlanApprovalUsers(parseInt(this.work_plan_id)).then((res) => {
-          if (res.data) {
-            res?.data?.forEach((e) => {
-              if (this.loginedUserId === e.id) {
-                this.isApproval = true;
-              }
-            });
-          } else {
-            this.isApproval = false;
-          }
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch('logLout');
-          } else {
-            this.$toast.add({
-              severity: 'error',
-              summary: error,
-              life: 3000,
-            });
-          }
-        });
       this.planService.getWorkPlanApprovalUsers(parseInt(this.work_plan_id)).then(res => {
         if (res.data) {
           this.members = res.data;

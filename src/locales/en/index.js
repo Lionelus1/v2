@@ -1374,6 +1374,7 @@ export default {
     },
     workPlan: {
         plans: "Plans",
+        planCheckApprove: "This plan has not yet been approved, you do not have access",
         planName: "Plan Name",
         addPlan: "Add plan",
         addEvent: "Add event",
