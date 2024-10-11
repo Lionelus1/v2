@@ -3,14 +3,14 @@
     <div class="card">
       <h4 class="m-0">{{ $t("common.welcome") }}, {{ loginedUser.fullName }} !</h4>
     </div>
-    <div class="capabilities flex">
+<!--    <div class="capabilities flex">
         <div v-for="i of videos" :key="i" class="p-2">
           <video poster="https://old.enu.kz/pictures/fevral-2021/po-tsifrovizacii-3.PNG" style="border-radius: 15px" width="100%" controls>
             <source :src="i.video" type="video/mp4">
             <source :src="i.video" type="video/ogg">
           </video>
         </div>
-    </div>
+    </div>-->
 
     <div class="card card_bottom">
       <TabView ref="templateView" v-model:activeIndex="active">
