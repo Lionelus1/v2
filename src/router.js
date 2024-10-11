@@ -111,8 +111,8 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path:'/finance',
-                name:'Finance',
+                path: '/finance',
+                name: 'Finance',
                 component: load('finance/Finance'),
                 beforeEnter: ifAuthenticated,
             },
@@ -704,13 +704,13 @@ const routes = [
             },
 
             {
-                path: '/helpdesk/',
+                path: '/helpdesk/v2',
                 name: 'HelpDeskComponent',
                 component: load('helpDesk/HelpDeskComponent'),
                 beforeEnter: ifAuthenticated,
                 children: [
                     {
-                        path: 'deskJournal',
+                        path: '',
                         name: 'DeskJournal',
                         component: load('helpDesk/DeskJournal'),
                         beforeEnter: ifAuthenticated,
@@ -742,7 +742,7 @@ const routes = [
                 ]
             },
             {
-                path: '/helpdesk/v2',
+                path: '/helpdesk',
                 name: 'HelpDeskComponent2',
                 component: load('helpDesk/v2/HelpDeskComponent'),
                 beforeEnter: ifAuthenticated,

@@ -376,8 +376,6 @@ const saveDoc = async () => {
     isDocSaved.value = true;
     status.value = "created";
     // updateQueryStatus("created");
-  } else {
-
   }
 };
 // const loading = ref();
