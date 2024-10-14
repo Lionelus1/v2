@@ -33,10 +33,24 @@
 
       </div>
       <AppProfile/>
-      <AppMenu :model="globalMenu" @menuitem-click="onMenuItemClick"/>
+      <AppMenu v-show="false" :model="globalMenu" @menuitem-click="onMenuItemClick"/>
     </div>
     <div class="layout-main flex-grow-1" :class="{ 'flex flex-column': applyFlex }">
-      <router-view v-model:pagemenu="localpagemenu" @apply-flex="applyFlexHandler"/>
+<!--      <router-view v-model:pagemenu="localpagemenu" @apply-flex="applyFlexHandler"/>-->
+      <div class="technical_work">
+        <h1>
+          {{
+            $i18n.locale === 'kz' ? 'Сайтта техникалық жұмыстар жүргізілуде' : $i18n.locale === 'ru' ?
+                'Ведутся технические работы на сайте' : 'Technical work is underway on the site'
+          }}
+        </h1>
+        <p>
+          {{
+            $i18n.locale === 'kz' ? 'Өтініш кейінірек қайта кіріңіз' : $i18n.locale === 'ru' ?
+                'Пожалуйста, зайдите позже.' : 'Please check back later.'
+          }}
+        </p>
+      </div>
     </div>
     <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange"
                @layout-color-change="onLayoutColorChange"/>
@@ -569,6 +583,45 @@ export default {
   60% {
     transform: translateY(-15px);
     box-shadow: rgb(33, 150, 243) 0 2px 10px;
+  }
+}
+.technical_work{
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px;
+  color: #003c76;
+  font-weight: 600;
+  white-space: nowrap;
+  p{
+    font-size: 20px;
+  }
+}
+@media (max-width: 640px) {
+  .technical_work{
+    h1{
+      font-size: 20px;
+    }
+    p{
+      font-size: 18px;
+    }
+  }
+}
+@media (max-width: 415px) {
+  .technical_work{
+    width: 100%;
+    white-space: normal;
+    img{
+      width: 200px;
+    }
+    h1{
+      font-size: 18px;
+    }
+    p{
+      font-size: 16px;
+    }
   }
 }
 </style>
