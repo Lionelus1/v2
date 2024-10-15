@@ -142,6 +142,7 @@ import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
 import QrGuideline from "./QrGuideline.vue";
 import { DocService } from "@/service/doc.service";
+import {isArray} from "chart.js/helpers";
 
 export default {
   name: "DocSignaturesInfo",
@@ -528,8 +529,8 @@ export default {
             this.$i18n.locale
           )
             .then((sign) => {
-              if (sign != undefined) {
-                this.sendRequest(sign);
+              if (sign !== undefined && isArray(sign)) {
+                this.sendRequest(sign[0]);
               }
             })
             .catch((e) => {
