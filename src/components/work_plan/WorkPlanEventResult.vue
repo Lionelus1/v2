@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!plan || !resultData" class="spinner-container">
+  <div v-if="!plan || resultData === ''" class="spinner-container">
     <ProgressSpinner class="progress-spinner" strokeWidth="4"/>
   </div>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
@@ -500,7 +500,7 @@ export default {
       isDisabled: true,
       active: null,
       menu: null,
-      resultData: null,
+      resultData: '',
       files: [],
       newResult: null,
       fact: null,
