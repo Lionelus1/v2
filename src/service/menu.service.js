@@ -116,8 +116,8 @@ export class MenuService {
                     {
                         label: $t('common.students'),
                         icon: 'fa-solid fa-graduation-cap',
-                        to: '/contragent/persons/' + Enum.PersonType.Student,
                         visible: this.isEnuWorker(),
+                        to: '/contragent/persons/' + Enum.PersonType.Student,
                     }
                 ]
             },
