@@ -413,13 +413,13 @@ export default {
       this.eventParams.first = event.first
       this.getAllEvents(false);
     },
-    isCalendarBool(bool) {
+    async isCalendarBool(bool) {
       if (bool) {
         this.eventParams.month = this.currentMonth
         this.eventParams.year = this.currentYear
         this.eventParams.eventType = "publish";
         this.eventParams.rows = 160;
-        this.getAllEvents(true)
+        await this.getAllEvents(true)
         this.getCalendar()
         this.isCalendar = bool
       } else {
