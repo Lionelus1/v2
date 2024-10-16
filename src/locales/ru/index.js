@@ -442,7 +442,7 @@ export default {
         orgEmployees: "Сотрудники {org}",
         domesticPartners: 'Отечественные партнеры',
         foreignPartners: 'Зарубежные партнеры',
-        сompanyСategory: 'Категория предприятия',
+        companyCategory: 'Категория предприятия',
         organizationIndustry: 'Сфера деятельности организации',
         otherParameters: 'Другие параметры',
     },

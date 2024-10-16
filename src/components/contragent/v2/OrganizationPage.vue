@@ -49,7 +49,7 @@
         <small class="p-error" v-if="validation.form">{{$t('common.requiredField')}}</small>
       </div>
       <div class="field col-12 md:col-6">
-        <label>{{ $t("contragent.сompanyСategory") }}</label>
+        <label>{{ $t("contragent.companyCategory") }}</label>
         <Dropdown :disabled="pageReadonly" v-model="org.companyCategory" dataKey="id" :placeholder="$t('common.select')" :options="orgCompanyCategory"
                   :optionLabel="($i18n.locale === 'kz' ? 'name' : $i18n.locale === 'ru' ? 'namerus' : 'nameen')" @change="input"></Dropdown>
 <!--        <small class="p-error" v-if="validation.companyCategory">{{$t('common.requiredField')}}</small>-->
