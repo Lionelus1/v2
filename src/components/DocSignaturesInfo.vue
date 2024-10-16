@@ -529,7 +529,7 @@ export default {
             this.$i18n.locale
           )
             .then((sign) => {
-              if (sign !== undefined && isArray(sign)) {
+              if (sign && sign.length > 0) {
                 this.sendRequest(sign[0]);
               }
             })
