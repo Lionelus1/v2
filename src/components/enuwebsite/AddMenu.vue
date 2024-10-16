@@ -142,10 +142,13 @@
       <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_en"
                 maxlength="80"></Textarea>
         </div>
-        <div class="field">
+        <div class="field menu_bg">
             <label>{{ $t('web.bgImg') }}</label>
             <CustomFileUpload @upload="uploadFile" :accept="'image/*'" v-model="bgImg" :multiple="false"
-                :preview="formData.background_image" :button="true"></CustomFileUpload>
+                :preview="formData.background_image" :button="!formData.background_image"></CustomFileUpload>
+          <span v-if="formData.background_image" class="btn-remove-image p-button p-button-danger p-button-sm w-fit" @click="removeBg(formData.background_image)">
+              {{ $t('common.delete') }}
+            </span>
         </div>
         <template #footer>
             <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check"
@@ -490,6 +493,9 @@ export default {
       // }
       return errors.length === 0;
     },
+    removeBg(node){
+      this.formData.background_image = null;
+    }
   }
 }
 </script>
@@ -546,7 +552,10 @@ export default {
   top: 5px;
   right: 3px;
   cursor: pointer;
-
-
+}
+.menu_bg{
+  img{
+    margin-top: 20px!important;
+  }
 }
 </style>
