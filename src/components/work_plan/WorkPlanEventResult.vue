@@ -869,8 +869,8 @@ export default {
           },
         },
         {
-          label: this.$t("common.save"),
-          icon: "pi pi-fw pi-save",
+          label: this.$t("common.send"),
+          icon: "fa-regular fa-paper-plane",
           disabled: this.isDisabled,
           command: () => {
             this.saveResult();
@@ -1199,7 +1199,7 @@ export default {
       fd.append("result_id", item.event_result_id)
       fd.append("result_text_id", item.result_text[0].id)
       fd.append("work_plan_event_id", item.work_plan_event_id)
-      fd.append("quarter", this.selectedQuarter);
+      fd.append("quarter", item.result_text[0].quarter);
 
 
       if (this.isFactChanged)
