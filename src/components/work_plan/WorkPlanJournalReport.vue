@@ -315,7 +315,6 @@ const docService = new DocService()
 const loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
 const loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
 
-// console.log(student_id.value, loginedUser, loginedUserId)
 const plan = ref(null);
 const planDoc = ref(null);
 const report = ref(null);
@@ -414,8 +413,6 @@ const saveContrConc = () => {
     if(param.name === "content") {
       if (!param.value) param.value = "";
       param.value = contrConcModel.value;
-      console.log(contrConcModel.value)
-      console.log(param.value)
     }
   })
   docService.saveDocumentV2(contrConcDoc.value).then(res => {
@@ -434,8 +431,6 @@ const saveHeadConc = () => {
     if(param.name === "content") {
       if (!param.value) param.value = "";
       param.value = headConcModel.value;
-      console.log(headConcModel.value)
-      console.log(param.value)
     }
   })
   docService.saveDocumentV2(headConcDoc.value).then(res => {
@@ -468,7 +463,7 @@ const saveAssign = () => {
 
 const tabChanged = () => {
   if (active.value === 0) {
-    console.log("tabChanged 1");
+    // console.log("tabChanged 1");
   }
 }
 
@@ -698,8 +693,6 @@ const getDiaryReports = async () => {
 
 const getFile = async (index) => {
   await planService.getPlanReportFile(dReports.value[index].doc_id).then(async res => {
-    console.log("lksdnvlsdnvksdvksdvnksdnv")
-    console.log(res.data)
     if (res.data && dReports.value && dReports.value[index].doc_info.docHistory.stateId !== 4) {
       //kelisimge jiberilger bolsa daiyn filedi alam
       blobSource.value = URL.createObjectURL(await b64toBlob(res.data));
@@ -720,14 +713,10 @@ const getData = async (index) => {
     department_id: null,
     report_id: dReports.value[index].id
   };
-  console.log("iiiiiiiiinnnnnnn")
-  console.log(data)
   planService.getWorkPlanData(data).then(async res => {
-    console.log("iiinn")
     loading.value = false;
     blobSource.value = URL.createObjectURL(await b64toBlob(res.data));
   }).catch(error => {
-    console.log("error")
     loading.value = false;
     toast.add({ severity: 'error', summary: error.message, life: 3000 });
   });
