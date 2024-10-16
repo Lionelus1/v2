@@ -702,7 +702,7 @@ export default {
       const currentMonth = currentDate.getMonth() + 1;
       const currentQuarter = Math.ceil(currentMonth / 3);
       const currentDay = currentDate.getDate();
-      if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter()) {
+      if (currentDay <= 20 && currentMonth === this.getFirstMonthOfQuarter()) {
         // Agymdagy ai agymdagy toqsannyng birinshi aiy bolsa aldyngy toqsanga natije toltyra alady
         return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
       } else {
@@ -869,8 +869,8 @@ export default {
           },
         },
         {
-          label: this.$t("common.save"),
-          icon: "pi pi-fw pi-save",
+          label: this.$t("common.send"),
+          icon: "fa-regular fa-paper-plane",
           disabled: this.isDisabled,
           command: () => {
             this.saveResult();
@@ -1199,7 +1199,7 @@ export default {
       fd.append("result_id", item.event_result_id)
       fd.append("result_text_id", item.result_text[0].id)
       fd.append("work_plan_event_id", item.work_plan_event_id)
-      fd.append("quarter", this.selectedQuarter);
+      fd.append("quarter", item.result_text[0].quarter);
 
 
       if (this.isFactChanged)
