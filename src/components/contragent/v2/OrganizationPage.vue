@@ -136,7 +136,6 @@
           <div class="uppercase">{{ this.$t("contracts.cooperationDocument") }}</div>
         </template>
         <Menubar :model="menuCooperation" class="m-0 pt-0 pb-0"></Menubar>
-
         <div class="card">
           <DataTable :value="cooperations" dataKey="id" :rows="cooperationFilter.rows" :totalRecords="cooperationTotal"
                      :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
