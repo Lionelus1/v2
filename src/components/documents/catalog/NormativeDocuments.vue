@@ -551,13 +551,15 @@ export default {
 
       switch (extension) {
         case 'pdf':
-          return 'fa-solid fa-file-pdf';
+          return 'fa-regular fa-file-pdf pdf-icon';
         case 'doc':
+          return 'fa-solid fa-file-word word-icon';
         case 'docx':
-          return 'fa-solid fa-file-word';
+          return 'fa-solid fa-file-word word-icon';
         case 'xls':
+          return 'fa-solid fa-file-excel excel-icon';
         case 'xlsx':
-          return 'fa-solid fa-file-excel';
+          return 'fa-solid fa-file-excel excel-icon';
         default:
           return 'fa-solid fa-file';
       }
@@ -941,5 +943,20 @@ export default {
 }
 :deep(.p-treetable-toggler) {
   flex-shrink: 0;
+}
+
+.pdf-icon {
+  color: #ef3131;
+  font-size: 1.3em;
+}
+
+.word-icon {
+  color: #3c68c6;
+  font-size: 1.4em;
+}
+
+.excel-icon {
+  color: #149c49;
+  font-size: 1.4em;
 }
 </style>

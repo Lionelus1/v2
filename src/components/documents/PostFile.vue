@@ -106,7 +106,7 @@
         </div>
         <div v-if="showUploader" class="field">
           <label>{{$t('common.doc')}}</label>
-          <FileUpload  :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false" fileLimit="1" :accept="accept">
+          <FileUpload  :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false" fileLimit="1" accept = ".doc,.docx,.pdf,.xls,.xlsx">
             <template #empty>
               <p>{{$t('hdfs.dragMsg')}}</p>
             </template>
@@ -177,9 +177,6 @@ export default {
       showCatalog: Boolean,
       approveInfo: {
         default: false
-      },
-      accept: {
-        default: ".doc,.docx,.pdf"
       },
       docType: null
     },
