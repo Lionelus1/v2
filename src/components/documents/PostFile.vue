@@ -112,7 +112,7 @@
               ref="ufile"
               :multiple="false"
               fileLimit="1"
-              accept=".doc,.docx,.pdf,.xls,.xlsx"
+              accept=".doc,.docx,.pdf,.xls,.xlsx,.zip"
               @upload="onUpload"
               @select="onFileSelect"
           >

@@ -562,6 +562,8 @@ export default {
           return 'fa-solid fa-file-excel excel-icon';
         case 'xlsx':
           return 'fa-solid fa-file-excel excel-icon';
+        case 'zip':
+          return 'fa-solid fa-file-zipper zip-icon';
         default:
           return 'fa-solid fa-file';
       }
@@ -959,6 +961,11 @@ export default {
 
 .excel-icon {
   color: #149c49;
+  font-size: 1.4em;
+}
+
+.zip-icon {
+  color: #805b36;
   font-size: 1.4em;
 }
 
