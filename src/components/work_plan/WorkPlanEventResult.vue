@@ -664,7 +664,7 @@ export default {
     },
     respUserExists(id) {
       if (this.isMastersPlan || this.isDoctorsPlan) {
-        return this.event?.summary_department_id === id || this.isAdviser || this.event?.creator_id
+        return this.event?.summary_department_id === id || this.event?.creator_id == id
       }
       return this.event?.user?.some(user => user.id === id)
     },
