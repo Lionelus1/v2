@@ -15,6 +15,7 @@
                 <Column field="titleKz" v-bind:header="$t('common.nameIn')" :sortable="true" style="width: 40%">
                     <template #body="{data}">
                         <span>{{ data['title' + locale] }}</span>
+                      <Badge style="margin-left:5px" :value="$t('web.isHidden')" v-if="data.isHiddenNews"></Badge>
                     </template>
                 </Column>
                 <Column :field="$i18n.locale === 'kz' ? `history.status.nameKz` : $i18n.locale === 'ru'
