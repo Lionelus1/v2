@@ -608,6 +608,8 @@ export default {
         }
 
         this.$emit('organizationUpdated', this.org)
+        this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+        this.$router.go(-1);
       }).catch(err => {
         this.loading = false;
 
