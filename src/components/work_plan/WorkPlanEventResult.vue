@@ -1,6 +1,6 @@
 <template>
   <div v-if="!plan || resultData === ''" class="spinner-container">
-    <ProgressSpinner class="progress-spinner" strokeWidth="4"/>
+    <ProgressSpinner class="progress-spinner" style="width: 50px; height: 50px"/>
   </div>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
