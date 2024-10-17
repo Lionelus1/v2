@@ -2,7 +2,13 @@
   <div class="flex flex-row mb-3">
     <h3 class="m-0">{{ $t("smartenu.catalogNormDoc") }}</h3>
   </div>
-  <BlockUI :blocked="loading" class="card">
+  <div class="calendar_buttons flex justify-content-end mb-2">
+      <span class="p-buttonset mb-2">
+    <Button class="p-button-outlined calendar_btn_left" :class="{'active': isGrid}" icon="pi pi-th-large" @click="getFolders(true)"/>
+    <Button class="p-button-outlined calendar_btn_right" :class="{'active': !isGrid}" icon="pi pi-list" @click="getFolders(false)"/>
+      </span>
+  </div>
+  <BlockUI :blocked="loading" v-if="!isGrid" class="card">
     <Toolbar class="m-0 p-1">
       <template #start>
         <div v-if="findRole(null, 'normative_docs_admin') || isAdmin">
@@ -131,6 +137,18 @@
       </DataTable>
     </div>
   </BlockUI>
+
+  <BlockUI :blocked="loading" v-if="isGrid" class="card">
+    <Toolbar class="m-0 p-1">
+      <template #start>
+      </template>
+      <template #end>
+      </template>
+    </Toolbar>
+    <div class="flex-grow-1" style="height: 300px;">
+      <GridComponent :folders="folders" @select-folder="onFolderSelected" @open-folder="openFolder" />
+    </div>
+  </BlockUI>
   <!-- панель для фильтра -->
   <OverlayPanel ref="overlay_panel">
     <div class="p-fluid">
@@ -206,17 +224,16 @@ import PostFile from "@/components/documents/PostFile.vue"
 import {DocService} from "@/service/doc.service";
 import {getLongDateString, getShortDateString} from "@/helpers/helper";
 import ShowDocument from "@/components/documents/ShowDocument.vue";
+import GridComponent from "@/components/documents/catalog/GridComponent.vue";
 
 export default {
   name: 'NormativeDocuments',
-  components: {ShowDocument, PostFolder, PostFile, DepartmentList },
-  props: {
-
-  },
+  components: {GridComponent, ShowDocument, PostFolder, PostFile, DepartmentList },
   emits: [],
   data() {
     return {
       service: new DocService(),
+      isGrid: true,
       Enum: Enum,
       loginedUser: {},
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
@@ -225,7 +242,7 @@ export default {
         last: '{last}',
         totalRecords: '{totalRecords}',
       }),
-
+      folders: [],
       fileUpload: false,
       loading: false,
       tableLoading: false,
@@ -297,6 +314,13 @@ export default {
     openSidebar(selectedNode){
       this.docId = selectedNode.id
       this.showDoc = true
+    },
+    onFolderSelected(folder) {
+      this.selectedNodeKey = folder.key;
+    },
+    openFolder(folder) {
+      this.selectedNodeKey = folder.key;
+      this.getFolders(this.isGrid, folder);
     },
     getLongDateString: getLongDateString,
     getShortDateString: getShortDateString,
@@ -378,10 +402,12 @@ export default {
       this.selectedMoveNode = node
     },
     onNodeExpand(node) {
-      this.getFolders(node)
+      this.getFolders(null, node)
     },
-    getFolders(parent = null) {
+    getFolders(isGrid, parent = null) {
       this.loading = true;
+
+     this.isGrid = isGrid !== false;
 
       if (parent === null) {
         this.expandedKeys = {}
@@ -396,7 +422,7 @@ export default {
         headers: getHeader()
       }).then(res => {
         let data = res.data.folders
-
+        this.folders = res.data.folders;
         if (!data) {
           parent.children = null
           this.getFiles(parent)
@@ -959,4 +985,30 @@ export default {
   color: #149c49;
   font-size: 1.4em;
 }
+
+.calendar_buttons button {
+  border-radius: 10px;
+  padding: 7px 20px;
+}
+
+:deep(.fc-button-group button) {
+  border-radius: 10px;
+}
+
+.calendar_buttons .calendar_btn_left {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.calendar_buttons .calendar_btn_right {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.calendar_buttons button.active {
+  background: #007be5;
+  color: #fff;
+  border: 1px solid #007be5;
+}
+
 </style>
