@@ -93,9 +93,11 @@
         <i class="fa-solid fa-folder"></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
       </span>
             <span v-else>
-        <i :class="getFileIconClass(slotProps.node.name)"></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
+        <i :class="getFileIconClass(slotProps.node.name)"
+           :title="slotProps.node.newParams?.FileDescription?.value || $t('hdfs.noDescription')"
+           class="custom-tooltip-icon"
+        ></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
       </span>
-
           </template>
         </Column>
       </TreeTable>
@@ -195,7 +197,7 @@
 </template>
 <script>
 import api from '@/service/api';
-
+import Tooltip from 'primevue/tooltip';
 import { FilterMatchMode } from "primevue/api";
 import { getHeader, smartEnuApi, findRole } from "@/config/config";
 import Enum from "@/enum/docstates/index"
@@ -958,5 +960,26 @@ export default {
 .excel-icon {
   color: #149c49;
   font-size: 1.4em;
+}
+
+
+/* Стили для иконки */
+.custom-tooltip-icon {
+  cursor: pointer;
+}
+
+/* Стили для всплывающей подсказки */
+.p-tooltip {
+  background-color: #333;   /* Темный фон */
+  color: white;             /* Белый текст */
+  border-radius: 5px;       /* Скругленные углы */
+  padding: 10px;            /* Внутренние отступы */
+  font-size: 14px;          /* Размер текста */
+  max-width: 250px;         /* Ограничение ширины */
+  word-wrap: break-word;    /* Перенос текста */
+}
+
+.p-tooltip-arrow {
+  border-top-color: #333;   /* Цвет стрелки */
 }
 </style>
