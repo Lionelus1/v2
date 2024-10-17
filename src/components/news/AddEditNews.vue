@@ -82,6 +82,10 @@
           </small>
         </div>
         <div class="field-checkbox">
+          <Checkbox id="isPoster" name="isHiddenNews" v-model="newsData.isHiddenNews" :binary="true"/>
+          <label for="isPoster"> Скрыть новость </label>
+        </div>
+        <div class="field-checkbox">
           <Checkbox id="isPoster" name="isPoster" v-model="newsData.isPoster" :binary="true" @change="onChangePoster"/>
           <label for="isPoster">{{ $t("smartenu.addPoster") }}</label>
         </div>
@@ -261,7 +265,7 @@ export default {
         if (error?.response?.status === 403) {
           this.haveAccess = false
         } else {
-          this.toast.add({severity: "error", summary: error, life: 3000});
+          // this.toast.add({severity: "error", summary: error, life: 3000});
         }
       })
     },
