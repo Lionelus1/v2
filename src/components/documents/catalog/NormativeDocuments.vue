@@ -140,10 +140,7 @@
 
   <BlockUI :blocked="loading" v-if="isGrid" class="card">
     <Toolbar class="m-0 p-1">
-      <template #start>
-      </template>
-      <template #end>
-      </template>
+      <!-- Toolbar start/end templates -->
     </Toolbar>
     <div class="flex-grow-1" style="height: 300px;">
       <GridComponent :folders="folders" @select-folder="onFolderSelected" @open-folder="openFolder" />
@@ -246,6 +243,7 @@ export default {
       fileUpload: false,
       loading: false,
       tableLoading: false,
+      selectedFolder: null,
 
       visibility: {
         folderUploadDialog: false,
@@ -316,11 +314,15 @@ export default {
       this.showDoc = true
     },
     onFolderSelected(folder) {
-      this.selectedNodeKey = folder.key;
+      this.selectedFolder = folder;
     },
     openFolder(folder) {
-      this.selectedNodeKey = folder.key;
-      this.getFolders(this.isGrid, folder);
+      this.selectedFolder = folder;
+      if (!this.isGrid) {
+        this.getFolders(this.isGrid, folder);
+      } else {
+        this.getFolders(true, folder);
+      }
     },
     getLongDateString: getLongDateString,
     getShortDateString: getShortDateString,
@@ -407,8 +409,72 @@ export default {
     getFolders(isGrid, parent = null) {
       this.loading = true;
 
-     this.isGrid = isGrid !== false;
+      console.log("this.isGrid: ", isGrid)
+      this.isGrid = isGrid;
+      if (isGrid) {
+        this.fetchFolders(parent);
+      } else {
+        console.log("fetchTreeTable: ", this.isGrid)
+        this.fetchTreeTable(parent);
+      }
+    },
+    fetchFolders(parent = null) {
+      if (parent === null) {
+        this.expandedKeys = {}
+      }
 
+      api.post('/folders', {
+        folderTypes: [Enum.FolderType.NormativeDocuments],
+        page: null,
+        rows: null,
+        parentId: parent !== null ? parent.id : null,
+      }, {
+        headers: getHeader()
+      }).then(res => {
+        let data = res.data.folders
+        this.folders = res.data.folders;
+        if (!data) {
+          parent.children = null
+          this.getFiles(parent)
+          return
+        }
+
+        for (let i = 0; i < data.length; i++) {
+          data[i].nodeType = 'folder'
+          data[i].key = parent !== null ? parent.key + '-' + i.toString() : i.toString()
+
+          if (!data[i].groups) {
+            continue
+          }
+
+          for (let j = 0; j < data[i].groups.length; j++) {
+            delete data[i].groups[j].users
+          }
+        }
+
+        if (parent === null) {
+          this.catalog = data
+          this.loading = false
+        } else {
+          parent.children = data
+          this.getFiles(parent)
+        }
+
+
+      }).catch(err => {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+        } else {
+          console.log(err)
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+
+        this.loading = false
+      })
+    },
+    fetchTreeTable(parent = null) {
       if (parent === null) {
         this.expandedKeys = {}
       }

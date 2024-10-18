@@ -4,9 +4,9 @@
         class="card"
         v-for="folder in folders"
         :key="folder.key"
-        @dblclick="openFolder(folder)"
+        @click="openFolder(folder)"
         :class="{ selected: isSelected(folder) }"
-        v-tooltip="folder.newParams?.FileDescription?.value || $t('common.noDescription')"
+        v-tooltip="folder.newParams?.FileDescription?.value || folder['name' + $i18n.locale]"
         data-pr-position="top"
     >
       <div class="card-icon">
@@ -29,11 +29,6 @@ export default {
     }
   },
   methods: {
-    /**
-     * Определяет класс иконки на основе расширения файла.
-     * @param {String} fileName - Имя файла.
-     * @returns {String} - Класс иконки.
-     */
     getFileIconClass(fileName) {
       if (!fileName || typeof fileName !== 'string') {
         return 'fa-solid fa-folder';
@@ -51,22 +46,12 @@ export default {
         case 'xlsx':
           return 'fa-solid fa-file-excel excel-icon';
         default:
-          return 'fa-solid fa-folder'; // Иконка по умолчанию для папки
+          return 'fa-solid fa-folder'; // Default folder icon
       }
     },
-    /**
-     * Выбирает папку и эмитит событие в родительский компонент.
-     * @param {Object} folder - Выбранная папка.
-     */
     openFolder(folder) {
-      console.log("folder: ", folder)
       this.$emit('open-folder', folder);
     },
-    /**
-     * Проверяет, является ли папка выбранной.
-     * @param {Object} folder - Папка для проверки.
-     * @returns {Boolean} - Результат проверки.
-     */
     isSelected(folder) {
       return this.$parent.selectedNodeKey === folder.key;
     }
@@ -77,45 +62,55 @@ export default {
 <style scoped>
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Improved min size */
+  gap: 20px; /* Increased gap for breathing room */
+  padding: 10px; /* Added padding around the grid */
 }
 
 .card {
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 16px;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px; /* Softer corners */
+  padding: 20px 10px;
   text-align: center;
   cursor: pointer;
-  transition: box-shadow 0.3s, border-color 0.3s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px); /* Subtle lift effect */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Softer shadow */
 }
 
 .card.selected {
   border-color: #007ad9;
-  box-shadow: 0 0 10px rgba(0, 122, 217, 0.5);
+  box-shadow: 0 0 12px rgba(0, 122, 217, 0.5);
 }
 
 .card-icon {
-  font-size: 2em;
-  margin-bottom: 8px;
-  color: #007ad9;
+  font-size: 2.5em; /* Slightly bigger icon */
+  margin-bottom: 12px; /* Increased space between icon and name */
 }
 
 .card-name {
-  font-size: 1em;
-  font-weight: bold;
+  font-size: 1.1em;
+  font-weight: 600;
+  color: #333;
   word-wrap: break-word;
+  max-width: 100%;
+  line-height: 1.4;
+  white-space: nowrap; /* Текст будет отображаться в одну строку */
+  overflow: hidden;    /* Скрываем текст, который не помещается */
+  text-overflow: ellipsis; /* Добавляем троеточие для длинного текста */
 }
 
-/* Кастомные стили для иконок */
+/* Custom icon colors */
 .pdf-icon {
-  color: red;
+  color: #e74c3c; /* More vibrant red */
 }
 
 .word-icon {
@@ -123,6 +118,20 @@ export default {
 }
 
 .excel-icon {
-  color: #217346;
+  color: #27ae60; /* Slightly more vivid green */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); /* Adjusted for smaller screens */
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid-container {
+    grid-template-columns: 1fr; /* Single column layout for very small screens */
+  }
 }
 </style>
