@@ -326,20 +326,20 @@ export default {
       orgCompanyCategory: [
         {
           id: 0,
-          name: "Крупный бизнес",
-          namerus: "Крупный бизнес",
-          nameen: "Large Business"
+          name: "Ірі бизнес(250 адамнан астам)",
+          namerus: "Крупный бизнес(более 250 человек)",
+          nameen: "Large Business(more than 250 people)"
         },
         {
           id: 1,
-          name: "Средний бизнес",
-          namerus: "Средний бизнес",
+          name: "Орта бизнес(101-ден 250 адамға дейін)",
+          namerus: "Средний бизнес(от 101 до 250 человек)",
           nameen: "Medium Business"
         },
         {
           id: 2,
-          name: "Малый бизнес",
-          namerus: "Малый бизнес",
+          name: "Шағын бизнес(100 адамнан аспайды)",
+          namerus: "Малый бизнес(Не более 100 человек)",
           nameen: "Small Business"
         }
       ],
