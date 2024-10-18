@@ -1,4 +1,7 @@
 <template>
+  <div v-if="!plan || resultData === ''" class="spinner-container">
+    <ProgressSpinner class="progress-spinner" style="width: 50px; height: 50px"/>
+  </div>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <div class="col-12" v-if="plan && event">
@@ -497,7 +500,7 @@ export default {
       isDisabled: true,
       active: null,
       menu: null,
-      resultData: null,
+      resultData: '',
       files: [],
       newResult: null,
       fact: null,
@@ -666,8 +669,9 @@ export default {
     if (!this.event_id) {
       this.event_id = this.$route.params.id;
     }
+    this.loading = true
     this.getEvent();
-
+    this.loading = false
   },
 
   methods: {
@@ -1579,4 +1583,10 @@ p.value {
   margin-left: 1rem; /* Space between individual input group addons */
 }
 
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full screen height */
+}
 </style>
