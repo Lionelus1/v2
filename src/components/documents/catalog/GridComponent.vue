@@ -30,6 +30,7 @@ export default {
   },
   methods: {
     getFileIconClass(fileName) {
+
       if (!fileName || typeof fileName !== 'string') {
         return 'fa-solid fa-folder';
       }
@@ -40,13 +41,17 @@ export default {
         case 'pdf':
           return 'fa-regular fa-file-pdf pdf-icon';
         case 'doc':
+          return 'fa-solid fa-file-word word-icon';
         case 'docx':
           return 'fa-solid fa-file-word word-icon';
         case 'xls':
+          return 'fa-solid fa-file-excel excel-icon';
         case 'xlsx':
           return 'fa-solid fa-file-excel excel-icon';
+        case 'zip':
+          return 'fa-solid fa-file-zipper zip-icon';
         default:
-          return 'fa-solid fa-folder'; // Default folder icon
+          return 'fa-solid fa-file';
       }
     },
     openFolder(folder) {
@@ -133,5 +138,10 @@ export default {
   .grid-container {
     grid-template-columns: 1fr; /* Single column layout for very small screens */
   }
+}
+
+.zip-icon {
+  color: #805b36;
+  font-size: 1.4em;
 }
 </style>
