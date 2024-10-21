@@ -280,7 +280,7 @@
                     </div>
                   </div>
                   <div style="margin-left: -12px;"
-                       v-if="((isPlanCreator || findRole(null, 'main_administrator')) && (!isMastersPlan && !isDoctorsPlan || isAdviser))">
+                       v-if="((isMastersPlan || isDoctorsPlan) && isAdviser) || (!isMastersPlan && !isDoctorsPlan && isPlanCreator || findRole(null, 'main_administrator'))">
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check"
                             class="p-button-rounded p-button-text"
                             @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)"
@@ -555,9 +555,11 @@ export default {
       let res = false
       this.plan?.doc_info?.params.forEach((e) => {
         if (e.name === 'sci_advisor') {
+          console.log(e.value[0].userID, this.loginedUserId)
           res = e.value[0].userID === this.loginedUserId
         }
       })
+
       return res
     },
     isSummaryDepartmentUser() {
