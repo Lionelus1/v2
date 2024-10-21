@@ -394,6 +394,18 @@ export default {
       this.loading = true
       this.lazyParams.countMode = null;
       this.lazyParams.searchText = data;
+      try {
+        const queryData = this.$route.query.data;
+        if (queryData) {
+          const query = JSON.parse(queryData);
+          if (query) {
+            this.lazyParams.navigateToVacancies = query;
+          }
+        }
+      } catch (error) {
+        console.error("Error parsing JSON data:", error);
+      }
+
       api.post("/vacancy/public", this.lazyParams, {headers: getHeader()}).then((response) => {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;

@@ -366,6 +366,12 @@ export default {
           icon: "pi pi-fw pi-save",
           disabled: () => !this.changed,
           command: () => { this.save() },
+        },
+        {
+          label: this.$t('hr.vacancies'),
+          icon: 'pi pi-fw pi-user-plus',
+          // disabled: () => !this.changed,
+          command: () => { this.navigateToVacancies() },
         }
       ],
 
@@ -952,6 +958,9 @@ export default {
         }
       })
     },
+    navigateToVacancies() {
+      this.$router.push({ path: '/human-resources/career/vacancies', query: { data: JSON.stringify(this.org.id) } });
+    }
   }
 }
 </script>
