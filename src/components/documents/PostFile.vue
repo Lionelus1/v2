@@ -357,7 +357,8 @@ export default {
       if (this.file.fileDescription) {
           let param = {
             value: this.file.fileDescription,
-            name: 'FileDescription'
+            name: 'FileDescription',
+            description: 'FileDescription'
           };
           this.file.params.push(param);
       }
