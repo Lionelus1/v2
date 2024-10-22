@@ -123,8 +123,12 @@
   <OverlayPanel ref="filterOverlayPanel">
     <div class="p-fluid" style="min-width: 320px;">
       <div class="field">
-        <label>{{ $t('contracts.columns.regDate') }}</label>
-        <PrimeCalendar v-model="tempFilter.date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+        <label>{{ $t('contracts.filter.createdFrom') }}</label>
+        <PrimeCalendar v-model="tempFilter.createdFrom" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field">
+        <label>{{ $t('contracts.filter.createdTo') }}</label>
+        <PrimeCalendar v-model="tempFilter.createdTo" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
       <div class="field">
         <Button :label="$t('common.clear')" @click="clearFilter();toggleFilter('filterOverlayPanel', $event);getAllNews()" class="mb-2 p-button-outlined"/>
@@ -219,10 +223,12 @@ export default {
             actionsNode: null,
             filtered: false,
             filter: {
-              date: null,
+              createdFrom: null,
+              createdTo: null,
             },
             tempFilter: {
-              date: null,
+              createdFrom: null,
+              createdTo: null,
             },
         }
     },
