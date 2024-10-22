@@ -4,8 +4,8 @@
     <ToolbarMenu v-model:search-model="filter.searchText" :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin"
                  :filtered="filter.filtered"/>
     <div class="card">
-      <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
-                 :loading="loading" responsiveLayout="scroll" :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows" :totalRecords="total" @page="onPage">
+      <DataTable :lazy="true" :rowsPerPageOptions="[10, 25, 50]" :value="data" dataKey="id" :rowHover="true"
+                 :loading="loading" :paginatorTemplate="paginatorTemplate" :currentPageReportTemplate="currentPageReportTemplate" responsiveLayout="scroll" :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows" :totalRecords="total" stripedRows class="flex-grow-1"  @page="onPage">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
         <Column field="content" :header="$t('workPlan.planName')" sortable>
@@ -105,6 +105,12 @@ export default {
     return {
       data: [],
       isAdded: null,
+      paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
+      currentPageReportTemplate: this.$t('common.showingRecordsCount', {
+        first: '{first}',
+        last: '{last}',
+        totalRecords: '{totalRecords}',
+      }),
       isCurrentUserApprove: false,
       isAcceptModal: false,
       isRejectModal: false,
