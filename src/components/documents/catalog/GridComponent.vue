@@ -4,8 +4,9 @@
         class="card"
         v-for="folder in folders"
         :key="folder.key"
-        @click="openFolder(folder)"
-        :class="{ selected: isSelected(folder) }"
+        @dblclick="openFolder(folder)"
+        @click="click(folder)"
+        :class="{ selected: folder === selectedNode }"
         v-tooltip="folder.newParams?.FileDescription?.value || folder['name' + $i18n.locale]"
         data-pr-position="top"
     >
@@ -20,6 +21,8 @@
 </template>
 
 <script>
+import {findRole} from "@/config/config";
+
 export default {
   name: 'GridComponent',
   props: {
@@ -28,7 +31,21 @@ export default {
       required: true
     }
   },
+  data() {
+    return {
+      isAdmin: false,
+      selectedNode: null,
+      tooltip: {
+        folder: false,
+        file: false,
+      },
+      selectedCard: null,
+    }
+  },
   methods: {
+    created() {
+      this.isAdmin = this.findRole(null, 'main_administrator')
+    },
     getFileIconClass(fileName) {
 
       if (!fileName || typeof fileName !== 'string') {
@@ -57,65 +74,72 @@ export default {
     openFolder(folder) {
       this.$emit('open-folder', folder);
     },
-    isSelected(folder) {
-      return this.$parent.selectedNodeKey === folder.key;
-    }
-  }
+    findRole: findRole,
+    click(folder) {
+      this.selectedCard = folder
+      this.selectedNode = folder
+      this.$emit('card-selected', folder);
+    },
+  },
 };
 </script>
 
 <style scoped>
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Improved min size */
-  gap: 20px; /* Increased gap for breathing room */
-  padding: 10px; /* Added padding around the grid */
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Flexible grid */
+  gap: 20px;
+  padding: 10px;
+  justify-items: center; /* Center cards in grid */
 }
 
 .card {
   background-color: #f9f9f9;
   border: 1px solid #e0e0e0;
-  border-radius: 8px; /* Softer corners */
+  border-radius: 12px; /* Softer corners */
   padding: 20px 10px;
   text-align: center;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 180px;
+  position: relative;
 }
 
 .card:hover {
-  transform: translateY(-5px); /* Subtle lift effect */
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Softer shadow */
+  transform: translateY(-8px); /* Lift effect */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Elevated shadow */
 }
 
 .card.selected {
-  border-color: #007ad9;
-  box-shadow: 0 0 12px rgba(0, 122, 217, 0.5);
+  border: 2px solid #007ad9; /* More prominent border */
+  box-shadow: 0 0 20px rgba(0, 122, 217, 0.5); /* Stronger shadow */
+  background: linear-gradient(135deg, #f0f9ff, #e0f7ff); /* Subtle gradient for selected folder */
+  transform: scale(1.05); /* Slightly larger when selected */
 }
 
 .card-icon {
-  font-size: 2.5em; /* Slightly bigger icon */
-  margin-bottom: 12px; /* Increased space between icon and name */
+  font-size: 3em; /* Larger icon */
+  margin-bottom: 12px;
 }
 
 .card-name {
-  font-size: 1.1em;
+  font-size: 1.2em;
   font-weight: 600;
   color: #333;
   word-wrap: break-word;
   max-width: 100%;
   line-height: 1.4;
-  white-space: nowrap; /* Текст будет отображаться в одну строку */
-  overflow: hidden;    /* Скрываем текст, который не помещается */
-  text-overflow: ellipsis; /* Добавляем троеточие для длинного текста */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Custom icon colors */
 .pdf-icon {
-  color: #e74c3c; /* More vibrant red */
+  color: #e74c3c;
 }
 
 .word-icon {
@@ -123,7 +147,11 @@ export default {
 }
 
 .excel-icon {
-  color: #27ae60; /* Slightly more vivid green */
+  color: #27ae60;
+}
+
+.zip-icon {
+  color: #805b36;
 }
 
 /* Responsive design */
@@ -139,7 +167,6 @@ export default {
     grid-template-columns: 1fr; /* Single column layout for very small screens */
   }
 }
-
 .zip-icon {
   color: #805b36;
   font-size: 1.4em;

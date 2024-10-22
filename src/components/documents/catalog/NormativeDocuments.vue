@@ -142,10 +142,69 @@
 
   <BlockUI :blocked="loading" v-if="isGrid" class="card">
     <Toolbar class="m-0 p-1">
-      <!-- Toolbar start/end templates -->
+      <template #start>
+        <Button @click="open('folderUploadDialog')"
+                :disabled="selectedNode?.nodeType !== 'folder'"
+                v-tooltip="$t('educomplex.folder.add')"
+                class="p-button-text p-button-info p-1">
+          <i class="fa-solid fa-folder-plus fa-xl" />
+        </Button>
+        <Button @click="open('folderUploadDialog', selectedNode)" :disabled="!selectedNode || selectedNode?.nodeType === 'file' || (!isAdmin && (!tooltip.folder || selectedNode?.parentID == null || loginedUser.userID != selectedNode?.ownerId))"
+                v-tooltip="$t('educomplex.folder.edit')" class="p-button-text p-button-info p-1">
+          <i class="fa-solid fa-square-pen fa-xl" />
+        </Button>
+        <Button @click="deleteFolder()" :disabled="!selectedNode || selectedNode?.nodeType === 'file' || (!isAdmin && (!tooltip.folder || selectedNode?.parentID == null || loginedUser.userID != selectedNode?.ownerId))"
+                v-tooltip="$t('educomplex.folder.delete')" class="p-button-text p-button-info p-1">
+          <i class="fa-solid fa-folder-minus fa-xl" />
+        </Button>
+        <Button v-if="tooltip.folder && !selectedNode?.hidden && selectedNode?.ownerId === loginedUser.userID"
+                @click="hideFolder()" :disabled="!tooltip.folder || selectedNode.parentID == null"
+                v-tooltip="$t('educomplex.folder.hide')" class="p-button-text p-button-info p-1">
+          <i class="fa-solid fa-eye-slash fa-xl" />
+        </Button>
+        <Button v-if="tooltip.folder && selectedNode?.hidden && selectedNode?.ownerId === loginedUser.userID"
+                @click="showFolder()" :disabled="selectedNode.parentID == null" v-tooltip="$t('educomplex.folder.show')" class="p-button-text p-button-info p-1">
+          <i class="fa-solid fa-eye fa-xl" />
+        </Button>
+      </template>
+      <template #end>
+        <div v-if="findRole(null, 'normative_docs_admin')">
+          <Button @click="open('fileUploadDialog')" :disabled="selectedNode?.nodeType !== 'folder'"
+                  v-tooltip="$t('educomplex.file.add')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-file-circle-plus fa-xl"/>
+          </Button>
+          <Button @click="open('fileUploadDialog', selectedNode)"  :disabled="selectedNode?.nodeType !== 'file' || loginedUser.userID != selectedNode?.creatorID"
+                  v-tooltip="$t('educomplex.file.edit')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-file-pen fa-xl" />
+          </Button>
+          <Button @click="deleteFile()" :disabled="selectedNode?.nodeType !== 'file' || loginedUser.userID != selectedNode?.creatorID"
+                  v-tooltip="$t('educomplex.file.delete')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-file-circle-minus fa-xl" />
+          </Button>
+          <Button v-if="tooltip.file && !selectedNode?.isHidden && loginedUser.userID === selectedNode?.creatorID"
+                  @click="hideFile()" v-tooltip="$t('educomplex.file.hide')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-eye-slash fa-xl" />
+          </Button>
+          <Button v-if="tooltip.file && selectedNode?.isHidden && loginedUser.userID === selectedNode?.creatorID"
+                  @click="showFile()" v-tooltip="$t('educomplex.file.show')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-eye fa-xl" />
+          </Button>
+        </div>
+        <div>
+          <Button @click="toggle" aria:haspopup="true" aria-controls="overlay_panel" v-tooltip="$t('educomplex.search')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-search fa-xl" />
+          </Button>
+          <Button v-if="selectedNode && !selectedNode?.is_view_only" @click="downloadFile()" :disabled="!tooltip.file && !currentDocument" v-tooltip="$t('educomplex.file.download')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-file-arrow-down fa-xl" />
+          </Button>
+          <Button v-if="selectedNode && selectedNode?.is_view_only" @click="openSidebar(selectedNode)" :disabled="!tooltip.file && !currentDocument" v-tooltip="$t('educomplex.show')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-eye fa-xl"></i>
+          </Button>
+        </div>
+      </template>
     </Toolbar>
     <div class="flex-grow-1" style="height: 300px;">
-      <GridComponent :folders="folders" @select-folder="onFolderSelected" @open-folder="openFolder" />
+      <GridComponent :folders="folders" @card-selected="onCardSelected" @open-folder="openFolder" />
     </div>
   </BlockUI>
   <!-- панель для фильтра -->
@@ -315,8 +374,8 @@ export default {
       this.docId = selectedNode.id
       this.showDoc = true
     },
-    onFolderSelected(folder) {
-      this.selectedFolder = folder;
+    onCardSelected(folder) {
+      this.selectedNode = folder;
     },
     openFolder(folder) {
       this.selectedFolder = folder;
@@ -352,6 +411,11 @@ export default {
       }
 
       this.visibility[name] = true
+    },
+    isDisabled() {
+      console.log("zdess")
+       return ((this.selectedNode == null || this.selectedNode.file !== 'file') || this.selectedNode && this.loginedUser.userID !== this.selectedNode.creatorID);
+
     },
     resetNewNode(type) {
       if (type === 1) {
@@ -411,12 +475,10 @@ export default {
     getFolders(isGrid, parent = null) {
       this.loading = true;
 
-      console.log("this.isGrid: ", isGrid)
       this.isGrid = isGrid;
       if (isGrid) {
         this.fetchFolders(parent);
       } else {
-        console.log("fetchTreeTable: ", this.isGrid)
         this.fetchTreeTable(parent);
       }
     },
