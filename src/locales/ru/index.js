@@ -379,7 +379,7 @@ export default {
         removed: "Исключен",
         modified: "Измененный",
         socialMediaIds: 'Социальные медиа',
-        viewOnlyCheckbox: 'Показать в режиме просмотра'
+        viewOnlyCheckbox: 'Показать в режиме просмотра',
         specialNeedsJobs: 'Вакансии для людей с особыми потребностями',
         availabilityForSpecialNeeds: 'Доступно для людей с особыми потребностями'
     },
