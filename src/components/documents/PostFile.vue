@@ -182,9 +182,6 @@ export default {
         uploadedFiles: [],
         languages: [{name:"kz", value: 0}, {name:"ru", value:1},  {name:"en", value:2}],
         validation: {
-            namekz: false,
-            nameru: false,
-            nameen: false,
             parent: false,
             file: false,
             param: false,
@@ -195,6 +192,7 @@ export default {
             catalog: false,
             academicLevel:false,
             eduProg:false,
+            nameGroup: false,
         },
         Enums: Enums,
         selectedEducationLevel: null,
@@ -277,9 +275,39 @@ export default {
 
     },
     notValid() {
-      this.validation.namekz = this.file.namekz === null || this.file.namekz === ''
-      this.validation.nameru = this.file.nameru === null || this.file.nameru === ''
-      this.validation.nameen = this.file.nameen === null || this.file.nameen === ''
+      this.validation.namekz = this.file.namekz === null || this.file.namekz === '';
+      this.validation.nameru = this.file.nameru === null || this.file.nameru === '';
+      this.validation.nameen = this.file.nameen === null || this.file.nameen === '';
+
+      if (this.validation.namekz && this.validation.nameru && this.validation.nameen) {
+        this.validation.nameGroup = true;
+      } else {
+        this.validation.nameGroup = false;
+
+        if (!this.validation.namekz) {
+          if (this.validation.nameru) {
+            this.file.nameru = this.file.namekz;
+          }
+          if (this.validation.nameen) {
+            this.file.nameen = this.file.namekz;
+          }
+        } else if (!this.validation.nameru) {
+          if (this.validation.namekz) {
+            this.file.namekz = this.file.nameru;
+          }
+          if (this.validation.nameen) {
+            this.file.nameen = this.file.nameru;
+          }
+        } else if (!this.validation.nameen) {
+          if (this.validation.namekz) {
+            this.file.namekz = this.file.nameen;
+          }
+          if (this.validation.nameru) {
+            this.file.nameru = this.file.nameen;
+          }
+        }
+      }
+
       //this.validation.parent = this.file.parentID === null || this.file.parentID === undefined
       this.levelValidate();
       this.validation.lang = (this.file.id === null && this.file.lang === null)
@@ -307,6 +335,10 @@ export default {
       var errors = [];
       Object.keys(this.validation).forEach(function(k)
       {
+        if (k === 'namekz' || k === 'nameru' || k === 'nameen') {
+          return;
+
+        }
           if (validation[k] === true) errors.push(validation[k])
           //result = result && validation[k];
       });
