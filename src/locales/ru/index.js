@@ -380,6 +380,8 @@ export default {
         modified: "Измененный",
         socialMediaIds: 'Социальные медиа',
         viewOnlyCheckbox: 'Показать в режиме просмотра'
+        specialNeedsJobs: 'Вакансии для людей с особыми потребностями',
+        availabilityForSpecialNeeds: 'Доступно для людей с особыми потребностями'
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -453,7 +455,10 @@ export default {
         },
         orgEmployees: "Сотрудники {org}",
         domesticPartners: 'Отечественные партнеры',
-        foreignPartners: 'Зарубежные партнеры'
+        foreignPartners: 'Зарубежные партнеры',
+        companyCategory: 'Категория предприятия',
+        organizationIndustry: 'Сфера деятельности организации',
+        otherParameters: 'Другие параметры',
     },
     doctemplate: {
         title: "Создание шаблона документа",
