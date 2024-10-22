@@ -15,7 +15,7 @@
         </li>
       </ul>
       <div class="steps-content p-fluid">
-        <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers" :user-type="3"  :disabled="readonly"></FindUser>
+        <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers" :searchMode="searchMode" :user-type="3"  :disabled="readonly"></FindUser>
         <Dropdown :disabled="!isNewStage || readonly" @change="updateModel" class="mt-2"
                   v-model="certificate" dataKey="value" :options="certificates" :optionLabel="'name' + $i18n.locale"
                   :placeholder="$t('ncasigner.certType')" />
@@ -43,7 +43,7 @@
       </ul>
       <div class="steps-content p-fluid">
         <Dropdown v-if="isNewStage" @change="approvalListChanged" v-model="approvalListItem" :options="approvalList" :optionLabel="'title' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)" :placeholder="$t('roleControl.instance')"></Dropdown>
-        <FindUser :disabled="readonly || !approvalStages[activeIndex].userChangeable" class="mt-2" @add="updateModel" @remove="updateModel" v-model="selectedUsers" :user-type="3"></FindUser>
+        <FindUser :disabled="readonly || !approvalStages[activeIndex].userChangeable" class="mt-2" @add="updateModel" @remove="updateModel" v-model="selectedUsers" :searchMode="searchMode" :user-type="3"></FindUser>
         <Dropdown v-if="mode !== 'doc_template_creating'"  :disabled="true" @change="updateModel" class="mt-2" v-model="certificate" :options="certificates" optionValue="value" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
       </div>
 
@@ -74,6 +74,11 @@ export default {
     stages: null,
     mode: null, // 'standard', 'doc_template', 'doc_template_creating'
     readonly: null,
+    searchMode:{
+      type: String,
+      default: 'ldap'
+    }
+
   },
   emits: ['clearStages'],
   components: { ApprovalListControl },
@@ -410,7 +415,7 @@ h3 {
   margin-bottom: 1rem;
   padding: 0;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .steps-item {
@@ -426,8 +431,6 @@ h3 {
 }
 
 .steps-item span {
-  width: 38px;
-  height: 38px;
   cursor: pointer;
   border-radius: 50%;
   padding: .75rem 1rem;

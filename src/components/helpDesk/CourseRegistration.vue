@@ -140,14 +140,21 @@ const props = defineProps({
   }
 })
 
-const userData = ref({
-  fullName: null,
-  speciality: null,
-  group: null,
-  course: null,
-  phone: null,
-  email: null,
-})
+const userData = ref({})
+
+const formFields = computed(() => [
+  { key: 'fullName', label: t('common.fullName'), model: userData.value.fullName, type: 'text', placeholder: t('common.fullName'),   validation: null,show: true },
+  { key: 'speciality', label: t('common.speciality'), model: userData.value.speciality, type: 'text', placeholder: userData.value.speciality || t('common.speciality'),   validation: null, show: true },
+  { key: 'course', label: t('course.course'), model: userData.value.course, type: 'number', placeholder: t('course.course'),   validation: null, show: true },
+  { key: 'group', label: t('contracts.cafedraGroup'), model: userData.value.group, type: 'text', placeholder: userData.value.group || t('contracts.cafedraGroup'),   validation: null, show: true },
+  { key: 'phone', label: t('contact.phone'), model: userData.value.phone, type: 'text', placeholder: t('contact.phone'),   validation: 'phone', show: true},
+  { key: 'email', label: t('contact.email'), model: userData.value.email, type: 'text', placeholder: t('contact.email'),   validation: 'email', show:true },
+])
+
+if (!findRole(null, 'student') && !props.courseRequest.doc?.newParams?.not_formal_education_ids) {
+  formFields.value.unshift({ key: 'discipline', label: t('helpDesk.application.discipline'), model: userData.value.discipline, type: 'text', placeholder: t('helpDesk.application.discipline'), required: true,  validation: null, show: true });
+}
+
 const isCurrentUserSender = computed(() => {
   return ((currentUser.value?.userID == props.courseRequest.sender_id && (props.courseRequest.doc.docHistory == null)) || props.courseRequest?.doc?.docHistory?.stateId == DocEnum.REVISION.ID)
 })
@@ -235,6 +242,11 @@ const showMessage = (msgtype, message, content) => {
 const validateCourse = (course) => {
   return course >= 1 && course <= 5
 }
+const validatePhoneNumber = (phoneNumber) => {
+  const phoneRegex = /^(8|\+7)?\(\d{3}\)\d{7}$|^(8|\+7)?\d{10}$/;
+
+  return phoneRegex.test(phoneNumber);
+}
 emit('onCheckboxChecked', selectedIds.value)
 emit('childInputData', userData.value)
 emit('validateInput', {
@@ -243,12 +255,6 @@ emit('validateInput', {
   phone: userData.value.phone === null || !validatePhoneNumber(userData.value.phone),
 });
 
-
-const validatePhoneNumber = (phoneNumber) => {
-  const phoneRegex = /^(8|\+7)?\(\d{3}\)\d{7}$|^(8|\+7)?\d{10}$/;
-
-  return phoneRegex.test(phoneNumber);
-}
 
 // const isValidCourse = computed(() => {
 //   const course = parseInt(userData.course)
@@ -373,7 +379,6 @@ const checkBoxSelect = (course) => {
   }
 
 };
-
 onMounted(() => {
   isAdmin.value = (findRole(null, 'main_administrator') || findRole(null, "career_administrator"))
   currentUser.value = JSON.parse(localStorage.getItem("loginedUser"));

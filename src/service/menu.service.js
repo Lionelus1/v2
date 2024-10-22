@@ -43,7 +43,7 @@ export class MenuService {
                                 label: $t('postaccmonrep.title'),
                                 icon: 'pi pi-fw pi-folder',
                                 to: '/documents/catalog/postaccmonrep'
-                            },  
+                            },
                             {
                                 label: $t('common.sacReportMenuTitle'),
                                 icon: 'pi pi-fw pi-folder',
@@ -88,7 +88,13 @@ export class MenuService {
                         icon: 'fa-solid fa-rotate',
                         to: '/integrations',
                         visible: this.findRole("main_administrator")
-                    }
+                    },
+                    {
+                        label: $t('smartenu.mailingTitle'),
+                        icon: 'fa-regular fa-paper-plane',
+                        to: '/mailing',
+                        visible: this.findRole("mailing_manager")
+                    },
                 ]
             },
             {
@@ -104,8 +110,7 @@ export class MenuService {
                     {
                       label: $t('common.individualEntrepreneur'),
                       icon: 'pi pi-fw pi-briefcase',
-                      to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur,
-                        visible: this.isEnuWorker(),
+                      to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
                     },
                     {
                         label: $t('common.personal'),
@@ -118,6 +123,11 @@ export class MenuService {
                         icon: 'fa-solid fa-graduation-cap',
                         visible: this.isEnuWorker(),
                         to: '/contragent/persons/' + Enum.PersonType.Student,
+                    },
+                    {
+                        label: $t('common.graduates'),
+                        icon: 'fa-solid fa-graduation-cap',
+                        to: '/contragent/persons/' + Enum.PersonType.Graduate
                     }
                 ]
             },
@@ -307,7 +317,6 @@ export class MenuService {
                         label: $t('course.courses'),
                         icon: 'fa-solid fa-chalkboard',
                         to: '/categories-courses',
-
                     },
 
                 ]
@@ -316,14 +325,27 @@ export class MenuService {
                 label: $t('helpDesk.title'),
                 icon: 'pi pi-spin pi-cog',
                 to: '/helpdesk',
-            
+
             },
             {
-                label: $t('Telegram'),
-                icon: 'fa-brands fa-telegram',
+                label: $t('telegram.title'),
+                icon: 'fa-solid fa-robot',
                 to: '/telegram',
                 visible: this.findRole('telegram') || this.findRole('main_administrator')
-            }
+            },
+            {
+                label: $t('workPlan.reports'),
+                icon: 'pi pi-fw pi-chart-line',
+                visible: this.findRole("personal"),
+                items: [
+                    {
+                        label: $t('Hikvision'),
+                        icon: 'fa-solid fa-file-signature',
+                        to: '/hikvision',
+
+                    }
+                ]
+            },
         ]
     }
 

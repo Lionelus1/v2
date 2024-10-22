@@ -44,7 +44,7 @@
       </div>
       <div class="field col-12 md:col-6">
         <label>{{ $t("contragent.form") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
-        <Dropdown :disabled="pageReadonly" v-model="org.form" dataKey="id" :placeholder="$t('common.select')" :options="orgforms"
+        <Dropdown :disabled="pageReadonly" filter v-model="org.form" dataKey="id" :placeholder="$t('common.select')" :options="orgforms"
           :optionLabel="($i18n.locale === 'kz' ? 'name' : $i18n.locale === 'ru' ? 'namerus' : 'nameen')" @change="input"></Dropdown>
         <small class="p-error" v-if="validation.form">{{$t('common.requiredField')}}</small>
       </div>
@@ -86,6 +86,7 @@
             optionLabel="name"
         />
       </div>
+      <!-- resizdent and not resident -->
       <div class="field col-12 md:col-6">
         <label>&nbsp;</label>
         <SelectButton :disabled="pageReadonly"  v-model="org.resident" :options="resident" optionValue="id"
@@ -97,7 +98,8 @@
         {{ this.$t("contact.title") }}
       </div>
       <div class="field col-12 md:col-6">
-        <label>{{ $t("contact.email") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
+        <!-- <span class="p-error" v-if="!pageReadonly">*</span> -->
+        <label>{{ $t("contact.email") }}<span class="p-error" v-if="!pageReadonly && this.org.resident === 1">*</span></label>
         <InputText :readonly="pageReadonly" type="text" :placeholder="$t('contact.email')" 
           v-model="org.email" @input="input"></InputText>
         <small class="p-error" v-if="validation.email">{{$t('common.requiredField')}}</small>
@@ -136,6 +138,7 @@
           <div class="uppercase">{{ this.$t("contracts.cooperationDocument") }}</div>
         </template>
         <Menubar :model="menuCooperation" class="m-0 pt-0 pb-0"></Menubar>
+
         <div class="card">
           <DataTable :value="cooperations" dataKey="id" :rows="cooperationFilter.rows" :totalRecords="cooperationTotal"
                      :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
@@ -161,7 +164,6 @@
           <div class="uppercase">{{ this.$t("contracts.rating") }}</div>
         </template>
           <Menubar :model="menuRating" class="m-0 pt-0 pb-0"></Menubar>
-
           <DataTable :value="ratings" dataKey="id" :rows="ratingFilter.rows" :totalRecords="ratingTotal"
                      :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
                      :lazy="true" :loading="cooperationLoading"
@@ -245,7 +247,6 @@
     <Sidebar position="right" class="p-sidebar-lg"
              style="width: 50%;"  v-model:visible="ratingDialog">
       <TitleBlock :title="this.$t('contracts.rating')" :show-back-button="false"></TitleBlock>
-
       <Menubar :model="menuRatingSave" class="m-0 pt-0 pb-0"></Menubar>
       <div class="card p-fluid">
         <div class="grid formgrid">
@@ -262,7 +263,7 @@
           </div>
 
           <div class="field col-12 md:col-4">
-            <label>{{ this.$t('contracts.rating') }} {{this.$t('common.language.ru')}}<span class="p-error">*</span></label>
+            <label>{{ this.$t('contracts.rating') }} {{this.$t('common.language.en')}}<span class="p-error">*</span></label>
             <InputText v-model="rating.name_en" required />
             <small class="p-error" v-if="validationErrors.place">{{ this.$t('common.requiredField') }}</small>
           </div>
@@ -715,10 +716,11 @@ export default {
       this.validation.nameru =  !this.org.nameru || this.org.nameru.length < 1;
       this.validation.nameen =  !this.org.nameen || this.org.nameen.length < 1;
       this.validation.form = !this.org.form || this.org.form.id < 1;
-      this.validation.email = !this.org.email || this.org.email.length < 1;
-      // this.validation.companyCategory = !this.org.companyCategory || this.org.companyCategory.length < 1;
-      // this.validation.organizationIndustry = !this.org.organizationIndustry || this.org.organizationIndustry.length < 1;
-      // this.validation.otherParameters = !this.org.otherParameters || this.org.otherParameters.length < 1;
+      if(this.org.resident === 1){
+        this.validation.email = !this.org.email || this.org.email.length < 1;
+      }
+
+
       if (this.org.type === 2) {
         this.validation.swift = !this.bank.swift || this.bank.swift.length < 1;
       } else {
@@ -772,7 +774,6 @@ export default {
           this.getOrganizationIndustries()
           this.getAdditionalParameters()
         }
-
       }).catch(err => {
         if (err.response && err.response.status == 401) {
           this.$store.dispatch("logLout");

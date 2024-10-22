@@ -87,7 +87,7 @@
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && ((docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
       (docInfo.docType && (docInfo.docType === Enum.DocType.Contract))) || docInfo.docType === Enum.DocType.WorkPlan
-      || docInfo.docType === Enum.DocType.DocTemplate || docInfo.docType === Enum.DocType.DT_Request)" :header="$t('common.revision')" :disabled="hideDocRevision">
+      || docInfo.docType === Enum.DocType.DocTemplate || docInfo.docType === Enum.DocType.DT_Request || docInfo.docType === Enum.DocType.ScienceWorksList)" :header="$t('common.revision')" :disabled="hideDocRevision">
         <div class="card">
           <label> {{ this.$t("common.comment") }} </label>
           <InputText v-model="revisionComment" style="width: 100%; margin-bottom: 2rem"></InputText>
@@ -142,6 +142,7 @@ import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
 import QrGuideline from "./QrGuideline.vue";
 import { DocService } from "@/service/doc.service";
+import {isArray} from "chart.js/helpers";
 
 export default {
   name: "DocSignaturesInfo",
@@ -322,7 +323,7 @@ export default {
               }
             )
             .then((response) => {
-              this.files.push(this.b64toBlob(response.data));
+              this.files.push(this.b64toBlob(response.data.file));
             });
         }
       } else if (this.active == 2 && this.loginedUserId === null) {
@@ -354,6 +355,7 @@ export default {
                 this.findRole(null, RolesEnum.roles.CareerModerator) ||
                 this.findRole(null, RolesEnum.roles.UMKAdministrator) ||
                 this.findRole(null, RolesEnum.roles.Accountant) ||
+                  this.findRole(null, RolesEnum.roles.DormitoryAdministration) ||
                 (this.findRole(null, RolesEnum.roles.Teacher) &&
                   this.docInfo.docType === Enum.DocType.Contract) ||
                 (this.signatures &&
@@ -520,15 +522,15 @@ export default {
           runNCaLayer(
             this.$t,
             this.$toast,
-            response.data,
+            response.data.file,
             "cms",
             this.signerType,
             this.isTspRequired,
             this.$i18n.locale
           )
             .then((sign) => {
-              if (sign != undefined) {
-                this.sendRequest(sign);
+              if (sign && sign.length > 0) {
+                this.sendRequest(sign[0]);
               }
             })
             .catch((e) => {

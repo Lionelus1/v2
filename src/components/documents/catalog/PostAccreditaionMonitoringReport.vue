@@ -698,7 +698,7 @@ export default {
         )
             .then(response => {
               const link = document.createElement("a");
-              link.href = "data:application/octet-stream;base64," + response.data;
+              link.href = "data:application/octet-stream;base64," + response.data.file;
               link.setAttribute("download", path);
               link.download = path;
               link.click();

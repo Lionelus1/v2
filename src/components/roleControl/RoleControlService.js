@@ -1,5 +1,6 @@
 import api from "@/service/api";
 import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
+import axios from "axios";
 
 export const RIGHTS = {
     MAIN_ADMINISTRATOR: 'main_administrator',
@@ -51,6 +52,14 @@ export default class RoleControlService {
         return api.post(
             "/roleControl/getEmployee",
             {IIN: iin},
+            {headers: getHeader()}
+        )
+    }
+
+    getDepartments(departmentRequest) {
+        return axios.post(
+            smartEnuApi + "/positionRel/getDepartmentByOrgId",
+            departmentRequest,
             {headers: getHeader()}
         )
     }

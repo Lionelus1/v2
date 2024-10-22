@@ -1,0 +1,18 @@
+import api from "@/service/api";
+import {getHeader} from "@/config/config";
+
+export class AccountService {
+    
+    getMyAccount(data) {
+        return api.post(`/account/getAccount`, data, {headers: getHeader()});
+    }
+
+    deleteEducation(data) {
+        return api.post(`/account/education/delete/id`, data, {headers: getHeader()});
+    }
+
+    updateAccount(data) {
+        return api.post(`/account/info/update`, data, {headers: getHeader()});
+    }
+
+}

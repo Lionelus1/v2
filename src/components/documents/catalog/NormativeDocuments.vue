@@ -1,31 +1,33 @@
 <template>
-  <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
   <div class="flex flex-row mb-3">
     <h3 class="m-0">{{ $t("smartenu.catalogNormDoc") }}</h3>
   </div>
   <BlockUI :blocked="loading" class="card">
     <Toolbar class="m-0 p-1">
       <template #start>
-        <div v-if="findRole(null, 'normative_docs_admin')">
-          <Button @click="open('folderUploadDialog')" :disabled="!tooltip.folder"
+        <div v-if="findRole(null, 'normative_docs_admin') || isAdmin">
+          <Button @click="open('folderUploadDialog')"
+                  :disabled="!tooltip.folder"
+                  v-tooltip="$t('educomplex.folder.add')"
                   class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-folder-plus fa-xl" />
           </Button>
-          <Button @click="open('folderUploadDialog', selectedNode)" :disabled="!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId"
-                  class="p-button-text p-button-info p-1">
+          <!-- edit here -->
+          <Button @click="open('folderUploadDialog', selectedNode)" :disabled="!selectedNode || selectedNode?.nodeType === 'file' || (!isAdmin && (!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId))"
+                  v-tooltip="$t('educomplex.folder.edit')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-square-pen fa-xl" />
           </Button>
-          <Button @click="deleteFolder()" :disabled="!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId"
-                  class="p-button-text p-button-info p-1">
+          <Button @click="deleteFolder()" :disabled="!selectedNode || selectedNode?.nodeType === 'file' || (!isAdmin && (!tooltip.folder || selectedNode.parentID == null || loginedUser.userID != selectedNode.ownerId))"
+                  v-tooltip="$t('educomplex.folder.delete')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-folder-minus fa-xl" />
           </Button>
           <Button v-if="tooltip.folder && !selectedNode.hidden && selectedNode.ownerId === loginedUser.userID"
                   @click="hideFolder()" :disabled="!tooltip.folder || selectedNode.parentID == null"
-                  class="p-button-text p-button-info p-1">
+                  v-tooltip="$t('educomplex.folder.hide')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye-slash fa-xl" />
           </Button>
           <Button v-if="tooltip.folder && selectedNode.hidden && selectedNode.ownerId === loginedUser.userID"
-                  @click="showFolder()" :disabled="selectedNode.parentID == null" class="p-button-text p-button-info p-1">
+                  @click="showFolder()" :disabled="selectedNode.parentID == null" v-tooltip="$t('educomplex.folder.show')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye fa-xl" />
           </Button>
           <!-- <Button @click="open('folderMoveDialog')" :disabled="!tooltip.folder || selectedNode.parentID == null
@@ -37,47 +39,67 @@
       <template #end>
         <div v-if="findRole(null, 'normative_docs_admin')">
           <Button @click="open('fileUploadDialog')" :disabled="!tooltip.folder"
-                  class="p-button-text p-button-info p-1">
+                  v-tooltip="$t('educomplex.file.add')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-circle-plus fa-xl"/>
           </Button>
           <Button @click="open('fileUploadDialog', selectedNode)"  :disabled="!tooltip.file || loginedUser.userID != selectedNode.creatorID"
-                  class="p-button-text p-button-info p-1">
+                  v-tooltip="$t('educomplex.file.edit')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-pen fa-xl" />
           </Button>
           <Button @click="deleteFile()" :disabled="!tooltip.file || loginedUser.userID != selectedNode.creatorID"
-                  class="p-button-text p-button-info p-1">
+                  v-tooltip="$t('educomplex.file.delete')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-circle-minus fa-xl" />
           </Button>
           <Button v-if="tooltip.file && !selectedNode.isHidden && loginedUser.userID === selectedNode.creatorID"
-                  @click="hideFile()" class="p-button-text p-button-info p-1">
+                  @click="hideFile()" v-tooltip="$t('educomplex.file.hide')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye-slash fa-xl" />
           </Button>
           <Button v-if="tooltip.file && selectedNode.isHidden && loginedUser.userID === selectedNode.creatorID"
-                  @click="showFile()" class="p-button-text p-button-info p-1">
+                  @click="showFile()" v-tooltip="$t('educomplex.file.show')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye fa-xl" />
           </Button>
         </div>
         <div>
-          <Button @click="toggle" aria:haspopup="true" aria-controls="overlay_panel" class="p-button-text p-button-info p-1">
+          <Button @click="toggle" aria:haspopup="true" aria-controls="overlay_panel" v-tooltip="$t('educomplex.search')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-search fa-xl" />
           </Button>
-          <Button @click="downloadFile()" :disabled="!tooltip.file && !currentDocument" class="p-button-text p-button-info p-1">
+          <Button v-if="selectedNode && !selectedNode.is_view_only" @click="downloadFile()" :disabled="!tooltip.file && !currentDocument" v-tooltip="$t('educomplex.file.download')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-arrow-down fa-xl" />
+          </Button>
+          <Button v-if="selectedNode && selectedNode.is_view_only" @click="openSidebar(selectedNode)" :disabled="!tooltip.file && !currentDocument" v-tooltip="$t('educomplex.show')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-eye fa-xl"></i>
           </Button>
         </div>
       </template>
     </Toolbar>
     <div class="flex-grow-1" style="height: 300px;">
-      <TreeTable :value="catalog" :expandedKeys="expandedKeys" selectionMode="single" v-model:selectionKeys="selectedNodeKey"
-                 :lazy="true" :loading="loading" scrollable scrollHeight="flex" class="p-treetable-sm"
-                 @node-select="onNodeSelect($event)" @node-expand="onNodeExpand($event)"  v-if="!filterApplied">
-        <Column :header="$t('common.name')" :expander="true" :pt="{rowToggler: {style: 'flex-shrink: 0;'}}">
+      <TreeTable
+          :value="catalog"
+          :loading="loading"
+          :expandedKeys="expandedKeys"
+          selectionMode="single"
+          v-model:selectionKeys="selectedNodeKey"
+          :lazy="true"
+          scrollable
+          scrollHeight="flex"
+          class="p-treetable-sm"
+          @node-select="onNodeSelect($event)"
+          @node-expand="onNodeExpand($event)"
+          v-if="!filterApplied"
+      >
+        <Column :header="$t('common.name')" :expander="true">
           <template #body="slotProps">
-            <span v-if="slotProps.node.hidden || slotProps.node.isHidden"><i class="fa-solid fa-eye-slash"></i>&nbsp;{{slotProps.node["name"+$i18n.locale]}}</span>
-            <span v-else><i :class="'fa-solid fa-' + (slotProps.node.nodeType)"></i>&nbsp;{{ slotProps.node["name"+$i18n.locale] }}</span>
+      <span v-if="slotProps.node.hidden || slotProps.node.isHidden">
+        <i class="fa-solid fa-folder"></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
+      </span>
+            <span v-else>
+        <i :class="getFileIconClass(slotProps.node.name)"></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
+      </span>
+
           </template>
         </Column>
       </TreeTable>
+
       <DataTable :value="documents" dataKey="id" :rows="rows" :totalRecords="total" :first="first"
                  :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
                  :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="tableLoading"
@@ -118,14 +140,14 @@
       </div>
       <div class="field">
         <label> {{ $t('common.author') }} </label>
-        <DepartmentList :orgType="2" :parentID="1" :autoLoad="true" 
-          ref="departmentList"  v-model="filesFilter.author.value" :editMode="true">
+        <DepartmentList :orgType="2" :parentID="1" :autoLoad="true"
+                        ref="departmentList"  v-model="filesFilter.author.value" :editMode="true">
         </DepartmentList>
       </div>
       <div class="field">
         <label> {{ $t('common.approveDate') }} </label>
-        <Dropdown v-model="filesFilter.year.matchMode" :options="matchModes" optionLabel="value" 
-          optionValue="value" :placeholder="$t('common.select')">
+        <Dropdown v-model="filesFilter.year.matchMode" :options="matchModes" optionLabel="value"
+                  optionValue="value" :placeholder="$t('common.select')">
           <template #value="slotProps">
             <span> {{ $t('common.' + slotProps.value) }} </span>
           </template>
@@ -146,14 +168,14 @@
     <PostFolder :modelValue="newNode" @updated="folderUpdated($event)"></PostFolder>
   </Dialog>
   <!-- file upload -->
-  <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="visibility.fileUploadDialog" :style="{width: '60vw'}" :modal="true"> 
-    <PostFile :approveInfo="true" :fileUpload="fileUpload" :modelValue="newNode" directory="normativeDocs" 
-      :parentID="selectedNode.id" @updated="fileUpdated($event)" accept=".doc,.docx,.pdf,.zip,.rar,.7z,.gz"></PostFile>
+  <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="visibility.fileUploadDialog" :style="{width: '60vw'}" :modal="true">
+    <PostFile :approveInfo="true" :fileUpload="fileUpload" :modelValue="newNode" directory="normativeDocs"
+              :parentID="selectedNode.id" @updated="fileUpdated($event)" accept=".doc,.docx,.pdf,.zip,.rar,.7z,.gz"></PostFile>
   </Dialog>
   <!-- as -->
-  <Dialog :header="$t('common.move')" v-model:visible="visibility.folderMoveDialog"  :style="{width: '75vw'}" :maximizable="true" :modal="true" :contentStyle="{height: '300px'}"> 
+  <Dialog :header="$t('common.move')" v-model:visible="visibility.folderMoveDialog"  :style="{width: '75vw'}" :maximizable="true" :modal="true" :contentStyle="{height: '300px'}">
     <TreeTable :scrollable="true" scrollHeight="flex"  class="p-treetable-sm"  @node-select="onMoveNodeSelect($event)" :value="catalog" :lazy="true" :loading="loading"
-      @node-expand="onNodeExpand($event)" :totalRecords="totalRecords" selectionMode="single" v-model:selectionKeys="moveto">
+               @node-expand="onNodeExpand($event)" :totalRecords="totalRecords" selectionMode="single" v-model:selectionKeys="moveto">
       <Column field="name" :header="$t('common.name')" :expander="true">
         <template #body="slotProps">
           <span v-if="slotProps.node.hidden || slotProps.node.isHidden"><i class="fa-solid fa-eye-slash"></i>&nbsp;{{slotProps.node["name"+$i18n.locale]}}</span>
@@ -166,6 +188,10 @@
       <Button label="Yes" icon="pi pi-check" @click="moveFolder" autofocus />
     </template>
   </Dialog>
+  <Dialog v-model:visible="showDoc" class="p-sidebar-lg" style="width: 50%;">
+    <ShowDocument :docId="docId"></ShowDocument>
+  </Dialog>
+
 </template>
 <script>
 import api from '@/service/api';
@@ -179,10 +205,11 @@ import PostFolder from "@/components/documents/PostFolder.vue"
 import PostFile from "@/components/documents/PostFile.vue"
 import {DocService} from "@/service/doc.service";
 import {getLongDateString, getShortDateString} from "@/helpers/helper";
+import ShowDocument from "@/components/documents/ShowDocument.vue";
 
 export default {
   name: 'NormativeDocuments',
-  components: { PostFolder, PostFile, DepartmentList },
+  components: {ShowDocument, PostFolder, PostFile, DepartmentList },
   props: {
 
   },
@@ -249,6 +276,9 @@ export default {
         {value: 'gt'},
         {value: 'equals'}
       ],
+      docId: null,
+      showDoc: false,
+      isAdmin: false
     }
   },
   mounted() {
@@ -260,7 +290,14 @@ export default {
   beforeUnmount() {
     this.$emit('apply-flex', false);
   },
+  created() {
+    this.isAdmin = this.findRole(null, 'main_administrator')
+  },
   methods: {
+    openSidebar(selectedNode){
+      this.docId = selectedNode.id
+      this.showDoc = true
+    },
     getLongDateString: getLongDateString,
     getShortDateString: getShortDateString,
     findRole: findRole,
@@ -301,7 +338,8 @@ export default {
           createdDate: null,
           updatedDate: null,
           type: Enum.FolderType.NormativeDocuments,
-          parentID: this.selectedNode.id
+          parentID: this.selectedNode.id,
+          is_view_only: false,
         }
       } else {
         this.newNode = {
@@ -329,7 +367,7 @@ export default {
         file: false,
         folder: false
       }
-      
+
       if (node.nodeType === 'file') {
         this.tooltip.file = true
       } else {
@@ -354,22 +392,20 @@ export default {
         page: null,
         rows: null,
         parentId: parent !== null ? parent.id : null,
-      }, { 
-        headers: getHeader() 
+      }, {
+        headers: getHeader()
       }).then(res => {
         let data = res.data.folders
 
         if (!data) {
           parent.children = null
           this.getFiles(parent)
-          this.loading = false
           return
         }
 
         for (let i = 0; i < data.length; i++) {
           data[i].nodeType = 'folder'
           data[i].key = parent !== null ? parent.key + '-' + i.toString() : i.toString()
-          data[i].leaf = false
 
           if (!data[i].groups) {
             continue
@@ -382,12 +418,13 @@ export default {
 
         if (parent === null) {
           this.catalog = data
+          this.loading = false
         } else {
           parent.children = data
           this.getFiles(parent)
         }
 
-        this.loading = false
+
       }).catch(err => {
         if (err.response && err.response.status == 401) {
           this.$store.dispatch("logLout")
@@ -410,8 +447,8 @@ export default {
         folderId: parent.id,
         page: null,
         rows: null,
-      }, { 
-        headers: getHeader() 
+      }, {
+        headers: getHeader()
       }).then(res => {
         let data = res.data.documents
 
@@ -448,17 +485,17 @@ export default {
     getLang(lang) {
       if (lang === 0) {
         return {
-          name: "kz", 
+          name: "kz",
           value: 0
         }
       } else if (lang === 1) {
         return {
-          name: "ru", 
+          name: "ru",
           value: 1
         }
       } else {
         return {
-          name: "en", 
+          name: "en",
           value: 2
         }
       }
@@ -490,6 +527,7 @@ export default {
           creatorID: this.loginedUser.userID,
           isHidden: false,
           lang: event.lang,
+          is_view_only: event.is_view_only
         })
       } else {
         this.selectedNode.lang = event.lang
@@ -499,6 +537,31 @@ export default {
         this.selectedNode.author = event.author
         this.selectedNode.approvedBy = event.approvedBy
         this.selectedNode.approveDate = new Date(event.approveDate)
+        this.selectedNode.is_view_only = event.is_view_only
+      }
+
+    },
+    getFileIconClass(fileName) {
+
+      if (!fileName || typeof fileName !== 'string') {
+        return 'fa-solid fa-folder';
+      }
+
+      const extension = fileName.split('.').pop().toLowerCase();
+
+      switch (extension) {
+        case 'pdf':
+          return 'fa-regular fa-file-pdf pdf-icon';
+        case 'doc':
+          return 'fa-solid fa-file-word word-icon';
+        case 'docx':
+          return 'fa-solid fa-file-word word-icon';
+        case 'xls':
+          return 'fa-solid fa-file-excel excel-icon';
+        case 'xlsx':
+          return 'fa-solid fa-file-excel excel-icon';
+        default:
+          return 'fa-solid fa-file';
       }
     },
     folderUpdated(event) {
@@ -524,7 +587,9 @@ export default {
           type: Enum.FolderType.NormativeDocuments,
           parentID: this.selectedNode.id,
           ownerId: this.loginedUser.userID,
+          is_view_only: this.selectedNode.is_view_only
         })
+
       } else {
         this.selectedNode.namekz = event.namekz
         this.selectedNode.nameru = event.nameru
@@ -532,6 +597,7 @@ export default {
         this.selectedNode.code = event.code
         this.selectedNode.groups = event.groups
       }
+      this.getFolders();
     },
     deleteFolder() {
       if (!this.selectedNode || this.selectedNode.nodeType !== 'folder') {
@@ -745,12 +811,14 @@ export default {
       }
 
       for (let i = 0; i < nodes.children.length; i++) {
+
         if (nodes.children[i].key === key) {
-          nodes.children.splice(i, 1)
-          return
-        } else if (key.startsWith(nodes.children[i].key)) {
-          this.deleteNode(nodes.children[i], key)
-          return
+          nodes.children.splice(i, 1);
+          return;
+        }
+
+        if (key.startsWith(nodes.children[i].key)) {
+          this.deleteNode(nodes.children[i], key);
         }
       }
     },
@@ -764,12 +832,12 @@ export default {
       this.loading = true
 
       api.post('/downloadFile', {
-        filePath: this.selectedNode.filePath
+        filePath: this.selectedNode ? this.selectedNode.filePath : this.currentDocument.filePath,
       }, {
         headers: getHeader()
       }).then(res => {
         let link = document.createElement("a");
-        link.href = "data:application/octet-stream;base64," + res.data;
+        link.href = "data:application/octet-stream;base64," + res.data.file;
         link.setAttribute("download", this.selectedNode ? this.selectedNode.name : this.currentDocument.name);
         link.download = this.selectedNode ? this.selectedNode.name : this.currentDocument.name;
         link.click();
@@ -875,5 +943,20 @@ export default {
 }
 :deep(.p-treetable-toggler) {
   flex-shrink: 0;
+}
+
+.pdf-icon {
+  color: #ef3131;
+  font-size: 1.3em;
+}
+
+.word-icon {
+  color: #3c68c6;
+  font-size: 1.4em;
+}
+
+.excel-icon {
+  color: #149c49;
+  font-size: 1.4em;
 }
 </style>

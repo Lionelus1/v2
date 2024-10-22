@@ -19,9 +19,10 @@
           <b>{{ $t('contact.phone') }}:</b> <em>{{ candidate?.phoneNumber + '\n\n' }}</em>
         </span>
 
-        <Checkbox v-model="candidate.isResumeVerified" @change="update" :binary="true" /> Люди с особыми потребностями
+        <Checkbox v-model="candidate.isResumeVerified" @change="update" :binary="true" />
+        {{ $t('people_special_needs') }}
         <br>
-        <Checkbox v-model="candidate.hasSpecialNeeds" @change="update" :binary="true" /> Ознакомлен и подтверждаю, что данные в моем персональном резюме корректные. Даю согласие на обработку предоставленных данных.
+        <Checkbox v-model="candidate.hasSpecialNeeds" @change="update" :binary="true" /> {{ $t('hr.sp.agreement') }}
         <hr>
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.id') + ' '}}</em></b>

@@ -41,6 +41,9 @@ a {
     border-bottom: 1px solid #e9ecef;
     border-top: transparent;
 }
+.main_container{
+    padding: 20px;
+}
 
 .p-treetable .p-treetable-header {
     background: transparent;
@@ -265,4 +268,11 @@ a {
 }
 .fa-pen, .fa-pencil {
     color: #FBC02D;
+}
+.select_wp .p-dropdown, .p-chips, .select_wp .p-button {
+    width: 100%;
+}
+
+.timeline_wp_history .p-timeline-event-opposite {
+    flex:0;
 }

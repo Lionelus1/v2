@@ -82,6 +82,7 @@ export default {
     //ұйым мүшесі (қызметкер, студент, магистрант, бастық және т.б.)
     OrganizationMember: 2,
     Student: 3,
+    Graduate: 4,
   },
 
   SignRighType : {
@@ -118,6 +119,7 @@ export default {
     ReferenceSalaryRequest: 'reference_salary_request',
     ScienceAdvisorApproval: 'science_advisor_approval',
     AccountantsExecutionRequest: 'accountants_execution_request',
+    PracticeLeaderRequest: 'practice_leader_request',
   },
 
   ScienceWorkType: {
