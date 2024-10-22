@@ -171,4 +171,13 @@ export default {
   color: #805b36;
   font-size: 1.4em;
 }
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Flexible grid */
+  gap: 20px;
+  padding: 10px;
+  justify-items: center; /* Center cards in grid */
+  max-height: 100%; /* Ограничение по высоте */
+  overflow-y: auto; /* Скролл по вертикали */
+}
 </style>
