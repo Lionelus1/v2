@@ -413,7 +413,6 @@ export default {
       this.visibility[name] = true
     },
     isDisabled() {
-      console.log("zdess")
        return ((this.selectedNode == null || this.selectedNode.file !== 'file') || this.selectedNode && this.loginedUser.userID !== this.selectedNode.creatorID);
 
     },
