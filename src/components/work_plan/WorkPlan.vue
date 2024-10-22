@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
     <h3>{{ $t('workPlan.plans') }}</h3>
-    <ToolbarMenu v-if="!isStudent()" v-model:search-model="filter.searchText" :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin"
+    <ToolbarMenu v-model:search-model="filter.searchText" :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin"
                  :filtered="filter.filtered"/>
     <div class="card">
       <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"

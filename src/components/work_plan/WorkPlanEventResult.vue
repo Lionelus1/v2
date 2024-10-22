@@ -273,7 +273,7 @@
                     </div>
                   </div>
                   <div style="margin-left: -12px;"
-                       v-if="((isPlanCreator || findRole(null, 'main_administrator')) && (!isMastersPlan && !isDoctorsPlan || isAdviser))">
+                       v-if="((isMastersPlan || isDoctorsPlan) && isAdviser) || (!isMastersPlan && !isDoctorsPlan && isPlanCreator || findRole(null, 'main_administrator'))">
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check"
                             class="p-button-rounded p-button-text"
                             @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)"
@@ -550,9 +550,11 @@ export default {
       let res = false
       this.plan?.doc_info?.params.forEach((e) => {
         if (e.name === 'sci_advisor') {
+          console.log(e.value[0].userID, this.loginedUserId)
           res = e.value[0].userID === this.loginedUserId
         }
       })
+
       return res
     },
     isSummaryDepartmentUser() {
@@ -654,7 +656,7 @@ export default {
     },
     respUserExists(id) {
       if (this.isMastersPlan || this.isDoctorsPlan) {
-        return this.event?.summary_department_id === id || this.isAdviser || this.event?.creator_id
+        return this.event?.summary_department_id === id || this.event?.creator_id == id
       }
       return this.event?.user?.some(user => user.id === id)
     },
@@ -982,8 +984,7 @@ export default {
     verifyHistory(isInspected, userId, resultId) {
       let comment = "";
       comment = this.rejectComment
-
-      this.planService.verifyEventResultHistory(this.isInspected, comment, this.user_id, this.user_id, this.eventResultId).then(res => {
+      this.planService.verifyEventResultHistory(this.isInspected, comment, this.user_id, this.user_id, this.eventResultId, this.event_id).then(res => {
         if (res.data) {
           this.$toast.add({
             severity: 'success',
