@@ -380,6 +380,8 @@ export default {
         modified: "Измененный",
         socialMediaIds: 'Социальные медиа',
         viewOnlyCheckbox: 'Показать в режиме просмотра'
+        specialNeedsJobs: 'Вакансии для людей с особыми потребностями',
+        availabilityForSpecialNeeds: 'Доступно для людей с особыми потребностями'
     },
     positions: {
         menuTitle: 'Поменять позицию',
@@ -453,7 +455,10 @@ export default {
         },
         orgEmployees: "Сотрудники {org}",
         domesticPartners: 'Отечественные партнеры',
-        foreignPartners: 'Зарубежные партнеры'
+        foreignPartners: 'Зарубежные партнеры',
+        companyCategory: 'Категория предприятия',
+        organizationIndustry: 'Сфера деятельности организации',
+        otherParameters: 'Другие параметры',
     },
     doctemplate: {
         title: "Создание шаблона документа",
@@ -727,6 +732,9 @@ export default {
         toastMsg: "Файл загружен",
         fileRemoved: "Файл удален",
         dragMsg: "Перетащите файлы сюда, чтобы загрузить их",
+        fileDescription: "Описание файла",
+        hintEnterDescription: "Введите описание файла (необязательно)",
+        noDescription: "Нет описания",
         search: "Поиск",
         noData: "Нет данных",
         loading: "Загрузка...",
@@ -915,7 +923,7 @@ export default {
         dataAndTime: "Дата и время проведения: {fn}",
         eventFormat: "формат проведения",
         eventFormatView: "Формат проведения: {fn}",
-        participantsCategory: "категория участников",
+        participantsCategory: "Категория участников",
         participantsCategoryView: "Категория участников: {fn}",
         meetingLink: "ссылка видеоконференции",
         meetingLinkView: "Ссылка видеоконференции:",
@@ -1504,6 +1512,8 @@ export default {
         filter: "Фильтр",
         years: "Годы",
         globalFilter: "Глобальный фильтр",
+        search: "Поиск",
+        show: "Показывать",
         tooltip: {
             home: "Главный список",
             previous: "Назад",
@@ -1516,6 +1526,21 @@ export default {
             document: "Информация о документе",
             revision: "Информация о доработке",
             delete: "Удалить документ",
+        },
+        folder: {
+            add: "Добавить папку",
+            edit: "Редактировать папку",
+            delete: "Удалить папку",
+            hide: "Скрыть папку",
+            show: "Показать папку",
+        },
+        file: {
+            add: "Добавить файл",
+            edit: "Редактировать файл",
+            delete: "Удалить файл",
+            hide: "Скрыть файл",
+            show: "Показать файл",
+            download: "Скачать файл",
         },
         columns: {
             faculties: "Факультеты",

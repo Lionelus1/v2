@@ -379,7 +379,9 @@ export default {
         removed: "Алынды",
         modified: "Өзгертілді",
         socialMediaIds: 'Әлеуметтік медиа',
-        viewOnlyCheckbox: 'Көру режимінде көрсету'
+        viewOnlyCheckbox: 'Көру режимінде көрсету',
+        specialNeedsJobs: 'Ерекше қажеттіліктері бар адамдарға арналған жұмыс орындары',
+        availabilityForSpecialNeeds: 'Ерекше қажеттіліктері бар адамдар үшін қол жетімді'
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -453,7 +455,10 @@ export default {
         },
         orgEmployees: "{org} қызметкерлері",
         domesticPartners: 'Отандас серіктестер',
-        foreignPartners: 'Шетел серіктестер'
+        foreignPartners: 'Шетел серіктестер',
+        companyCategory: 'Кәсіпорын санаты"',
+        organizationIndustry: 'Ұйымның қызмет саласы',
+        otherParameters: 'Басқа параметрлер',
     },
     doctemplate: {
         title: "Құжат үлгісін жасау",
@@ -726,6 +731,9 @@ export default {
         toastMsg: "Файл жүктелді",
         fileRemoved: "Файл өшірілді",
         dragMsg: "Жүктеу үшін файлдарды осында сүйреңіз",
+        fileDescription: "Файл сипаттамасы",
+        hintEnterDescription: "Файл сипаттамасын енгізіңіз (міндетті емес)",
+        noDescription: "Сипаттама жоқ",
         search: "Іздеу",
         noData: "Ақпарат жоқ",
         loading: "Күтіңіз...",
@@ -921,7 +929,7 @@ export default {
         dataAndTime: "Күні мен уақыты: {fn}",
         eventFormat: "өткізу форматы",
         eventFormatView: "Өткізу форматы: {fn}",
-        participantsCategory: "қатысушылардың санаты",
+        participantsCategory: "Қатысушылардың санаты",
         participantsCategoryView: "Қатысушылардың санаты: {fn}",
         meetingLink: "бейнеконференция сілтемесі",
         meetingLinkView: "Бейнеконференция сілтемесі:",
@@ -1512,6 +1520,8 @@ export default {
         filter: "Сүзгі",
         years: "Жылдар",
         globalFilter: "Жаһандық сүзгі",
+        search: "Іздеу",
+        show: "Көру",
         tooltip: {
             home: "Бастапқы тізім",
             previous: "Артқа",
@@ -1524,6 +1534,21 @@ export default {
             document: "Құжат ақпараты",
             revision: "Түзету ақпараты",
             delete: "Құжатты өшіру",
+        },
+        folder: {
+            add: "Қалта қосу",
+            edit: "Қалтаны өңдеу",
+            delete: "Қалтаны жою",
+            hide: "Қалтаны жасыру",
+            show: "Қалтаны көрсету",
+        },
+        file: {
+            add: "Файл қосу",
+            edit: "Файлды өңдеу",
+            delete: "Файлды жою",
+            hide: "Файлды жасыру",
+            show: "Файлды көрсету",
+            download: "Файлды жүктеу",
         },
         columns: {
             faculties: "Факультеттер",

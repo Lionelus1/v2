@@ -386,7 +386,9 @@ export default {
         removed: "Removed",
         modified: "Modified",
         socialMediaIds: 'Social Media',
-        viewOnlyCheckbox: 'Show in viewing mode'
+        viewOnlyCheckbox: 'Show in viewing mode',
+        specialNeedsJobs: 'Jobs for People with Special Needs',
+        availabilityForSpecialNeeds: 'Available for People with Special Needs'
     },
     positions: {
         menuTitle: "Change position",
@@ -461,7 +463,10 @@ export default {
         },
         orgEmployees: "{org} employees",
         domesticPartners: 'Domestic Partners',
-        foreignPartners: 'Foreign Partners'
+        foreignPartners: 'Foreign Partners',
+        companyCategory: 'Категория предприятия',
+        organizationIndustry: 'Organization Industry',
+        otherParameters: 'Other Parameters',
     },
     doctemplate: {
         title: "Document template creation",
@@ -735,6 +740,9 @@ export default {
         toastMsg: "File Uploaded",
         fileRemoved: "File removed",
         dragMsg: "Drag and drop files to here to upload",
+        fileDescription: "File Description",
+        hintEnterDescription: "Enter a description of the file (optional)",
+        noDescription: "No Description",
         search: "Search",
         noData: "No data",
         loading: "Loading...",
@@ -945,7 +953,7 @@ export default {
         dataAndTime: "Date and time: {fn}",
         eventFormat: "format",
         eventFormatView: "Format: {fn}",
-        participantsCategory: "participant category",
+        participantsCategory: "Participant category",
         participantsCategoryView: "Participant category: {fn}",
         meetingLink: "link to video conference",
         meetingLinkView: "Video conference link:",
@@ -1549,6 +1557,8 @@ export default {
         filter: "Filter",
         years: "Years",
         globalFilter: "Global filter",
+        search: "Search",
+        show: "Show",
         tooltip: {
             home: "Main list",
             previous: "Back",
@@ -1561,6 +1571,21 @@ export default {
             document: "Document information",
             revision: "Revision information",
             delete: "Delete document",
+        },
+        folder: {
+            add: "Add folder",
+            edit: "Edit folder",
+            delete: "Delete folder",
+            hide: "Hide folder",
+            show: "Show folder",
+        },
+        file: {
+            add: "Add file",
+            edit: "Edit file",
+            delete: "Delete file",
+            hide: "Hide file",
+            show: "Show file",
+            download: "download file",
         },
         columns: {
             faculties: "Faculties",

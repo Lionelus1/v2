@@ -111,8 +111,8 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
-                path:'/finance',
-                name:'Finance',
+                path: '/finance',
+                name: 'Finance',
                 component: load('finance/Finance'),
                 beforeEnter: ifAuthenticated,
             },
@@ -326,14 +326,16 @@ const routes = [
                 path: '/contragent/organizations',
                 name: 'OrganizationList',
                 component: load('contragent/v2/OrganizationList'),
-                beforeEnter: ifAuthenticated,
+                beforeEnter: ifUserRoles,
+                meta: { roles: ['student', 'personal'] }
             },
             {
                 path: '/contragent/organization/:id?',
                 name: 'OrganizationPage',
                 component: load('contragent/v2/OrganizationPage'),
                 props: true,
-                beforeEnter: ifAuthenticated,
+                beforeEnter: ifUserRoles,
+                meta: { roles: ['student', 'personal'] }
             },
             {
                 path: '/user/cv/:uuid',
@@ -345,7 +347,8 @@ const routes = [
                 path: '/contragent/persons/:type',
                 name: 'PersonsList',
                 component: load('contragent/v2/PersonsList'),
-                beforeEnter: ifAuthenticated,
+                beforeEnter: ifUserRoles,
+                meta: { roles: ['personal'] }
             },
             {
                 path: '/hdfs/hdfsmain',
@@ -704,13 +707,13 @@ const routes = [
             },
 
             {
-                path: '/helpdesk/',
+                path: '/helpdesk/v2',
                 name: 'HelpDeskComponent',
                 component: load('helpDesk/HelpDeskComponent'),
                 beforeEnter: ifAuthenticated,
                 children: [
                     {
-                        path: 'deskJournal',
+                        path: '',
                         name: 'DeskJournal',
                         component: load('helpDesk/DeskJournal'),
                         beforeEnter: ifAuthenticated,
@@ -742,7 +745,7 @@ const routes = [
                 ]
             },
             {
-                path: '/helpdesk/v2',
+                path: '/helpdesk',
                 name: 'HelpDeskComponent2',
                 component: load('helpDesk/v2/HelpDeskComponent'),
                 beforeEnter: ifAuthenticated,

@@ -62,6 +62,14 @@
                 v-if="validation.organization"
             >{{ $t("common.requiredField") }}</small>
           </div>
+          <div class="field-checkbox" style="margin-left: 15px">
+            <Checkbox id="binary" v-model="value.isAccessibleVacancies" :binary="true"/>
+            <label for="binary" style="font-size: 15px; text-align: justify">
+              <b>
+                Данная вакансия подходит для людей с особыми потребностями
+              </b>
+            </label>
+          </div>
         </div>
         <TabView>
           <TabPanel header="Қазақша">
@@ -766,7 +774,8 @@ export default {
         languageLevelEn: false,
         certificateRequirementsEn: false,
         personalQualitiesEn: false,
-        workConditionEn: false
+        workConditionEn: false,
+        accessibleVacancies: false,
       },
       menu: [
         {

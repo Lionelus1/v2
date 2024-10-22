@@ -9,7 +9,7 @@
   <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
       <BlockUI v-if="haveAccess && selectedDirection
-      //&& selectedDirection.code !== 'course_application'
+        //&& selectedDirection.code !== 'course_application'
       " :blocked="loading" class="card">
         <div class="" style="padding: 10px">
           <div style="margin-bottom: 10px; width: 100px" v-if="status != undefined" :class="'mb-10 customer-badge status-' + (status ?? 'created')">
@@ -301,6 +301,8 @@ const activeTab = ref(0);
 // });
 const isAdmin = ref(false);
 const saveDoc = async () => {
+
+
   // isDataValid();
   var isValid = true;
   for (
@@ -311,14 +313,14 @@ const saveDoc = async () => {
     if (camundaServiceInstance.currentSchema.components[i].properties && 'selects' in camundaServiceInstance.currentSchema.components[i].properties && !("key" in camundaServiceInstance.currentSchema.components[i])) {
       camundaServiceInstance.currentSchema.components[i].key = camundaServiceInstance.currentSchema.components[i].properties.selects
     }
-    if (camundaServiceInstance.currentSchema.components[i].properties && `validate` in camundaServiceInstance.currentSchema.components[i].properties && camundaServiceInstance.currentSchema.components[i].properties.validate) {
-      camundaServiceInstance.currentSchema.components[i].validate = { required: true }
-    }
+    // if (camundaServiceInstance.currentSchema.components[i].properties && `validate` in camundaServiceInstance.currentSchema.components[i].properties && camundaServiceInstance.currentSchema.components[i].properties.validate) {
+    //   camundaServiceInstance.currentSchema.components[i].validate = { required: true }
+    // }
     // if(`validate` in camundaServiceInstance.currentSchema.components[i])
     if (
       (`validate` in camundaServiceInstance.currentSchema.components[i] &&
         // camundaServiceInstance.currentSchema.components[i].validate &&
-        camundaServiceInstance.currentSchema.components[i].validate &&
+        camundaServiceInstance.currentSchema.components[i].validate.required &&
         !camundaServiceInstance.currentSchema.components[i].value[
         camundaServiceInstance.currentSchema.components[i].key
         ]) ||
@@ -332,13 +334,15 @@ const saveDoc = async () => {
         ))
     ) {
       // const regex = '/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/';
-      camundaServiceInstance.currentSchema.components[i].incorrect.value = true;
+
+      camundaServiceInstance.currentSchema.components[i].incorrect = { value: true };
       isValid = false;
       return;
     } else {
-      camundaServiceInstance.currentSchema.components[
-        i
-      ].incorrect.value = false;
+      camundaServiceInstance.currentSchema.components[i].incorrect = { value: true };
+      // camundaServiceInstance.currentSchema.components[
+      //   i
+      // ].incorrect.value = false;
     }
   }
 
@@ -480,8 +484,8 @@ const validate = (pattern, str) => {
   if (!pattern && str) {
     return true;
   }
-  console.log("str:", str);
-  console.log(pattern);
+
+
 
 
 
@@ -780,7 +784,7 @@ onMounted(async () => {
   } else {
     status.value = ticketInfo.value.ticket[0].doc.docHistory.stateEn;
     ticket.value = ticketInfo.value.ticket[0].doc;
-    console.log("ticket:", ticket.value);
+
 
   }
   if (status.value == "created") isDocSaved.value = true;
@@ -848,16 +852,84 @@ const initForm = async (
   components.value = camundaServiceInstance.currentSchema.components;
   if (!camundaServiceInstance.isEdit) return;
   const variables = await camundaServiceInstance.getProcessVariable();
+
+
   if (variables == undefined) return;
   for (var i = 0; i < components.value.length; i++) {
-    if (components.value[i].type == "datetime") {
-      components.value[i].value[components.value[i].key] = new Date(variables[components.value[i].key])
+    if (components.value[i].type == "checklist") {
+
+
+      components.value[i].values = variables[components.value[i].key];
+      components.value[i].value = variables[components.value[i].key];
       continue;
+    }
+    if (components.value[i].value == null) {
+      components.value[i].value = { [components.value[i].key]: null };
+    }
+    if (variables[components.value[i].key] == null) {
+      components.value[i].value[components.value[i].key] = null;
+      continue
+    }
+    if (components.value[i].type == "datetime") {
+      var length = 1;
+      if (variables[components.value[i].key] && Array.isArray(variables[components.value[i].key]) && variables[components.value[i].key].length > length) {
+        length = variables[components.value[i].key].length;
+        for (var d = 0; d < length; d++) {
+          const dateObj = isValidDateFormat(variables[components.value[i].key][d]);
+          if (!Array.isArray(components.value[i].value[components.value[i].key])) {
+            components.value[i].value[components.value[i].key] = []
+          }
+          if (dateObj) {
+            components.value[i].value[components.value[i].key].push(dateObj);
+            continue;
+          }
+          components.value[i].value[components.value[i].key].push(new Date(variables[components.value[i].key]))
+          continue;
+        }
+      } else {
+        const dateObj = isValidDateFormat(variables[components.value[i].key]);
+
+        if (dateObj) {
+          components.value[i].value[components.value[i].key] = dateObj;
+          continue;
+        }
+        components.value[i].value[components.value[i].key] = new Date(variables[components.value[i].key])
+        continue;
+      }
     }
     components.value[i].value[components.value[i].key] =
       variables[components.value[i].key];
   }
+  components.value["initialized"] = true;
+
+
+
 };
+const isValidDateFormat = (dateString) => {
+
+
+  // Regular expression to check if the string is in YYYY-MM-DD format
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+  if (regex.test(dateString)) {
+    // Create a Date object
+    const date = new Date(dateString);
+
+    // Check if the date is valid
+    if (!isNaN(date.getTime())) {
+
+
+      return date;
+    } else {
+
+      return null;
+    }
+  } else {
+
+    return null;
+  }
+}
+
 const tabChanged = () => {
   if (activeTab.value === 1) {
     // if (

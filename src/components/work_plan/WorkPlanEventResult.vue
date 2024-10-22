@@ -1,4 +1,7 @@
 <template>
+  <div v-if="!plan || resultData === ''" class="spinner-container">
+    <ProgressSpinner class="progress-spinner" style="width: 50px; height: 50px"/>
+  </div>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <div class="col-12" v-if="plan && event">
@@ -166,7 +169,7 @@
                       </div>
                     </div>
                   </Divider>
-                  <Inplace v-if="(item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
+                  <Inplace v-if="(item.result_text && item.result_text[0].user && (loginedUserId === item.result_text[0].user.userID) && event &&
                     (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)) || (item.result_text && isPlanCreator && event &&
                     (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 5) && isSciencePlan)" :active="item.isActive" @open="openInplace(item)">
                     <template #display>
@@ -497,7 +500,7 @@ export default {
       isDisabled: true,
       active: null,
       menu: null,
-      resultData: null,
+      resultData: '',
       files: [],
       newResult: null,
       fact: null,
@@ -666,8 +669,9 @@ export default {
     if (!this.event_id) {
       this.event_id = this.$route.params.id;
     }
+    this.loading = true
     this.getEvent();
-
+    this.loading = false
   },
 
   methods: {
@@ -702,7 +706,7 @@ export default {
       const currentMonth = currentDate.getMonth() + 1;
       const currentQuarter = Math.ceil(currentMonth / 3);
       const currentDay = currentDate.getDate();
-      if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter()) {
+      if (currentDay <= 20 && currentMonth === this.getFirstMonthOfQuarter()) {
         // Agymdagy ai agymdagy toqsannyng birinshi aiy bolsa aldyngy toqsanga natije toltyra alady
         return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
       } else {
@@ -869,8 +873,8 @@ export default {
           },
         },
         {
-          label: this.$t("common.save"),
-          icon: "pi pi-fw pi-save",
+          label: this.$t("common.send"),
+          icon: "fa-regular fa-paper-plane",
           disabled: this.isDisabled,
           command: () => {
             this.saveResult();
@@ -1199,7 +1203,7 @@ export default {
       fd.append("result_id", item.event_result_id)
       fd.append("result_text_id", item.result_text[0].id)
       fd.append("work_plan_event_id", item.work_plan_event_id)
-      fd.append("quarter", this.selectedQuarter);
+      fd.append("quarter", item.result_text[0].quarter);
 
 
       if (this.isFactChanged)
@@ -1579,4 +1583,10 @@ p.value {
   margin-left: 1rem; /* Space between individual input group addons */
 }
 
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full screen height */
+}
 </style>

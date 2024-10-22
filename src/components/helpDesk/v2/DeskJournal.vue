@@ -15,9 +15,10 @@
             <div class="field">
                 <label>{{ t("helpDesk.application.categoryApplication") }}</label>
                 <Dropdown v-model="selectedDirection" :options="directions" :optionLabel="ALIAS[locale]" :placeholder="t('common.select')" />
-                <div style="margin-top: 15px" v-if="selectedDirection?.code === 'course_application'">
+                <div style="margin-top: 15px" v-if="allowedPositions.includes(selectedDirection?.code)">
                     <label>{{ t("helpDesk.application.requestReason") }}</label>
-                    <Dropdown style="margin-top: 5px" v-model="selectedPosition" :options="position" :optionLabel="ALIAS[locale]" :placeholder="t('common.select')" />
+                    <Dropdown style="margin-top: 5px" v-model="selectedPosition" :options="getPositionsOptions(selectedDirection?.code)" :optionLabel="ALIAS[locale]"
+                        :placeholder="t('common.select')" />
                 </div>
             </div>
             <template #footer>
@@ -200,6 +201,51 @@ const toggle = (ref, event) => {
 
     filterv2.value.toggle(event);
 };
+const getPositionsOptions = (code) => {
+    if (code == 'book_audiance') {
+        return [
+            {
+                name_kz: "Әкімшілік департаментінің аудиториялары",
+                name_en: "Audiences of the Administrative Department",
+                name_ru: "Аудитории административного департамента",
+                code: "book_audiance",
+            }
+        ];
+    }
+    return [
+        {
+            name_kz: "Қосымша білім беру бағдарламасы",
+            name_en: "Additional educational program",
+            name_ru: "Дополнительная образовательная программа",
+            code: "additional",
+        },
+        {
+            name_kz: "Күміс университеті",
+            name_en: "Silver University",
+            name_ru: "Серебряный университет",
+            code: "sliver",
+        },
+        {
+            name_kz: "Пререквизиттерді игеру",
+            name_en: "Mastering prerequisites",
+            name_ru: "Освоение пререквизитов",
+            code: "mastering",
+        },
+        {
+            name_kz: "Академиялық қарызды жою",
+            name_en: "Liquidation of academic debt",
+            name_ru: "Ликвидация академической задолженности",
+            code: "liquidation",
+        },
+        {
+            name_kz: "Аударым ұпайларын арттыру (GPA)",
+            name_en: "Increase in transferable points (GPA)",
+            name_ru: "Повышение переводных баллов (GPA)",
+            code: "increase",
+        },
+    ]
+}
+const allowedPositions = ["book_audiance", "course_application"];
 const statuses = ref([
     Enum.StatusesArray.StatusCreated,
     Enum.StatusesArray.StatusInapproval,
@@ -255,39 +301,6 @@ const showMessage = (severity, detail, life) => {
     });
 };
 const currentUser = ref(JSON.parse(localStorage.getItem("loginedUser")));
-
-const position = ref([
-    {
-        name_kz: "Қосымша білім беру бағдарламасы",
-        name_en: "Additional educational program",
-        name_ru: "Дополнительная образовательная программа",
-        code: "additional",
-    },
-    {
-        name_kz: "Күміс университеті",
-        name_en: "Silver University",
-        name_ru: "Серебряный университет",
-        code: "sliver",
-    },
-    {
-        name_kz: "Пререквизиттерді игеру",
-        name_en: "Mastering prerequisites",
-        name_ru: "Освоение пререквизитов",
-        code: "mastering",
-    },
-    {
-        name_kz: "Академиялық қарызды жою",
-        name_en: "Liquidation of academic debt",
-        name_ru: "Ликвидация академической задолженности",
-        code: "liquidation",
-    },
-    {
-        name_kz: "Аударым ұпайларын арттыру (GPA)",
-        name_en: "Increase in transferable points (GPA)",
-        name_ru: "Повышение переводных баллов (GPA)",
-        code: "increase",
-    },
-]);
 
 const docStatus = ref([
     {

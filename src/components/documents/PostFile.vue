@@ -106,9 +106,39 @@
         </div>
         <div v-if="showUploader" class="field">
           <label>{{$t('common.doc')}}</label>
-          <FileUpload  :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false" fileLimit="1" :accept="accept">
+          <FileUpload
+              :showUploadButton="false"
+              :showCancelButton="false"
+              ref="ufile"
+              :multiple="false"
+              fileLimit="1"
+              accept=".doc,.docx,.pdf,.xls,.xlsx,.zip"
+              @upload="onUpload"
+              @select="onFileSelect"
+          >
             <template #empty>
               <p>{{$t('hdfs.dragMsg')}}</p>
+            </template>
+
+            <template #content>
+              <div class="upload-content">
+                <div v-if="selectedFile" class="selected-file">
+                  <p>{{ selectedFile.name }}</p>
+                  <button @click="removeFile" class="remove-file-button">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+
+                <div class="field">
+                  <label for="fileDescription">{{$t('hdfs.fileDescription')}}</label>
+                  <textarea
+                      id="fileDescription"
+                      v-model="file.fileDescription"
+                      :placeholder="$t('hdfs.hintEnterDescription')"
+                      rows="3"
+                  ></textarea>
+                </div>
+              </div>
             </template>
           </FileUpload>
           <small class="p-error" v-if="validation.file">{{ $t("hdfs.chooseFile") }}</small>
@@ -141,6 +171,7 @@ export default {
     data() {
       return {
         file: this.modelValue,
+        selectedFile: null,
         catalogs: null,
         catalog: null,
         state: this.visible,
@@ -148,6 +179,7 @@ export default {
         uploading: false,
         imageUrl: smartEnuApi + fileRoute,
         showUploader: this.fileUpload,
+        uploadedFiles: [],
         languages: [{name:"kz", value: 0}, {name:"ru", value:1},  {name:"en", value:2}],
         validation: {
             namekz: false,
@@ -177,9 +209,6 @@ export default {
       showCatalog: Boolean,
       approveInfo: {
         default: false
-      },
-      accept: {
-        default: ".doc,.docx,.pdf"
       },
       docType: null
     },
@@ -229,7 +258,16 @@ export default {
 
   },
   methods: {
-    
+    onFileSelect(event) {
+      if (event.files.length > 0) {
+        this.selectedFile = event.files[0];
+      }
+    },
+    removeFile() {
+      this.selectedFile = null;
+      this.file.fileDescription = '';
+      this.$refs.ufile.clear();
+    },
     levelValidate(){
       let docType = parseInt(this.docType)
       if (docType === this.attestationDocReportType){
@@ -315,6 +353,15 @@ export default {
         //var fcount = this.file.id !== null ? 0 : this.$refs.ufile.files.length
           fcount = this.$refs.ufile.files.length
         }
+      this.file.params = [];
+      if (this.file.fileDescription) {
+          let param = {
+            value: this.file.fileDescription,
+            name: 'FileDescription',
+            description: 'FileDescription'
+          };
+          this.file.params.push(param);
+      }
         fd.append('info', JSON.stringify({directory: this.directory, count: fcount, folderID: locFolderId, fileInfo: this.file}));
         api.post("/doc/updateFile", fd, {
           headers: getFileHeader()
@@ -376,3 +423,27 @@ export default {
   },
 }
 </script>
+
+<style>
+
+.selected-file {
+  margin-bottom: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.remove-file-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #d9534f; /* Красный цвет для иконки */
+  margin-left: 10px; /* Отступ между текстом и иконкой */
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+</style>
