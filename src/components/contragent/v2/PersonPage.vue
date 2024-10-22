@@ -201,7 +201,7 @@ export default {
             this.openResumeV2();
           },
           visible: () => {
-            if (this.customType === 'viewUser' && findRole(null, 'main_administrator') && this.showResume){
+            if (this.customType === 'viewUser' && findRole(null, 'personal') && this.showResume){
               return true;
             }
             return false;
