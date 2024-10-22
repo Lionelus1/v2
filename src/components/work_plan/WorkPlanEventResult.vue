@@ -987,8 +987,7 @@ export default {
     verifyHistory(isInspected, userId, resultId) {
       let comment = "";
       comment = this.rejectComment
-
-      this.planService.verifyEventResultHistory(this.isInspected, comment, this.user_id, this.user_id, this.eventResultId).then(res => {
+      this.planService.verifyEventResultHistory(this.isInspected, comment, this.user_id, this.user_id, this.eventResultId, this.event_id).then(res => {
         if (res.data) {
           this.$toast.add({
             severity: 'success',
