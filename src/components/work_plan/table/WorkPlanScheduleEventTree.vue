@@ -49,7 +49,7 @@
           </TreeTable>
         </div>
       </TabPanel>
-      <TabPanel :header="$t('common.members')" v-if="isPlanCreator">
+      <TabPanel :header="$t('common.members')" v-if="isPlanCreator && !findRole(null, 'student')">
         <div class="card" v-if="members">
           <div class="flex justify-end">
             <div style="margin-bottom: 10px; width: 100%;"/>
@@ -99,6 +99,7 @@ import moment from "moment";
 import ActionButton from "@/components/ActionButton.vue";
 import {computed, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
+import {findRole} from "../../../config/config";
 
 const router = useRouter()
 const route = useRoute()

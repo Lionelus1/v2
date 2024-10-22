@@ -71,7 +71,7 @@
           <DocSignaturesInfo :docIdParam="dReports[1].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 1)"></DocSignaturesInfo>
         </Sidebar>
 
-        <ToolbarMenu :data="toolbarMenus"/>
+        <ToolbarMenu :data="toolbarMenus" v-if="dReports && dReports[1].doc_info && (dReports[1].doc_info.docHistory.stateId === 1 || dReports[1].doc_info.docHistory.stateId === 5)"/>
 
         <div class="card" v-if="dReports">
 <!--          {{ tbDoc.params.filter(item => item.name.includes("content")) }}-->
@@ -82,7 +82,7 @@
               </template>
             </Column>
             <Column style="width: 80%" field="txt" :header="$t('workPlan.textCS')"></Column>
-            <Column v-if="findRole(null, 'student')" style="width: 10%; text-align: center;" field="actions" header="" >
+            <Column v-if="findRole(null, 'student') && dReports && dReports[1].doc_info && (dReports[1].doc_info.docHistory.stateId === 1 || dReports[1].doc_info.docHistory.stateId === 5)" style="width: 10%; text-align: center;" field="actions" header="" >
               <template #body="{ data: node, index }">
                 <ActionButton :items="actionMenus" :show-label="true" @toggle="actionsToggle(node, index)"/>
               </template>
@@ -108,10 +108,11 @@
         <Sidebar v-model:visible="showReportDocInfo2" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal2">
           <DocSignaturesInfo :docIdParam="dReports[2].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 2)"></DocSignaturesInfo>
         </Sidebar>
-        <div class="field" v-if="!findRole(null, 'student')">
+        <div class="field" v-if="findRole(null, 'student')">
           <TinyEditor v-model="contrConcModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
+          <ToolbarMenu :data="toolbarMenus"/>
         </div>
-        <ToolbarMenu v-if="!findRole(null, 'student')" :data="toolbarMenus"/>
+
       </TabPanel>
       <!--Заключение руководителя-->
       <TabPanel :header="$t('workPlan.conclusionHeadDepartment')">
@@ -130,10 +131,11 @@
         <Sidebar v-model:visible="showReportDocInfo3" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal3">
           <DocSignaturesInfo :docIdParam="dReports[3].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 3)"></DocSignaturesInfo>
         </Sidebar>
-        <div class="field" v-if="!findRole(null, 'student')">
+        <div class="field" v-if="!findRole(null, 'student') && visibleSendToApproveHeadConc()">
           <TinyEditor v-model="headConcModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
+          <ToolbarMenu :data="toolbarMenus"/>
         </div>
-        <ToolbarMenu v-if="!findRole(null, 'student')" :data="toolbarMenus"/>
+
       </TabPanel>
       <!--Оценка практики-->
       <TabPanel :header="$t('workPlan.practiceAssessment')">
@@ -153,9 +155,9 @@
           <DocSignaturesInfo :docIdParam="dReports[4].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 4)"></DocSignaturesInfo>
         </Sidebar>
 
-        <div class="field" v-if="!findRole(null, 'student')">
+        <div class="field" v-if="!findRole(null, 'student') && visibleSendToApproveAssign()">
           <TinyEditor v-model="assignModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
-          <ToolbarMenu :data="toolbarMenus"  v-if="loginedUser && (dReports && dReports[4].doc_info && (dReports[4].doc_info.docHistory.stateId === 1 || dReports[4].doc_info.docHistory.stateId === 4))"/>
+          <ToolbarMenu :data="toolbarMenus"/>
         </div>
       </TabPanel>
     </TabView>
@@ -407,6 +409,7 @@ const createTechSec = () => {
   closeDialog();
 }
 
+//заключение контрагента тек докты курган адам гана жаза алады
 const saveContrConc = () => {
   contrConcLoading.value = true;
   contrConcDoc.value.params?.forEach((param) => {
