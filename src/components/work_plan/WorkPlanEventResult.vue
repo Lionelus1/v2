@@ -50,7 +50,7 @@
             </div>
           </div>
 
-          <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
+          <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5 && !isMastersPlan && !isDoctorsPlan">
             <Menubar :model="verifyMenu" :key="active"
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
@@ -894,6 +894,7 @@ export default {
           this.isBlockUI = false;
         }
         this.files = [];
+        this.isDisabled = true
         this.submitted = false
         this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
       }).catch(error => {
