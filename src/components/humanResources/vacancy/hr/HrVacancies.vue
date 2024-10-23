@@ -196,7 +196,7 @@
 
     <template #footer>
       <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-        <div style="display: flex; align-items: center;">
+        <div style="display: flex; align-items: center;" v-if="vacancy.isAccessibleVacancies">
           <i class="fa-solid fa-wheelchair" style="margin-right: 8px;"></i>
           <span>{{ $t('common.availabilityForSpecialNeeds') }}</span>
         </div>
@@ -768,7 +768,7 @@ export default {
     },
     clickRightBtn(){
       this.accessible = !this.accessible
-      console.log('ddddddddd')
+
       this.getVacancies()
     }
   },
