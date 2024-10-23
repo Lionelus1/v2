@@ -284,7 +284,12 @@ export default {
       }
 
       // Выполняем проверку если студент и согласованный ли план
-      if (this.isStudent() && code !== "approved") {
+      if (this.isStudent() && code !== "approved" &&
+        (
+            data.plan &&
+            data.plan.plan_type &&
+            data.plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule
+        )) {
         // Обработка ошибки planCheckApprove
         this.$toast.add({
           severity: "error",
