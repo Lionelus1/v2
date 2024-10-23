@@ -379,7 +379,9 @@ export default {
         removed: "Алынды",
         modified: "Өзгертілді",
         socialMediaIds: 'Әлеуметтік медиа',
-        viewOnlyCheckbox: 'Көру режимінде көрсету'
+        viewOnlyCheckbox: 'Көру режимінде көрсету',
+        specialNeedsJobs: 'Ерекше қажеттіліктері бар адамдарға арналған жұмыс орындары',
+        availabilityForSpecialNeeds: 'Ерекше қажеттіліктері бар адамдар үшін қол жетімді'
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -453,7 +455,10 @@ export default {
         },
         orgEmployees: "{org} қызметкерлері",
         domesticPartners: 'Отандас серіктестер',
-        foreignPartners: 'Шетел серіктестер'
+        foreignPartners: 'Шетел серіктестер',
+        companyCategory: 'Кәсіпорын санаты"',
+        organizationIndustry: 'Ұйымның қызмет саласы',
+        otherParameters: 'Басқа параметрлер',
     },
     doctemplate: {
         title: "Құжат үлгісін жасау",

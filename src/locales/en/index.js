@@ -386,7 +386,9 @@ export default {
         removed: "Removed",
         modified: "Modified",
         socialMediaIds: 'Social Media',
-        viewOnlyCheckbox: 'Show in viewing mode'
+        viewOnlyCheckbox: 'Show in viewing mode',
+        specialNeedsJobs: 'Jobs for People with Special Needs',
+        availabilityForSpecialNeeds: 'Available for People with Special Needs'
     },
     positions: {
         menuTitle: "Change position",
@@ -461,7 +463,10 @@ export default {
         },
         orgEmployees: "{org} employees",
         domesticPartners: 'Domestic Partners',
-        foreignPartners: 'Foreign Partners'
+        foreignPartners: 'Foreign Partners',
+        companyCategory: 'Категория предприятия',
+        organizationIndustry: 'Organization Industry',
+        otherParameters: 'Other Parameters',
     },
     doctemplate: {
         title: "Document template creation",

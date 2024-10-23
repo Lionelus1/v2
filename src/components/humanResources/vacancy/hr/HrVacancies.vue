@@ -1,7 +1,7 @@
 <template>
   <TitleBlock :title="$t('hr.vacancies')" />
 
-  <ToolbarMenu @search="getVacancies" :search="true"/>
+  <ToolbarMenu :data="menu" @search="getVacancies" :search="true" @rightBtn="clickRightBtn($event)" :rightBtn="true" />
 
   <div class="card">
     <DataTable :lazy="true"
@@ -195,12 +195,19 @@
     </Card>
 
     <template #footer>
-      <Button
-          v-bind:label="$t('common.close')"
-          icon="pi pi-times"
-          class="p-button p-component p-button-primary"
-          @click="visible.view = false"
-      />
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div style="display: flex; align-items: center;" v-if="vacancy.isAccessibleVacancies">
+          <i class="fa-solid fa-wheelchair" style="margin-right: 8px;"></i>
+          <span>{{ $t('common.availabilityForSpecialNeeds') }}</span>
+        </div>
+
+        <Button
+            v-bind:label="$t('common.close')"
+            icon="pi pi-times"
+            class="p-button p-component p-button-primary"
+            @click="visible.view = false"
+        />
+      </div>
     </template>
 
   </Dialog>
@@ -457,6 +464,7 @@ export default {
       resumeFile: null,
       fileBlob: null,
       loading: false,
+      accessible: false,
     }
   },
   methods: {
@@ -588,6 +596,7 @@ export default {
       this.loading = true
       this.lazyParams.countMode = null;
       this.lazyParams.searchText = data;
+      this.lazyParams.isAccessibleVacancies = this.accessible
       api.post("/vacancy/public", this.lazyParams, {headers: getHeader()}).then((response) => {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
@@ -756,6 +765,11 @@ export default {
       this.validation.ml = !this.file || this.file === ""
       this.validation.resumeData = this.signWay === 0 ? (!this.signature || this.signature === "") : (!this.resumeFile || this.resumeFile === "")
       return (!this.validation.source && !this.validation.ml && !this.validation.resumeData)
+    },
+    clickRightBtn(){
+      this.accessible = !this.accessible
+
+      this.getVacancies()
     }
   },
   created() {

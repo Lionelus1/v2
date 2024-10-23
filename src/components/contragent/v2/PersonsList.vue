@@ -194,7 +194,7 @@ export default {
       {
         label: this.$t("contragent.menu.select"),
         icon: "fa-regular fa-square-check",
-        disabled: () => !this.currentPerson,
+        disabled: !this.currentPerson,
         visible: this.sidebar,
         command: () => { this.$emit('personSelected', this.currentPerson); }
       },

@@ -386,11 +386,14 @@ export default {
           fcount = this.$refs.ufile.files.length
         }
       this.file.params = [];
-      let param = {
-        value: this.file.fileDescription,
-        name: 'FileDescription'
-      };
-      this.file.params.push(param);
+      if (this.file.fileDescription) {
+          let param = {
+            value: this.file.fileDescription,
+            name: 'FileDescription',
+            description: 'FileDescription'
+          };
+          this.file.params.push(param);
+      }
         fd.append('info', JSON.stringify({directory: this.directory, count: fcount, folderID: locFolderId, fileInfo: this.file}));
         api.post("/doc/updateFile", fd, {
           headers: getFileHeader()

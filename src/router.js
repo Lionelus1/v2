@@ -326,14 +326,16 @@ const routes = [
                 path: '/contragent/organizations',
                 name: 'OrganizationList',
                 component: load('contragent/v2/OrganizationList'),
-                beforeEnter: ifAuthenticated,
+                beforeEnter: ifUserRoles,
+                meta: { roles: ['student', 'personal'] }
             },
             {
                 path: '/contragent/organization/:id?',
                 name: 'OrganizationPage',
                 component: load('contragent/v2/OrganizationPage'),
                 props: true,
-                beforeEnter: ifAuthenticated,
+                beforeEnter: ifUserRoles,
+                meta: { roles: ['student', 'personal'] }
             },
             {
                 path: '/user/cv/:uuid',
@@ -345,7 +347,8 @@ const routes = [
                 path: '/contragent/persons/:type',
                 name: 'PersonsList',
                 component: load('contragent/v2/PersonsList'),
-                beforeEnter: ifAuthenticated,
+                beforeEnter: ifUserRoles,
+                meta: { roles: ['personal'] }
             },
             {
                 path: '/hdfs/hdfsmain',
