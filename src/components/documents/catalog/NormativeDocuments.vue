@@ -215,7 +215,7 @@
         </div>
       </template>
     </Toolbar>
-    <div class="flex-grow-1" style="height: 300px;">
+    <div class="grid-container-wrapper flex-grow-1" style="height: 300px;">
       <GridComponent :folders="folders" :folderHistory="folderHistory" @card-selected="onCardSelected" @open-folder="openFolder" @go-back="goBack" />
     </div>
   </BlockUI>
@@ -1223,6 +1223,20 @@ export default {
 .active {
   background-color: #007ad9;
   color: white;
+}
+
+.grid-container-wrapper {
+  flex-grow: 1;
+  overflow-y: auto; /* Enable vertical scroll */
+  padding: 10px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Flexible grid */
+  gap: 20px;
+  justify-items: center; /* Center cards in grid */
+  max-height: 100%; /* Ensure the grid fills available height */
 }
 
 </style>
