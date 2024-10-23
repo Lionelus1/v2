@@ -1,20 +1,14 @@
 <template>
-  <div class="grid-container">
-    <div
-        class="card"
-        v-for="folder in folders"
-        :key="folder.key"
-        @dblclick="openFolder(folder)"
-        @click="click(folder)"
-        :class="{ selected: folder === selectedNode }"
-        v-tooltip="folder.newParams?.FileDescription?.value || folder['name' + $i18n.locale]"
-        data-pr-position="top"
-    >
-      <div class="card-icon">
-        <i :class="getFileIconClass(folder.name)"></i>
-      </div>
-      <div class="card-name">
-        {{ folder['name' + $i18n.locale] }}
+  <div>
+    <div class="grid-container">
+      <div class="card" v-for="folder in folders" :key="folder.key" @dblclick="openFolder(folder)"
+           @click="selectFolder(folder)">
+        <div class="card-icon">
+          <i :class="getFileIconClass(folder.name)"></i>
+        </div>
+        <div class="card-name">
+          {{ folder['name' + $i18n.locale] }}
+        </div>
       </div>
     </div>
   </div>
@@ -29,7 +23,13 @@ export default {
     folders: {
       type: Array,
       required: true
+    },
+    folderHistory: {
+      type: Array,
+      default: () => []
     }
+
+
   },
   data() {
     return {
@@ -67,6 +67,12 @@ export default {
           return 'fa-solid fa-file-excel excel-icon';
         case 'zip':
           return 'fa-solid fa-file-zipper zip-icon';
+        case 'mp4':
+          return 'fa-solid fa-file-video video-icon';
+        case 'MP4':
+          return 'fa-solid fa-file-video video-icon';
+        case 'pptx':
+          return 'fa-solid fa-file-powerpoint powerpoint-icon'
         default:
           return 'fa-solid fa-file';
       }
@@ -74,10 +80,12 @@ export default {
     openFolder(folder) {
       this.$emit('open-folder', folder);
     },
+    selectFolder(folder) {
+      this.$emit('card-selected', folder); // Выбор папки
+    },
     findRole: findRole,
     click(folder) {
-      this.selectedCard = folder
-      this.selectedNode = folder
+      this.selectedCard = folder;
       this.$emit('card-selected', folder);
     },
   },
@@ -91,12 +99,16 @@ export default {
   gap: 20px;
   padding: 10px;
   justify-items: center; /* Center cards in grid */
+  max-height: 100%;
+  overflow-y: auto; /* Vertical scroll */
 }
 
 .card {
   background-color: #f9f9f9;
   border: 1px solid #e0e0e0;
   border-radius: 12px; /* Softer corners */
+  width: 180px; /* Static width */
+  height: 105px; /* Static height */
   padding: 20px 10px;
   text-align: center;
   cursor: pointer;
@@ -104,7 +116,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 180px;
+  justify-content: space-between; /* Align content vertically */
   position: relative;
 }
 
@@ -121,13 +133,14 @@ export default {
 }
 
 .card-icon {
-  font-size: 3em; /* Larger icon */
+  color: #007be5;
+  font-size: 1.6em; /* Larger icon */
   margin-bottom: 12px;
 }
 
 .card-name {
-  font-size: 1.2em;
-  font-weight: 600;
+  font-size: 0.9em; /* Reduced font size */
+  font-weight: 500; /* Slightly lighter font weight */
   color: #333;
   word-wrap: break-word;
   max-width: 100%;
@@ -154,6 +167,14 @@ export default {
   color: #805b36;
 }
 
+.powerpoint-icon {
+  color: #ff6900;
+}
+
+.video-icon {
+  color: #4c4743;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .grid-container {
@@ -166,18 +187,5 @@ export default {
   .grid-container {
     grid-template-columns: 1fr; /* Single column layout for very small screens */
   }
-}
-.zip-icon {
-  color: #805b36;
-  font-size: 1.4em;
-}
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Flexible grid */
-  gap: 20px;
-  padding: 10px;
-  justify-items: center; /* Center cards in grid */
-  max-height: 100%; /* Ограничение по высоте */
-  overflow-y: auto; /* Скролл по вертикали */
 }
 </style>

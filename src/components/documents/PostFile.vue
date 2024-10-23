@@ -112,7 +112,7 @@
               ref="ufile"
               :multiple="false"
               fileLimit="1"
-              accept=".doc,.docx,.pdf,.xls,.xlsx,.zip"
+              accept=".doc,.docx,.pdf,.xls,.xlsx,.zip, .mp4, .pptx"
               @upload="onUpload"
               @select="onFileSelect"
           >
@@ -391,7 +391,6 @@ export default {
         name: 'FileDescription'
       };
       this.file.params.push(param);
-      console.log(this.file)
         fd.append('info', JSON.stringify({directory: this.directory, count: fcount, folderID: locFolderId, fileInfo: this.file}));
         api.post("/doc/updateFile", fd, {
           headers: getFileHeader()

@@ -2,11 +2,23 @@
   <div class="flex flex-row mb-3">
     <h3 class="m-0">{{ $t("smartenu.catalogNormDoc") }}</h3>
   </div>
-  <div class="calendar_buttons flex justify-content-end mb-2">
-      <span class="p-buttonset mb-2">
-    <Button class="p-button-outlined calendar_btn_left" :class="{'active': isGrid}" icon="pi pi-th-large" @click="getFolders(true)"/>
-    <Button class="p-button-outlined calendar_btn_right" :class="{'active': !isGrid}" icon="pi pi-list" @click="getFolders(false)"/>
-      </span>
+  <div class="calendar_buttons flex justify-content-between mb-2">
+    <div class="left-btn">
+      <Button v-if="folderHistory.length > 0"
+              @click="goBack"
+              class="p-button-text p-button-info p-1">
+        <i class="fa-solid fa-chevron-left"></i>
+      </Button>
+    </div>
+
+      <Button class="p-button-outlined calendar_btn_left"
+              :class="{'active': isGrid}"
+              icon="pi pi-th-large"
+              @click="getFolders(true)" />
+      <Button class="p-button-outlined calendar_btn_right"
+              :class="{'active': !isGrid}"
+              icon="pi pi-list"
+              @click="getFolders(false)" />
   </div>
   <BlockUI :blocked="loading" v-if="!isGrid" class="card">
     <Toolbar class="m-0 p-1">
@@ -204,7 +216,7 @@
       </template>
     </Toolbar>
     <div class="flex-grow-1" style="height: 300px;">
-      <GridComponent :folders="folders" @card-selected="onCardSelected" @open-folder="openFolder" />
+      <GridComponent :folders="folders" :folderHistory="folderHistory" @card-selected="onCardSelected" @open-folder="openFolder" @go-back="goBack" />
     </div>
   </BlockUI>
   <!-- панель для фильтра -->
@@ -301,6 +313,8 @@ export default {
         totalRecords: '{totalRecords}',
       }),
       folders: [],
+      folderStack: [],
+      folderHistory: [],
       fileUpload: false,
       loading: false,
       tableLoading: false,
@@ -382,7 +396,14 @@ export default {
       if (!this.isGrid) {
         this.getFolders(this.isGrid, folder);
       } else {
+        this.folderHistory.push(this.folders);
+        this.folderStack.push(this.folders);
         this.getFolders(true, folder);
+      }
+    },
+    goBack() {
+      if (this.folderHistory.length > 0) {
+        this.folders = this.folderHistory.pop(); // Возвращаемся к предыдущим папкам
       }
     },
     getLongDateString: getLongDateString,
@@ -717,6 +738,12 @@ export default {
           return 'fa-solid fa-file-excel excel-icon';
         case 'zip':
           return 'fa-solid fa-file-zipper zip-icon';
+        case 'mp4':
+          return 'fa-solid fa-file-video video-icon';
+        case 'MP4':
+          return 'fa-solid fa-file-video video-icon';
+        case 'pptx':
+          return 'fa-solid fa-file-powerpoint powerpoint-icon';
         default:
           return 'fa-solid fa-file';
       }
@@ -1122,6 +1149,16 @@ export default {
   font-size: 1.4em;
 }
 
+.powerpoint-icon {
+  color: #ff6900;
+  font-size: 1.4em;
+}
+
+.video-icon {
+  color: #805b36;
+  font-size: 1.4em;
+}
+
 
 /* Стили для иконки */
 .custom-tooltip-icon {
@@ -1166,6 +1203,26 @@ export default {
   background: #007be5;
   color: #fff;
   border: 1px solid #007be5;
+}
+
+.calendar_buttons {
+  display: flex;
+  justify-content: space-between; /* Первая кнопка влево, остальные вправо */
+  align-items: center; /* Выравнивание кнопок по вертикали */
+}
+
+.left-btn {
+  flex-grow: 1; /* Заставляет левую кнопку занимать всё пространство слева */
+}
+
+.right-btns {
+  display: flex;
+  gap: 10px; /* Отступ между кнопками */
+}
+
+.active {
+  background-color: #007ad9;
+  color: white;
 }
 
 </style>
