@@ -353,7 +353,6 @@ export default {
         //var fcount = this.file.id !== null ? 0 : this.$refs.ufile.files.length
           fcount = this.$refs.ufile.files.length
         }
-      this.file.params = [];
       if (this.file.fileDescription) {
           let param = {
             value: this.file.fileDescription,
