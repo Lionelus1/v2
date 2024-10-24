@@ -147,16 +147,12 @@ export default {
             this.isSciencePlan = this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
           }
         }
-      }).catch(error => {
-        this.$toast.add({ severity: "error", summary: error, life: 3000 });
-      });
+      }).catch(_ => {});
     },
     getRespUsers() {
       this.planService.getRespUsers(this.report.work_plan_id).then(res => {
         this.respUsers = res.data
-      }).catch(error => {
-        this.$toast.add({ severity: "error", summary: error, life: 3000 });
-      });
+      }).catch(_ => {});
     },
     getReport() {
       this.planService.getPlanReportById(this.report_id).then(res => {
@@ -165,16 +161,6 @@ export default {
         this.getFile();
         // this.getReportApprovalUsers();
         this.getRespUsers()
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       });
     },
     getFile() {
@@ -186,16 +172,6 @@ export default {
           this.document = res.data;
         } else {
           this.getData();
-        }
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
         }
       });
     },
@@ -213,17 +189,8 @@ export default {
         this.source = `data:application/pdf;base64,${res.data}`;
         this.blobSource = URL.createObjectURL(this.b64toBlob(res.data));
         this.loading = false;
-      }).catch(error => {
+      }).catch(_ => {
         this.loading = false;
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       });
     },
     download() {
@@ -235,17 +202,7 @@ export default {
         if (res.data) {
           this.approval_users = res.data;
         }
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-      });
+      })
     },
     rejectPlanReport(comment) {
       this.reject.comment = comment;
@@ -259,16 +216,6 @@ export default {
           this.$router.push({ name: 'WorkPlanReport', params: { id: this.report.work_plan_id } });
         }
         this.getReport()
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       })
     },
     async downloadWord() {

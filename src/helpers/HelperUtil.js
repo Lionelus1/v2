@@ -18,12 +18,8 @@ export async function resizeImages(content) {
                     if (i === el.getElementsByTagName('img').length - 1) {
                         content = el.innerHTML;
                     }
-                }).catch(error => {
-                    console.log("to url error", error)
-                });
-            }).catch(error => {
-                console.log("from url error", error)
-            });
+                }).catch(_ => {});
+            }).catch(_ => {});
     }
     return content;
 }

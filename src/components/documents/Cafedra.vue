@@ -44,11 +44,11 @@
                         </Column>
                         </TreeTable>
                 </AccordionTab>
-                
+
             </Accordion>
         </div>
     </div>
-    
+
 </template>
 
 <script>
@@ -79,7 +79,7 @@ export default {
     findRole: findRole,
     init() {
         if (!(this.findRole(this.loginedUser, "dephead") || this.findRole(this.loginedUser,"practice_responsible"))) {
-            this.$router.push('/access') 
+            this.$router.push('/access')
         } else {
             this.getPracticeManagers(null)
         }
@@ -103,44 +103,7 @@ export default {
         .catch(error => {
             this.respLoading = false;
         if (error.response == null || error.response == undefined) {
-            console.log(error)
-        }
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: "Dictionary load error:\n" + error,
-              life: 3000,
-            });
-          }
-        });
-        
-    },
-    onExpand(node) {
-        this.getPracticeManagers(node)
-    },
-    getPracticeManagers(node) {
-        this.managersLoading = true;
-        api
-        .post(
-          "/dic/getPracticeManagers",{groupID: node !=null ? Number(node.key) : null},
-          {
-            headers: getHeader(),
-          }
-        )
-        .then(res => {
-            if (node == null) {
-                this.managers = res.data
-            } else {
-                node.children = res.data
-            }
-          this.managersLoading = false;
-        })
-        .catch(error => {
-            this.managersLoading = false;
-        if (error.response == null || error.response == undefined) {
-            console.log(error)
+          this.$toast.add({severity: "error", summary: this.$t('common.getDataError'), life: 3000});
         }
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
@@ -153,6 +116,23 @@ export default {
           }
         });
 
+    },
+    onExpand(node) {
+        this.getPracticeManagers(node)
+    },
+    getPracticeManagers(node) {
+        this.managersLoading = true;
+        api.post("/dic/getPracticeManagers",{groupID: node !=null ? Number(node.key) : null}, {headers: getHeader(),}).then(res => {
+            if (node == null) {
+                this.managers = res.data
+            } else {
+                node.children = res.data
+            }
+          this.managersLoading = false;
+        })
+        .catch(error => {
+          this.managersLoading = false;
+        });
     },
     onRowEditSave(event) {
         this.users = []
@@ -169,7 +149,7 @@ export default {
             this.responsibles[index].users = []
         }
       });
-      
+
     },
     setManager(node) {
         node.editing = false;
@@ -182,7 +162,7 @@ export default {
         } else {
             req.groupID = node.id
         }
-      
+
         api
         .post(
           "/dic/setPracticeManager",
@@ -195,7 +175,7 @@ export default {
             if (node.isStudent) {
                 node.children = res.data
             }
-         
+
         })
         .catch((error) => {
           if (error.response.status == 401) {
@@ -228,22 +208,7 @@ export default {
           {
             headers: getHeader(),
           }
-        )
-        .then(res => {
-          console.log(res.data)
-         
-        })
-        .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: "Dictionary load error:\n" + error,
-              life: 3000,
-            });
-          }
-        });
+        );
     }
   }
 }

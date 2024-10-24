@@ -394,9 +394,6 @@ export default {
           this.folder.key = response.data.id;
           this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
           this.$emit("updated", this.folder);
-      },
-      error =>{
-        console.log(error);
       })
     },
     getReadyDocCatalog() {
@@ -407,12 +404,6 @@ export default {
         headers: getHeader()
       }).then(res => {
         this.catalogs = res.data
-      }).catch(err => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          console.log(err)
-        }
       })
     },
   },

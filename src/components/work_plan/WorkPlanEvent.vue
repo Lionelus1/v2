@@ -661,13 +661,6 @@ export default {
           
         
         }
-      }).catch(error => {
-        console.log(error)
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
       });
     },
     signView(node) {
@@ -1268,7 +1261,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e)
         return false
       }
 
@@ -1297,7 +1289,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e)
         return signed
       }
 

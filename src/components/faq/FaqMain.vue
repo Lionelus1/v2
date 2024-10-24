@@ -674,7 +674,6 @@ export default {
             if (error.response.status == 401) {
               this.$store.dispatch("logLout");
             } else {
-              console.log(error);
               this.$toast.add({
                 severity: "error",
                 summary: error,
@@ -700,13 +699,6 @@ export default {
             });
             this.isChancery = response.data.departmentName === 'Отдел документооборота и контроля';
             this.getData();
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              console.log(error);
-            }
           });
     },
     downloadFile(fileName, fileType) {
@@ -773,8 +765,6 @@ export default {
           this.getData();
           this.$toast.add({severity: 'success', detail: 'Успешно', life: 3000});
         }
-      }).catch(error => {
-        console.log(error)
       });
     },
     clearData() {

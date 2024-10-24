@@ -444,7 +444,6 @@ export default {
                   visible:this.actionsNode && (this.actionsNode.docHistory.stateId === Enum.CREATED.ID ||
                       this.actionsNode.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === this.actionsNode.creatorID,
                   command: () => {
-                      console.log(this.actionsNode)
                       this.currentFile = this.actionsNode;
                       this.deleteFile(false)
                   }
@@ -638,7 +637,6 @@ export default {
       this.neutral()
     },
     isTest(element) {
-      console.log(element)
     },
     cover(element) {
       if (this.screen[element].maximized) {
@@ -903,7 +901,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -953,7 +950,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -987,7 +983,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -1019,7 +1014,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
 
@@ -1049,7 +1043,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -1075,7 +1068,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -1107,7 +1099,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e)
         return false
       }
 
@@ -1134,7 +1125,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e)
         return false
       }
 
@@ -1163,7 +1153,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e)
         return signed
       }
 

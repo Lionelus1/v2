@@ -68,7 +68,6 @@ import TieredMenu from 'primevue/tieredmenu';
 import Timeline from 'primevue/timeline';
 import Textarea from 'primevue/textarea';
 import Toast from 'primevue/toast';
-import {useToast} from "primevue/usetoast";
 import ToastService from 'primevue/toastservice';
 import Toolbar from 'primevue/toolbar';
 import TabView from 'primevue/tabview';
@@ -117,9 +116,6 @@ import Person from '@/components/contragent/Person.vue';
 import Organization from '@/components/contragent/Organization.vue';
 import FindUser from "@/helpers/FindUser";
 import TinyEditor from "@/components/TinyEditor.vue";
-import 'primevue/resources/primevue.min.css'
-import 'primevue/resources/themes/saga-blue/theme.css'
-import 'primeicons/primeicons.css'
 
 
 import ConfirmationService from 'primevue/confirmationservice';
@@ -135,10 +131,9 @@ import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
 import TitleBlock from "./components/TitleBlock";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
-import {getHeader, smartEnuApi, socketApi} from "@/config/config";
-import io from "socket.io-client";
 import {isMobile} from "@/helpers/HelperUtil";
 import {VueReCaptcha} from "vue-recaptcha-v3";
+import {useToast} from "primevue/usetoast";
 
 Date.prototype.toJSON = function(){
     const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
@@ -155,23 +150,6 @@ router.beforeEach(function(to, from, next) {
 const app = createApp(App);
 const emitter = mitt();
 app.provide('emitter', emitter);
-
-/*
-const headers = getHeader()
-export const socket = io(smartEnuApi, {
-    withCredentials: false
-   /!* transports: ['websocket'],
-    extraHeaders: {
-
-    }*!/
-})
-
-socket.on("connect", (s) => {
-    console.log(s)
-});
-*/
-
-
 
 /* eslint-disable */
 app.use(PrimeVue, {
@@ -412,5 +390,5 @@ app.component('TitleBlock', TitleBlock)
 app.component('ToolbarMenu', ToolbarMenu)
 app.component('ActionButton', ActionButton)
 
-interceptor(store,app);
+interceptor(store, app);
 app.mount('#app');

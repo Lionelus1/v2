@@ -525,7 +525,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
 
@@ -745,7 +744,6 @@ export default {
             life: 3000,
           })
         } else {
-          console.log(err)
           this.$toast.add({
             severity: "error",
             summary: this.$t('common.message.actionError'),
@@ -915,7 +913,6 @@ export default {
       }
     },
     getEducationalProgramGroup(educationalProgramGroup) {
-      console.log("educationalProgramGroup: ", educationalProgramGroup)
       if (educationalProgramGroup === undefined || educationalProgramGroup === '') {
         return ''
       }

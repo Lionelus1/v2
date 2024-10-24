@@ -62,8 +62,6 @@ export class CamundaService {
   }
   async startProcess(key, value) {
     this.here = "yeah";
-    // if (this.isProccessStarted) return;
-    console.log("api:", api.getUri());
     const response = await api.post(
       "/camunda/start/process",
       {
@@ -76,14 +74,10 @@ export class CamundaService {
     );
     this.processInstanceKey = response.data["processInstanceKey"];
     this.processDefinitionKey = response.data["processDefinitionKey"];
-    console.log("AFTER INIT:");
-    console.log("this.processDefinitionKey0:", this.processDefinitionKey);
-    console.log("this.processInstanceKey0:", this.processInstanceKey);
     this.isProccessStarted = true;
     // CamundaService.instance = this;
   }
   async initBasics() {
-    console.log("this.uuidthis.uuid:", this.uuid);
     const response = await api.get("/camunda/uuid/forms", {
       headers: getHeader(),
       params: {
@@ -92,7 +86,6 @@ export class CamundaService {
         uuid: this.uuid,
       },
     });
-    console.log("uuid response:", response.data);
     this.uuid = response.data.hits.hits[0]["_source"].uuid;
     this.processDefinitionKey =
       response.data.hits.hits[0]["_source"].processDefinitionKey;
@@ -100,8 +93,6 @@ export class CamundaService {
       response.data.hits.hits[0]["_source"].processInstanceKey;
   }
   async initCurrentForm(forceGet = null) {
-    console.log("forceGet:", forceGet);
-    console.log("initCurrentForm");
     const response = await api.get("/camunda/form/current", {
       headers: getHeader(),
       params: {
@@ -109,10 +100,6 @@ export class CamundaService {
         processDefinitionKey: this.processDefinitionKey,
       },
     });
-    console.log(
-      "response.dataa:",
-      response.data.hits.hits
-    );
     const arrayToSort = response.data.hits.hits;
 
     // Sort the array by the id property within the _source object
@@ -125,18 +112,14 @@ export class CamundaService {
       arrayToSort[forceGet ?? arrayToSort.length - 1][
       "_source"
       ]["currentForm"];
-    console.log("this.currentFormId:", this.currentFormId);
     this.flowNodeBpmnId = this.currentFormId;
   }
   async setCurrentSchema() {
-    console.log("this.processDefinitionKey1:", this.processDefinitionKey);
-    console.log("this.processInstanceKey1:", this.processInstanceKey);
     const response = await api.get("/camunda/form", {
       headers: getHeader(),
       params: { form_id: this.currentFormId },
     });
     this.currentSchema = response.data.schema;
-    console.log("this.currentSchema:", this.currentSchema);
     for (var i = 0; i < this.currentSchema.components.length; i++) {
       if (
         this.currentSchema.components[i].key ||
@@ -167,7 +150,6 @@ export class CamundaService {
         { headers: getHeader() }
       );
 
-      console.log("response:", response.data);
       component.items = response.data[component.properties.items_key];
       component.totalRecords = ref(response.data["total"]);
     }
@@ -190,7 +172,6 @@ export class CamundaService {
         //     { headers: getHeader() }
         //   );
 
-        //   console.log("response:", response.data);
         //   this.currentSchema.components[i].items =
         //     response.data[
         //       this.currentSchema.components[i].properties.items_key
@@ -223,17 +204,14 @@ export class CamundaService {
       },
       { headers: getHeader() }
     );
-    console.log("response:", response);
   }
   async finishStep(variables) {
-    console.log("this.flowNodeBpmnId:", this.flowNodeBpmnId);
     const body = {
       processDefinitionKey: this.processDefinitionKey,
       processInstanceKey: this.processInstanceKey,
       variables: variables,
     };
     body["flow"] = this.flowNodeBpmnId;
-    console.log("body:", body);
     const response = await api.patch("/camunda/finish/active/task", body, {
       headers: getHeader(),
     });
@@ -241,9 +219,7 @@ export class CamundaService {
       params: { process_instance_key: this.processInstanceKey },
       headers: getHeader(),
     });
-    console.log("response:", response.data);
     this.flowNodeBpmnId = response.data.flowNodeBpmnId;
-    console.log("this.flowNodeBpmnId2:", this.flowNodeBpmnId);
     // var variables = {};
     // for (const [index, obj] of Object.entries(this.currentSchema.components)) {
     //   if ("valuesKey" in obj) {
@@ -271,10 +247,8 @@ export class CamundaService {
 
     // camunda_api(config)
     //   .then(function (response) {
-    //     console.log(JSON.stringify(response.data));
     //   })
     //   .catch(function (error) {
-    //     console.log(error);
     //   });
   }
   async getApplications() {
@@ -297,7 +271,6 @@ export class CamundaService {
         response.data.hits.hits[0]["_source"].value
       ).body.uuid;
     }
-    console.log("this.docUUID:", this.docUUID);
   }
   async getProcessVariable() {
     const response = await api.get("/camunda/proccess/variable", {
@@ -308,29 +281,17 @@ export class CamundaService {
         name: this.flowNodeBpmnId,
       },
     });
-    console.log(
-      "response.data.hits.hits[0] === undefined:",
-      response.data.hits.hits[0] === undefined
-    );
     if (
       response.data.hits.hits[0] === undefined ||
       !("_source" in response.data.hits.hits[0])
     )
       return undefined;
-    console.log("getProcessVariable:", this.flowNodeBpmnId);
     this.flowNodeBpmnId = response.data.hits.hits[0]["_source"]["name"];
     return JSON.parse(response.data.hits.hits[0]["_source"]["value"]);
   }
   async setVars() {
-    console.log(
-      "this.currentSchema.components:",
-      this.currentSchema.components
-    );
     for (const [index, obj] of Object.entries(this.currentSchema.components)) {
       if ("valuesKey" in obj) {
-        console.log("Object with valuesKey:", obj);
-        console.log("this.processDefinitionKey:", this.processDefinitionKey);
-        console.log("this.processInstanceKey:", this.processInstanceKey);
         // await new Promise((resolve) => setTimeout(resolve, 10000));
         const response = await api.get("/camunda/variable", {
           headers: getHeader(),
@@ -340,16 +301,11 @@ export class CamundaService {
             processInstanceKey: this.processInstanceKey,
           },
         });
-        console.log("response.data:", response.data);
         const value = JSON.parse(
           response.data.hits.hits[0]["_source"]["value"]
         );
         this.currentSchema.components[index]["values"].value =
           value["category"];
-        console.log(
-          "responsesss:",
-          this.currentSchema.components[index]["values"]
-        );
       }
     }
   }

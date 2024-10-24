@@ -271,7 +271,6 @@ export default {
     },
     async xmlSignature(res) {
       let NCALaClient = new NCALayerClientExtension();
-      console.log("nc object ", NCALaClient);
       try {
         await NCALaClient.connect();
       } catch (error) {
@@ -377,8 +376,7 @@ export default {
     },
     checkLoginAndPassword() {
       this.loginDataCheck.username = this.loginData.username.length === 0 
-      this.loginDataCheck.password = this.loginData.password.length === 0 
-      console.log(this.loginData.password.length)
+      this.loginDataCheck.password = this.loginData.password.length === 0
 
         return (
             !this.loginDataCheck.username &&

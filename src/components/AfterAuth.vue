@@ -36,7 +36,6 @@ export default {
           location.replace("/#"+oldPath);
         }
       }).catch(error => {
-        console.log(error)
         this.$router.push({name:'Login'});
       })
     },

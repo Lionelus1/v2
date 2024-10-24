@@ -148,8 +148,6 @@
 
 
   const updateModuleOfCourse = async () => {
-    console.log(formData)
-    console.log(formData.value.id)
     if (formData.value.id === undefined || formData.value.id <= 0) {
       await addModulesToCourse()
       return

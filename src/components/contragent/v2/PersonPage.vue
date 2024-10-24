@@ -359,7 +359,6 @@ export default {
       this.changed = true;
     },
     handleModelUpdate(newValue) {
-      console.log('Новое значение model-value:', newValue);
 
     },
     validate() {

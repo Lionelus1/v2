@@ -193,7 +193,6 @@
     }
 
     const updateCourseState = (stateID) => {
-      console.log(course.value.duration_type.id)
       if (course.value.duration_type.id > 0) {
         const selectedOption = durationTypeOptions.find(option => option.id === course.value.duration_type.id);
 
@@ -282,11 +281,9 @@
     const initializeCourseHistory = () => {
       if (course.value) {
         if (course.value.history && course.value.history.length > 0) {
-          console.log('test - 1');
           course.value.history[0].startDate = null;
           course.value.history[0].finalDate = null;
         } else {
-          console.log('test - 2');
           course.value.history = [{
             startDate: null,
             finalDate: null,

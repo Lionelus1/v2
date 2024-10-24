@@ -64,11 +64,8 @@ export default {
     this.emitter.on('updateAfterUpload', (data) => {
       if (data === true) {
         this.getData(this.selected);
-      } else {
-        console.log("error emit")
       }
     });
-    console.log(this.selected)
   },
   methods: {
     getData(dirName) {
@@ -84,7 +81,6 @@ export default {
             this.loading = false;
           },
           (response) => {
-            console.log(response);
           }
       );
     },

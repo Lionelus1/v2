@@ -660,9 +660,8 @@
       getCourse()
       getCourseHistoryStudents()
       getCourseHistory()
-    }).catch(err => {
+    }).catch(_ => {
       loading.value = false
-      console.log(err)
     })
 
     // onlineCourseService.createCourse(req).then(_ => {
@@ -670,7 +669,6 @@
     //   loading.value = false
     //   getCourseHistoryStudents()
     // }).catch(_=> {
-    //   console.log(stateID, req, 'test')
     //
     //   loading.value = false;
     //   showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'), 3000)
