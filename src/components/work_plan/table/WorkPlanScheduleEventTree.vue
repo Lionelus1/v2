@@ -1,7 +1,7 @@
 <template>
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel :header="$t('common.tasks')">
-        <div class="card">
+        <div>
           <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
                      @nodeExpand="emits('expand', $event)" scrollHeight="flex"
                      responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
@@ -50,7 +50,7 @@
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.members')" v-if="isPlanCreator && !findRole(null, 'student')">
-        <div class="card" v-if="members">
+        <div v-if="members">
           <div class="flex justify-end">
             <div style="margin-bottom: 10px; width: 100%;"/>
             <IconField>
@@ -58,35 +58,80 @@
               <InputText v-model="searchQuery" @input="filterData" :placeholder="$t('common.search')"/>
             </IconField>
           </div>
-          <TreeTable :value="filteredMembers"
-                     scrollHeight="flex"
-                     responsiveLayout="scroll"
-                     :resizableColumns="true"
-                     columnResizeMode="fit"
-                     showGridlines
+
+          <DataTable v-model:selection="selectedProduct"
+                     :value="filteredMembers"
+                     dataKey="id"
+                     tableStyle="min-width: 50rem"
                      :paginator="true"
                      :rows="10"
                      :rowsPerPageOptions="[5, 10, 25]">
-            <template #empty> {{ $t('common.noData') }}</template>
-            <template #loading> {{ $t('common.loading') }}</template>
 
-            <Column field="fullName" :header="$t('common.fullName')" style="text-align: center; width: 40%;" sortable>
-              <template #body="{ node }">
+            <Column header=" " style="width: 10%;">
+              <template #header>
+                <Checkbox
+                    v-model="allChecked"
+                    @change="selectAllCheckBox"
+                    :binary="true"
+                />
+                <span class="ml-2">{{this.$t("common.selectAll")}}</span>
+              </template>
+              <template #body="slotProps">
+                <Checkbox
+                    v-model="slotProps.data.checked"
+                    @change="checkBoxSelect(slotProps)"
+                    :binary="true"
+                />
+              </template>
+            </Column>
+
+            <Column field="fullName" :header="$t('common.fullName')" style="text-align: center; width: 40%;">
+              <template #body="slotProps">
                 <div style="text-align: left;">
-                  <p>{{ node.user.fullName }}</p>
+                  <p>{{ slotProps.data.user.fullName }}</p>
                 </div>
               </template>
             </Column>
             <Column field="id" header="" style="text-align: center;">
-              <template #body="{ node }">
+              <template #body="slotProps">
                 <div style="text-align: left;">
-                  <button @click="navigateToJournalReports(node.id)" style="background: none; border: none; cursor: pointer;">
+                  <button @click="navigateToJournalReports(slotProps.data.id)" style="background: none; border: none; cursor: pointer;">
                     <i class="fas fa-eye"></i> <!-- Иконка глаза -->
                   </button>
                 </div>
               </template>
             </Column>
-          </TreeTable>
+          </DataTable>
+          {{selectedProduct}}
+<!--          <TreeTable :value="filteredMembers"-->
+<!--                     scrollHeight="flex"-->
+<!--                     responsiveLayout="scroll"-->
+<!--                     :resizableColumns="true"-->
+<!--                     columnResizeMode="fit"-->
+<!--                     showGridlines-->
+<!--                     :paginator="true"-->
+<!--                     :rows="10"-->
+<!--                     :rowsPerPageOptions="[5, 10, 25]">-->
+<!--            <template #empty> {{ $t('common.noData') }}</template>-->
+<!--            <template #loading> {{ $t('common.loading') }}</template>-->
+
+<!--            <Column field="fullName" :header="$t('common.fullName')" style="text-align: center; width: 40%;" sortable>-->
+<!--              <template #body="{ node }">-->
+<!--                <div style="text-align: left;">-->
+<!--                  <p>{{ node.user.fullName }}</p>-->
+<!--                </div>-->
+<!--              </template>-->
+<!--            </Column>-->
+<!--            <Column field="id" header="" style="text-align: center;">-->
+<!--              <template #body="{ node }">-->
+<!--                <div style="text-align: left;">-->
+<!--                  <button @click="navigateToJournalReports(node.id)" style="background: none; border: none; cursor: pointer;">-->
+<!--                    <i class="fas fa-eye"></i> &lt;!&ndash; Иконка глаза &ndash;&gt;-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--              </template>-->
+<!--            </Column>-->
+<!--          </TreeTable>-->
         </div>
       </TabPanel>
     </TabView>
@@ -100,7 +145,9 @@ import ActionButton from "@/components/ActionButton.vue";
 import {computed, ref} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {findRole} from "../../../config/config";
+import {useToast} from "primevue/usetoast";
 
+const toast = useToast()
 const router = useRouter()
 const route = useRoute()
 const props = defineProps(['data', 'loading', 'total', 'menus', 'isPlanCreator', 'members'])
@@ -114,6 +161,54 @@ const active = ref(0)
 
 const tabChanged = () => {
   emits('updateActive', active.value)
+}
+
+const selectedProduct = ref([]);
+const metaKey = ref(true);
+const allChecked = ref(false);
+// Логика для определения, доступна ли строка для выбора
+const isSelectable = (student) => {
+  // Например, делать запись недоступной, если quantity меньше 10
+  return student.id >= 162275;
+};
+
+
+const checkBoxSelect = (slotProps) => {
+  if(!isSelectable(slotProps.data)) {
+    // Если поле недоступно, показываем сообщение
+    slotProps.data.checked = !slotProps.data.checked;
+    toast.add({ severity: 'warn', summary: 'Внимание', detail: 'Данное поле не доступно', life: 3000 });
+    return
+  }
+  if (slotProps.data.checked) {
+    selectedProduct.value.push(slotProps.data)
+  } else {
+    selectedProduct.value = selectedProduct.value.filter(item => item !== slotProps.data);
+  }
+}
+
+const selectAllCheckBox = () => {
+  allChecked.value = !allChecked.value;
+  if (allChecked.value) {
+    filteredMembers.value.forEach(member => {
+      member.checked = false;
+    });
+    selectedProduct.value = []
+  } else {
+    filteredMembers.value.forEach(member => {
+      let isChecked = false;
+
+      if(isSelectable(member)){
+        isChecked = true
+        selectedProduct.value.push(member)
+      }
+
+      if (isChecked) {
+        member.checked = true;
+      }
+    });
+  }
+  allChecked.value = !allChecked.value;
 }
 
 const filterData = () => {
