@@ -76,7 +76,6 @@ const getFullName = computed(() => {
 
 const getCategories = computed(() => {
   const categories = props.selectedMailing?.categories
-  console.log("categories: ", categories)
   return locale.value === "kz"
       ? categories?.map(category => category.name_kz || '-').join(', ')
       : locale.value === "ru"

@@ -58,7 +58,6 @@
     methods: {
       downloadResume() {
         if (!this.candidate) {
-          console.log(this.candidate)
           return; 
         }
   
@@ -83,7 +82,6 @@
           reader.readAsDataURL(pdf);
           reader.onloadend = () => {
             var base64data = reader.result;
-            console.log(base64data);
             var link = document.createElement('a');
             link.innerHTML = 'Download PDF file';
             link.download = 'Resume.pdf';
@@ -126,4 +124,3 @@
     },
   };
   </script>
-  

@@ -604,9 +604,8 @@ export default {
             }
             this.loading = false
           })
-          .catch(error => {
+          .catch(_ => {
             this.loading = false
-            console.log(error)
           })
     },
     resetFileInfo() {
@@ -719,9 +718,6 @@ export default {
               if (!hide) {
                 this.deleteChild(this.catalog[0])
               }
-            },
-            error => {
-              console.log(error);
             });
         },
       });
@@ -792,9 +788,8 @@ export default {
         this.file.revision = false;
         this.approving = false
       })
-          .catch(error => {
+          .catch(_ => {
             this.approving = false
-              console.log(error);
           })
 
       this.dialogOpenState.revision = false;

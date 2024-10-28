@@ -33,7 +33,6 @@ onMounted(async () => {
     if (response.status !== 200) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    console.log("response: ", response.data);
     selectedCategories.value = Array.isArray(response.data.mailing.categoryIds) ? response.data.mailing.categoryIds : [];
     emails.value = response.data.mailing.emails || [];
     description.value = response.data.mailing.description;
@@ -44,9 +43,7 @@ onMounted(async () => {
     if (additional_file_path.value) {
       additionalFileName.value = response.data.mailing.AdditionalFileName;
     }
-  } catch (error) {
-    console.error("Failed to fetch mailing data:", error);
-  }
+  } catch (error) {}
 });
 
 const categories = [
@@ -121,24 +118,14 @@ const sendMailing = (statusID) => {
       .then(text => {
         try {
           const data = JSON.parse(text);
-          console.log('Success:', data);
           router.push('/mailing');
         } catch (error) {
-          console.error('Error parsing JSON:', error);
           toast.add({
             severity: "error",
             detail: t('common.errorParsingResponse'),
             life: 3000,
           });
         }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        toast.add({
-          severity: "error",
-          detail: t('common.requestFailed'),
-          life: 3000,
-        });
       });
 }
 

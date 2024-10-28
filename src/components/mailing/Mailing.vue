@@ -124,7 +124,6 @@ export default {
       });
     },
     closeMailingView() {
-      console.log('Closing view from parent...');  // Лог для проверки
       this.mailingViewVisible = false;
     },
   },

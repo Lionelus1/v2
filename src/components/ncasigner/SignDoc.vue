@@ -173,7 +173,6 @@
             getDocument(docId) {
                 axios.get(signerApi + '/documents/' + docId, {headers: header}).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
-                        console.log(response.data)
                         this.documentID = response.data.uuid
                         this.addSignature(response.data)
                     } else {

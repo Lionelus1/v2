@@ -332,9 +332,7 @@ const getTicketForm = () => {
       validation: value.validation || ''
     }))
     emit('childInputData', formFields.value.model)
-  }).catch((err) => {
-    console.log(err)
-  })
+  });
 }
 
 const getDocStatus = (code) => {

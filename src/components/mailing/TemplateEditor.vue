@@ -138,7 +138,6 @@ export default {
       }).filter(role => role !== null);
 
       const processedEmails = this.emails.map(email => email.trim());
-    console.log("this.templateContent: ", this.templateContent.length)
       const mailingData = {
         mailingID: null,
         filters: {
@@ -167,8 +166,7 @@ export default {
             localStorage.removeItem('mailingData');
             this.$router.push('/mailing');
           })
-          .then(data => {
-            console.log('Success:', data);
+          .then(_ => {
             localStorage.removeItem('mailingData');
             this.$router.push('/mailing');
           })

@@ -888,8 +888,6 @@ export default {
       this.service.getRatings(this.ratingFilter).then(res => {
         this.ratings = res.data.ratings
         this.ratingTotal = res.data.total
-      }).catch(err => {
-        console.log(err);
       })
     },
     saveRating() {
@@ -903,8 +901,6 @@ export default {
       this.service.updateRating(this.rating).then(res => {
         this.getRatings()
         this.ratingDialog = false
-      }).catch(err => {
-        console.log(err)
       })
 
     },
@@ -942,8 +938,6 @@ export default {
           this.service.deleteRating(req).then(res => {
             this.showMessage('success', this.$t('common.message.successCompleted'), null);
             this.getRatings();
-          }).catch(err => {
-            console.log(err);
           })
         }
       })

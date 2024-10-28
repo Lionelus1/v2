@@ -89,14 +89,11 @@
     const updateBank = () => {
         if (bank.value) {
             payload.value.bank_id = bank.value.id
-            console.log(bank.value.id)
         }
         
         api.post('/account/bank/update', payload.value, {headers: getHeader()}).then(res  => {
             emitter.emit('educationUpdated', true)
-        }).catch(err => {
-          console.log(err)
-        })
+        });
     }
 
     const getBanks = () => {

@@ -325,13 +325,6 @@ export default {
       api.post('/science/laborActivity/create', this.value, {headers: getHeader()})
       .then(res => {
         this.emitter.emit("experienceScientists", true);
-      }).catch(error => {
-        console.log('asfasf')
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
       });
     }
   },

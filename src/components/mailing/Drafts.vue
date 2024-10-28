@@ -96,14 +96,12 @@ const initMailing = () => {
           mailingList.value = res.data;
           count.value = res.data.NewCount;
         } else {
-          console.log('res.data is null');
           mailingList.value = [];
           count.value = 0;
         }
         loading.value = false;
       })
       .catch((err) => {
-        console.log(err);
         if (err.response && err.response.status === 401) {
           store.dispatch("logOut");
         }

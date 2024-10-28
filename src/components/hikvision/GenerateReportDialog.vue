@@ -171,12 +171,11 @@ const createReports = async () => {
 
   try {
     const response = await reportService.createReport(data);
-    console.log('Report created:', response);
     showSuccess(t('hikvision.notification'))
     emit('reportCreated', response);
     emit('close');
-  } catch (error) {
-    console.error('Error creating report:', error);
+  } catch (_) {
+
   }
 };
 

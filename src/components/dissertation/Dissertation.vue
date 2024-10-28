@@ -292,10 +292,7 @@ export default {
           this.CouncilsList.push(JSON.parse(JSON.stringify(this.newCouncil)));
           this.submitted = false;
           this.hideDialog(this.dialog.addCouncil);
-        }).catch((error) => {
-          console.log(error.response.data)
-          this.$toast.add({ severity: "error", summary: error, life: 3000 })
-        })
+        });
       }
     },
     validateAddConsulForm() {

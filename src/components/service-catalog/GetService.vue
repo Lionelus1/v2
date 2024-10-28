@@ -33,7 +33,6 @@ const getCatalog = () => {
     loading.value = false
   }).catch(error => {
     loading.value = false
-    console.log(error)
   })
 }
 

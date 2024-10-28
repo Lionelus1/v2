@@ -149,9 +149,7 @@ const emitter = inject("emitter");
 
     api.post('/account/cardID/update', fd, {headers: getHeader()}).then(res  => {
         emitter.emit('educationUpdated', true)
-      }).catch(err => {
-        console.log(err)
-      })
+      });
   
   }
   const validateForm = () => {
@@ -166,10 +164,5 @@ const emitter = inject("emitter");
           !validation.value.issuedBy &&
           !validation.value.file
       )
-    }
-
-
-  const check = (data) => {
-      console.log(data, 'id')
     }
 </script>

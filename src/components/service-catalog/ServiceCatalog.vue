@@ -53,7 +53,6 @@ const getCatalog = () => {
     loading.value = false
   }).catch(error => {
     loading.value = false
-    console.log(error)
   })
 }
 
@@ -83,7 +82,6 @@ const save = () => {
     hideDialog()
     getCatalog()
   }).catch(error => {
-    console.log(error)
     toast.add({severity: 'error', summary: t('common.error'), detail: error, life: 3000})
   })
 }
@@ -95,7 +93,6 @@ const add = () => {
     hideDialog()
     getCatalog()
   }).catch(error => {
-    console.log(error)
     toast.add({severity: 'error', summary: t('common.error'), detail: error, life: 3000})
   })
 }
@@ -124,7 +121,6 @@ const remove = (id) => {
     toast.add({severity: "success", summary: t('common.success'), life: 3000});
     getCatalog()
   }).catch(error => {
-    console.log(error)
     toast.add({severity: 'error', summary: t('common.error'), detail: error, life: 3000})
   })
 }

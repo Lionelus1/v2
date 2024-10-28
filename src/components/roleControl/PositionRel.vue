@@ -292,7 +292,6 @@
     }
 
     const  savePositionRel = () => {
-        console.log(user.value[0].userID, 'test')
         if (position.value === null || selectedDepartment.value === null || user.value === null) {
             return
         }

@@ -260,14 +260,7 @@ export default {
                     }
                     this.loading = false
                   
-                })
-                .catch(error => {
-                    console.log(error)
-                    if (error.response.status == 401) {
-                        this.$store.dispatch("logLout");
-                    } else
-                        console.error(error)
-                })
+                });
         },
 
         resetForm() {
@@ -389,9 +382,6 @@ export default {
                                 if (!hide) {
                                     this.deleteChild(this.catalog[0])
                                 }
-                            },
-                            error => {
-                                console.log(error);
                             });
                 },
             });
@@ -410,9 +400,6 @@ export default {
                         if (!hide) {
                             this.deleteChild(this.catalog[0])
                         }
-                    },
-                    error => {
-                        console.log(error);
                     });
                 },
             });
@@ -447,10 +434,7 @@ export default {
                 this.folder.hidden = false
                 this.selected.hidden = false
 
-            })
-            .catch(error => {
-                console.log(error)
-            })
+            });
         },
         showFile() {
             let url = "/doc/showFile";
@@ -460,10 +444,7 @@ export default {
                 this.file.hidden = false
                 this.selected.hidden = false
 
-            })
-            .catch(error => {
-                console.log(error)
-            })
+            });
         },
         downloadFile() {
             if (this.file) {
