@@ -56,6 +56,10 @@ export default {
           id: 2,
           name: this.$t('workPlan.reportTypes.quarter')
         },
+        {
+          id: 3,
+          name: this.$t('workPlan.reportTypes.halfYear')
+        },
       ],
       reportQuarters: [
         {

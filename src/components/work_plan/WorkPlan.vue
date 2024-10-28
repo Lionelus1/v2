@@ -237,7 +237,7 @@ export default {
                     this.data?.doc_info?.docHistory?.stateId === Enum.INAPPROVAL.ID))),
             visible: true,
             command: () => {
-              this.deleteConfirm(this.deleteData)
+              this.deleteConfirm(data)
             }
           },
         ];
