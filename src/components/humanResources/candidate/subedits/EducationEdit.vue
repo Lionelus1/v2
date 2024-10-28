@@ -1,7 +1,7 @@
 <template>
   <div id="carddiv" class="grid">
     <div class="col-12">
-      <h3>Создание и редактирование образования</h3>
+      <h3>{{$t("hr.crAndUpdEdu")}}</h3>
       <div>
         <Menubar :model="menu" :key="active"
                  style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
