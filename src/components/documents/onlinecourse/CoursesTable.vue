@@ -349,7 +349,7 @@ export default {
       this.tableLoading = true
       this.service.getOod().then(_ => {
 
-      });
+      }).catch(_ => {})
         .finally(() => {
           this.getCourses()
           this.tableLoading = false
@@ -448,10 +448,6 @@ export default {
       }).finally(() => {
         this.loading = false;
       })
-    },
-    handleSelectionChange() {
-      if (this.lazyParams.searchText) {
-      }
     },
     itemLabel(item) {
       return item['name']

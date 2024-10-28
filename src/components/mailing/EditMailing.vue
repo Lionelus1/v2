@@ -43,7 +43,9 @@ onMounted(async () => {
     if (additional_file_path.value) {
       additionalFileName.value = response.data.mailing.AdditionalFileName;
     }
-  } catch (error) {}
+  } catch (error) {
+    // TODO: Dulat zhondeu kerek zher
+  }
 });
 
 const categories = [
