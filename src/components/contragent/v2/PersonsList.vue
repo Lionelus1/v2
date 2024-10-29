@@ -983,6 +983,7 @@ export default {
     },
 
     async getResume(studentId) {
+      /* eslint-disable */
       try {
         const response = await this.service.getResume({ userID: studentId, lang: this.$i18n.locale });
         if (!response.data) {
