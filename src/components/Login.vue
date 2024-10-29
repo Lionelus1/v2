@@ -1,5 +1,5 @@
 <template>
-  <div style="overflow-x: hidden">
+<div style="overflow-x: hidden">
     <Toast />
     <!-- <div class="feature-intro block">
   <h1>Smart.enu жүйесіне қош келдіңіз.</h1>
@@ -342,17 +342,25 @@ export default {
       }
       api.post('/login', {
         'username': this.loginData.username,
-        'password': this.loginData.password
+        'password': this.loginData.password,
+        'session': this.$route.params.sessionID || localStorage.getItem('sessionID')
       }, {headers: getHeader()})
           .then((res) => {
             if (res.status === 200) {
               authUser.access_token = res.data.access_token;
               authUser.refresh_token = res.data.refresh_token;
+              authUser.session_uuid = res.data.session_uuid
               window.localStorage.setItem('authUser', JSON.stringify(authUser));
-              this.$router.push({name: 'AfterAuth'});
+              const sessionID = this.$route.params.sessionID || localStorage.getItem('sessionID');
+              if (sessionID) {
+
+                window.location.href = 'https://t.me/local_bot_test_for_us_bot?start=' + res.data.session_uuid;
+              } else {
+                this.$router.push({name: 'AfterAuth'});
+              }
             }
           })
-          .catch(error => {  
+          .catch(error => {
             if (error.response && error.response.status === 401) {
                 this.$toast.add({
                   severity: 'error',
@@ -377,9 +385,7 @@ export default {
     },
     checkLoginAndPassword() {
       this.loginDataCheck.username = this.loginData.username.length === 0 
-      this.loginDataCheck.password = this.loginData.password.length === 0 
-      console.log(this.loginData.password.length)
-
+      this.loginDataCheck.password = this.loginData.password.length === 0
         return (
             !this.loginDataCheck.username &&
             !this.loginDataCheck.password
@@ -441,4 +447,5 @@ export default {
     font-size: 14px!important;
   }
 }
+
 </style>

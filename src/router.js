@@ -62,8 +62,8 @@ const ifUserRoles = (to, from, next) => {
 
 const routes = [
     {
-        path:'/login',
-        name:'Login',
+        path: '/login/:sessionID?',
+        name: 'Login',
         component: load('Login'),
         beforeEnter: ifNotAuthenticated
     },
@@ -859,5 +859,14 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes,
 });
+
+
+router.beforeEach((to, from, next) => {
+    if (to.name === 'Login' && to.params.sessionID) {
+        localStorage.setItem('sessionID', to.params.sessionID);
+    }
+    next();
+});
+
 
 export default router;

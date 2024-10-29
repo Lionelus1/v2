@@ -291,7 +291,6 @@ export class MenuService {
                         label: $t('course.courses'),
                         icon: 'fa-solid fa-chalkboard',
                         to: '/categories-courses',
-
                     },
 
                 ]
@@ -300,7 +299,6 @@ export class MenuService {
                 label: $t('helpDesk.title'),
                 icon: 'pi pi-spin pi-cog',
                 to: '/helpdesk',
-            
             },
             {
                 label: $t('telegram.title'),
