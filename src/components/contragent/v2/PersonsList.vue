@@ -993,7 +993,7 @@ export default {
 
         return base64Data;
       } catch (error) {
-        throw error;
+        this.$toast.add({severity: "error", summary: this.$t('common.message.actionError'), life: this.$t('common.message.actionErrorContactAdmin'),})
       }
     },
 

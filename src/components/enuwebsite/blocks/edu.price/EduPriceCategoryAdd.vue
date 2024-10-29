@@ -38,11 +38,9 @@
 </template>
 
 <script>
-import RichEditor from "@/components/documents/editor/RichEditor.vue";
 import {inject, onMounted, ref, unref} from "vue";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
-import {AdmissionInfoService} from "@/service/admission.info.service";
 import {EnuWebService} from "@/service/enu.web.service";
 import {EduPriceService} from "@/service/edu.price.service";
 
