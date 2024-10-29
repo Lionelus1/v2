@@ -1,109 +1,133 @@
 <template>
   <div class="col-12 flex flex-column">
     <TitleBlock
-      :title="`${$t('web.siteSettings')}${facultyAbbrev ? ' - ' + facultyAbbrev['name_' + $i18n.locale] : ''}`" />
+        :title="`${$t('web.siteSettings')}${facultyAbbrev ? ' - ' + facultyAbbrev['name_' + $i18n.locale] : ''}`"/>
 
-
-    <TabView>
-      <TabPanel :header="$t('web.properties')">
-        <Panel :header="$t('web.commonSettings')" v-if="isWebAdmin || isFacultyWebAdmin">
-          <div v-if="isWebAdmin">
-            <div class="py-3">{{ i18n.t('web.mourningMode') }}</div>
-            <InputSwitch v-model="formData.mourning" @change="mourningChange" />
-            <div class="flex flex-column gap-2 pt-3" v-if="formData.mourning">
-              <label>{{ $t('common.startDate') }}</label>
-              <div>
-                <PrimeCalendar v-model="formData.mourning_start" dateFormat="dd.mm.yy" show-icon />
-              </div>
-              <label>{{ $t('common.endDate') }}</label>
-              <div>
-                <PrimeCalendar @date-select="endDateSelect" v-model="formData.mourning_end" dateFormat="dd.mm.yy"
-                  :class="{ 'p-invalid': !formData.mourning_end && submitted }" show-icon />
-                <div><small v-show="!formData.mourning_end && submitted" class="p-error">{{
-                  $t("common.requiredField")
-                }}</small></div>
-              </div>
-            </div>
-
-          </div>
-          <div>
-            <div class="py-3">{{ i18n.t('web.SiteMaintenanceMode') }}</div>
-            <InputSwitch v-model="formData.is_closed" />
-            <div class="py-3" v-if="formData.is_closed"><a :href="facultySite" target="_blank">{{
-              i18n.t('web.sitePreviewLink') }}</a></div>
-            <div class="field">
-              <Button :label="$t('common.save')" class="mt-3" @click="update" />
-            </div>
-
-          </div>
-        </Panel>
-        <div v-if="isUserExist">
-          <Panel v-if="isFacultyWebAdmin || isWebAdmin" :header="$t('web.universityAddressInfo')" class="mt-3">
-            <div class="p-fluid">
-              <div class="field">
-                <label>{{ $t('web.universityFax') }}</label>
-                <InputText v-model="infoData.fax" />
-              </div>
-              <div class="field">
-                <label>{{ $t('contact.email') }}</label>
-                <InputText v-model="infoData.email" type="email" />
-              </div>
-              <div class="field">
-                <label>{{ $t('web.websiteAddress') }}</label>
-                <InputText v-model="infoData.website" />
-              </div>
-              <div class="field">
-                <label>{{ $t('web.universityAddressKZ') }}</label>
-                <InputText v-model="infoData.address_kz" />
-
-              </div>
-              <div class="field">
-                <label>{{ $t('web.universityAddressRU') }}</label>
-                <InputText v-model="infoData.address_ru" />
-
-              </div>
-              <div class="field">
-                <label>{{ $t('web.universityAddressEN') }}</label>
-                <InputText v-model="infoData.address_en" />
-
-              </div>
-              <div class="field">
-                <label>{{ $t('web.bgImg') }}</label>
-                <FileUpload mode="basic" :customUpload="true" @uploader="uploadBg" :auto="true"
-                  v-bind:chooseLabel="$t('hdfs.chooseFile')" accept="image/*" />
-                <div v-if="infoData.bg_image" class="img-block">
-                  <br/>
-                  <Image :src="infoData.bgUrl ? infoData.bgUrl : getImgUrl(infoData.bg_image)" alt="Image" width="350" preview />
+    <BlockUI v-if="haveAccess" :blocked="loading" class="card">
+      <TabView>
+        <TabPanel :header="$t('web.properties')">
+          <Panel :header="$t('web.commonSettings')" v-if="isWebAdmin || isFacultyWebAdmin">
+            <div v-if="isWebAdmin">
+              <div class="py-3">{{ i18n.t('web.mourningMode') }}</div>
+              <InputSwitch v-model="formData.mourning" @change="mourningChange"/>
+              <div class="flex flex-column gap-2 pt-3" v-if="formData.mourning">
+                <label>{{ $t('common.startDate') }}</label>
+                <div>
+                  <PrimeCalendar v-model="formData.mourning_start" dateFormat="dd.mm.yy" show-icon/>
+                </div>
+                <label>{{ $t('common.endDate') }}</label>
+                <div>
+                  <PrimeCalendar @date-select="endDateSelect" v-model="formData.mourning_end" dateFormat="dd.mm.yy"
+                                 :class="{ 'p-invalid': !formData.mourning_end && submitted }" show-icon/>
+                  <div><small v-show="!formData.mourning_end && submitted" class="p-error">{{
+                      $t("common.requiredField")
+                    }}</small></div>
                 </div>
               </div>
+
             </div>
-            <div class="field">
-              <Button :label="$t('common.save')" class="mt-3" @click="saveSiteInfo" />
+            <div>
+              <div class="py-3">{{ i18n.t('web.SiteMaintenanceMode') }}</div>
+              <InputSwitch v-model="formData.is_closed"/>
+              <div class="py-3" v-if="formData.is_closed"><a :href="facultySite" target="_blank">{{
+                  i18n.t('web.sitePreviewLink')
+                }}</a></div>
+              <div class="field">
+                <Button :label="$t('common.save')" class="p-button-outlined mt-3" @click="update"/>
+              </div>
+
             </div>
           </Panel>
-        </div>
-      </TabPanel>
-      <TabPanel v-if="isWebAdmin" :header="$t('web.history')" @click="getTableLogs()">
-        <WebLogs :TN="TN" :key="TN" />
-      </TabPanel>
-    </TabView>
+          <div v-if="isUserExist">
+            <Panel v-if="isFacultyWebAdmin || isWebAdmin" :header="$t('web.universityAddressInfo')" class="mt-3">
+              <div class="p-fluid">
+                <div class="field">
+                  <label>{{ $t('web.universityFax') }}</label>
+                  <InputText v-model="infoData.fax"/>
+                </div>
+                <div class="field">
+                  <label>{{ $t('contact.email') }}</label>
+                  <InputText v-model="infoData.email" type="email"/>
+                </div>
+                <div class="field">
+                  <label>{{ $t('web.websiteAddress') }}</label>
+                  <InputText v-model="infoData.website"/>
+                </div>
+                <div class="field">
+                  <label>{{ $t('web.universityAddressKZ') }}</label>
+                  <InputText v-model="infoData.address_kz"/>
+
+                </div>
+                <div class="field">
+                  <label>{{ $t('web.universityAddressRU') }}</label>
+                  <InputText v-model="infoData.address_ru"/>
+
+                </div>
+                <div class="field">
+                  <label>{{ $t('web.universityAddressEN') }}</label>
+                  <InputText v-model="infoData.address_en"/>
+
+                </div>
+                <div class="field">
+                  <label>{{ $t('common.socialMediaIds') }}</label>
+                  <div class="flex flex-column">
+                    <div v-for="(platform, index) in socialPlatforms" :key="index" class="mb-3">
+                      <InputGroup>
+                        <InputGroupAddon>
+                          <i :class="iconClasses(platform)"></i>
+                        </InputGroupAddon>
+                        <InputText v-model="socialMediaIds[platform]" :placeholder="platform" />
+                      </InputGroup>
+                    </div>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>{{ $t('web.bgImg') }}</label>
+                  <FileUpload mode="basic" :customUpload="true" @uploader="uploadBg" :auto="true"
+                              v-bind:chooseLabel="$t('hdfs.chooseFile')" accept="image/*"/>
+                  <div v-if="infoData.bg_image" class="img-block">
+                    <br/>
+                    <Image :src="infoData.bgUrl ? infoData.bgUrl : getImgUrl(infoData.bg_image)" alt="Image" width="350" preview/>
+                  </div>
+                </div>
+              </div>
+              <div class="field">
+                <Button :label="$t('common.save')" class="p-button-outlined mt-3" @click="saveSiteInfo"/>
+              </div>
+            </Panel>
+          </div>
+        </TabPanel>
+        <TabPanel v-if="isWebAdmin" :header="$t('web.history')" @click="getTableLogs()">
+          <WebLogs :TN="TN" :key="TN"/>
+        </TabPanel>
+      </TabView>
+    </BlockUI>
+    <div v-else class="card">
+      <Access textMode="short" :showLogo="false" returnMode="back"></Access>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
-import { useI18n } from "vue-i18n";
-import { EnuWebService } from "@/service/enu.web.service";
-import { useToast } from "primevue/usetoast";
+import {computed, onMounted, ref, watch} from "vue";
+import {useI18n} from "vue-i18n";
+import {EnuWebService} from "@/service/enu.web.service";
+import {useToast} from "primevue/usetoast";
 import WebLogs from "@/components/enuwebsite/EnuSiteLogs.vue";
-import { findRole, smartEnuApi, fileRoute } from "@/config/config";
-import { useStore } from "vuex";
+import {findRole, smartEnuApi, fileRoute} from "@/config/config";
+import {useStore} from "vuex";
 import {FileService} from "@/service/file.service";
 import TitleBlock from "@/components/TitleBlock.vue";
+import Access from "@/pages/Access.vue";
+import InputGroup from 'primevue/inputgroup';
+import InputGroupAddon from 'primevue/inputgroupaddon';
+
 
 const store = useStore()
 const formData = ref({})
-const infoData = ref({})
+const infoData = ref({
+
+})
 const isClosed = ref()
 const i18n = useI18n()
 const enuService = new EnuWebService()
@@ -116,9 +140,21 @@ const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
 const isWebAdmin = computed(() => findRole(authUser.value, "enu_web_admin"))
 const isFacultyWebAdmin = computed(() => findRole(authUser.value, "enu_web_fac_admin"))
 const facultyAbbrev = ref()
-const userParams = ref({ user_id: authUser.value.userID })
+const userParams = ref({user_id: authUser.value.userID})
 const fileService = new FileService()
 const bgImg = ref(null)
+const haveAccess = ref(true)
+const socialMediaIds = ref(
+  {
+    facebook: null,
+    instagram: null,
+    youtube: null,
+    telegram: null,
+    tiktok: null,
+  }
+);
+const socialPlatforms = ['facebook', 'instagram', 'youtube', 'telegram', 'tiktok'];
+const iconClasses = (platform) => `pi pi-${platform}`;
 
 const facultySite = computed(() => {
   return `${enuService.getSiteUrl(store, null)}?mode=preview`
@@ -130,12 +166,15 @@ const getFacultyAbb = () => {
     if (res.data) {
       facultyAbbrev.value = res.data
       isUserExist.value = true
-
     }
     loading.value = false;
   }).catch(error => {
-    loading.value = false;
-    toast.add({ severity: "error", summary: error, life: 3000 });
+    if (error?.response?.status === 403) {
+      haveAccess.value = false
+    } else {
+      loading.value = false
+      toast.add({severity: "error", summary: error, life: 3000});
+    }
   });
 }
 const getSettings = () => {
@@ -146,19 +185,27 @@ const getSettings = () => {
       formData.value = res.data.settings;
       infoData.value = res.data.site_info || {}
       formData.value.is_closed = infoData.value.is_closed
+      if (res.data?.site_info?.social_media_ids){
+        socialMediaIds.value = JSON.parse(res.data?.site_info?.social_media_ids)
+      }
+      
       TN.value = res.data.tn_res
 
       initMourning(formData.value)
     }
     loading.value = false;
   }).catch(error => {
-    loading.value = false;
-    toast.add({ severity: "error", summary: error, life: 3000 });
+    if (error?.response?.status === 403) {
+      haveAccess.value = false
+    } else {
+      loading.value = false
+      toast.add({severity: "error", summary: error, life: 3000});
+    }
   });
 }
 
 onMounted(() => {
-  // getSettings();
+  getSettings();
   getFacultyAbb();
 
 })
@@ -175,14 +222,14 @@ const update = () => {
   }
   enuService.setSiteSettings(formData.value).then(res => {
     if (res.data) {
-      toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
+      toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
     }
     submitted.value = false;
     loading.value = false;
   }).catch(error => {
     submitted.value = false;
     loading.value = false;
-    toast.add({ severity: "error", summary: error, life: 3000 });
+    toast.add({severity: "error", summary: error, life: 3000});
   });
 }
 
@@ -238,22 +285,23 @@ const initMourning = (data) => {
 }
 
 const saveSiteInfo = () => {
+  infoData.value.social_media_ids = JSON.stringify(socialMediaIds.value)
   enuService.setSiteInfo(infoData.value).then(res => {
     if (res.data)
-      toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
+      toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
     // getSettings();
   }).catch(error => {
-    toast.add({ severity: "error", summary: error, life: 3000 });
+    toast.add({severity: "error", summary: error, life: 3000});
   })
 }
 
 const saveMaintenaceMode = () => {
-  enuService.setSiteMaintenanceMode({ is_closed: isClosed.value }).then(res => {
+  enuService.setSiteMaintenanceMode({is_closed: isClosed.value}).then(res => {
     if (res.data)
-      toast.add({ severity: "success", summary: i18n.t('common.success'), life: 3000 });
+      toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
     // getSettings();
   }).catch(error => {
-    toast.add({ severity: "error", summary: error, life: 3000 });
+    toast.add({severity: "error", summary: error, life: 3000});
   })
 }
 

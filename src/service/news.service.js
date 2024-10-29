@@ -11,6 +11,10 @@ export class NewsService {
         return api.get(`/findNews/${id}`, {headers: getHeader()});
     }
 
+    getHistoryNews(id) {
+        return api.get(`/newsHistory/${id}`, {headers: getHeader()});
+    }
+
     addNews(data) {
         return api.post("/addNews", data, {headers: getHeader()});
     }
@@ -41,6 +45,22 @@ export class NewsService {
 
     getNewsFiles(params) {
         return api.post(`/web/getNewsFiles`, params, {headers: getHeader()});
+    }
+
+    delNewsCat(data) {
+        return api.post(`/delNewsCat`, data, {headers: getHeader()});
+    }
+
+    categories(data) {
+        return api.post(`/delNewsCat`, data, {headers: getHeader()});
+    }
+
+    getAllNews(data) {
+        return api.post(`/getNews`, data, {headers: getHeader()});
+    }
+
+    getPublishEvents() {
+        return api.get(`/getPublishEvents`, {headers: getHeader()});
     }
 
     getWelcomeNews(params) {

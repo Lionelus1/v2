@@ -87,7 +87,11 @@ export default {
                 height: this.height,
                 fontsize_formats: "8px 10px 12px 14px 16px 18px 20px 22px 24px 36px 48px",
                 menubar: false,
-                toolbar_mode: 'wrap',
+                external_plugins: {
+                  'tiny_mce_wiris': `/assets/mathtype-tinymce5/plugin.min.js`,
+                },
+              draggable_modal: true,
+              toolbar_mode: 'wrap',
                 allow_script_urls: true,
                 remove_script_host: false,
                 relative_urls: false,
@@ -99,8 +103,10 @@ export default {
                     'insertdatetime media table paste code help wordcount pagebreak'
                 ],
                 toolbar:
-                    `undo redo | fontselect fontsizeselect formatselect | ${this.contractElements ? `customSelect` : ''} | bold italic forecolor backcolor |
-            alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | blockquote |
+                    `undo redo | fontselect fontsizeselect formatselect | ${this.contractElements ? `customSelect` : ''}
+                    | bold italic forecolor backcolor |
+                    alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | blockquote |
+                    tiny_mce_wiris_formulaEditor tiny_mce_wiris_formulaEditorChemistry |
             removeformat | table | link | image media ${this.customFileUpload ? `fileupload` : ''} | code | pagebreak | ${this.accordion ? `accordion` : ''}`,
                 contextmenu: 'link | customUploadContext',
                 images_upload_handler: uploadSingFile,
@@ -186,14 +192,118 @@ export default {
                         fetch: (callback) => {
                             const items = [
                                 {
-                                    type: 'menuitem',
+                                    type: 'nestedmenuitem',
                                     text: this.$t('doctemplate.editor.ourside'),
-                                    onAction: () => onSelectItem('{ourside}&nbsp;'),
+                                    getSubmenuItems: () => [
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.orgName'),
+                                        onAction: () => onSelectItem('{ourside:ourside:name}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.orgBIN'),
+                                        onAction: () => onSelectItem('{ourside:ourside:bin}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.orgAddress'),
+                                        onAction: () => onSelectItem('{ourside:ourside:address}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.orgPhone'),
+                                        onAction: () => onSelectItem('{ourside:ourside:phone}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.orgBankAccount'),
+                                        onAction: () => onSelectItem('{ourside:ourside:bank_account}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.signerFullname'),
+                                        onAction: () => onSelectItem('{ourside:ourside:signer_fullname}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.signerFullnameShorten'),
+                                        onAction: () => onSelectItem('{ourside:ourside:signer_fullname_shorten}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.signerPosition'),
+                                        onAction: () => onSelectItem('{ourside:ourside:signer_position}&nbsp;'),
+                                      },
+                                    ],
                                 },
                                 {
-                                    type: 'menuitem',
+                                    type: 'nestedmenuitem',
                                     text: this.$t('doctemplate.editor.contragent'),
-                                    onAction: () => onSelectItem('{contragent}&nbsp;'),
+                                    getSubmenuItems: () => [
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.orgName'),
+                                        onAction: () => onSelectItem('{contragent:contragent:name}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.orgBIN'),
+                                        onAction: () => onSelectItem('{contragent:contragent:bin}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.orgAddress'),
+                                        onAction: () => onSelectItem('{contragent:contragent:address}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.orgPhone'),
+                                        onAction: () => onSelectItem('{contragent:contragent:phone}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.orgBankAccount'),
+                                        onAction: () => onSelectItem('{contragent:contragent:bank_account}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.signerFullname'),
+                                        onAction: () => onSelectItem('{contragent:contragent:signer_fullname}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.signerFullnameShorten'),
+                                        onAction: () => onSelectItem('{contragent:contragent:signer_fullname_shorten}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.signerPosition'),
+                                        onAction: () => onSelectItem('{contragent:contragent:signer_position}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.signerCard'),
+                                        onAction: () => onSelectItem('{contragent:contragent:signer_card}&nbsp;'),
+                                      },
+                                    ],
+                                },
+                                {
+                                  type: 'nestedmenuitem',
+                                  text: this.$t('doctemplate.editor.person'),
+                                  getSubmenuItems: () => [
+                                    {
+                                      type: 'nestedmenuitem',
+                                      text: this.$t('doctemplate.editor.sciadvisor'),
+                                      getSubmenuItems: () => [
+                                        {
+                                          type: 'menuitem',
+                                          text: this.$t('doctemplate.editor.fullnameShorten'),
+                                          onAction: () => onSelectItem('{person:sciadvisor:fullname_shorten}&nbsp;'),
+                                        },
+                                      ]
+                                    },
+                                  ],
                                 },
                                 {
                                     type: 'menuitem',
@@ -201,9 +311,25 @@ export default {
                                     onAction: () => onSelectItem('{place}&nbsp;'),
                                 },
                                 {
-                                    type: 'menuitem',
+                                    type: 'nestedmenuitem',
                                     text: this.$t('doctemplate.editor.date'),
-                                    onAction: () => onSelectItem('{date}&nbsp;'),
+                                    getSubmenuItems: () => [
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.agreementDate'),
+                                        onAction: () => onSelectItem('{date}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.mnvoAgreementDate'),
+                                        onAction: () => onSelectItem('{date:mnvo}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.agreementEndDate'),
+                                        onAction: () => onSelectItem('{date:agreement_end_date}&nbsp;'),
+                                      },
+                                    ],
                                 },
                                 {
                                     type: 'menuitem',
@@ -215,20 +341,87 @@ export default {
                                     text: this.$t('doctemplate.editor.student'),
                                     onAction: () => onSelectItem('{student}&nbsp;'),
                                 },
+                                // {
+                                //     type: 'menuitem',
+                                //     text: this.$t('doctemplate.editor.individualEntrepreneur'),
+                                //     onAction: () => onSelectItem('{individualEntrepreneur}&nbsp;'),
+                                // },
                                 {
-                                    type: 'menuitem',
-                                    text: this.$t('doctemplate.editor.individualEntrepreneur'),
-                                    onAction: () => onSelectItem('{individualEntrepreneur}&nbsp;'),
-                                },
-                                {
-                                    type: 'menuitem',
+                                    type: 'nestedmenuitem',
                                     text: this.$t('doctemplate.editor.text'),
-                                    onAction: () => onSelectItem('text'),
+                                    getSubmenuItems: () => [
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.text'),
+                                        onAction: () => onSelectItem('text'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.projectPosition'),
+                                        onAction: () => onSelectItem('{text:project_position}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.irn'),
+                                        onAction: () => onSelectItem('{text:irn}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.theme'),
+                                        onAction: () => onSelectItem('{text:theme}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.mnvoAgreement'),
+                                        onAction: () => onSelectItem('{text:mnvo_agreement}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.agreementSum'),
+                                        onAction: () => onSelectItem('{text:agreement_sum}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.agreementSumText'),
+                                        onAction: () => onSelectItem('{text:agreement_sum_text}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.executorWorkPlace'),
+                                        onAction: () => onSelectItem('{text:executor_work_place}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.priority'),
+                                        onAction: () => onSelectItem('{text:priority}&nbsp;'),
+                                      },
+                                      {
+                                        type: 'menuitem',
+                                        text: this.$t('doctemplate.editor.subpriority'),
+                                        onAction: () => onSelectItem('{text:subpriority}&nbsp;'),
+                                      },
+                                    ],
                                 },
                                 {
                                     type: 'menuitem',
                                     text: this.$t('common.number'),
                                     onAction: () => onSelectItem('{number}&nbsp;'),
+                                },
+                                {
+                                  type: 'nestedmenuitem',
+                                  text: this.$t('doctemplate.editor.workTypes'),
+                                  getSubmenuItems: () => [
+                                    {
+                                      type: 'menuitem',
+                                      text: this.$t('doctemplate.editor.workTypesItems'),
+                                      onAction: () => onSelectItem('{items:work_types:columns[task_code,work_name,start_date,end_date,result,percentage]}&nbsp;'),
+                                    },
+                                    {
+                                      type: 'menuitem',
+                                      text: this.$t('doctemplate.editor.workTypesTable'),
+                                      onAction: () => onSelectItem('{table:work_types:columns[task_code,work_name,start_date,end_date,result,percentage]}&nbsp;'),
+                                    },
+                                  ],
                                 },
                             ];
                             callback(items);
@@ -286,8 +479,8 @@ export default {
                         } else {
                             const styledText = `<span style="font-weight: bold ;color: blue;font-style: italic;">${value}</span>`;
                             editor.selection.setContent(styledText);
+                            editor.execCommand('removeformat', false, null);
                         }
-                        editor.execCommand('removeformat', false, null);
                     };
                   const addAccordion = (value1, value2) => {
                       const styledText = `<div><accordion class="accordion">

@@ -2,24 +2,31 @@
   <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
   <BlockUI v-if="contragentRequested" :blocked="loading" class="card">
     <div>
+      <div class="p-fluid pb-0" v-if="!contragent">
+        <Message severity="warn" :closable="false">{{ $t('contracts.contragentAsEnt') }}</Message>
+      </div>
       <div class="p-fluid md:col-6 pb-0">
         <label>{{ $t('contracts.contragentSigner') }}</label>
       </div>
       <div class="p-fluid md:col-6">
         <div class="field mb-4" v-if="contragent">
-          <span class="p-input-icon-right">
-            <i v-if="contragent" class="pi pi-id-card" @click="open('organizationCard')"></i>
+          <IconField iconPosition="right">
+            <InputIcon>
+              <i v-if="contragent" class="pi pi-id-card" style="font-size: 1.2rem" @click="open('organizationCard')"></i>
+            </InputIcon>
             <InputText :readonly="true" type="text" v-model="getOrganizationName"></InputText>
-          </span>
+          </IconField>
         </div>
         <div class="field mb-0" v-if="signer">
-          <span class="p-float-label p-input-icon-right">
-            <i v-if="signer && signer.userID > 0" 
-              class="pi pi-id-card" style="right: 2.5rem;" @click="open('signerCard')"></i>
-            <i class="pi pi-ellipsis-h" style="right: 0;" @click="open('signerList')"></i>
+          <IconField iconPosition="right">
+            <InputIcon>
+              <i v-if="signer && signer.userID > 0"
+                 class="pi pi-id-card" style="font-size: 1.25rem;padding-right: 10px;" @click="open('signerCard')"></i>
+              <i class="pi pi-ellipsis-h" style="font-size: 1.25rem" @click="open('signerList')"></i>
+            </InputIcon>
             <InputText :readonly="true" type="text" v-model="getSignerName"></InputText>
-            <label v-if="contragent">{{$t('contracts.signer')}}</label>
-          </span>
+          </IconField>
+          <label v-if="contragent">{{$t('contracts.signer')}}</label>
         </div>
       </div>
       <div class="md:col-6">
@@ -35,7 +42,7 @@
     <Message severity="warn" :closable="false">{{ $t('contracts.contragentWarning') }}</Message>
   </div>
   <Sidebar v-model:visible="visibility.organizationCard" position="right" class="p-sidebar-lg">
-    <OrganizationPage :organization="contragent" :sidebar="true" @organizationUpdated="organizationUpdated"></OrganizationPage>
+    <OrganizationPage :id="contragent.id" :organization="contragent" :sidebar="true" @organizationUpdated="organizationUpdated"></OrganizationPage>
   </Sidebar>
   <Sidebar v-model:visible="visibility.signerCard" position="right" class="p-sidebar-lg">
     <PersonPage :person="signer" :sidebar="true" @organizationUpdated="personUpdated" custom-type="viewUser"></PersonPage>
@@ -194,6 +201,7 @@ export default {
         this.loading = false;
 
         if (this.contract.docHistory.stateId > this.DocEnum.CREATED.ID) {
+          this.$router.push('/sign/' + this.contract.uuid);
           return;
         }
         
@@ -225,11 +233,16 @@ export default {
       })
     },
     downloadContract() {
+      this.loading = true;
+
       this.service.downloadDocumentV2({
         uuid: this.contract.uuid,
         preview: true,
+        organization: this.contragent,
+        signer: this.signer,
       }).then(res => {
         this.pdf = b64toBlob(res.data);
+        this.loading = false;
       }).catch(err => {
         this.loading = false;
 
@@ -247,16 +260,19 @@ export default {
       this.close('organizationCard');
 
       this.contragent = JSON.parse(JSON.stringify(event));
+      this.downloadContract();
     },
     personUpdated(event) {
       this.close('signerCard');
 
       this.signer = JSON.parse(JSON.stringify(event));
+      this.downloadContract();
     },
     personSelected(event) {
       this.close('signerList');
 
       this.signer = JSON.parse(JSON.stringify(event));
+      this.downloadContract();
     },
     contragentAccept() {
       if (!this.signer || this.signer.userID < 1) {

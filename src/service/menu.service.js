@@ -12,7 +12,7 @@ export class MenuService {
                     {
                         label: $t('contracts.template'),
                         icon: 'pi pi-fw pi-book',
-                        to: '/documents/doctemplate',
+                        to: '/documents/templates',
                         visible: this.isEnuWorker()
                     },
                     {
@@ -28,7 +28,7 @@ export class MenuService {
                     {
                         label: $t('educomplex.title'), 
                         icon: 'pi pi-fw pi-folder', 
-                        to: '/documents/catalog/educomplex'
+                        to: '/documents/catalog/educomplex/' + Enum.DocType.EduComplex
                     },
                     {
                         label: $t('course.certificate.title'),
@@ -36,9 +36,20 @@ export class MenuService {
                         to: '/documents/certificates'
                     },
                     {
-                        label: $t('postaccmonrep.title'),
-                        icon: 'pi pi-fw pi-folder',
-                        to: '/documents/catalog/postaccmonrep'
+                        label: $t('workPlan.reports'),
+                        icon: 'pi pi-fw pi-chart-line',
+                        items: [
+                            {
+                                label: $t('postaccmonrep.title'),
+                                icon: 'pi pi-fw pi-folder',
+                                to: '/documents/catalog/postaccmonrep'
+                            },
+                            {
+                                label: $t('common.sacReportMenuTitle'),
+                                icon: 'pi pi-fw pi-folder',
+                                to: '/documents/catalog/educomplex/' + Enum.DocType.StateAttestationCommission,
+                            },
+                        ]
                     },
                 ]
             },
@@ -77,7 +88,13 @@ export class MenuService {
                         icon: 'fa-solid fa-rotate',
                         to: '/integrations',
                         visible: this.findRole("main_administrator")
-                    }
+                    },
+                    {
+                        label: $t('smartenu.mailingTitle'),
+                        icon: 'fa-regular fa-paper-plane',
+                        to: '/mailing',
+                        visible: this.findRole("mailing_manager")
+                    },
                 ]
             },
             {
@@ -103,6 +120,11 @@ export class MenuService {
                         label: $t('common.students'),
                         icon: 'fa-solid fa-graduation-cap',
                         to: '/contragent/persons/' + Enum.PersonType.Student
+                    },
+                    {
+                        label: $t('common.graduates'),
+                        icon: 'fa-solid fa-graduation-cap',
+                        to: '/contragent/persons/' + Enum.PersonType.Graduate
                     }
                 ]
             },
@@ -113,7 +135,8 @@ export class MenuService {
                     {
                         label: $t('smartenu.categories'),
                         icon: 'fa-solid fa-tags',
-                        to: '/newscategories/cattable'
+                        to: '/newscategories/cattable',
+                        visible: !this.findRole("student")
                     },
                     {
                         label: $t('smartenu.newsList'), 
@@ -296,16 +319,49 @@ export class MenuService {
                 ]
             },
             {
+                label: $t('educationalPrograms.educationalProgramConstructor'), icon: 'fa-solid fa-diagram-project',
+                items: [
+                    {
+                        label: $t('educationalPrograms.bachelor'), to: '/educational-programs/bachelor',
+                    },
+                    {
+                        label: $t('educationalPrograms.master'), to: '/educational-programs/master',
+                    },
+                    {
+                        label: $t('educationalPrograms.doctoral'), to: '/educational-programs/doctoral',
+                    },
+                ]
+            },
+            {
+                label: 'Каталог услуг',
+                icon: 'fa-solid fa-briefcase',
+                to: '/service-catalog'
+            },
+            {
                 label: $t('helpDesk.title'),
                 icon: 'pi pi-spin pi-cog',
                 to: '/helpdesk',
+
             },
             {
                 label: $t('telegram.title'),
                 icon: 'fa-solid fa-robot',
                 to: '/telegram',
                 visible: this.findRole('telegram') || this.findRole('main_administrator')
-            }
+            },
+            {
+                label: $t('workPlan.reports'),
+                icon: 'pi pi-fw pi-chart-line',
+                visible: this.findRole("personal"),
+                items: [
+                    {
+                        label: $t('Hikvision'),
+                        icon: 'fa-solid fa-file-signature',
+                        to: '/hikvision',
+
+                    }
+                ]
+            },
         ]
     }
 

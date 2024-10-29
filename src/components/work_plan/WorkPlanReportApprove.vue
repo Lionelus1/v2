@@ -38,7 +38,7 @@ export default {
             nameen: "Certificate of an individual",
             value: "individual"
           }
-        }
+        },
       ],
       currentStageUsers: null,
       currentStage: 1,
@@ -95,7 +95,8 @@ export default {
         quarter: this.report.report_type === 2 ? this.report.quarter : null,
         halfYearType: this.report.report_type === 3 ? this.report.halfYearType : null,
         department_id: this.report.department_id ? this.report.department_id : null,
-        report_id: this.report.id
+        report_id: this.report.id,
+        is_report: true
       };
       this.planService.getWorkPlanData(data).then(res => {
         this.file = this.b64toBlob(res.data);
@@ -134,7 +135,6 @@ export default {
   },
   computed: {
     isSciencePlan() {
-      console.log(this.plan.plan_type.code)
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
     }
   }

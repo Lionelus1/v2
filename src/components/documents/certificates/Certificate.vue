@@ -9,8 +9,8 @@
     </div>
     <TabView style="margin-top:0px" v-model:activeIndex="activeIndex">
       <TabPanel headerStyle="" v-for="lang in languages" :key="lang" :header="$t('common.language.' + lang)">
-        <div :ref="'template'+lang" id="candiv" class="certificate"   style:="overflow:scroll; width:100%; height:100%;">
-          <div class="certificate" style="  height: 595px;width:842px;border: 1px solid #000;user-select: none;position:relative;">
+        <div :ref="'template'+lang" id="candiv" style="overflow:scroll; width:100%; height:100%;">
+          <div class="certificate" style="height: 970px;width:1390px;border: 1px solid #000;user-select:none;position:relative;">
             <template v-for="element in template.params">
               <Vue3DraggableResizable   :active="element.active"  :ref="lang+template.params.indexOf(element)"  :id="lang+template.params.indexOf(element)" :key="element.id" v-if="element.value != null && (element.name ==='img'|| element.name ==='txt') && !element.isDeleted && (element.description === lang || element.description == 'common')"
                 v-model:x="element.value.rectelement.x"
@@ -298,9 +298,9 @@ export default {
        
         saveCertificateTemplate() {
           this.saving = true;
-          for (let i=0;i<this.template.params.length; i++) {
+          for (let i=0; i<this.template.params.length; i++) {
             if (this.template.params[i].name === 'text') {
-              let divHtml = this.$refs["template" + this.template.params[i].description].innerHTML;
+              let divHtml = this.$refs["template" + this.template?.params[i].description][0].innerHTML;
               divHtml = divHtml.replaceAll(this.smartEnuApi + this.fileRoute, "@fileservice")
               this.template.params[i].value = divHtml
             } 

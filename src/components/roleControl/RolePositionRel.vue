@@ -11,7 +11,6 @@
         v-on:click="open('create', nil)"
       />
       <span class="p-input-icon-left mr-2">
-        <i class="pi pi-search" />
         <InputText
           type="search"
           v-model="searchText"

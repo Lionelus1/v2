@@ -1,8 +1,8 @@
 <template>
   <div class="col-12" v-if="slugs">
     <h5>{{ $t('web.domain') }}</h5>
-    <Dropdown v-model="selectedSlug" :options="slugs" optionLabel="name"
-              placeholder="Выберите факультет" class="w-full" :loading="loading" @change="select" />
+    <Dropdown v-model="selectedSlug" :options="slugs" :optionLabel="$i18n.locale == 'kz' ? 'name_kz' : $i18n.locale == 'en' ? 'name_en' : 'name_ru' "
+              :placeholder="$t('smartenu.selectFaculty')" class="w-full" :loading="loading" @change="select" />
   </div>
 </template>
 

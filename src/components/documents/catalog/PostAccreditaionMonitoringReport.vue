@@ -1,6 +1,5 @@
 <template>
     <h3>{{ $t("postaccmonrep.title") }}</h3>
-
     <ToolbarMenu :data="menu" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
 
     <div class="card">
@@ -699,7 +698,7 @@ export default {
         )
             .then(response => {
               const link = document.createElement("a");
-              link.href = "data:application/octet-stream;base64," + response.data;
+              link.href = "data:application/octet-stream;base64," + response.data.file;
               link.setAttribute("download", path);
               link.download = path;
               link.click();

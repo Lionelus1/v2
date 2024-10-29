@@ -18,7 +18,6 @@
           <div class="flex justify-content-between align-items-center">
             <h5 class="m-0">{{ $t('faq.title') }}</h5>
             <span class="p-input-icon-left">
-              <i class="pi pi-search"/>
               <InputText type="search" v-model="userData.searchText" :placeholder="$t('common.search')"
                          @keyup.enter="getData" @click="clearData"/>
               <Button icon="pi pi-search" class="ml-1" @click="getData"/>
@@ -133,7 +132,6 @@
           <div class="flex justify-content-between align-items-center">
             <h5 class="m-0">{{ $t('faq.title') }}</h5>
             <span class="p-input-icon-left">
-              <i class="pi pi-search"/>
               <InputText type="search" v-model="userData.searchText" :placeholder="$t('common.search')"
                          @keyup.enter="getData" @click="clearData"/>
               <Button icon="pi pi-search" class="ml-1" @click="getData"/>
@@ -857,9 +855,34 @@ export default {
     color: #c63737;
   }
 
+  &.status-negotiation {
+    background: #feedaf;
+    color: #8a5340;
+  }
+
+  &.status-1 {
+    background: #b3e5fc;
+    color: #23547b;
+  }
+
   &.status-4 {
     background: #eccfff;
     color: #694382;
+  }
+
+  &.status-proposal {
+    background: #ffd8b2;
+    color: #805b36;
+  }
+
+  &.online {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.offline {
+    background: #ffcdd2;
+    color: #c63737;
   }
 }
 </style>

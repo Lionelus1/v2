@@ -1,42 +1,25 @@
 <template>
-  <Dialog :header="$t('workPlan.addPlan')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid" @hide="closeBasic">
+  <Dialog :header="$t('workPlan.addPlan')" v-model:visible="showModal" :style="{width: '450px'}" class="p-fluid"
+          @hide="closeBasic">
     <div class="field">
       <label>{{ $t('workPlan.planName') }}</label>
       <InputText v-model="formData.work_plan_name" v-on:keyup.enter="createPlan"/>
     </div>
     <div class="field">
       <label>{{ $t('common.lang') }}</label>
-      <Dropdown v-model="formData.lang" :options="languages" optionLabel="name" optionValue="id" :placeholder="$t('common.select')"/>
+      <Dropdown v-model="formData.lang" :options="languages" optionLabel="name" optionValue="id"
+                :placeholder="$t('common.select')"/>
       <small class="p-error" v-if="submitted && !formData.lang">{{ $t('workPlan.errors.langError') }}</small>
     </div>
     <div class="field">
       <label>{{ $t('workPlan.planType') }}</label>
-      <Dropdown v-model="formData.plan_type" :options="types" :optionLabel="'name_' + $i18n.locale" optionValue="id" :placeholder="$t('common.select')"/>
+      <Dropdown v-model="formData.plan_type" :options="types" :optionLabel="'name_' + $i18n.locale" optionValue="id"
+                :placeholder="$t('common.select')"/>
       <small class="p-error" v-if="submitted && !formData.plan_type">{{ $t('common.requiredField') }}</small>
     </div>
-    <template v-if="formData.plan_type === 3">
-      <div class="field" v-for="(param, index) of params" :key="index">
-        <template v-if="param.type === 'text'">
-          <label>{{ $t('workPlan.' + param.name) }}</label>
-          <InputText v-model="param.value"/>
-        </template>
-        <template v-if="param.type === 'date'">
-          <label>{{ $t('workPlan.' + param.name) }}</label>
-          <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
-        </template>
-        <small class="p-error" v-if="submitted && !param.value">{{ $t('common.requiredField') }}</small>
-      </div>
-      <div class="field">
-        <label>{{ $t('contracts.contract') }}</label>
-        <CustomFileUpload @upload="uploadFile($event, 'contractFiles')" v-model="contractFiles" :multiple="false" :button="true"/>
-        <small class="p-error" v-if="submitted && !contractFiles">{{ $t('common.requiredField') }}</small>
-      </div>
-      <div class="field">
-        <label>{{ $t('common.doc') }}</label>
-        <CustomFileUpload @upload="uploadFile($event, 'documentFiles')" v-model="documentFiles" :multiple="false" :button="true"/>
-        <small class="p-error" v-if="submitted && !documentFiles">{{ $t('common.requiredField') }}</small>
-      </div>
-    </template>
+
+    <DocParams :params="params"></DocParams>
+
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
               @click="closeBasic"/>
@@ -49,8 +32,9 @@
 
 <script setup>
 import {WorkPlanService} from "@/service/work.plan.service";
-import CustomFileUpload from "@/components/CustomFileUpload.vue";
-import {computed, onMounted, reactive, ref} from "vue";
+import {DocService} from "@/service/doc.service";
+import DocParams from "@/components/DocParams.vue";
+import {computed, onMounted, reactive, ref, watch} from "vue";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
 
@@ -86,41 +70,9 @@ const languages = ref([
 const isDisabled = computed(() => !validate())
 
 const planService = new WorkPlanService()
+const docService = new DocService()
 const types = ref([])
-const contractFiles = ref(null)
-const documentFiles = ref(null)
-const params = ref([
-  {
-    name: "plancontractname",
-    value: null,
-    description: "Contract name",
-    type: "text"
-  },
-  {
-    name: "plancontractnumber",
-    value: null,
-    description: "Contract number",
-    type: "text"
-  },
-  {
-    name: "plancontractdate",
-    value: null,
-    description: "Contract date",
-    type: "date"
-  },
-  {
-    name: "plancontractprioruty",
-    value: null,
-    description: "Contract priority",
-    type: "text"
-  },
-  {
-    name: "plancontracttopic",
-    value: null,
-    description: "Contract topic",
-    type: "text"
-  },
-])
+const params = ref(null)
 
 const closeBasic = () => {
   emit('hide')
@@ -131,22 +83,25 @@ const createPlan = () => {
   if (!validate()) return
 
   const fd = new FormData()
-  formData.science_params = formData.plan_type === 3 ? params.value : null
+  formData.science_params = params.value?.filter(param => param.component != "file")
   fd.append("workplan", JSON.stringify(formData))
-  if (contractFiles?.value?.length > 0) {
-    for (let file of contractFiles.value) {
-      fd.append("contract_files[]", file)
-    }
-  }
 
-  if (documentFiles?.value?.length > 0) {
-    for (let file of documentFiles.value) {
-      fd.append("document_files[]", file)
+  params.value?.forEach((param) => {
+    if (param.component == "file" && param.value?.length > 0) {
+      for (let file of param.value) {
+        fd.append(`${param.name}[]`, file)
+      }
     }
-  }
+  })
+
   planService.createPlan(fd).then(res => {
     if (res.data.is_success) {
-      toast.add({severity: 'success', summary: t('common.success'), detail: t('workPlan.message.planCreated'), life: 3000});
+      toast.add({
+        severity: 'success',
+        summary: t('common.success'),
+        detail: t('workPlan.message.planCreated'),
+        life: 3000
+      });
     } else {
       toast.add({severity: "error", summary: "Create plan error", life: 3000});
     }
@@ -159,33 +114,16 @@ const createPlan = () => {
   });
 }
 
-const uploadFile = (event, name) => {
-  switch (name) {
-    case 'contractFiles':
-      contractFiles.value = event.files;
-      break;
-    case 'documentFiles':
-      documentFiles.value = event.files;
-      break;
-    default:
-      break;
-  }
-}
-
 const validate = () => {
   let paramValidation = false
-  let filesValidation = false
-  if (formData.plan_type === 3) {
+  if (params.value != null) {
     params?.value?.forEach(param => {
-      if (param.value === null || param.value === '') {
+      if ((param.value === null || param.value === '') || (param.component == "file" && param.value?.length == 0)) {
         paramValidation = true
       }
     })
-
-    filesValidation = !((contractFiles.value && contractFiles.value.length !== 0) && (documentFiles.value && documentFiles.value.length !== 0))
   }
-
-  return formData.work_plan_name && formData.lang && formData.plan_type && !paramValidation && !filesValidation;
+  return formData.work_plan_name && formData.lang && formData.plan_type && !paramValidation;
 }
 
 const getWorkPlanTypes = () => {
@@ -198,5 +136,19 @@ const getWorkPlanTypes = () => {
 
 onMounted(() => {
   getWorkPlanTypes();
+})
+
+watch(() => formData.plan_type, () => {
+  const id = types.value[formData.plan_type - 1].dic_document_types
+  if (id == null) {
+    params.value = null
+    return
+  }
+  docService.getDocParams(id).then(res => {
+    params.value = JSON.parse(res.data)
+  }).catch(error => {
+    toast.add({severity: "error", summary: error, life: 3000});
+  })
+
 })
 </script>

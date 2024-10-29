@@ -17,9 +17,9 @@ export default class ResumeService {
         )
     }
 
-    getCandidate() {
+    getCandidate(userID) {
         return api.post("/candidate/get",
-            {},
+            {userId: userID},
             {headers: getHeader()}
         )
     }

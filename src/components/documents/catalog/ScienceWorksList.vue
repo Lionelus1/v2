@@ -74,7 +74,7 @@
     <div class="p-fluid" style="min-width: 320px;">
       <div class="field">
         <label>{{ $t('scienceWorks.filter.author') }}</label>
-        <FindUser v-model="tempFilter.author" :max="1" searchMode="local" ></FindUser>
+        <FindUser v-model="tempFilter.author" :max="1" searchMode="local" :user-type="3"></FindUser>
       </div>
       <div class="field">
         <label>{{ $t('scienceWorks.filter.status') }}</label>

@@ -3,7 +3,7 @@
 
       <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
 
-      <TitleBlock class="content_title" :title="$t('Онлайн курс')" :show-back-button="true"/>
+      <TitleBlock class="content_title" :title="$t('course.onlineCourse')" :show-back-button="true"/>
         <div class="course_card block sm:flex p-4">
           <div class="text text-white">
             <div class="flex mb-4">
@@ -34,7 +34,7 @@
 <!--        <TabPanel :header="$t('course.users')">-->
 <!--          <CourseStudents  :props-course="course" :get-course="getCourse" @update-course="getCourse" />-->
 <!--        </TabPanel>-->
-        <TabPanel  header="Потоки">
+        <TabPanel  :header="$t('course.potok')">
           <CourseHistories  :props-course="course" :get-course="getCourse" @update-course="getCourse" :courseID="course.id"></CourseHistories>
         </TabPanel>
         <!--  КУРС МОДУЛІ  -->
@@ -280,11 +280,11 @@
               });
           },
 
-          updateModule(data) {
-              this.moduleDialog = true;
+    updateModule(data) {
+      this.moduleDialog = true;
 
-              this.formData = data;
-          },
+      this.formData = data;
+    },
 
           updateModuleOfCourse() {
             this.formData.course_id = parseInt(this.course_id);
@@ -324,9 +324,10 @@
 </script>
 
 <style lang="scss">
-.course_card{
+.course_card {
   background: #293042;
-  img{
+
+  img {
     margin-right: 20px;
     width: 240px;
     height: 160px;
@@ -340,31 +341,37 @@
   gap: 20px;
   grid-template-columns: repeat(4, 1fr);
 }
-.module_card{
+
+.module_card {
   display: flex;
   flex-direction: column;
   width: 240px;
   border: 1px solid #ccc;
   border-radius: 3px;
   padding: 10px;
-  .content{
+
+  .content {
     flex: 1;
   }
+
   img {
     width: 100%;
   }
-  i{
+
+  i {
     text-align: right;
   }
 }
-.content_title{
-  h3{
+
+.content_title {
+  h3 {
     font-size: 20px;
   }
 }
+
 @media (max-width: 500px) {
-  .course_card{
-    img{
+  .course_card {
+    img {
       width: 100%;
     }
   }

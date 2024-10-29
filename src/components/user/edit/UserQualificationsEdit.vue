@@ -3,7 +3,7 @@
       <div class="col-12">
         <h3>{{ t('science.professionalDevelopment') }}</h3>
         <div>
-          <Menubar :model="menu" :key="active"
+          <Menubar :model="menu"
           style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
         </div>
       </div>
@@ -14,7 +14,7 @@
                 
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                   <label>{{ t('science.qualification.trainingForm') }}</label>
-                  <Dropdown :options="trainingForm" v-model="payload.training_form" :option-label="'name_' + locale" :placeholder="t('science.qualification.trainingForm')" @change="selectTrainingForm" />                       
+                  <Dropdown class="mt-2" :options="trainingForm" v-model="payload.training_form" :option-label="'name_' + locale" :placeholder="t('science.qualification.trainingForm')" @change="selectTrainingForm" />                       
                   <small class="p-error" v-if="validation.training_form">{{ $t("common.requiredField") }}</small>
               </div>
 
@@ -38,14 +38,14 @@
 
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                   <label>{{ t('science.qualification.start') }}</label>
-                  <PrimeCalendar class="mt-2" :class="{'p-invalid': payload.start_date}" :placeholder="$t('hr.id.startDate')" v-model="payload.start_date" dateFormat="dd.mm.yy"/>
+                  <PrimeCalendar class="mt-2" :placeholder="$t('hr.id.startDate')" v-model="payload.start_date" dateFormat="dd.mm.yy"/>
                   <small class="p-error" v-if="validation.start_date">{{ $t("common.requiredField")}}</small>
               </div>
               
 
               <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
                 <label>{{ t('science.qualification.end') }}</label>
-                <PrimeCalendar class="mt-2" :class="{'p-invalid': payload.end_date}" :placeholder="$t('common.endDate')" v-model="payload.end_date" dateFormat="dd.mm.yy"/>
+                <PrimeCalendar class="mt-2"  :placeholder="$t('common.endDate')" v-model="payload.end_date" dateFormat="dd.mm.yy"/>
                 <small class="p-error" v-if="validation.end_date">{{ $t("common.requiredField")}}</small>
               </div>
 
@@ -175,6 +175,15 @@
       command: () => {
         create()
       },
+      disabled: () => (!payload.value.training_form || payload.value.training_form == "")
+      || (!payload.value.country || payload.value.country == "")
+      || (!payload.value.city || payload.value.city == "")
+      || (!payload.value.start_date || payload.value.start_date == "")
+      || (!payload.value.end_date || payload.value.end_date == "")
+      || (!payload.value.hours || payload.value.hours == 0)
+      || (!payload.value.funding_source || payload.value.funding_source == "")
+      || (!payload.value.proof_document_type || payload.value.proof_document_type == "")
+      || (!file.value || file.value == "")
     },
   ])
 

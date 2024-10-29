@@ -110,7 +110,7 @@
             :style="{width: '75vw'}">
       <div class="field">
         <label>{{ this.$t("queue.responsible") }}</label>
-        <FindUser v-model="responsible" :max="1" :editMode="false" style="width:100%"/>
+        <FindUser v-model="responsible" :max="1" :editMode="false" style="width:100%" :user-type="3"/>
       </div>
       <template #footer>
         <Button :label="$t('common.cancel')" @click="sendDialog=false"/>
@@ -282,7 +282,7 @@ export default {
       let data = {filePath: filePath};
       this.receptionService.downloadFile(data).then(response => {
         const link = document.createElement("a");
-        link.href = "data:application/octet-stream;base64," + response.data;
+        link.href = "data:application/octet-stream;base64," + response.data.file;
         link.setAttribute("download", filePath);
         link.download = filePath;
         link.click();
@@ -380,7 +380,49 @@ export default {
 }
 
 .customer-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+
+  &.status-7 {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
   &.status-3 {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+
+  &.status-negotiation {
+    background: #feedaf;
+    color: #8a5340;
+  }
+
+  &.status-1 {
+    background: #b3e5fc;
+    color: #23547b;
+  }
+
+  &.status-8 {
+    background: #eccfff;
+    color: #694382;
+  }
+
+  &.status-proposal {
+    background: #ffd8b2;
+    color: #805b36;
+  }
+
+  &.online {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.offline {
     background: #ffcdd2;
     color: #c63737;
   }

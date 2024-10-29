@@ -113,8 +113,10 @@ export default {
         }
         loading.value = false
       }).catch(error => {
-        loading.value = false
-        toast.add({severity: "error", summary: error, life: 3000});
+        if (error?.response.status !== 403) {
+          loading.value = false
+          toast.add({severity: "error", summary: error, life: 3000});
+        }
       });
     }
 

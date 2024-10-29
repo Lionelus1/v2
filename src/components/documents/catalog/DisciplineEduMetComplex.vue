@@ -1,7 +1,14 @@
 <template>
+  
   <ProgressBar v-if="loading" mode="indeterminate" class="progress-bar"/>
+  <div v-if="docType == eduComplexDocType">
     <h3 v-if="screen.isLarge">{{ $t("educomplex.title") }}</h3>
     <h3 v-else>{{ $t("educomplex.title") }}</h3>
+  </div>
+  <div v-if="docType == attestationDocReportType">
+    <TitleBlock :title="$t('common.sacReportMenuTitle')" :show-back-button="true" />
+  </div>
+   
   <BlockUI :blocked="loading" class="card">
     <div ref="outerDiv" class="flex flex-grow-1" :class="{ 'flex-column': !screen.isLarge }">
       <div :class="'flex flex-column' + getDepFlexGrow()">
@@ -40,7 +47,7 @@
             </div>
           </template>
         </Toolbar>
-        <DataTable v-if="!screen.departments.minimized" :value="departments" dataKey="id" :rows="departmentRows" :totalRecords="totalDepartments"
+        <DataTable @row-click="rowClickHandler" v-if="!screen.departments.minimized" :value="departments" dataKey="id" :rows="departmentRows" :totalRecords="totalDepartments"
           :class="{'p-datatable-sm': !screen.isLarge}" :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
           :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="departmentTableLoading" scrollable scrollHeight="flex"
           v-model:selection="currentDepartment" selectionMode="single" :rowHover="true" stripedRows class="flex-grow-1"
@@ -169,7 +176,7 @@
               </div>
             </template>
           </Column>
-          <Column :header="$t('educomplex.columns.state')" style="min-width: 150px;">
+          <Column :header="statusColumnHeader" style="min-width: 150px;">
             <template #body="slotProps">
               <span :class="'customer-badge status-' + slotProps.data.docHistory.code">
                 {{ slotProps.data.docHistory[$i18n.locale === 'en' ? 'stateEn' : $i18n.locale === 'ru' ? 'stateRus' : 'stateKaz'] }} 
@@ -186,10 +193,10 @@
     </div>
   </BlockUI>
   <!-- addDocumentDialog -->
-  <Dialog :header="$t('hdfs.uploadTitle')" v-model:visible="visibility.addDocumentDialog" 
+  <Dialog :header="$t('hdfs.uploadTitle')" :docType="docType" v-model:visible="visibility.addDocumentDialog" 
     :style="{width: '60vw'}" :modal="true">
     <PostFile :fileUpload="true" :modelValue="newFile" directory="eduMetComplex"
-      @updated="close('addDocumentDialog');getFiles()" accept=".pdf"></PostFile>
+      @updated="close('addDocumentDialog');getFiles()" accept=".pdf" :docType="docType"></PostFile>
   </Dialog>
   <!-- documentInfoSidebar -->
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg"
@@ -231,6 +238,10 @@
   <OverlayPanel ref="filterOverlayPanel" @hide="onHideFilterOverlayPanel">
     <div class="p-fluid">
       <div class="field">
+        <label>{{ $t('contracts.filter.author') }}</label>
+        <FindUser v-model="filter.author" @update:modelValue="onUpdateTextProfile"  :max="1" :userType="3"></FindUser>
+      </div>
+      <div class="field">
         <label>{{ $t('common.name') }}</label>
         <InputText type="text" v-model="filter.name" @update:modelValue="onUpdateText"/>
       </div>
@@ -252,11 +263,15 @@
           </template>
         </Dropdown>
       </div>
-      <div class="field">
+      <div class="field" v-if="docType == eduComplexDocType">
         <label>{{ $t('educomplex.years') }}</label>
         <PrimeCalendar v-model="filter.years" dateFormat="yy"
           selectionMode="multiple" view="year" :minDate="new Date(2020, 0)" 
           :maxDate="new Date(new Date().getFullYear() + 5, 0)"/>
+      </div>
+      <div class="field" v-if="docType == attestationDocReportType">
+        <label>{{ $t('educomplex.years') }}</label>
+        <PrimeCalendar v-model="filter.years" dateFormat="yy" selectionMode="range" view="year" />
       </div>
       <div class="field">
         <div class="flex align-items-center">
@@ -283,10 +298,11 @@ import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import DocInfo from "@/components/documents/DocInfo";
 import PostFile from "@/components/documents/PostFile.vue"
 import ActionButton from "@/components/ActionButton.vue";
+import FindUser from "@/helpers/FindUser";
 
 export default {
   name: 'DisciplineEduMetComplex',
-  components: {ActionButton, ApprovalUsers, DocSignaturesInfo, DocInfo, PostFile },
+  components: {ActionButton, ApprovalUsers, DocSignaturesInfo, DocInfo, PostFile,FindUser },
   props: { },
   emits: [],
   data() {
@@ -321,7 +337,8 @@ export default {
       fileTableLoading: false,
 
       filter: {
-        global: false,
+        global: true,
+        author: [],
         name: null,
         status: null,
         years: [new Date(new Date().getFullYear(), 0)],
@@ -339,6 +356,7 @@ export default {
         name: null,
         status: null,
         years: [new Date(new Date().getFullYear(), 0)],
+        author: null,
       },
 
       departmentPage: 0,
@@ -381,6 +399,9 @@ export default {
           value: "revision"
         }
       ],
+      docType: parseInt(this.$route.params.docType),
+      eduComplexDocType: parseInt(Enum.DocType.EduComplex),
+      attestationDocReportType: parseInt(Enum.DocType.StateAttestationCommission)
     }
   },
   computed: {
@@ -430,7 +451,16 @@ export default {
               },
 
           ];
+      },
+    statusColumnHeader() {
+      if (this.docType === this.eduComplexDocType) {
+        return this.$t('educomplex.columns.state');
+      } else if (this.docType === this.attestationDocReportType) {
+        return this.$t('scienceWorks.columns.status');
       }
+      return this.$t('educomplex.columns.state');
+
+    }
   },
   created() {
     this.loginedUser = JSON.parse(localStorage.getItem("loginedUser"))
@@ -439,14 +469,25 @@ export default {
     this.$emit('apply-flex', true)
     this.checkScreenSize();
     window.addEventListener('resize', this.checkScreenSize);
-
     this.getDepartments();
   },
   beforeUnmount() {
     this.$emit('apply-flex', false)
     window.removeEventListener('resize', this.checkScreenSize);
   },
+  watch: {
+    '$route.params.docType'(newDocType) {
+      this.docType = newDocType;
+      this.reloadPage()
+    },
+  },
   methods: {
+    reloadPage() {
+      if (this.$route.params.docType === undefined) {
+        this.docType = 2
+      }
+      this.getFiles()
+    },
     showMessage(msgtype, message, content) {
       this.$toast.add({
         severity: msgtype,
@@ -457,6 +498,9 @@ export default {
     },
     open(name) {
       this.visibility[name] = true
+    },
+    rowClickHandler(event) {
+      this.filter.global = false;
     },
     close(name) {
       this.visibility[name] = false
@@ -615,7 +659,8 @@ export default {
           }
       }];
 
-      this.stages = [
+      if(this.docType && this.docType == this.Enum.DocType.EduComplex){
+        this.stages = [
         {
           stage: 1,
           users: [this.loginedUser],
@@ -669,6 +714,39 @@ export default {
           },
         }
       ];
+      }
+      if(this.docType && this.docType == this.Enum.DocType.StateAttestationCommission){
+        this.stages = [
+        {
+          stage: 1,
+          users: null,
+          titleRu: "Председатель",
+          titleKz: "Төраға",
+          titleEn: "Chairman",
+          certificate: {
+            namekz: "Жеке тұлғаның сертификаты",
+            nameru: "Сертификат физического лица",
+            nameen: "Certificate of an individual",
+            value: "individual"
+          },
+        },
+        {
+          stage: 2,
+          users: null,
+          titleRu: "Декан",
+          titleKz: "Декан",
+          titleEn: "Dean",
+          certificate: {
+            namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+            nameru: "Для внутреннего документооборота (ГОСТ)",
+            nameen: "For internal document management (GOST)",
+            value: "internal"
+          },
+        }
+      ];
+      }
+
+     
     },
     clearNewFile(file) {
       if (file) {
@@ -683,8 +761,32 @@ export default {
 
         return
       }
+      if(this.docType && this.docType == this.Enum.DocType.StateAttestationCommission){
+          this.newFile = {
+          id: null,
+          namekz: "",
+          nameru: "",
+          nameen: "",
+          lang: {name:"kz", value: 0},
+          docType: this.Enum.DocType.StateAttestationCommission,
+          departmentID: this.currentDepartment.id,
+          params: [
+          {
+            name: "saceduprogram",
+            value: null,
+            description: "saceduprogram",
+          },
+          {
+            name: "academicyear",
+            value: null,
+            description: "academicyear",
+          },
+        ],
+        } 
 
-      this.newFile = {
+      }
+      if(this.docType && this.docType == this.Enum.DocType.EduComplex){
+        this.newFile = {
         id: null,
         namekz: "",
         nameru: "",
@@ -701,7 +803,7 @@ export default {
           {
             name: "eduprogram",
             value: null,
-            description: "білім беру баағдарламасы атауы",
+            description: "білім беру бағдарламасы атауы",
           },
           {
             name: "discipline",
@@ -709,17 +811,26 @@ export default {
             description: "discipline",
           },
         ],
+      
+    
+      } 
       }
+      
+
+
+
     },
     setDocFilter() {
       this.docFilter = {
         name: this.filter.name,
         status: this.filter.status,
         years: this.filter.years,
+        author: this.filter.author.length > 0 && this.filter.author[0] ? this.filter.author[0].userID : null,
       };
     },
     clearDocFilter() {
       this.docFilter = {
+        author: null,
         name: null,
         status: null,
         years: [new Date(new Date().getFullYear(), 0)],
@@ -727,6 +838,7 @@ export default {
     },
     clearFilter() {
       this.filter = {
+        author: null,
         global: false,
         name: null,
         status: null,
@@ -813,13 +925,13 @@ export default {
 
         return
       }
-
+      this.loading = true
       this.fileTableLoading = true
 
       api.post('/documents', {
         page: this.filePage,
         rows: this.fileRows,
-        docType: this.Enum.DocType.EduComplex,
+        docType: parseInt(this.docType, 10),
         departmentId: this.filter.global ? null : this.currentDepartment.id,
         filter: this.docFilter,
       }, { 
@@ -830,6 +942,7 @@ export default {
         this.currentFile = null
 
         this.fileTableLoading = false
+        this.loading = false
       }).catch(err => {
         this.files = []
         this.totalFiles = 0
@@ -845,6 +958,7 @@ export default {
         }
 
         this.fileTableLoading = false
+        this.loading = false
       })
     },
     downloadFile(uuid, filepath) {
@@ -1061,6 +1175,11 @@ export default {
     onUpdateText() {
       if (this.filter.name.length < 1) {
         this.filter.name = null
+      }
+    },
+    onUpdateTextProfile(){
+      if (this.filter.author.length < 1) {
+        this.filter.author = null
       }
     }
   }

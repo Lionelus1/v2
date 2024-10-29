@@ -26,22 +26,31 @@
         <label>{{ $t('workPlan.approvalUsers') }}</label>
         <InputText v-model="responsible_executor" />
       </div>
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+        <label>{{ $t('workPlan.summaryDepartment') }}</label>
+        <FindUser v-model="summaryDepartment" :max="1" :user-type="3" editMode="true"/>
+        <!-- <small class="p-error" v-if="submitted && formValid.summaryUser">{{ $t("common.requiredField") }}</small> -->
+        <small class="p-error" v-if="submitted && formValid.summaryUser">{{ $t('workPlan.errors.approvalUserError') }}</small>
+      </div>
       <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
-        <FindUser v-model="selectedUsers" :editMode="true"></FindUser>
+        <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
         <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
       </div>
       <template v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
         <div v-for="(inputSet, index) in inputSets" :key="index">
           <div class="field">
             <label>{{ $t('workPlan.scienceParticipants') }}</label>
-            <FindUser v-model="inputSet.selectedUsers" :editMode="true"></FindUser>
+            <FindUser v-model="inputSet.selectedUsers" :editMode="true" :user-type="3"></FindUser>
             <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
           </div>
           <div class="field">
             <label for="name">{{ $t('common.role') }}</label>
             <RolesByName v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
           </div>
+          <p style="text-align: right;" class="mb-3">
+            <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined"  @click="removeInputSet(index)" outlined />
+          </p>
         </div>
       </template>
     </div>
@@ -73,7 +82,6 @@
 </template>
 
 <script>
-import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import {WorkPlanService} from "@/service/work.plan.service";
 import Enum from "@/enum/workplan/index";
@@ -121,8 +129,10 @@ export default {
       selectedUsers: [],
       parentData: null,
       parentId: null,
+      summaryDepartment: [],
       formValid: {
         event_name: false,
+        summaryUser: false,
         users: false,
         quarter: false,
       },
@@ -138,7 +148,8 @@ export default {
       Enum: Enum,
       inputSets: [{ selectedUsers: '', selectedRole: '' }],
       start_date: new Date,
-      end_date: new Date()
+      end_date: new Date(),
+      
     }
   },
   mounted() {
@@ -147,13 +158,32 @@ export default {
     if (this.parentData) {
       this.quarters.length = this.quarters.findIndex(x => x.id === this.parentData.quarter) + 1;
       this.quarter = parseInt(this.parentData.quarter);
-      /*let ind = this.quarters.findIndex(x => x.id === parseInt(this.parentData.quarter.String));
-      console.log(ind)
-      this.quarters = this.quarters.slice(0, ind);*/
+
     }
+    if (this.summaryDepartment && this.summaryDepartment.length === 0) {
+      if (this.selectedUsers.length > 0) {
+        this.selectedUsers.shift();
+      }
+    }
+   
+  },
+  watch: {
+    summaryDepartment: {
+      handler(newVal) {
+        if (newVal.length === 0) {
+        this.selectedUsers.shift();
+        } else {
+          this.selectedUsers.unshift(...newVal);
+        }
+      },
+      deep: true,
+    },
   },
   created() {
     this.work_plan_id = parseInt(this.$route.params.id);
+    
+   
+
   },
   computed: {
     isSciencePlan() {
@@ -212,17 +242,26 @@ export default {
       } else {
         this.selectedUsers.forEach(e => {
           userIds.push({user: e, role: null});
-          this.respUsers.push({id: e.userID, fullName: e.fullName});
+            this.respUsers.push({id: e.userID, fullName: e.fullName});
+          
+          
         });
       }
 
       if (this.parentData) {
         this.parentId = parseInt(this.parentData.work_plan_event_id);
       }
+      let resp_person_id;
+      if (this.summaryDepartment && this.summaryDepartment[0]?.userID) {
+          resp_person_id = this.summaryDepartment[0].userID;
+      } else {
+          resp_person_id = null;
+      }
       let data = {
         work_plan_id: this.work_plan_id,
         event_name: this.event_name,
         parent_id: this.parentId,
+        resp_person_id: resp_person_id,
         quarter: this.quarter,
         result: this.result,
         resp_person_ids: userIds
@@ -246,7 +285,9 @@ export default {
         this.clearModel();
         //this.addToArray(res.data);
       }).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
+        if (error && error.error === 'summaryuseradded') {
+          this.$toast.add({ severity: "warn", summary: this.$t('workPlan.warnAddingSummaryUser'), life: 4000 });
+        }
       });
     },
     addToArray(data) {
@@ -262,10 +303,11 @@ export default {
     },
     validateForm() {
       this.formValid.event_name = !this.event_name;
+      this.formValid.summaryUser = !this.summaryDepartment.length === 0;
       // this.formValid.users = this.selectedUsers.length === 0;
       // this.formValid.quarter = !this.quarter;
 
-      return this.parentData ? !this.formValid.event_name && !this.formValid.users : !this.formValid.event_name && !this.formValid.users && !this.formValid.quarter;
+      return this.parentData ? !this.formValid.event_name && !this.formValid.users && !this.formValid.summaryUser : !this.formValid.event_name && !this.formValid.users && !this.formValid.quarter && !this.formValid.summaryUser;
     },
     clearModel() {
       this.event_name = null;
@@ -287,6 +329,9 @@ export default {
     },
     addNewUser() {
       this.inputSets.push({ selectedUsers: null, selectedRole: null })
+    },
+    removeInputSet(index) {
+      this.inputSets.splice(index, 1);
     }
   },
 }

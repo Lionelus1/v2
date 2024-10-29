@@ -1,87 +1,93 @@
 <template>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <div class="col-12">
-    <TitleBlock :title="$t('web.blocks') + ' | ' + ($i18n.locale === 'kz' ? block.title_kz : $i18n.locale === 'ru' ? block.title_ru : block.title_en)"
+    <TitleBlock :title="$t('web.blocks') + (block ? ' | ' + block['title_' + $i18n.locale] : '')"
                 :showBackButton="true"/>
-    <div class="card" v-if="block && !block.is_list">
-      <TabView class="p-fluid" v-if="formData">
-        <TabPanel header="Қазақша">
-          <div class="field mt-3">
-            <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
-            <InputText v-model="formData.title_kz" rows="3" :class="{ 'p-invalid': !formData.title_kz && submitted }"/>
-            <small v-show="!formData.title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
-          </div>
-          <div class="field">
-            <label>{{ $t("common.contentInQazaq") }}</label>
-            <!--            <RichEditor ref="kztext" v-model="content.content_kz" editorStyle="height: 320px"></RichEditor>-->
-            <TinyEditor v-model="formData.content_kz" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
-            <small v-show="!formData.content_kz && submitted" class="p-error">
-              {{ $t("smartenu.contentKzInvalid") }}
-            </small>
-          </div>
-        </TabPanel>
-        <TabPanel header="Русский">
-          <div class="field mt-3" style="margin-bottom: 1.5rem">
-            <label>{{ $t("common.nameInRussian") }}</label>
-            <InputText v-model="formData.title_ru" rows="3" :class="{ 'p-invalid': !formData.title_ru && submitted }"/>
-            <small v-show="!formData.title_ru && submitted" class="p-error">
-              {{ $t("smartenu.titleRuInvalid") }}
-            </small>
-          </div>
-          <div class="field">
-            <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-            <!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
-            <TinyEditor v-model="formData.content_ru" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
-            <small v-show="!formData.content_ru && submitted" class="p-error">
-              {{ $t("smartenu.contentRuInvalid") }}
-            </small>
-          </div>
-        </TabPanel>
-        <TabPanel header="English">
-          <div class="field mt-3" style="margin-bottom: 1.5rem">
-            <label>{{ $t("common.nameInEnglish") }}</label>
-            <InputText v-model="formData.title_en" rows="3" :class="{ 'p-invalid': !formData.title_en && submitted }"/>
-            <small v-show="!formData.title_en && submitted" class="p-error">
-              {{ $t("smartenu.titleEnInvalid") }}
-            </small>
-          </div>
-          <div class="field">
-            <label>{{ $t("common.contentInEnglish") }}</label>
-            <!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
-            <TinyEditor v-model="formData.content_en" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
-            <small v-show="!formData.content_en && submitted" class="p-error">
-              {{ $t("smartenu.contentEnInvalid") }}
-            </small>
-          </div>
-        </TabPanel>
-      </TabView>
 
-      <div class="field" v-if="formData && formData.files">
-        <label>{{ $t('workPlan.attachments') }}</label>
-        <div ref="content" class="p-fileupload-content">
-          <div class="p-fileupload-files">
-            <div class="p-fileupload-row" v-for="(item, index) of formData.files" :key="index">
+    <BlockUI v-if="haveAccess" :blocked="loading" class="card">
+      <div class="card" v-if="block && !block?.is_list">
+        <TabView class="p-fluid" v-if="formData">
+          <TabPanel header="Қазақша">
+            <div class="field mt-3">
+              <label for="kz-title">{{ $t("common.nameInQazaq") }}</label>
+              <InputText v-model="formData.title_kz" rows="3" :class="{ 'p-invalid': !formData.title_kz && submitted }"/>
+              <small v-show="!formData.title_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
+            </div>
+            <div class="field">
+              <label>{{ $t("common.contentInQazaq") }}</label>
+              <!--            <RichEditor ref="kztext" v-model="content.content_kz" editorStyle="height: 320px"></RichEditor>-->
+              <TinyEditor v-model="formData.content_kz" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+              <small v-show="!formData.content_kz && submitted" class="p-error">
+                {{ $t("smartenu.contentKzInvalid") }}
+              </small>
+            </div>
+          </TabPanel>
+          <TabPanel header="Русский">
+            <div class="field mt-3" style="margin-bottom: 1.5rem">
+              <label>{{ $t("common.nameInRussian") }}</label>
+              <InputText v-model="formData.title_ru" rows="3" :class="{ 'p-invalid': !formData.title_ru && submitted }"/>
+              <small v-show="!formData.title_ru && submitted" class="p-error">
+                {{ $t("smartenu.titleRuInvalid") }}
+              </small>
+            </div>
+            <div class="field">
+              <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
+              <!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
+              <TinyEditor v-model="formData.content_ru" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+              <small v-show="!formData.content_ru && submitted" class="p-error">
+                {{ $t("smartenu.contentRuInvalid") }}
+              </small>
+            </div>
+          </TabPanel>
+          <TabPanel header="English">
+            <div class="field mt-3" style="margin-bottom: 1.5rem">
+              <label>{{ $t("common.nameInEnglish") }}</label>
+              <InputText v-model="formData.title_en" rows="3" :class="{ 'p-invalid': !formData.title_en && submitted }"/>
+              <small v-show="!formData.title_en && submitted" class="p-error">
+                {{ $t("smartenu.titleEnInvalid") }}
+              </small>
+            </div>
+            <div class="field">
+              <label>{{ $t("common.contentInEnglish") }}</label>
+              <!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
+              <TinyEditor v-model="formData.content_en" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
+              <small v-show="!formData.content_en && submitted" class="p-error">
+                {{ $t("smartenu.contentEnInvalid") }}
+              </small>
+            </div>
+          </TabPanel>
+        </TabView>
+
+        <div class="field" v-if="formData && formData.files">
+          <label>{{ $t('workPlan.attachments') }}</label>
+          <div ref="content" class="p-fileupload-content">
+            <div class="p-fileupload-files">
+              <div class="p-fileupload-row" v-for="(item, index) of formData.files" :key="index">
               <span class="mr-3" style="cursor: pointer;" @click="downloadFile(item)">
                 <i class="fa-solid fa-file-arrow-down text-green-500"></i>
               </span>
-              <span @click="downloadFile(item)" style="cursor: pointer;">
+                <span @click="downloadFile(item)" style="cursor: pointer;">
                 {{ item.file.filename ? item.file.filename : item.file.filepath }}
               </span>
-              <span class="ml-2">
+                <span class="ml-2">
                 <Button icon="pi pi-copy" class="p-button-rounded p-button-text"
                         v-clipboard:copy="copyToClipboard(item.file)" v-clipboard:success="onCopy"/>
               </span>
-              <span v-if="item.id">
+                <span v-if="item.id">
                 <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="deleteFileConfirm($event, item, index)"/>
               </span>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="saveBlocContent"/>
+        <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="saveBlocContent"/>
+      </div>
+      <BlockElementsList v-if="block?.is_list"/>
+    </BlockUI>
+    <div v-else class="card">
+      <Access textMode="short" :showLogo="false" returnMode="back"></Access>
     </div>
-    <BlockElementsList v-if="block.is_list"/>
   </div>
 </template>
 
@@ -98,10 +104,11 @@ import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "../../../config/
 import {useConfirm} from "primevue/useconfirm";
 import {useStore} from "vuex";
 import TinyEditor from "../../TinyEditor";
+import Access from "@/pages/Access.vue";
 
 export default {
   name: "BlockView",
-  components: {BlockElementsList, TitleBlock, TinyEditor},
+  components: {Access, BlockElementsList, TitleBlock, TinyEditor},
   setup() {
     const loading = ref(false), submitted = ref(false)
     const enuService = new EnuWebService()
@@ -110,12 +117,13 @@ export default {
     const toast = useToast()
     const confirm = useConfirm();
     const i18n = useI18n()
-    let block = ref({})
+    let block = ref()
     let elements = ref([])
     let formData = ref(null)
     const route = useRoute()
     const blockId = route.params.id
     const fileList = ref([])
+    const haveAccess = ref(true)
 
     const getBlockInfo = () => {
       loading.value = true;
@@ -128,8 +136,12 @@ export default {
         }
         loading.value = false;
       }).catch(error => {
-        loading.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
+        if (error?.response?.status === 403) {
+          haveAccess.value = false
+        } else {
+          loading.value = false
+          toast.add({severity: "error", summary: error, life: 3000});
+        }
       });
     }
     getBlockInfo();
@@ -274,7 +286,7 @@ export default {
     }
 
     return {
-      loading, block, elements, formData, submitted,
+      loading, block, elements, formData, submitted, haveAccess,
       saveBlocContent, onAfterUpload, copyToClipboard, onCopy, downloadFile, deleteFileConfirm
     }
   }

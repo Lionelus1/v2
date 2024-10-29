@@ -92,7 +92,7 @@
       </div>
       <div class="field">
         <label>{{ $t('scienceWorks.filter.author') }}</label>
-        <FindUser v-model="tempFilter.author" :max="1" searchMode="local" ></FindUser>
+        <FindUser v-model="tempFilter.author" :max="1" searchMode="local" :user-type="3"></FindUser>
       </div>
       <div class="field">
         <label>{{ $t('scienceWorks.filter.status') }}</label>
@@ -357,8 +357,13 @@ export default {
       ],
 
       newPublicationType: null,
-      pubTypes: [Enum.ScienceWorkType.Free, Enum.ScienceWorkType.Article, Enum.ScienceWorkType.Textbooks,
-        Enum.ScienceWorkType.Monograph, Enum.ScienceWorkType.PublicationKOKSNVO],
+      pubTypes: [Enum.ScienceWorkType.Textbooks,
+        Enum.ScienceWorkType.Monograph, Enum.ScienceWorkType.Article,
+        Enum.ScienceWorkType.AuthorizedBodyPublications,
+        Enum.ScienceWorkType.ConferenceProceedings,
+        Enum.ScienceWorkType.AuthorCertificatesPatents,
+        Enum.ScienceWorkType.PublicationKOKSNVO,
+        Enum.ScienceWorkType.Free],
 
       koksnvo: {
         loading: false,

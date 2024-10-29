@@ -49,10 +49,28 @@
           </div>
         </template>
       </Column>
+      <Column :header="$t('contracts.columns.contractNumber')" style="min-width: 100px;">
+        <template #body="slotProps">
+          {{ getContractNumber(slotProps.data) }}
+        </template>
+      </Column>
+      <Column :header="$t('contracts.columns.contractDate')" style="min-width: 100px;">
+        <template #body="slotProps">
+          {{ getContractDate(slotProps.data) }}
+        </template>
+      </Column>
+      <Column>
+        <template #body="{data}">
+          <div v-if="showMySign(data?.approvalStages)">
+            <i v-if="greenMySign(data?.approvalStages)" class="pi pi-check-circle" style="color:green;"></i>
+            <i v-else class="pi pi-check-circle" style="color: red;"></i>
+          </div>
+        </template>
+      </Column>
       <Column style="min-width: 50px;">
         <template #body="slotProps">
           <div class="flex flex-wrap">
-            <ActionButton :show-label="true" :items="actions" @toggle="toggleActions(slotProps.data)" />
+            <ActionButton :show-label="true" :items="actions" @toggle="toggleActions(slotProps.data)"/>
           </div>
         </template>
       </Column>
@@ -63,53 +81,73 @@
     <div class="p-fluid" style="min-width: 320px;">
       <div class="field">
         <label>{{ $t('contracts.filter.author') }}</label>
-        <FindUser v-model="filter.author" :max="1" :userType="3"></FindUser>
+        <FindUser v-model="tempFilter.author" :max="1" :userType="3"></FindUser>
+      </div>
+      <div class="field" >
+        <label>{{ $t('contracts.columns.regNumber') }}</label>
+        <InputText type="text" v-model="tempFilter.regNumber"/>
+      </div>
+      <div class="field">
+        <label>{{ $t('contracts.columns.regDate') }}</label>
+        <PrimeCalendar v-model="tempFilter.regDate" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
       <div class="field">
         <label>{{ $t('contracts.filter.status') }}</label>
-        <Dropdown v-model="filter.status" :options="statuses" optionValue="id"
+        <Dropdown v-model="tempFilter.status" :options="statuses" optionValue="id"
                   class="p-column-filter" :showClear="true">
           <template #value="slotProps">
             <span v-if="slotProps.value" :class="'customer-badge status-' + statuses.find((e) => e.id === slotProps.value).value">
-              {{ $i18n.locale === 'kz' ? statuses.find((e) => e.id === slotProps.value).nameKz : $i18n.locale === 'ru'
-                ? statuses.find((e) => e.id === slotProps.value).nameRu : statuses.find((e) => e.id === slotProps.value).nameEn }}
+              {{
+                $i18n.locale === 'kz' ? statuses.find((e) => e.id === slotProps.value).nameKz : $i18n.locale === 'ru'
+                    ? statuses.find((e) => e.id === slotProps.value).nameRu : statuses.find((e) => e.id === slotProps.value).nameEn
+              }}
             </span>
           </template>
           <template #option="slotProps">
             <span :class="'customer-badge status-' + slotProps.option.value">
-              {{ $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
-                ? slotProps.option.nameRu : slotProps.option.nameEn }}
+              {{
+                $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
+                    ? slotProps.option.nameRu : slotProps.option.nameEn
+              }}
             </span>
           </template>
         </Dropdown>
       </div>
       <div class="field">
+        <label>{{ $t('contracts.filter.mnvo') }}</label>
+        <InputText type="text" v-model="tempFilter.mnvo"/>
+      </div>
+      <div class="field">
+        <label>{{ $t('contracts.filter.mnvoDate') }}</label>
+        <PrimeCalendar v-model="tempFilter.mnvoDate" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field">
         <Button :label="$t('common.clear')" @click="clearFilter();toggle('filterOverlayPanel', $event);getActs()" class="mb-2 p-button-outlined"/>
-        <Button :label="$t('common.search')" @click="filtered = true;toggle('filterOverlayPanel', $event);getActs()" class="mt-2"/>
+        <Button :label="$t('common.search')" @click="saveFilter();toggle('filterOverlayPanel', $event);getActs()" class="mt-2"/>
       </div>
     </div>
   </OverlayPanel>
 
   <!-- documentInfoSidebar -->
   <Sidebar v-model:visible="visibility.documentInfoSidebar" position="right" class="p-sidebar-lg"
-    style="overflow-y: scroll" @hide="getActs">
+           style="overflow-y: scroll" @hide="getActs">
     <DocSignaturesInfo :docIdParam="currentDocument.uuid"></DocSignaturesInfo>
   </Sidebar>
 </template>
 <script>
-import { b64toBlob, findRole } from "@/config/config";
-import { getShortDateString, getLongDateString } from "@/helpers/helper";
+import {b64toBlob, findRole, getHeader, smartEnuApi} from "@/config/config";
+import {getShortDateString, getLongDateString} from "@/helpers/helper";
 import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
 
-import { DocService } from "@/service/doc.service";
+import {DocService} from "@/service/doc.service";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import FindUser from "@/helpers/FindUser.vue";
 
 export default {
   name: 'Acts',
-  components: {FindUser, DocSignaturesInfo },
-  props: { },
+  components: {FindUser, DocSignaturesInfo},
+  props: {},
   data() {
     return {
       service: new DocService(),
@@ -122,10 +160,10 @@ export default {
       loginedUser: null,
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
       currentPageReportTemplate: this.$t('common.showingRecordsCount', {
-          first: '{first}',
-          last: '{last}',
-          totalRecords: '{totalRecords}',
-        }),
+        first: '{first}',
+        last: '{last}',
+        totalRecords: '{totalRecords}',
+      }),
 
       visibility: {
         documentInfoSidebar: false,
@@ -142,18 +180,27 @@ export default {
       rows: 10,
       actionsNode: {},
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved],
+
+      filtered: false,
       filter: {
         applied: false,
-        status: null,
         author: [],
-        createdFrom: null,
-        createdTo: null,
-        sourceType: null,
-        template: null,
-        name: null,
-        folder: null,
+        regNumber: null,
+        regDate: null,
+        mnvo: null,
+        mnvoDate: null,
+        status: null,
       },
-      filtered: false,
+
+      tempFilter: {
+        applied: false,
+        author: [],
+        regNumber: null,
+        regDate: null,
+        mnvo: null,
+        mnvoDate: null,
+        status: null,
+      },
     }
   },
   created() {
@@ -233,8 +280,12 @@ export default {
         rows: this.rows,
         docType: this.Enum.DocType.ActCompletedWorks,
         filter: {
-          status: this.filter.status && this.filter.status.length > 0 ? this.filter.status : null,
           author: this.filter.author.length > 0 && this.filter.author[0] ? this.filter.author[0].userID : null,
+          regNumber: this.filter.regNumber && this.filter.regNumber.length > 0 ? this.filter.regNumber : null,
+          regDate: this.filter.regDate,
+          status: this.filter.status && this.filter.status.length > 0 ? this.filter.status : null,
+          mnvo: this.filter.mnvo && this.filter.mnvo.length > 0 ? this.filter.mnvo : null,
+          mnvoDate: this.filter.mnvoDate,
         },
       }).then(res => {
         this.documents = res.data.documents;
@@ -272,7 +323,7 @@ export default {
         var link = document.createElement("a");
         link.innerHTML = "Download PDF file";
         link.download = "act.pdf";
-        link.href =  pdf;
+        link.href = pdf;
         link.click();
 
         this.loading = false;
@@ -289,13 +340,48 @@ export default {
         }
       })
     },
+    downloadAttachments() {
+      let attachments = this.currentDocument.newParams.attachments.value;
+
+      if (attachments === null || attachments === undefined || attachments.length < 1) {
+        return
+      }
+
+      this.loading = true;
+
+      for (let i = 0; i < attachments.length; i++) {
+        fetch(`${smartEnuApi}/serve?path=${attachments[i].filepath}`, {
+          method: 'GET',
+          headers: getHeader(),
+        }).then(res => res.blob()).then(blob => {
+          var url = window.URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = attachments[i].filename;
+          document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+          a.click();
+          a.remove();
+        }).catch(err => {
+          if (err.response && err.response.status == 401) {
+            this.$store.dispatch("logLout")
+          } else if (err.response && err.response.data && err.response.data.localized) {
+            this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+          } else {
+            console.log(err)
+            this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+          }
+        })
+      }
+
+      this.loading = false;
+    },
     executed(data) {
       if (data.docHistory?.stateId !== this.Enum.APPROVED.ID) {
         return false;
       }
 
       if (data.requests) {
-        for (let i = data.requests.length-1; i >= 0; i--) {
+        for (let i = data.requests.length - 1; i >= 0; i--) {
           if (data.requests[i].type === this.Enum.DocumentRequestType.AccountantsExecutionRequest) {
             if (data.requests[i].status === 1) {
               return true;
@@ -314,7 +400,7 @@ export default {
       }
 
       if (data.requests) {
-        for (let i = data.requests.length-1; i >= 0; i--) {
+        for (let i = data.requests.length - 1; i >= 0; i--) {
           if (data.requests[i].type === this.Enum.DocumentRequestType.AccountantsExecutionRequest) {
             if (data.requests[i].status === 0) {
               return true;
@@ -348,7 +434,7 @@ export default {
       let req = null;
 
       if (contract.requests) {
-        for (let i = contract.requests.length-1; i >= 0; i--) {
+        for (let i = contract.requests.length - 1; i >= 0; i--) {
           if (contract.requests[i].type === this.Enum.DocumentRequestType.AccountantsExecutionRequest) {
             if (contract.requests[i].status === 0) {
               req = contract.requests[i];
@@ -414,66 +500,190 @@ export default {
       });
     },
     toggle(ref, event) {
+      if (ref === 'filterOverlayPanel') {
+        this.tempFilter = JSON.parse(JSON.stringify(this.filter));
+        this.tempFilter.regDate = this.tempFilter.regDate ? new Date(this.tempFilter.regDate) : null;
+        this.tempFilter.mnvoDate = this.tempFilter.mnvoDate ? new Date(this.tempFilter.mnvoDate) : null;
+      }
+
       this.$refs[ref].toggle(event);
+    },
+    saveFilter() {
+      this.filter = JSON.parse(JSON.stringify(this.tempFilter));
+      this.filter.applied = true;
+      this.filtered = true;
     },
     clearFilter() {
       this.filter = {
         applied: false,
-        status: null,
         author: [],
-        createdFrom: null,
-        createdTo: null,
-        sourceType: null,
-        template: null,
-        name: null,
-        folder: null,
+        regNumber: null,
+        regDate: null,
+        mnvo: null,
+        mnvoDate: null,
+        status: null,
       };
       this.filtered = false;
     },
+    getContractNumber(contract) {
+      if (contract.newParams && contract.newParams.mnvo_agreement
+          && contract.newParams.mnvo_agreement.value) {
+        return contract.newParams.mnvo_agreement.value;
+      }
+
+      if (
+          contract.newParams &&
+          (contract.newParams['workPlan.plancontractnumber'] || contract.newParams['Contract number']) &&
+          (contract.newParams['workPlan.plancontractnumber']?.value || contract.newParams['Contract number']?.value)
+      ) {
+        return contract.newParams['workPlan.plancontractnumber']?.value || contract.newParams['Contract number']?.value;
+      }
+
+      return "";
+    },
+    getContractDate(contract) {
+      if (contract.newParams && contract.newParams.mnvo
+          && contract.newParams.mnvo.value) {
+        return getShortDateString(contract.newParams.mnvo.value);
+      }
+
+      if (contract.newParams &&
+          (contract.newParams['workPlan.plancontractdate'] || contract.newParams['Contract date']) &&
+          (contract.newParams['workPlan.plancontractdate']?.value || contract.newParams['Contract date']?.value)) {
+        return getShortDateString(contract.newParams['workPlan.plancontractdate']?.value || contract.newParams['Contract date']?.value);
+      }
+
+      return "";
+    },
+    showMySign(approvalStages) {
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUser.userID) {
+              return true
+            }
+          }
+
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return false
+      }
+
+      return false
+    },
+    greenMySign(approvalStages) {
+      let signed = true
+
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUser.userID && stage.usersApproved[j] < 1) {
+              signed = false
+            }
+          }
+
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return signed
+      }
+
+      return signed
+    },
   },
   computed: {
-    menu () {
+    menu() {
       return [
         {
           label: this.$t('contracts.menu.sendForExecution'),
           icon: "fa-solid fa-circle-check",
           disabled: !this.currentDocument || this.currentDocument.docHistory?.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || this.execution(this.currentDocument),
           visible: this.findRole(null, RolesEnum.roles.ActsToExecution) || this.findRole(null, RolesEnum.roles.MainAdministrator) || this.findRole(null, RolesEnum.roles.ScienceDirector),
-          command: () => {this.sendForExecution(this.currentDocument)},
+          command: () => {
+            this.sendForExecution(this.currentDocument)
+          },
         },
         {
           label: this.$t('contracts.executed'),
           icon: "fa-solid fa-envelope-circle-check",
           disabled: !this.currentDocument || this.currentDocument.docHistory?.stateId !== Enum.APPROVED.ID || this.executed(this.currentDocument) || !this.execution(this.currentDocument),
           visible: this.findRole(null, RolesEnum.roles.Accountant) || this.findRole(null, RolesEnum.roles.MainAdministrator),
-          command: () => {this.execute(this.currentDocument)},
+          command: () => {
+            this.execute(this.currentDocument)
+          },
+        },
+        {
+          label: this.$t('contracts.statusGPC'),
+          icon: "fa-solid fa-file-waveform",
+          visible: this.findRole(null, RolesEnum.roles.MainAdministrator),
+          command: () => {
+            this.$router.push('/documents/catalog/acts/status')
+          },
         },
       ]
     },
-    actions () {
+    actions() {
       return [
         {
           label: this.$t('common.show'),
           icon: "fa-solid fa-eye",
-          command: () => {this.currentDocument = this.actionsNode; this.open('documentInfoSidebar')},
+          command: () => {
+            this.currentDocument = this.actionsNode;
+            this.open('documentInfoSidebar')
+          },
         },
         {
           label: this.$t('common.download'),
           icon: "fa-solid fa-file-arrow-down",
           visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID,
-          command: () => {this.currentDocument = this.actionsNode; this.download()},
-        },
-        {
-          label: this.$t('common.delete'),
-          icon: "fa-solid fa-trash",
-          visible: (this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.CREATED.ID ||
-              this.actionsNode.docHistory?.stateId === Enum.REVISION.ID || this.actionsNode.docHistory?.stateId === Enum.INAPPROVAL.ID) &&
-              this.loginedUser.userID === this.actionsNode.creatorID,
           command: () => {
             this.currentDocument = this.actionsNode;
-            this.deleteFile()
+            this.download()
           },
-        }
+        },
+        {
+          label: this.$t('common.additionalInfo'),
+          icon: "fa-solid fa-file-arrow-down",
+          visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID &&
+              this.actionsNode.newParams !== null && this.actionsNode.newParams.attachments !== null &&
+              this.actionsNode.newParams.attachments !== undefined,
+          command: () => {
+            this.currentDocument = this.actionsNode;
+            this.downloadAttachments()
+          },
+        },
+        // {
+        //   label: this.$t('common.delete'),
+        //   icon: "fa-solid fa-trash",
+        //   visible: (this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.CREATED.ID ||
+        //       this.actionsNode.docHistory?.stateId === Enum.REVISION.ID || this.actionsNode.docHistory?.stateId === Enum.INAPPROVAL.ID) &&
+        //       this.loginedUser.userID === this.actionsNode.creatorID,
+        //   command: () => {
+        //     this.currentDocument = this.actionsNode;
+        //     this.deleteFile()
+        //   },
+        // }
       ]
     },
   }
@@ -482,17 +692,14 @@ export default {
 <style scoped>
 .progress-spinner {
   position: absolute;
-  top: 0; bottom: 0; left: 0; right: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   margin: auto;
   z-index: 1102;
 }
-.arrow-icon {
-  cursor: pointer;
-  font-size: 1.25rem;
-  margin-right: 1rem;
-  display: flex;
-  align-items: center;
-}
+
 .card {
   //flex-grow: 1;
   background-color: #ffffff;
@@ -501,30 +708,37 @@ export default {
   padding: 1rem;
   margin-bottom: 0px;
 }
+
 .status-status_created {
   background: #6c757d;
   color: #fff;
 }
+
 .status-status_signing {
   background: #17a2b8;
   color: #fff;
 }
+
 .status-status_signed {
   background: #28a745;
   color: #fff;
 }
+
 .status-status_inapproval {
   background: #9317b8;
   color: #ffffff;
 }
+
 .status-status_approved {
   background: #007bff;
   color: #ffffff;
 }
+
 .status-status_revision {
   background: #ffcdd2;
   color: #c63737;
 }
+
 :deep(.p-datatable.p-datatable-scrollable > .p-datatable-wrapper > .p-datatable-table > .p-datatable-thead) {
   background: transparent;
 }

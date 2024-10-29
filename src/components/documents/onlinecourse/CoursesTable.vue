@@ -20,10 +20,10 @@
                     @click="updateCourseGiveCertificates()" />
           </div>
           <div>
-            <span  class="p-input-icon-left mr-2">
-                <i class="pi pi-search"/>
-                <InputText type="search" v-model="searchText" @keyup.enter="getCourses"  @search="getCourses" :placeholder="$t('common.search')"/>
-            </span>
+            <IconField iconPosition="left">
+              <InputIcon class="pi pi-search"> </InputIcon>
+              <InputText  type="search" v-model="searchText" @keyup.enter="getCourses"  @search="getCourses" :placeholder="$t('common.search')" />
+            </IconField>
           </div>
         </div>
         </template>
@@ -166,6 +166,7 @@ export default {
       give_certificates: [],
       selectAllChecked: true,
       dic_course_type: null,
+      searchText: null,
       courseDialog: false,
       courseRequest: {
         namekz: '',
@@ -333,7 +334,6 @@ export default {
           if (err.response && err.response.data && err.response.data.localized) {
             this.showMessage('error', this.$t(err.response.data.localizedPath), null)
           } else if (err.response) {
-            console.log("TEST: ", err)
             this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
           }
         } else {
@@ -414,12 +414,12 @@ export default {
     },
 
     validateCourse() {
-      this.courseValidate.namekz = this.courseRequest.namekz === '' 
-      this.courseValidate.nameru = this.courseRequest.nameru === '' 
-      this.courseValidate.nameen = this.courseRequest.nameen === '' 
-      this.courseValidate.descriptionkz = this.courseRequest.descriptionkz === '' 
-      this.courseValidate.descriptionru = this.courseRequest.descriptionru === '' 
-      this.courseValidate.descriptionen = this.courseRequest.descriptionen === '' 
+      this.courseValidate.namekz = this.courseRequest.namekz === ''
+      this.courseValidate.nameru = this.courseRequest.nameru === ''
+      this.courseValidate.nameen = this.courseRequest.nameen === ''
+      this.courseValidate.descriptionkz = this.courseRequest.descriptionkz === ''
+      this.courseValidate.descriptionru = this.courseRequest.descriptionru === ''
+      this.courseValidate.descriptionen = this.courseRequest.descriptionen === ''
       this.courseValidate.start_time = this.courseRequest.history.startDate === null
       this.courseValidate.final_date = this.courseRequest.history.finalDate === null
       this.courseValidate.hours = (this.courseRequest.hours <= 0 && this.checkedHours)

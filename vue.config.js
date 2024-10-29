@@ -19,9 +19,19 @@ module.exports = {
                 stream: require.resolve("stream-browserify")
             }
         },
+        optimization: {
+            splitChunks: {
+                chunks: 'all',
+            },
+            minimize: true
+        },
         plugins: [
             new NodePolyfillPlugin()
         ]
     },
-
+    css: {
+        extract: process.env.NODE_ENV === 'production' ? {
+            ignoreOrder: true,
+        } : false,
+    }
 }

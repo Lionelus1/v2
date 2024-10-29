@@ -1,6 +1,6 @@
 <template>
   <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
-  <Dialog v-model:visible="visible" modal position="center" :style="{ width: '50vw' }" class="p-fluid">
+  <Dialog v-model:visible="visible" modal position="center" :style="{ width: '50vw' }" class="p-fluid" header=" ">
     <p> {{ getCurrentPosition() }} </p>
     <Dropdown v-model="selectedPosition" :options="positions" optionLabel="name"></Dropdown>
     <template #footer>
@@ -10,7 +10,7 @@
           <label class="ml-2">{{ $t("common.doNotShowAnymore") }}</label>
         </div>
         <div>
-          <Button class="p-button-help sm:mt-0 mt-4" :label="$t('positions.changePosition')"
+          <Button class="p-button-help sm:mt-0 mt-4 mr-2" :label="$t('positions.changePosition')"
             @click="visible = false;changePosition()" />
           <Button class="sm:mt-0 mt-4" :label="$t('positions.continue')" @click="visible = false" autofocus />
         </div>

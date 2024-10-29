@@ -66,7 +66,8 @@ export default {
     ScienceWorksList: 13,
     ActCompletedWorks: 14,
     RequestList: 15,
-    DT_Request:16
+    DT_Request:16,
+    StateAttestationCommission:19
   },
 
   ContragentType: {
@@ -81,6 +82,7 @@ export default {
     //ұйым мүшесі (қызметкер, студент, магистрант, бастық және т.б.)
     OrganizationMember: 2,
     Student: 3,
+    Graduate: 4,
   },
 
   SignRighType : {
@@ -107,6 +109,7 @@ export default {
     References: 4,
     Accredation: 5,
     RelatedDocumentTemplates: 7,
+    Agreement: 8,
   },
 
   DocumentRequestType: {
@@ -116,6 +119,7 @@ export default {
     ReferenceSalaryRequest: 'reference_salary_request',
     ScienceAdvisorApproval: 'science_advisor_approval',
     AccountantsExecutionRequest: 'accountants_execution_request',
+    PracticeLeaderRequest: 'practice_leader_request',
   },
 
   ScienceWorkType: {
@@ -125,6 +129,9 @@ export default {
     PublicationKOKSNVO: 'publication_koksnvo',
     Textbooks: 'textbooks',
     Free: 'free',
+    AuthorCertificatesPatents: 'author_certificates_patents',
+    ConferenceProceedings: 'conference_proceedings',
+    AuthorizedBodyPublications: "authorized_body_publications"
   },
 
   StatusesArray: {

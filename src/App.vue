@@ -6,6 +6,7 @@ export default {
   name: 'app',
   data() {
     return {
+
       menu: null
     }
   }

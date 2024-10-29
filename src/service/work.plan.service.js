@@ -166,12 +166,23 @@ export class WorkPlanService {
         return api.post('/workPlan/reapprove', data, {headers: getHeader()});
     }
 
+    getEvents(data) {
+        return api.post('/workPlan/getEvents', data, {headers: getHeader()});
+    }
     getWorkPlanTypes() {
         return api.get('/workPlan/types', {headers: getHeader()});
     }
 
     updatePlanAttachments(data) {
         return api.post('/workPlan/updatePlanAttachments', data, {headers: getHeader()});
+    }
+
+    updateEventFact(data){
+        return api.post('/workPlan/updateWorkPlanEventFact', data, {headers: getHeader()});
+    }
+
+    changePlanCreator(data){
+        return api.post('/workPlan/changeWorkPlanCreator', data, {headers: getHeader()});
     }
 
 }

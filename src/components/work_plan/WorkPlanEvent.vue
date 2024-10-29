@@ -1,8 +1,6 @@
 <template>
   <div class="col-12">
-    <h3 v-if="plan">
-      <TitleBlock :title="plan.work_plan_name" :show-back-button="true"/>
-    </h3>
+    <TitleBlock :title="plan?.work_plan_name" :show-back-button="true"/>
     <div class="card" v-if="plan && planDoc && isRejected">
       <div class="p-fluid">
         <div class="field">
@@ -35,7 +33,7 @@
     </div>
     <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
     <div class="card" v-if="plan && planDoc">
-      <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
+      <TreeTable ref="workplantreetable" class="p-treetable-sm" v-model:selectionKeys="selectedWorkPlanEvent" selectionMode="single" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total"
                  @page="onPage($event)">
         <template #empty> {{ $t('common.noData') }}</template>
@@ -67,7 +65,19 @@
         </Column>
         <Column field="fact" :header="$t('common.fact')" v-if="isOperPlan">
           <template #body="{ node }">
-            <span v-if="node.fact">{{ node.fact }}</span>
+            <span v-if="node.fact && isFactVisible" style="float: left;">{{ node.fact + " " }}</span>
+            <div v-if="node.resp_person_id === loginedUserId">
+              <div v-if="isFactInputVisible && parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id'])" style="min-width: 150px;">
+                <div class="inline-container">
+                  <InputText type="text" v-model="factValue" />
+                  <Button @click="updateFact(node.work_plan_event_id, factValue)" icon="pi pi-check" text rounded aria-label="Update" />
+                  <Button @click="cancelFact()" icon="pi pi-times" severity="danger" text rounded aria-label="Cancel" />
+                </div>
+            </div>
+            <span v-if="selectedWorkPlanEvent && Object.keys(selectedWorkPlanEvent)[0] && node">
+              <a v-if="parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id']) && isFactVisible" href="javascript:void(0)" @click="factValue=node.fact ;factVisiblity()">&nbsp;&nbsp;<i class="pi pi-pencil" style="margin-top: 5px;"></i></a>
+            </span>
+            </div>
           </template>
         </Column>
         <Column field="quarter" :header="$t('workPlan.quarter')" v-if="!isSciencePlan">
@@ -76,6 +86,7 @@
           </template>
         </Column>
         <Column field="responsible_executor" :header="$t('workPlan.respExecutor')" v-if="isOperPlan">
+         
           <template #body="{ node }">
             {{ node.responsible_executor }}
           </template>
@@ -83,7 +94,7 @@
         <Column field="fullName" :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
           <template #body="{ node }">
             <div v-if="node.user && node.user.length > 2">
-              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text" icon="fa-solid fa-eye fa-xl" label=""/>
+              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text" icon="fa-solid fa-people-group fa-xl" label=""/>
               <OverlayPanel ref="op" @hide="closeOverlay">
                 <p v-for="item in selectedEvent.user" :key="item.id">{{ item.user.fullName }}</p>
               </OverlayPanel>
@@ -91,9 +102,11 @@
             <div v-else>
               <p v-for="item in node.user" :key="item.id">{{ item.user.fullName }}</p>
             </div>
+            <!-- <Button v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" icon="pi pi-pencil" severity="info" text rounded @click="openRespPersonDialog(node)" /> -->
+
           </template>
         </Column>
-        <Column field="supporting_docs" v-if="plan && plan.is_oper" :header="$t('common.suppDocs')">
+        <Column field="supporting_docs" v-if="plan && isOperPlan" :header="$t('common.suppDocs')">
           <template #body="{ node }">
             {{ node.supporting_docs }}
           </template>
@@ -102,7 +115,6 @@
           <template #body="{ node }">
             <div v-if="node.result && node.result.length > 100">
               {{ node.result_short }}
-              <!--              <Button type="button" @click="toggle('event-final-result', $event)" class="p-button-text" icon="fa-solid fa-eye" label="" />-->
               <a href="javascript:void(0);" @click="toggle('event-final-result', $event, node)">{{ $t('common.showMore').toLowerCase() }}</a>
               <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }" @hide="closeOverlay">
                 <div>{{ selectedEvent.result }}</div>
@@ -119,13 +131,12 @@
                 $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru :
                     node.status.name_en
               }}</span>
+
           </template>
         </Column>
         <Column field="actions" header="">
           <template #body="{ node }">
-            <div>
-              <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
-            </div>
+            <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
           </template>
         </Column>
       </TreeTable>
@@ -152,6 +163,44 @@
       <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-text" @click="uploadRelatedDocs"/>
     </template>
   </Dialog>
+
+  <Dialog v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" :closable="false" v-model:visible="respPersonDialog" modal :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
+              <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+                  <label>{{ $t('workPlan.summaryDepartment') }}</label>
+                  <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
+                  <small class="p-error" v-if="submitted && !summaryDepartment?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+              </div>
+              <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
+                <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
+                <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
+                <small class="p-error" v-if="submitted && !selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+              </div>
+              <template v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science && inputSets">
+                <div v-for="(inputSet, index) in inputSets" :key="index">
+                  <div class="field">
+                    <label>{{ $t('workPlan.scienceParticipants') }}</label>
+                    <FindUser class="select_wp" v-model="inputSet.selectedUsers" :editMode="true" :user-type="3" :max="1"></FindUser>
+                    <small class="p-error" v-if="submitted && !inputSet.selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+                  </div>
+                  <div class="field">
+                    <label for="name">{{ $t('common.role') }}</label>
+                    <RolesByName class="select_wp" v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
+                    <small class="p-error" v-if="submitted && !inputSet?.selectedRole">{{ $t('workPlan.errors.approvalUserError') }}</small>
+                  </div>
+                  <p style="text-align: right;" class="mb-3">
+                      <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined"  @click="removeInputSet(index)" outlined />
+                    </p>
+                </div>
+              </template>
+              <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
+                <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5 select_wp" @click="addNewUser" />
+              </div>
+
+                <div class="flex justify-content-end gap-2">
+                    <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeRespPersonDialog"></Button>
+                    <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="updateResponsivePersons"></Button>
+                </div>
+            </Dialog>
 
   <OverlayPanel ref="global-filter">
     <div class="p-fluid">
@@ -183,7 +232,7 @@
       </div>
       <div class="field">
         <label>{{ $t('cafedra.responsible') }}</label>
-        <FindUser v-model="filters.author.value" :max="1" :editMode="false"/>
+        <FindUser v-model="filters.author.value" :max="1" :editMode="false" :user-type="3"/>
       </div>
       <div class="field">
         <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined"/>
@@ -191,10 +240,9 @@
       </div>
     </div>
   </OverlayPanel>
-
   <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null"
                        :isMain="!!selectedEvent" :plan-data="plan" @hide="hideDialog(dialog.add)"/>
-  <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :event="selectedEvent" @hide="hideDialog(dialog.edit)"/>
+  <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :isEditResponsiveUsers="editRespUser" :event="selectedEvent" :copiedEvent="selectedEvent" @hide="hideDialog(dialog.edit)"/>
   <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport"
                          :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan" @sentToApprove="hideDialog(dialog.reportApprove)"/>
   <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state" :approval-stages="planApprovalStage" :plan="plan" :events="data"
@@ -220,6 +268,7 @@ import ActionButton from "@/components/ActionButton.vue";
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import DocState from "@/enum/docstates/index";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import RolesByName from "@/components/smartenu/RolesByName.vue";
 
 export default {
   name: "WorkPlanEvent",
@@ -231,14 +280,16 @@ export default {
     WorkPlanEventEditModal,
     WorkPlanApprove,
     WorkPlanEventAdd,
-    // WorkPlanEventResultModal,
     DocSignaturesInfo,
-    ActionButton
+    ActionButton,
+    RolesByName
   },
+  props:['isEditResponsiveUsers'],
   data() {
     return {
       data: [],
       Enum: Enum,
+      DocEnum: DocEnum,
       work_plan_id: parseInt(this.$route.params.id),
       searchText: null,
       lastEvent: null,
@@ -288,7 +339,6 @@ export default {
       isAdmin: false,
       isCreator: false,
       isApproval: false,
-      isPlanSentApproval: false,
       isEventsNull: false,
       isShowPlanExecute: false,
       showReportDoc: false,
@@ -373,13 +423,28 @@ export default {
       documentFiles: null,
       service: new DocService(),
       DocState: DocState,
-      filtered: false
+      filtered: false,
+      stages: [],
+      isFactVisible: true,
+      isFactInputVisible:false,
+      factValue: null,
+      selectedWorkPlanEvent:null,
+      respPersonDialog: false,
+      editData: null,
+      summaryDepartment:[],
+      inputSets: null,
+      submitted: false,
+      selectedUsers: [],
+      editRespUser:false
     }
   },
   created() {
+
     this.isAdmin = this.findRole(null, 'main_administrator')
     this.getPlan();
     this.getEventsTree(null);
+    this.getWorkPlanApprovalUsers(this.work_plan_id)
+
   },
   mounted() {
     this.emitter.on('workPlanEventIsAdded', (data) => {
@@ -437,9 +502,174 @@ export default {
         this.getEventsTree(this.parentNode);
       }
     });
+    this.getEventsTree;
+
+
+  },
+  watch: {
+    summaryDepartment: {
+      handler(newVal) {
+        if (newVal.length === 0 && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Oper) {
+        this.selectedUsers.shift();
+        } else {
+          this.selectedUsers.unshift(...newVal);
+        }
+      },
+      deep: true,
+    },
   },
   methods: {
     findRole: findRole,
+    updateResponsivePersons() {
+      this.submitted = true;
+
+      if (
+        (this.selectedUsers?.length === 0 && 
+        this.plan?.plan_type?.code !== this.Enum.WorkPlanTypes.Science) ||
+        (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Science && 
+        !this.validate()) ||
+        (this.summaryDepartment?.length === 0 && 
+        this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Oper)
+      ) {
+        return false;
+      }
+      
+      let userIds = [];
+      if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
+        userIds = this.inputSets.reduce((acc, inputSet) => {
+          inputSet.selectedUsers.forEach(user => {
+            if (user !== null){
+              acc.push({
+              user: user,
+              role: inputSet.selectedRole,
+            });
+            }
+
+          });
+          return acc;
+        }, []);
+      } else {
+        userIds = [];
+        this.selectedUsers.forEach(e => {
+          if(e !== null){
+            userIds.push({ user: e, role: null })
+          }
+          
+        });
+      }
+      let resp_person_id;
+      if (this.summaryDepartment && this.summaryDepartment[0]?.userID) {
+          resp_person_id = this.summaryDepartment[0].userID;
+      } else {
+          resp_person_id = null;
+      }
+      this.editData.resp_person_id = resp_person_id;
+      this.editData.resp_person_ids = userIds;
+
+      this.planService.editEvent(this.editData).then(res => {
+        if (res.data.is_success) {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t('workPlan.message.eventChanged'),
+            life: 3000,
+          });
+          this.respPersonDialog = false;
+          this.getEventsTree();
+          this.closeBasic();
+          this.submitted = false;
+        }
+      }).catch(error => {
+        this.submitted = false;
+        if (error && error.error === 'summaryDepartmentadded') {
+          this.$toast.add({ severity: "warn", summary: this.$t('workPlan.warnAddingsummaryDepartment'), life: 4000 });
+        }
+        
+      });
+    },
+    validate() {
+      return this.inputSets.every(inputSet => 
+        inputSet?.selectedUsers?.length > 0 && inputSet?.selectedRole !== null
+      );
+    },
+    addNewUser() {
+      this.inputSets.push({ selectedUsers: null, selectedRole: null })
+    },
+    removeInputSet(index) {
+      this.inputSets.splice(index, 1);
+    },
+    openRespPersonDialog(node){
+      if (node !== null){
+        this.selectedUsers = []
+        this.summaryDepartment = []
+        this.editData = node
+          this.respPersonDialog = true
+          if (this.editData !== null) {
+            this.editData.user.forEach(e => {
+              this.selectedUsers.push(e.user);
+              if(e.is_summary_department && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Oper){
+                  this.summaryDepartment.push(e.user);
+                  this.selectedUsers.pop(e.user);
+              }
+              
+            });
+            if (this.plan && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science && this.editData.user) {
+              const roleMap = new Map();
+              this.editData.user.forEach(item => {
+                if (item.role && item.user) {
+                  const { role, user } = item;
+                  if (roleMap.has(role.id)) {
+                    roleMap.get(role.id).selectedUsers.push(user);
+                  } else {
+                    roleMap.set(role.id, { selectedRole: role, selectedUsers: [user] });
+                  }
+                }
+              });
+              this.inputSets = Array.from(roleMap.values());
+            }
+          }
+      }
+    },
+    closeRespPersonDialog(){
+      this.selectedUsers = [];
+      this.respPersonDialog = false;
+      this.getEventsTree();
+    },
+    factVisiblity(){
+      this.isFactVisible = false;
+      this.isFactInputVisible = true;
+      
+    },
+    cancelFact(){
+      this.isFactInputVisible = false;
+      this.isFactVisible = true;
+    },
+    updateFact(eventId, fact){
+      let data = {
+        event_id: eventId,
+        fact: fact
+      }
+      this.planService.updateEventFact(data).then(res => {
+        if (res.data) {
+          this.isFactVisible = true
+          this.isFactInputVisible = false;
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t("common.success"),
+            life: 3000,
+          });
+          this.getEventsTree();
+          
+        
+        }
+      }).catch(error => {
+        console.log(error)
+        this.$toast.add({
+          severity: "error",
+          summary: error,
+          life: 3000,
+        });
+      });
+    },
     signView(node) {
       this.showReportDoc = true;
     },
@@ -499,7 +729,6 @@ export default {
           }
           this.total = 0;
         }
-        // this.getWorkPlanApprovalUsers();
         this.loading = false;
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -520,16 +749,13 @@ export default {
     getWorkPlanApprovalUsers() {
       this.planService.getWorkPlanApprovalUsers(parseInt(this.work_plan_id)).then(res => {
         if (res.data) {
-          this.approval_users = res.data;
-          this.isPlanSentApproval = true;
-          this.approval_users.forEach(e => {
-            if (this.loginedUserId === e.user.id) {
+          res?.data?.forEach(e => {
+            if (this.loginedUserId === e.id) {
               this.isApproval = true;
             }
           });
         } else {
           this.isApproval = false;
-          this.isPlanSentApproval = false;
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -610,6 +836,7 @@ export default {
             }
           ];
           this.getRelatedFiles()
+          this.getWorkPlanApprovalUsers(this.work_plan_id)
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -978,8 +1205,9 @@ export default {
       this.isCreator = node.creator_id === this.loginedUserId
       this.selectedEvent = node
     },
-    showDialog(dialog) {
+    showDialog(dialog, isEditPerson) {
       dialog.state = true
+      this.editRespUser = isEditPerson
     },
     hideDialog(dialog) {
       this.selectedEvent = null
@@ -1015,18 +1243,75 @@ export default {
     initSearch(searchText) {
       this.filters.name.value = searchText
       this.getEventsTree(null)
-    }
+    },
+    respUserExists(id) {
+      return this.plan.responsive_users.some(user => user.id === id)
+    },
+    showMySign(approvalStages) {
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUserId) {
+              return true
+            }
+          }
+
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return false
+      }
+
+      return false
+    },
+    greenMySign(approvalStages) {
+      let signed = true
+
+      try {
+        for (let i in approvalStages) {
+          let stage = approvalStages[i]
+          let stagePassed = true
+
+          for (let j = 0; j < stage.users.length; j++) {
+            if (stage.usersApproved[j] < 1) {
+              stagePassed = false
+            }
+
+            if (stage.users[j].userID === this.loginedUserId && stage.usersApproved[j] < 1) {
+              signed = false
+            }
+          }
+
+          if (!stagePassed) {
+            break
+          }
+        }
+      } catch (e) {
+        console.log(e)
+        return signed
+      }
+
+      return signed
+    },
   },
-  /*unmounted() {
-    localStorage.removeItem("workPlan");
-  }*/
+ 
   computed: {
     initItems() {
       return [
         {
           label: this.$t('common.show'),
           icon: 'fa-solid fa-eye',
-          disabled: !(this.selectedEvent && this.isPlanApproved && this.canExecuteEvent),
+          disabled: !(this.isPlanApproved && this.canExecuteEvent),
           visible: this.isFinish,
           command: () => {
             this.openPlanExecuteSidebar()
@@ -1035,7 +1320,7 @@ export default {
         {
           label: this.$t('common.add'),
           icon: 'fa-solid fa-plus',
-          disabled: !(this.selectedEvent && (this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent.user)) && !this.isFinish),
+          disabled: !(this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent?.user) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
             this.showDialog(this.dialog.add)
@@ -1047,7 +1332,16 @@ export default {
           disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
           visible: !this.isFinish,
           command: () => {
-            this.showDialog(this.dialog.edit)
+            this.showDialog(this.dialog.edit, false)
+          }
+        },
+        {
+          label: this.$t('workPlan.editRespUser'),
+          icon: 'fa-solid fa-pen',
+          disabled: !((this.isPlanCreator || this.isAdmin) && this.isPlanApproved),
+          visible: this.isPlanApproved && (this.isPlanCreator || this.isAdmin),
+          command: () => {
+            this.showDialog(this.dialog.edit, true)
           }
         },
         {
@@ -1079,24 +1373,6 @@ export default {
     isPlanUnderRevision() {
       return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
     },
-    // isGenerateActVisible(){
-    //   const currentMonth = new Date().getMonth() + 1;
-    //   let receivedDate = null;
-
-    //   if (this.planDoc && this.planDoc.docHistory) {
-    //     receivedDate = this.planDoc.docHistory?.setDate;
-    //   }
-    //   const newDate = receivedDate ? new Date(receivedDate) : null;
-    //   const receivedMonth = newDate ? newDate.getMonth() + 1 : null;
-    //   const isVisible = receivedMonth < currentMonth;
-
-    //   return (
-    //     this.planDoc &&
-    //     this.planDoc.docHistory &&
-    //     this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value &&
-    //     isVisible
-    //   );
-    // },
     toolbarMenus() {
       return [
         {
@@ -1181,7 +1457,13 @@ export default {
           }
         }
       ]
-    }
+    },
+    isFinshButtonDisabled() {
+      return this.data && this.data.length > 0;
+    },
+    isRespUser() {
+      return this.plan && this.respUserExists(this.loginedUserId)
+    },
   }
 }
 </script>
@@ -1226,6 +1508,11 @@ export default {
     background: #C8E6C9;
     color: #256029;
   }
-
+  .inline-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
 }
 </style>

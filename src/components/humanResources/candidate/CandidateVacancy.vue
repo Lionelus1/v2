@@ -35,7 +35,6 @@
       <div class="table-header flex flex-column md:flex-row md:justify-content-between">
         <h4 class="mb-2 m-md-0 align-self-md-center">{{ $t("hr.vacancies") }}</h4>
         <span class="p-input-icon-left">
-            <i class="pi pi-search"/>
             <InputText type="search"
                        v-model="lazyParams.searchText"
                        :placeholder="$t('common.search')"
@@ -721,9 +720,36 @@ export default {
 }
 
 .customer-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+
   &.status-8 {
     background: #b3e5fc;
     color: #23547b;
+  }
+
+  &.status-9 {
+    background: #eccfff;
+    color: #694382;
+  }
+
+  &.status-10 {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.status-11 {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+
+  &.status-12 {
+    background: #ffd8b2;
+    color: #805b36;
   }
 }
 </style>

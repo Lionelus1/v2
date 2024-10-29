@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isView.check" id="carddiv" class="grid">  
+  <div v-if="isView.check">  
     <div class="col-12">
         <Menubar :model="menu" :key="active" style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
       </div>
@@ -7,9 +7,9 @@
     <BlockUI :blocked="loading" :fullScreen="true">
         <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     </BlockUI>
-    <div class="card">
-      <div class="grid formgrid">
-        <span   style="white-space: pre-line">
+    <div>
+      <div>
+        <span>
           <DataTable class="justify-content-between" selectionMode="single" v-model="qualification"
                   :lazy="true" :value="qualifications" :loading="loading" v-model:selection="qualification"
                   :paginator="true" :rows="10" :totalRecords="totalRecords" @page="onPageChange">
@@ -53,8 +53,8 @@
 
           <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
               <template #body="slotProps">
-                  <Button icon="pi pi-pencil" class="p-button-rounded p-button-outlined mb-2 mr-2" @click="qualification=slotProps.data;update()"></Button>
-                  <Button v-if="!slotProps.data.platonus_qualification_id" icon="fa-solid fa-trash" class="p-button-danger mb-2 mr-2" @click="qualification=slotProps.data;deleteValue()"></Button>
+                  <Button icon="fa-solid fa-pencil fa-xl" class="p-button-text p-button-warning p-1 mr-2" @click="qualification=slotProps.data;update()"></Button>
+                  <Button v-if="!slotProps.data.platonus_qualification_id" icon="fa-solid fa-trash-can fa-xl" class="p-button-text p-button-danger p-1 mr-2" @click="qualification=slotProps.data;deleteValue()"></Button>
               </template>
           </Column>
           </DataTable>
@@ -93,6 +93,7 @@
   import ResearchInterestsEdit from "../edit/ResearchInterestsEdit"
   import UserAwardEdit from "../edit/UserAwardEdit"
   import UserQualificationsEdit from "../edit/UserQualificationsEdit.vue"
+  import {useConfirm} from "primevue/useconfirm";
 
   const emitter = inject("emitter");
   const {t, locale} = useI18n()
@@ -145,23 +146,34 @@
 
   const fileData = ref(null)
   const fileView = ref(false)
+  const confirm = useConfirm()
 
   const deleteValue=() => {
-      const data = {
+
+    confirm.require({
+      message: t('common.doYouWantDelete'),
+      header: t('common.confirm'),
+      icon: 'pi pi-exclamation-triangle',
+      acceptClass: 'p-button p-button-success',
+      rejectClass: 'p-button p-button-danger',
+      accept: () => {
+        const data = {
           id: Number(qualification.value.id),
           userID: Number(props.userID)
-      }
+        }
 
-      scienceService.deleteQualificationsScience(data).then(res  => {
-        toast.add({severity: "success", summary: t('common.success'), life: 3000});
-        getQualificationsScience()
-      }).catch(err => {
+        scienceService.deleteQualificationsScience(data).then(res  => {
+          toast.add({severity: "success", summary: t('common.success'), life: 3000});
+          getQualificationsScience()
+        }).catch(err => {
           toast.add({
-          severity: "error",
-          summary: t('message.actionError'),
-          life: 3000,
+            severity: "error",
+            summary: t('message.actionError'),
+            life: 3000,
           })
-      })
+        })
+      },
+    });
   }
 
   const update = () => {
