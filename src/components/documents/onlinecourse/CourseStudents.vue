@@ -403,7 +403,7 @@
       total.value = response.data.total;
       dic_course_type.value = response.data.dic_course_type;
     } catch (error) {
-      console.error(error);
+      showMessage('error', t('common.error'), '', 3000);
       // Handle error appropriately, e.g., show a user-friendly message.
     } finally {
       loading.value = false;

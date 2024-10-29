@@ -105,7 +105,6 @@ const loading = ref(false);
 
 const deleteValue = (node) => {
   if (!node) {
-    console.error('Node is undefined');
     return;
   }
   const req = {

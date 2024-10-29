@@ -226,7 +226,6 @@ export default {
       handler(params) {
 
         if (!params) {
-          console.error("params is undefined!");
           return;
         }
 

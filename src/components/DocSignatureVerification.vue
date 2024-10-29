@@ -197,12 +197,7 @@ export default {
                   this.attached = false
                 }
               }
-            }).catch((error) => {
-          console.error(error);
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-        });
+            });
       }
     },
     verify() {

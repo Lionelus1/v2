@@ -745,10 +745,7 @@ export default {
             this.file.hidden = false
             this.selected.hidden = false
 
-          })
-          .catch(error => {
-              console.error(error)
-          })
+          });
     },
     downloadFile(path = null) {
       if (this.file || path) {

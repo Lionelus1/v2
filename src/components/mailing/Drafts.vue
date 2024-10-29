@@ -80,7 +80,6 @@ const getFullName = (senderJSON) => {
     const senderData = JSON.parse(senderJSON);
     return `${senderData.firstName || ''} ${senderData.lastName || ''} ${senderData.thirdName || ''}`.trim();
   } catch (error) {
-    console.error("Error parsing sender JSON:", error);
     return t("mailing.invalidSenderData");
   }
 };
@@ -144,7 +143,6 @@ const deleteMailing = (data) => {
         }
       })
       .catch((err) => {
-        console.error(err);
         toast.add({
           severity: "error",
           detail: t("mailing.deleteFailed"),

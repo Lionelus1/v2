@@ -300,10 +300,7 @@ export default {
                 this.fixedMenu = false
               }
             })
-            .catch((err) => {
-
-              console.error('Ошибка при получении значения fixedMenu из бэкенда:', err);
-
+            .catch((_) => {
               this.fixedMenu = false;
             });
       } else {

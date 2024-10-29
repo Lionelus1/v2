@@ -99,9 +99,7 @@ export default {
                 this.selectedOwner = [];
             }
         }
-        ).catch(
-        (error) => {
-            console.error("Error fetching users:", error);
+        ).catch((_) => {
             this.selectedOwner = [];
         }
         );

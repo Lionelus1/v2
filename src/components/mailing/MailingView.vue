@@ -69,7 +69,6 @@ const getFullName = computed(() => {
     const { lastName = "", firstName = "", thirdName = "" } = JSON.parse(senderString);
     return `${thirdName} ${firstName} ${lastName}`.trim();
   } catch (e) {
-    console.error("Failed to parse senderJSON:", e);
     return "Invalid sender data";
   }
 });

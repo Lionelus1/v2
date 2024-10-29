@@ -177,7 +177,7 @@
             if (selectedAwardType) {
                 payload.value.award_type = selectedAwardType;
             } else {
-                console.error("Selected award type not found in awardTypes array");
+              // TODO: Selected award type not found in awardTypes array
             }
         }
     };

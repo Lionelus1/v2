@@ -171,7 +171,6 @@ const getReports = async () => {
       totalRecords.value = response.data.total;
     }
   } catch (error) {
-    console.error('Не удалось получить отчеты:', error);
     showError('Не удалось получить отчеты');
   } finally {
     loading.value = false;

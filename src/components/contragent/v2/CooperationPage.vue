@@ -295,9 +295,6 @@ function saveCooperationDocument() {
 
         showMessage('success', t('common.message.succesSaved'), null);
         handleClose()
-      })
-      .catch((error) => {
-        console.error('Failed to save document:', error);
       });
 }
 
@@ -326,7 +323,6 @@ function createNewSubject() {
       getCoopertationSubjects()
     })
     .catch((error) => {
-      console.error('Failed to save document:', error);
       showMessage('error', t('common.message.errorSaving'), null);
     });
 

@@ -139,7 +139,7 @@
       await service.addModulesToCourse(formData.value);
       props.closeModuleDialog();
     } catch (error) {
-      console.error(error);
+      toast.add({severity: 'error', summary: t('common.error'), life: 3000 });
     } finally {
       loading.value = false;
       submitted.value = false;
@@ -166,7 +166,7 @@
       await service.updateModuleOfCourse(formData.value);
       props.closeModuleDialog();
     } catch (error) {
-      console.error(error);
+      toast.add({severity: 'error', summary: t('common.error'), life: 3000 });
     } finally {
       submitted.value = false;
       loading.value = false;

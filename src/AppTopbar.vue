@@ -114,7 +114,6 @@ export default {
             this.notificationService.viewNotifications({views: nots}).then(response => {
                     if (this.newCount > 0)
                         this.newCount = this.newCount - nots.length < 0 ? 0 : this.newCount - nots.length;
-                    console.info("view result", response)
                 }
             ).catch(_ => {});
         },

@@ -106,11 +106,7 @@
             } else {
                 banks.value = res.data
             }
-        }).catch(err => {
-          if (err?.response?.status !== 404) {
-            console.error(err)
-          }
-        })
+        });
     }
 
     const bankLabel = (item) => {

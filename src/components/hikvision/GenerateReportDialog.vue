@@ -138,7 +138,6 @@ const getDepartments = async () => {
       departments.value = [];
     }
   } catch (error) {
-    console.error('Failed to load departments:', error);
     toast.add({
       severity: 'error',
       detail: t('common.message.loadError'),

@@ -730,7 +730,7 @@ export default {
             this.departmentsGroup = res.data.departments;
             break;
           default:
-            console.error(`Unknown type: ${type}`);
+            // TODO: Unknown type
         }
 
         this.loading = false
@@ -952,7 +952,7 @@ export default {
 
           saveAs(pdfBlob, `${selectedPersons[0].fullName}.pdf`);
         } catch (error) {
-          console.error('Failed to download resume:', error);
+          // TODO: Failed to download resume
         }
       } else if (selectedPersons.length > 1) {
         const zip = new JSZip();
@@ -973,7 +973,7 @@ export default {
 
             zip.file(`${person.fullName}.pdf`, pdfBlob);
           } catch (error) {
-            console.error(`Failed to download resume for ${person.name}:`, error);
+            // TODO: Failed to download resume for ${person.name}:
           }
         }
 
@@ -993,7 +993,6 @@ export default {
 
         return base64Data;
       } catch (error) {
-        console.error('Ошибка при загрузке резюме:', error);
         throw error;
       }
     },

@@ -1255,7 +1255,6 @@ export default {
     },
     deleteItem(item) {
       if (!item.result_text || !item.result_text[0] || !item.result_text[0].id || !item.event_result_id) {
-        console.error('Invalid item');
         return;
       }
       const data = {

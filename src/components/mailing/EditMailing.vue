@@ -161,7 +161,6 @@ const deleteFile = async () => {
       });
     }
   } catch (error) {
-    console.error('Error deleting file:', error);
     toast.add({
       severity: 'error',
       detail: t('common.fileDeleteFailed'),
@@ -189,7 +188,6 @@ const deleteAddFilePath = (mailingId) => {
         }
       })
       .catch((err) => {
-        console.error(err);
         toast.add({
           severity: "error",
           detail: t("mailing.deleteFailed"),
