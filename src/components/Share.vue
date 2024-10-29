@@ -26,7 +26,6 @@ const error = () => {
   emit('error')
 }
 const showSocials = (event) => {
-  console.log(props.data)
   op.value.toggle(event);
 }
 const shareWhatsApp = () => {

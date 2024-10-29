@@ -33,7 +33,6 @@ export class VacancyService {
     }
 
     vacancyAction(vacancyId, path) {
-        console.log(vacancyId + ', ' + path)
         return api.post(
             '/vacancy/' + path,
             {
@@ -44,8 +43,6 @@ export class VacancyService {
     }
 
     applyAction(request, path) {
-        console.log(request)
-        console.log(path)
         return api.post(
             '/vacancy/apply/' + path,
             request,
@@ -65,8 +62,6 @@ export class VacancyService {
     }
 
     checkAction(statusId, vacancy) {
-        console.log(statusId)
-        console.log(vacancy)
         return api.post(
             '/vacancy/check/action',
             {
@@ -78,7 +73,6 @@ export class VacancyService {
     }
 
     checkApplyAction(statusId) {
-        console.log(statusId)
         return api.post(
             '/vacancy/check/apply/action',
             {

@@ -808,7 +808,6 @@ const getModuleByEduProgId = () => {
 getModuleByEduProgId()
 
 const approve = (event) => {
-  console.log(event)
 /*  approving.value = true;
   toast.add({
     severity: "success",

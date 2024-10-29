@@ -387,10 +387,7 @@ export default {
             formData.value.main_image_file.url = smartEnuApi + fileRoute + formData.value.main_image_file.filepath
             formData.value.image_id = formData.value.main_image_file.id
           }
-        }).catch(error => {
-          console.log(error)
-          toast.add({severity: "error", summary: error, life: 3000});
-        })
+        });
       }
     }
 

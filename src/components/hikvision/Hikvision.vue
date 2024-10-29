@@ -171,7 +171,6 @@ const getReports = async () => {
       totalRecords.value = response.data.total;
     }
   } catch (error) {
-    console.error('Не удалось получить отчеты:', error);
     showError('Не удалось получить отчеты');
   } finally {
     loading.value = false;
@@ -188,11 +187,9 @@ const initItems = (data) => [
   },
 ];
 const onPageChange = (event) => {
-  console.log('Page change event:', event);
   lazyParams.value.page = event.page;
   lazyParams.value.rows = event.rows;
   lazyParams.value.first = event.first;
-  console.log('Updated lazyParams:', lazyParams.value);
   getReports();
 };
 
@@ -202,20 +199,6 @@ onMounted(() => {
 
 const showGenerateReport = () => {
   showGenerateReportDialog.value = true;
-};
-
-// const showWorkSchedule = () => {
-//   showWorkScheduleDialog.value = true;
-// };
-
-const viewReport = async (id) => {
-  try {
-    const response = await reportService.getReportById(id);
-    console.log('Просмотр отчета:', response.data);
-  } catch (error) {
-    console.error('Не удалось просмотреть отчет:', error);
-    showError('Не удалось просмотреть отчет');
-  }
 };
 
 const deleteReport = (id) => {

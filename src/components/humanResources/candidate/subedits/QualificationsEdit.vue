@@ -192,7 +192,6 @@
     }
 
     const onIconUpload = (event) => {
-        console.log(event)
         file.value = event.files[0];
     };
 

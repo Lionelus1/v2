@@ -158,7 +158,6 @@
     });
 
   const create = () => {
-      // console.log(payload, 'test')
       if (validateForm()) {
         let api = '/account/education/create'
         if (payload.value.id !== 0 && payload.value.id !== undefined)  {
@@ -167,9 +166,7 @@
 
         api.post(api, payload.value, {headers: getHeader()}).then(res  => {
           emitter.emit('educationUpdated', true)
-        }).catch(err => {
-          console.log(err)
-        })
+        });
       }
     };
 
@@ -206,4 +203,3 @@
     position: inherit;
   }
   </style>
-  

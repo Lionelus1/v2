@@ -306,10 +306,7 @@ export default {
             e.member = e.members.find(x => x.userID === event.value[0].userID)
           })
         }
-      }).catch(error => {
-        console.log(error)
-        this.$toast.add({severity: "error", summary: error, life: 3000})
-      })
+      });
     },
     getTrainigName(sp) {
       switch (this.$i18n.locale) {

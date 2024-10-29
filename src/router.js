@@ -19,7 +19,6 @@ const ifAuthenticated = (to, from, next) => {
         next()
         return
     } else {
-        console.log(to)
         store.dispatch("solveAttemptedUrl", to);
         next('/login')
         return

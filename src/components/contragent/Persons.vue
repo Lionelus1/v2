@@ -321,15 +321,11 @@ export default {
           this.loading = false
         })
         .catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-          if (error.response.status == 404) {
+          if (error?.response?.status == 404) {
             this.persons = [];
             this.count = 0;
           }
 
-          console.error(error);
           this.loading = false
         });
     },

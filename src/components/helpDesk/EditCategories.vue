@@ -168,13 +168,10 @@ const saveCategory = () => {
     }
     saveCategoryLine()
     router.back()
-  }).catch((err) => {
-    console.log(err)
-  })
+  });
 }
 
 const input = () => {
-  console.log("Category")
 }
 
 const itemLabel = (item) => {
@@ -234,7 +231,6 @@ const getDepartment = () => {
         life: 3000,
       })
     } else {
-      console.log(err)
       toast.add({
         severity: "error",
         summary: t('common.message.actionError'),

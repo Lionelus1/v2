@@ -69,14 +69,12 @@ const getFullName = computed(() => {
     const { lastName = "", firstName = "", thirdName = "" } = JSON.parse(senderString);
     return `${thirdName} ${firstName} ${lastName}`.trim();
   } catch (e) {
-    console.error("Failed to parse senderJSON:", e);
     return "Invalid sender data";
   }
 });
 
 const getCategories = computed(() => {
   const categories = props.selectedMailing?.categories
-  console.log("categories: ", categories)
   return locale.value === "kz"
       ? categories?.map(category => category.name_kz || '-').join(', ')
       : locale.value === "ru"

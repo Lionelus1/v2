@@ -59,8 +59,6 @@ const validatePhoneNumber = (phoneNumber) => {
   return phoneRegex.test(phoneNumber);
 }
 
-console.log(props.validationRequest)
-
 const input = () => {
   emit('childConsultationInput', userData.value)
   emit('validationConsultation', {

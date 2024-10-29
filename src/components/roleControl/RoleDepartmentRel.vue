@@ -225,7 +225,6 @@
                 life: 3000,
             })
             } else {
-            console.log(err)
             toast.add({
                 severity: "error",
                 summary: t('common.message.actionError'),

@@ -318,7 +318,6 @@ export default {
         })
         .catch((error) => {
           this.loading = false;
-          console.error(error);
         });
     },
     toggle(event, data) {
