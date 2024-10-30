@@ -153,7 +153,7 @@
           window.open(firstLink, '_blank'); 
         } 
       } else {
-          console.error("Ссылка на профиль отсутствует");
+        // TODO: Ссылка на профиль отсутствует
         } 
     }
 

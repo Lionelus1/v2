@@ -230,7 +230,7 @@ export default {
           "name": inputValue,
         },
         "searchMode": this.userType == 1 ? "student" : this.userType == 2 ? "staff" : "all",
-        "ldap": this.searchMode == 'ldap' ? true : false,
+        "ldap": this.userType == 1 || this.userType == 2 ? true : false,
         "page": 0,
         "rows": 15
       }, this.cancelToken.token).then(

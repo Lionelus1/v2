@@ -113,7 +113,6 @@
           } else if (err.response && err.response.data && err.response.data.localized) {
             this.showMessage('error', this.$t(err.response.data.localizedPath), null);
           } else {
-            console.log(err);
             this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
           }
         })
@@ -132,7 +131,6 @@
           this.validation.birthday || this.validation.email);
       },
       onMenuItemClick(event) {
-          console.log(event.target)
           if (event.target) {
             const menuItemValue = event.target.textContent
             
@@ -173,7 +171,6 @@
           } else if (err.response && err.response.data && err.response.data.localized) {
             this.showMessage('error', this.$t(err.response.data.localizedPath), null);
           } else {
-            console.log(err);
             this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
           }
         })
@@ -195,4 +192,3 @@
     z-index: 1102;
   }
   </style>
-  

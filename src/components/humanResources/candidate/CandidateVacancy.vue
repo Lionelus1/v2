@@ -562,9 +562,7 @@ export default {
       ).then(response => {
         this.documentUuid = response.data
         this.visible.petition = true
-      }).catch(error => {
-        console.log(error)
-      })
+      });
     },
 
     /**

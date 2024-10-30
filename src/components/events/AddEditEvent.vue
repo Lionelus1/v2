@@ -225,10 +225,7 @@
 </template>
 
 <script>
-import RichEditor from "../documents/editor/RichEditor";
 import {EventsService} from "../../service/event.service";
-import {resizeImages} from "../../helpers/HelperUtil";
-import * as imageResizeCompress from "image-resize-compress";
 import {PosterService} from "../../service/poster.service";
 import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "@/config/config";
 import {FileService} from "@/service/file.service";

@@ -99,9 +99,7 @@ export default {
                 this.selectedOwner = [];
             }
         }
-        ).catch(
-        (error) => {
-            console.error("Error fetching users:", error);
+        ).catch((_) => {
             this.selectedOwner = [];
         }
         );
@@ -156,9 +154,6 @@ export default {
             this.$emit("updated", this.folder);
             this.selectedOwner = []
             this.ownerID = []
-        },
-        error =>{
-          console.log(error);
         });
     },
     deleteFolder(hide) {
@@ -170,9 +165,6 @@ export default {
            
             this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
             this.$emit("updated", this.folder);
-        },
-        error =>{
-          console.log(error);
         });
     },
   }

@@ -825,18 +825,6 @@ export default {
         })
         .then((response) => {
           this.myDetails = response.data;
-        })
-        .catch((error) => {
-          console.log(error);
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("vaccination.error.list") + ":\n" + error,
-              life: 3000,
-            });
-          }
         });
     },
     onPage(event) {

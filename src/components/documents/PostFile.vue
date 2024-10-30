@@ -224,7 +224,6 @@ export default {
       handler(params) {
 
         if (!params) {
-          console.error("params is undefined!");
           return;
         }
 
@@ -385,7 +384,6 @@ export default {
         //var fcount = this.file.id !== null ? 0 : this.$refs.ufile.files.length
           fcount = this.$refs.ufile.files.length
         }
-      this.file.params = [];
       if (this.file.fileDescription) {
           let param = {
             value: this.file.fileDescription,
@@ -426,9 +424,6 @@ export default {
           this.folder.key = response.data.id;
           this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
           this.$emit("updated", this.folder);
-      },
-      error =>{
-        console.log(error);
       })
     },
     getReadyDocCatalog() {
@@ -439,12 +434,6 @@ export default {
         headers: getHeader()
       }).then(res => {
         this.catalogs = res.data
-      }).catch(err => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          console.log(err)
-        }
       })
     },
   },

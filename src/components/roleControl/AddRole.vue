@@ -140,9 +140,6 @@ export default {
     },
     isDisabled() {
       return !(this.selectedOrganization !== null && this.employeeFullName !== null && this.role !== null);
-    },
-    onInputEvent() {
-      console.log("HERE")
     }
   }
 }

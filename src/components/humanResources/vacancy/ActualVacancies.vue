@@ -207,7 +207,7 @@ export default {
         sortField: "",
         sortOrder: 0,
         right: null,
-        isDeleted: false,
+        isArchive: false,
       },
       view: {
         candidates: false,
@@ -324,7 +324,6 @@ export default {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
-        console.log(response.data)
       }).catch((error) => {
         if (error.response.status == 401) {
           this.$store.dispatch("logLout");
@@ -401,7 +400,6 @@ export default {
             this.report,
             {responseType: "blob", headers: getHeader()},
         ).then(response => {
-          console.log(response)
           this.reportResponse = response
         }).catch(error => {
           this.$toast.add({

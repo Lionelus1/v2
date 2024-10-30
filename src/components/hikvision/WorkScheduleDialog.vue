@@ -68,7 +68,6 @@ const reset = () => {
 };
 
 const save = () => {
-  console.log('Saving schedules:', { ppsSchedule: ppsSchedule.value, employeeSchedule: employeeSchedule.value });
   // Добавьте логику для сохранения расписания
   $emit('close');
 };

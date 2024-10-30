@@ -359,7 +359,6 @@ export default {
       this.changed = true;
     },
     handleModelUpdate(newValue) {
-      console.log('Новое значение model-value:', newValue);
 
     },
     validate() {
@@ -430,7 +429,7 @@ export default {
           window.open(firstLink, '_blank'); 
         } 
       } else {
-          console.error("Ссылка на профиль отсутствует");
+        // TODO: Ссылка на профиль отсутствует
       } 
     },
     onMenuItemClick() {

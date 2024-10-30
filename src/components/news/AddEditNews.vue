@@ -336,13 +336,6 @@ export default {
         if (response.data) {
           this.$router.push({name: "NewsTable"})
         }
-      }).catch((error) => {
-        console.log(error)
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-          life: 3000,
-        });
       });
     },
     uploadImage1(event) {

@@ -33,7 +33,6 @@ export class EnuWebService {
     }
 
     addPage(data){
-        console.log("rest files", data.files)
         return api.post("/web/addPage", data, {headers: getHeader()})
     }
 

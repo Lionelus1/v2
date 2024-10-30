@@ -369,13 +369,6 @@ export default {
             life: 3000,
           });
         }
-      }).catch(error => {
-        console.log(error)
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
       });
     },
 

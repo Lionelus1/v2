@@ -88,7 +88,7 @@ export default {
         const data = await response.json();
         this.templates = data;
       } catch (error) {
-        console.error('Ошибка при получении шаблонов:', error);
+        this.toast.add({severity: "error", detail: this.$t('common.error'), life: 3000});
       }
     },
     getTemplateContent(template) {

@@ -186,11 +186,7 @@ export default {
           this.total = res.data.count
           this.loading = false;
         })
-        .catch((error) => {
-          console.error(error);
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
+        .catch((_) => {
           this.loading = false;
         });
     },

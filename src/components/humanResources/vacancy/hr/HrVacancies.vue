@@ -498,7 +498,6 @@ export default {
           link.innerHTML = 'Download PDF file';
           link.download = 'Resume.pdf';
           link.href = base64data;
-          console.log(link.href)
           link.click();
         }
       });
@@ -541,13 +540,11 @@ export default {
       }
       try {
         await this.signResume()
-        console.log("PDF IS ", this.resumeBlob)
         let dataBase64 = this.arrayBufferToBase64(this.resumeBlob)
         this.signature = await NCALaClient.sign('cms', {}, dataBase64, 'fl', this.$i18n.locale, true)
         // this.signature = await NCALaClient.createCAdESFromBase64('PKCS12', this.resumeBlob, 'SIGNATURE', false)
         this.visible.resume = false
-      } catch (error) {
-        console.log(error)
+      } catch (_) {
         this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
       }
     },
@@ -681,7 +678,6 @@ export default {
       if (this.signWay === 0) {
         const blob = new Blob([this.resumeBlob], {type: "application/pdf"});
         let pdfF = new File([blob], 'filename.pdf')
-        console.log(pdfF)
         fd.append("resumeData", pdfF)
         fd.append("signature", this.signature)
       } else {
@@ -696,16 +692,6 @@ export default {
             }
           }
           this.visible.apply = false;
-        }).catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          }
         });
       }
     },
@@ -768,7 +754,6 @@ export default {
     },
     clickRightBtn(){
       this.accessible = !this.accessible
-
       this.getVacancies()
     }
   },

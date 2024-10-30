@@ -317,7 +317,6 @@ const onGalleryRemove = (event) => {
       }
     })
     /*let found = galleryFiles.value.find(x => x.file_id === event.id)
-    console.log(found)
     found.is_deleted = true;*/
   }
 }

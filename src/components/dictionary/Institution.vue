@@ -65,19 +65,9 @@ export default {
       api.get('/institutions')
           .then(response=>{
             this.institutions = response.data;
-            console.log(response.data)
           })
           .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            }
-            this.$toast.add({
-              severity: "error",
-              summary: "getInstitutions:\n" + error,
-              life: 3000,
-            });
-
-            if (error.response.status === 404) {
+            if (error?.response?.status === 404) {
               this.institutions = null;
             }
           })

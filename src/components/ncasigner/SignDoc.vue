@@ -62,8 +62,6 @@
         methods: {
             upload(event) {
                 this.document = event.files[0]
-                console.log(this.document)
-                console.log(this.document.name)
             },
             async getInfo() {
                 let NCALaClient = new NCALayerClient()
@@ -79,7 +77,7 @@
                 }
 
                 try {
-                    console.log(await NCALaClient.getKeyInfo("PKCS12"))
+                  // await NCALaClient.getKeyInfo("PKCS12")
                 } catch (error) {
                     this.$toast.add({
                         severity: 'error',
@@ -136,9 +134,7 @@
                     name: this.document.name
                 }, {headers: header}).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
-                        console.log(response.data)
                         this.documentID = response.data.uuid
-                        console.log('DOCID', this.documentID);
                         this.addSignature(response.data)
                     } else {
                         this.$toast.add({
@@ -177,7 +173,6 @@
             getDocument(docId) {
                 axios.get(signerApi + '/documents/' + docId, {headers: header}).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
-                        console.log(response.data)
                         this.documentID = response.data.uuid
                         this.addSignature(response.data)
                     } else {

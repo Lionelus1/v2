@@ -7,7 +7,6 @@ export async function docToByteArray(document) {
         reader.readAsArrayBuffer(document);
         reader.onload = () => {
             resolve(reader.result);
-            console.log(reader)
         }
         reader.onerror = error => reject(error);
     });

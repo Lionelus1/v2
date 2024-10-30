@@ -105,7 +105,6 @@ const loading = ref(false);
 
 const deleteValue = (node) => {
   if (!node) {
-    console.error('Node is undefined');
     return;
   }
   const req = {
@@ -186,13 +185,10 @@ const getQuestions = (node = null) => {
       nodes.value = res.data.questions;
       total.value = res.data.total;
     } else {
-      console.log('Updating children for node:', node.id);  // Логируем ID обновляемого узла
       node.value.children = res.data.questions;
-      console.log('Updated node with children:', node);
     }
     loading.value = false;
-  })
-      .catch(err => {
+  }).catch(err => {
         loading.value = false;
         toast.add({ severity: 'error', summary: t('common.error'), life: 3000 });
       });
@@ -208,7 +204,6 @@ const menu2 = computed(() => [
 
 
 const onExpand = (data) => {
-  console.log('Expanded node data:', data);
   lazyParams.parent_id = Number(data.id);
   lazyParams.is_child = true;
   node.value = data;

@@ -114,7 +114,6 @@ const getWorkDays = () => {
       })
       .catch((error) => {
         loading.value = false
-        console.log(error)
       });
 }
 getWorkDays()

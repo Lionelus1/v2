@@ -85,9 +85,6 @@ export default {
           this.faq = response.data;
 
           this.loading = false;
-        })
-        .catch((error) => {
-          console.log(error);
         });
     },
     downloadFile(fileName, fileType) {

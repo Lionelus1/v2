@@ -216,19 +216,8 @@ export default {
           this.hideDialog(this.dialog.addMember);
         })
         .catch((error) => {
-          console.log(error)
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } 
-          if (error.response.status == 302) {
+          if (error?.response?.status === 302) {
             this.$toast.add({severity:"error", summary: this.$t('dissertation.title'), detail:this.$t('dissertation.message.hasSameMember'), life: 3000});
-          }
-          else {
-            this.$toast.add({
-            severity: "error",
-            summary: "dissertationNewCouncilError\n" + error,
-            life: 3000
-            })
           }
         })
     }

@@ -412,7 +412,7 @@ export default {
           }
         }
       } catch (error) {
-        console.error("Error parsing JSON data:", error);
+        this.$toast.add({severity: "error", summary: this.$t('common.error'), life: 3000});
       }
 
       api.post("/vacancy/public", this.lazyParams, {headers: getHeader()}).then((response) => {

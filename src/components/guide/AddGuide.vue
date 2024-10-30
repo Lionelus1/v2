@@ -81,14 +81,7 @@
                         });
                         this.closeBasic();
                     }
-                }).catch((error) => {
-                    console.log(error)
-                        this.$toast.add({
-                            severity: "error",
-                            summary: this.$t("smartenu.saveEventError") + ":\n" + error,
-                            life: 3000,
-                        });
-                    });
+                });
             },
             getGuides(parentId, parent) {
                 this.lazyParams.parentId = parentId

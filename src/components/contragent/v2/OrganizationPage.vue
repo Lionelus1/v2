@@ -625,7 +625,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       })
@@ -647,7 +646,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       })
@@ -663,9 +661,8 @@ export default {
           this.org.organizationIndustry = []
           this.organizationIndustry = res.data;
           this.org.organizationIndustry = this.organizationIndustry.filter(item => item.is_noted === true);
-          console.log("Filtered organizationIndustry:", this.org.organizationIndustry); // Логируйте результат
         } else {
-          console.error("Данные не загружены или пусты", res.data);
+          this.showMessage('error', 'Данные не загружены или пусты', null);
         }
         this.loading = false;
       }).catch(err => {
@@ -676,7 +673,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       })
@@ -699,7 +695,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       })
@@ -780,7 +775,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
 
@@ -802,7 +796,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       });
@@ -843,7 +836,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       });
@@ -854,7 +846,6 @@ export default {
       this.getCooperations(this.org_id);
     },
     editCoolection(actionsNode) {
-      console.log('test: ', actionsNode)
       this.cooperation = actionsNode
       this.cooperationDialog = true
     },
@@ -881,9 +872,7 @@ export default {
           this.service.deleteCooperation(req).then(res => {
             this.showMessage('success', this.$t('common.message.successCompleted'), null);
             this.getCooperations(this.org_id);
-          }).catch(err => {
-            console.log(err);
-          })
+          });
         }
       })
     },
@@ -899,8 +888,6 @@ export default {
       this.service.getRatings(this.ratingFilter).then(res => {
         this.ratings = res.data.ratings
         this.ratingTotal = res.data.total
-      }).catch(err => {
-        console.log(err);
       })
     },
     saveRating() {
@@ -914,8 +901,6 @@ export default {
       this.service.updateRating(this.rating).then(res => {
         this.getRatings()
         this.ratingDialog = false
-      }).catch(err => {
-        console.log(err)
       })
 
     },
@@ -953,8 +938,6 @@ export default {
           this.service.deleteRating(req).then(res => {
             this.showMessage('success', this.$t('common.message.successCompleted'), null);
             this.getRatings();
-          }).catch(err => {
-            console.log(err);
           })
         }
       })

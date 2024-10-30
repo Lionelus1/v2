@@ -602,7 +602,7 @@ const saveDocument = () => {
     }
   } else if (selectedDirection.value.code === 'appointment' || selectedDirection.value.code === 'office_booking') {
     if (request.value.doc.newParams) {
-      console.log("IF HAVE NEWPARAMS")
+      // IF HAVE NEWPARAMS
     } else {
       request.value.doc.newParams = {}
 
@@ -870,9 +870,7 @@ const getTicketForm = () => {
       userData.value[field.code] = request.value.doc?.newParams?.not_formal_student_info?.value[field.code] || responseUserData.value[field.code];
       field.model = userData.value[field.code]
     });
-  }).catch((err) => {
-    console.log(err)
-  })
+  });
 }
 
 const input = () => {

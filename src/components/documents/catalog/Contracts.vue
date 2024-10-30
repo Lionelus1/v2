@@ -571,7 +571,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -677,7 +676,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
 
@@ -742,7 +740,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
@@ -762,7 +759,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
@@ -809,7 +805,7 @@ export default {
                         }
                       })
                       .catch((e) => {
-                        console.log(e);
+
                         this.loading = false;
                       });
                 })
@@ -880,7 +876,6 @@ export default {
             let isChecked = false;
 
             document.signatures.forEach(signature => {
-              console.log(signature)
               if (signature.userId === loggedInUserId && signature.signature.length === 0) {
                 isChecked = true;
                 this.selectedIds.push(document.id);

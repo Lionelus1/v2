@@ -99,7 +99,7 @@ export default {
             this.count = response.data.count;
           })
           .catch((e)=> {
-            console.log(e)
+            this.$toast.add({severity: "error", summary: this.$t('common.getDataError'), life: 3000});
           })
           .finally(() => {
             this.loading = false;

@@ -113,7 +113,7 @@
                   <InputText v-model="event.fact" @input="factChange"/>
 
               </div>
-              <div class="field" v-if="isVisibleWritableField && isRespUser && (isOperPlan || isStandartPlan)">
+              <div class="field" v-if="isVisibleWritableField && isRespUser && isOperPlan">
                 <Dropdown v-model="selectedQuarter" :options="filteredQuarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full md:w-14rem" required @change="validate"/>
                 <small class="p-error" v-if="validation.quarter">{{$t('common.requiredField')}}</small>
               </div>
@@ -706,7 +706,7 @@ export default {
       const currentMonth = currentDate.getMonth() + 1;
       const currentQuarter = Math.ceil(currentMonth / 3);
       const currentDay = currentDate.getDate();
-      if (currentDay <= 20 && currentMonth === this.getFirstMonthOfQuarter()) {
+      if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter()) {
         // Agymdagy ai agymdagy toqsannyng birinshi aiy bolsa aldyngy toqsanga natije toltyra alady
         return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
       } else {
@@ -921,7 +921,7 @@ export default {
         return
       }
 
-      if ((this.isOperPlan || this.isStandartPlan) && this.validate()) {
+      if (this.isOperPlan && this.validate()) {
         this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
         return
       }
@@ -937,12 +937,16 @@ export default {
         this.isBlockUI = false;
         return;
       }
-
+      
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.isOperPlan ? this.newResult ? this.newResult : "" : this.result);
+
       if (this.plan && this.isOperPlan) {
         fd.append("quarter", this.selectedQuarter.value);
         fd.append("is_partially", true);
+      }
+      if (this.plan && this.isStandartPlan) {
+        fd.append("quarter", this.event.quarter);
       }
 
       if (this.authUser?.mainPosition?.department &&
@@ -1255,7 +1259,6 @@ export default {
     },
     deleteItem(item) {
       if (!item.result_text || !item.result_text[0] || !item.result_text[0].id || !item.event_result_id) {
-        console.error('Invalid item');
         return;
       }
       const data = {
