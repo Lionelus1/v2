@@ -6,6 +6,9 @@ export class DocService {
     uploadRelatedDocs(data) {
         return api.post("/doc/uploadRelatedDocs", data, {headers: getFileHeader()});
     }
+    createRelatedDocs(data) {
+        return api.post("/doc/createRelatedDocs", data, {headers: getFileHeader()});
+    }
     getRelatedDocs(data) {
         return api.post("/doc/getRelatedDocs", data, {headers: getHeader()});
     }

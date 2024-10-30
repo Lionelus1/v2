@@ -364,9 +364,9 @@ export default {
           {
             stage: 1,
             users: [this.loginedUser],
-            titleRu: 'Структурное подразделение',
-            titleKz: 'Құрылымдық бөлім',
-            titleEn: 'Structural department',
+            titleRu: 'Студент',
+            titleKz: 'Студент',
+            titleEn: 'Student',
             certificate: {
               namekz: 'Жеке тұлғаның сертификаты',
               nameru: 'Сертификат физического лица',
