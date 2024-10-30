@@ -2,7 +2,7 @@
   <div>
     <div class="grid-container">
       <div class="card" v-for="folder in folders" :key="folder.key" @dblclick="openFolder(folder)"
-           @click="selectFolder(folder)">
+           @click="selectFolder(folder)" :class="{ selected: selectedCard === folder }">
         <div class="card-icon">
           <i :class="getFileIconClass(folder.name)"></i>
         </div>
@@ -81,6 +81,10 @@ export default {
       this.$emit('open-folder', folder);
     },
     selectFolder(folder) {
+      if (this.selectedCard === folder) {
+        return;
+      }
+      this.selectedCard = folder;
       this.$emit('card-selected', folder); // Выбор папки
     },
     findRole: findRole,
@@ -188,4 +192,5 @@ export default {
     grid-template-columns: 1fr; /* Single column layout for very small screens */
   }
 }
+
 </style>

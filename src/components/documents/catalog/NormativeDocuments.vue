@@ -2,23 +2,15 @@
   <div class="flex flex-row mb-3">
     <h3 class="m-0">{{ $t("smartenu.catalogNormDoc") }}</h3>
   </div>
-  <div class="calendar_buttons flex justify-content-between mb-2">
-    <div class="left-btn">
-      <Button v-if="folderHistory.length > 0"
-              @click="goBack"
-              class="p-button-text p-button-info p-1">
-        <i class="fa-solid fa-chevron-left"></i>
-      </Button>
-    </div>
-
-      <Button class="p-button-outlined calendar_btn_left"
-              :class="{'active': isGrid}"
-              icon="pi pi-th-large"
-              @click="getFolders(true)" />
-      <Button class="p-button-outlined calendar_btn_right"
-              :class="{'active': !isGrid}"
-              icon="pi pi-list"
-              @click="getFolders(false)" />
+  <div class="calendar_buttons flex align-items-center mb-2">
+    <Button class="p-button-outlined calendar_btn_left"
+            :class="{'active': isGrid}"
+            icon="pi pi-th-large"
+            @click="getFolders(true)" />
+    <Button class="p-button-outlined calendar_btn_right"
+            :class="{'active': !isGrid}"
+            icon="pi pi-list"
+            @click="getFolders(false)" />
   </div>
   <BlockUI :blocked="loading" v-if="!isGrid" class="card">
     <Toolbar class="m-0 p-1">
@@ -189,15 +181,15 @@
                   v-tooltip="$t('educomplex.file.edit')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-pen fa-xl" />
           </Button>
-          <Button @click="deleteFile()" :disabled="selectedNode?.nodeType !== 'file' || loginedUser.userID != selectedNode?.creatorID"
+          <Button @click="deleteFile()" :disabled="selectedNode?.nodeType !== 'file' || loginedUser.userID !== selectedNode?.creatorID"
                   v-tooltip="$t('educomplex.file.delete')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-circle-minus fa-xl" />
           </Button>
-          <Button v-if="tooltip.file && !selectedNode?.isHidden && loginedUser.userID === selectedNode?.creatorID"
+          <Button v-if="selectedNode?.isHidden === true && loginedUser.userID === selectedNode?.creatorID"
                   @click="hideFile()" v-tooltip="$t('educomplex.file.hide')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye-slash fa-xl" />
           </Button>
-          <Button v-if="tooltip.file && selectedNode?.isHidden && loginedUser.userID === selectedNode?.creatorID"
+          <Button v-if="selectedNode?.isHidden === false && loginedUser.userID === selectedNode.creatorID"
                   @click="showFile()" v-tooltip="$t('educomplex.file.show')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye fa-xl" />
           </Button>
@@ -216,6 +208,30 @@
       </template>
     </Toolbar>
     <div class="grid-container-wrapper flex-grow-1" style="height: 300px;">
+      <div class="breadcrumbs">
+  <span
+      v-for="(folder, index) in folderBreadCrumbs"
+      :key="folder.id"
+      class="breadcrumb-item"
+  >
+    <a
+        v-if="index !== folderBreadCrumbs.length - 1"
+        @click.prevent="navigateToFolder(folder)"
+        href="#"
+        class="breadcrumb-link"
+    >
+      {{ folder.namekz }}
+    </a>
+    <span
+        v-else
+        class="current-folder breadcrumb-link"
+    >
+      {{ folder.namekz }}
+    </span>
+    <span v-if="index !== folderBreadCrumbs.length - 1" class="breadcrumb-separator"> / </span>
+  </span>
+      </div>
+
       <GridComponent :folders="folders" :folderHistory="folderHistory" @card-selected="onCardSelected" @open-folder="openFolder" @go-back="goBack" />
     </div>
   </BlockUI>
@@ -315,6 +331,7 @@ export default {
       folders: [],
       folderStack: [],
       folderHistory: [],
+      folderBreadCrumbs: [],
       fileUpload: false,
       loading: false,
       tableLoading: false,
@@ -397,6 +414,10 @@ export default {
         this.getFolders(this.isGrid, folder);
       } else {
         this.folderHistory.push(this.folders);
+        if (folder !== this.folderBreadCrumbs[this.folderBreadCrumbs.length - 1]) {
+          this.folderBreadCrumbs.push(folder);
+        }
+
         this.folderStack.push(this.folders);
         this.getFolders(true, folder);
       }
@@ -405,6 +426,19 @@ export default {
       if (this.folderHistory.length > 0) {
         this.folders = this.folderHistory.pop(); // Возвращаемся к предыдущим папкам
       }
+    },
+    navigateToFolder(folder) {
+      const folderIndex = this.folderHistory.findIndex(item => item && item.id === folder.id);
+
+      if (folderIndex !== -1) {
+        this.folderHistory = this.folderHistory.slice(0, folderIndex + 1);
+        this.folderBreadCrumbs = this.folderBreadCrumbs.slice(0, folderIndex + 1);
+      } else {
+        this.folderBreadCrumbs.pop();
+      }
+
+      this.openFolder(folder);
+
     },
     getLongDateString: getLongDateString,
     getShortDateString: getShortDateString,
@@ -1180,13 +1214,16 @@ export default {
   border-top-color: #333;   /* Цвет стрелки */
 }
 
+.calendar_buttons {
+  display: flex;
+  justify-content: flex-end; /* Выравнивание кнопок по правому краю */
+  gap: 0; /* Расстояние между кнопками */
+  align-items: center; /* Выравнивание кнопок по вертикали */
+}
+
 .calendar_buttons button {
   border-radius: 10px;
   padding: 7px 20px;
-}
-
-:deep(.fc-button-group button) {
-  border-radius: 10px;
 }
 
 .calendar_buttons .calendar_btn_left {
@@ -1205,11 +1242,6 @@ export default {
   border: 1px solid #007be5;
 }
 
-.calendar_buttons {
-  display: flex;
-  justify-content: space-between; /* Первая кнопка влево, остальные вправо */
-  align-items: center; /* Выравнивание кнопок по вертикали */
-}
 
 .left-btn {
   flex-grow: 1; /* Заставляет левую кнопку занимать всё пространство слева */
@@ -1238,5 +1270,43 @@ export default {
   justify-items: center; /* Center cards in grid */
   max-height: 100%; /* Ensure the grid fills available height */
 }
+
+.breadcrumbs {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px; /* Отступ между элементами */
+}
+
+.breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  max-width: 120px; /* Задайте нужную ширину */
+  margin: 5px 0; /* Отступ сверху и снизу */
+}
+
+.breadcrumb-link {
+  display: inline-block;
+  max-width: 100%; /* Для обрезки текста по ширине элемента */
+  white-space: nowrap; /* Запрещает перенос текста */
+  overflow: hidden; /* Обрезка текста */
+  text-overflow: ellipsis; /* Добавляет "..." для длинного текста */
+  color: #333;
+  text-decoration: none;
+}
+
+.breadcrumb-link:hover {
+  color: #007be5; /* Цвет текста при наведении */
+}
+
+.current-folder {
+  font-weight: bold;
+  color: #555;
+}
+
+.breadcrumb-separator {
+  margin: 0 5px; /* Пространство между элементами */
+  color: #888;
+}
+
 
 </style>
