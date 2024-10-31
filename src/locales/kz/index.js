@@ -1490,7 +1490,9 @@ export default {
         dissertationLanguage: "Диссертация тілі",
         conclusionOfDepartment: "Кафедраны аяқтау немесе қорытындылау белгісі",
         semester: "Семестр",
-        doctorsThesisInfo: "Докторлық диссертация туралы мәлімет"
+        doctorsThesisInfo: "Докторлық диссертация туралы мәлімет",
+        downloadProtocol: "Протоколды жүктеп алу",
+        uploadProtocol: "Протокол енгізу"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",

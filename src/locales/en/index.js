@@ -1465,7 +1465,9 @@ export default {
         dissertationLanguage: "Dissertation language",
         conclusionOfDepartment: "Mark of completion or conclusion of the department",
         semester: "Semester",
-        doctorsThesisInfo: "Information about the doctoral dissertation"
+        doctorsThesisInfo: "Information about the doctoral dissertation",
+        downloadProtocol: "Download protocol",
+        uploadProtocol: "Upload protocol"
     },
     queue: {
         title: "Queue",

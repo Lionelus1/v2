@@ -1,14 +1,14 @@
 <template>
   <div>
-    <ProgressBar v-if="loading" mode="indeterminate" style="height: 0.5em" />
+    <ProgressBar v-if="loading" mode="indeterminate" style="height: 0.5em"/>
     <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
   </div>
   <div>
-    <ProgressBar v-if="signing" mode="indeterminate" style="height: 0.5em" />
+    <ProgressBar v-if="signing" mode="indeterminate" style="height: 0.5em"/>
     <BlockUI :blocked="signing" :fullScreen="true"></BlockUI>
   </div>
   <div v-if="!loading">
-    <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id" />
+    <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id"/>
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
         <div class="col-12" v-if="isShow">
@@ -25,17 +25,19 @@
       </TabPanel>
       <TabPanel :header="$t('ncasigner.goToDoc')" :disabled="!isShow">
         <div class="card" v-for="(item, index) of files" :key="index">
-          <embed :src="item" style="width: 100%; height: 1000px" v-if="files.length > 0" type="application/pdf" />
+          <embed :src="item" style="width: 100%; height: 1000px" v-if="files.length > 0" type="application/pdf"/>
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
       && docInfo.docType === Enum.DocType.Contract" :header="$t('ncasigner.sign')">
         <div class="flex justify-content-center">
-          <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve" :label="$t('common.action.approve')" :loading="loading" :disabled="hideDocApprove" />
+          <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve"
+                  :label="$t('common.action.approve')" :loading="loading" :disabled="hideDocApprove"/>
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
-      && docInfo.docType === Enum.DocType.Contract) || docInfo && docInfo.docHistory.stateId == 6" :disabled="hideDocSign" :header="$t('ncasigner.sign')">
+      && docInfo.docType === Enum.DocType.Contract) || docInfo && docInfo.docHistory.stateId == 6"
+                :disabled="hideDocSign" :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel v-if="!$isMobile">
             <template #header>
@@ -49,7 +51,10 @@
             <Panel>
               <template #header>
                 <div class="d-flex justify-content-center">
-                  <InlineMessage v-if="$isMobile" severity="info" class="mb-1">{{ $t('ncasigner.noteMark') }}</InlineMessage>
+                  <InlineMessage v-if="$isMobile" severity="info" class="mb-1">{{
+                      $t('ncasigner.noteMark')
+                    }}
+                  </InlineMessage>
                   <InlineMessage class="" severity="info">{{ $t('ncasigner.qrSinging') }}</InlineMessage>
                 </div>
               </template>
@@ -63,13 +68,13 @@
                 <hr />
               </div>
               <div v-if="mgovMobileRedirectUri && isIndivid" class="text-center">
-                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile" />
+                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile"/>
               </div>
               <div v-if="mgobBusinessRedirectUri && !isIndivid">
                 <hr />
               </div>
               <div v-if="mgobBusinessRedirectUri && !isIndivid" class="text-center">
-                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness" />
+                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness"/>
               </div>
               <div v-if="mgovSignUri && !$isMobile" class="d-flex justify-content-center">
                 <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
@@ -81,12 +86,13 @@
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId === Enum.INAPPROVAL.ID && ((docInfo.sourceType === Enum.DocSourceType.FilledDoc ||
         (docInfo.docType && (docInfo.docType === Enum.DocType.Contract))) || docInfo.docType === Enum.DocType.WorkPlan)" :header="$t('common.revision')"
-        :disabled="hideDocRevision">
+                :disabled="hideDocRevision">
         <div class="card">
           <label> {{ this.$t("common.comment") }} </label>
           <InputText v-model="revisionComment" style="width: 100%; margin-bottom: 2rem"></InputText>
           <div class="flex justify-content-center">
-            <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="revision" :label="$t('common.revision')" :loading="loading" />
+            <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="revision"
+                    :label="$t('common.revision')" :loading="loading"/>
           </div>
         </div>
       </TabPanel>
@@ -96,7 +102,8 @@
         <label> {{ this.$t('common.comment') }} </label>
         <InputText v-model="denyComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
         <div class="flex justify-content-center">
-          <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="deny" :label="$t('common.deny')" :loading="loading" />
+          <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="deny"
+                  :label="$t('common.deny')" :loading="loading"/>
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2
@@ -109,6 +116,14 @@
           <Button icon="fa-solid fa-user-check" class="p-button-success md:col-3" @click="changeApprovals" :label="$t('common.change')" :loading="loading"
             :disabled="currentApprovalUsers.length < 1" />
         </div>
+      </TabPanel>
+      <TabPanel :header="$t('common.protocol')" v-if="isReport">
+        <CustomFileUpload v-if="!relatedFile && canUploadProtocol" @upload="uploadFile($event)" v-model="uploadedFile" :multiple="false"
+                          :button="true"/>
+        <div class="mb-2" v-if="relatedFile">{{relatedFile.name}}</div>
+        <Button v-if="relatedFile"
+                :label="$t('workPlan.downloadProtocol')" icon="pi pi-download"
+                @click="downloadProtocol" class="p-button"/>
       </TabPanel>
     </TabView>
   </div>
@@ -135,11 +150,12 @@ import QrcodeVue from "qrcode.vue";
 import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
 import QrGuideline from "./QrGuideline.vue";
-import { DocService } from "@/service/doc.service";
+import {DocService} from "@/service/doc.service";
+import CustomFileUpload from "@/components/CustomFileUpload.vue";
 
 export default {
   name: "DocSignaturesInfo",
-  components: { QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue },
+  components: {CustomFileUpload, QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue},
   props: {
     docIdParam: {
       type: String,
@@ -203,8 +219,13 @@ export default {
       currentApprovalStage: -1,
       currentApprovalUsers: [],
       currentApprovalUsersLoading: true,
+      uploadedFile: null,
+      relatedFile: null,
+      isReport: false,
+      canUploadProtocol: false,
     }
   },
+
   created() {
     if (this.docIdParam) {
       this.doc_id = this.docIdParam;
@@ -240,29 +261,77 @@ export default {
     this.emitter.on('downloadCMS', (data) => {
       if (data !== null) {
         api
-          .post(smartEnuApi + "/doc/downloadCms",
-            { documentUuid: this.doc_id, signatureId: data },
-            { headers: getHeader(), })
-          .then(res => {
-            console.log(res.data)
-            let result = res.data
-            var link = document.createElement('a');
-            link.innerHTML = 'Download file';
-            link.download = result.fileName;
-            link.href = result.data;
-            link.click();
-          })
+            .post(smartEnuApi + "/doc/downloadCms",
+                {documentUuid: this.doc_id, signatureId: data},
+                {headers: getHeader(),})
+            .then(res => {
+              console.log(res.data)
+              let result = res.data
+              var link = document.createElement('a');
+              link.innerHTML = 'Download file';
+              link.download = result.fileName;
+              link.href = result.data;
+              link.click();
+            })
           .catch((error) => {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
           });
+        });
       }
     });
   },
   methods: {
+    getRelatedFiles() {
+      this.service
+          .getRelatedDocs({fileID: this.docInfo?.id, uuid: null})
+          .then((response) => {
+            this.relatedFile = response.data;
+            if (this.relatedFile.length > 0) {
+              this.relatedFile = this.relatedFile[0];
+            }else{
+              this.relatedFile = null
+            }
+          })
+          .catch((_) => {
+            this.uploading = false;
+          });
+    },
+    downloadProtocol() {
+      let url = this.relatedFile.filePath
+      if (!url) {
+        this.$toast.add({
+          severity: 'info',
+          summary: this.$t('common.noData'),
+          life: 3000,
+        });
+        return;
+      }
+
+      url = smartEnuApi + fileRoute + url;
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', url);
+      link.setAttribute('target', '_blank');
+      link.download = url;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    },
+
+    uploadFile(event) {
+      const fd = new FormData();
+      fd.append("file", event.files[0]);
+      fd.append("workPlanId", this.docInfo?.id);
+      this.service.createRelatedDocs(fd).then(response => {
+
+      }).catch(err => {
+
+      });
+      this.relatedFile = event.files[0];
+    },
     findRole: findRole,
     b64toBlob: b64toBlob,
     showMessage(msgtype, message, content) {
@@ -284,36 +353,36 @@ export default {
         // showFileTab
         if (this.docInfo.isManifest === true) {
           api.post(
-            "/downloadManifestFiles", {
-            docId: this.docInfo.id
-          }, {
-            headers: getHeader()
-          }
-          )
-            .then(response => {
-              let filesBase64Array = response.data
-              for (let i = 0; i < filesBase64Array.length; i++) {
-                this.files.push(this.b64toBlob(filesBase64Array[i]));
+              "/downloadManifestFiles", {
+                docId: this.docInfo.id
+              }, {
+                headers: getHeader()
               }
-            });
+          )
+              .then(response => {
+                let filesBase64Array = response.data
+                for (let i = 0; i < filesBase64Array.length; i++) {
+                  this.files.push(this.b64toBlob(filesBase64Array[i]));
+                }
+              });
         } else {
           api.post(
-            "/downloadFile", {
-            filePath: this.docInfo.filePath
-          }, {
-            headers: getHeader()
-          }
+              "/downloadFile", {
+                filePath: this.docInfo.filePath
+              }, {
+                headers: getHeader()
+              }
           )
             .then(response => {
               (
                   // this.files.push(this.b64toBlob(response.data.file))
                   this.files.push(this.b64toBlob(response.data))
-              )
-            })
+                )
+              })
         }
       } else if (this.active == 2 && this.loginedUserId === null) {
         this.$store.dispatch("solveAttemptedUrl", this.$route);
-        this.$router.push({ path: "/login" });
+        this.$router.push({path: "/login"});
       }
     },
     getData() {
@@ -325,6 +394,8 @@ export default {
       }).then(res => {
         if (res.data) {
           this.docInfo = res.data;
+          this.isReport = this.docInfo?.filePath.includes("report")
+          this.getRelatedFiles();
           this.signatures = res.data.signatures;
 
           if (this.showAllSignsParam) {
@@ -332,19 +403,23 @@ export default {
           } else {
             this.isShow = this.findRole(null, RolesEnum.roles.CareerModerator) || this.findRole(null, RolesEnum.roles.UMKAdministrator)
                 || this.findRole(null, RolesEnum.roles.Accountant) ||
-              (this.findRole(null, RolesEnum.roles.Teacher) && this.docInfo.docType === Enum.DocType.Contract) ||
-              (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) ||
+                (this.findRole(null, RolesEnum.roles.Teacher) && this.docInfo.docType === Enum.DocType.Contract) ||
+                (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) ||
                 (this.findRole(null, RolesEnum.roles.OnlineCourseAdministrator) && this.docInfo.docType === Enum.DocType.DT_Request) ||
-              this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
+                this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
           }
 
 
           if (this.signatures) {
             this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
             this.hideDocRevision = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
-
+            this.signatures.forEach(x => {
+              if (x.userId === this.loginedUserId){
+                this.canUploadProtocol = x.user?.roles?.some(role => role.id === 22 || role.id === 23)
+              }
+            });
             let usersign = this.signatures.filter(x => x.userId === this.loginedUserId &&
-              (!x.signature || x.signature === '') && (x.signRight && x.signRight !== ''))
+                (!x.signature || x.signature === '') && (x.signRight && x.signRight !== ''))
             if (usersign.length !== 0) {
               if (usersign[0].signRight === "individual") {
                 this.mobileApp = "eGov Mobile";
@@ -469,29 +544,29 @@ export default {
       };
       this.signing = true;
 
-      api.post("/doc/sign", req, { headers: getHeader() })
-        .then(response => {
-          this.signing = false
-          this.getData()
-          this.showMessage('success', this.$t('ncasigner.signDocTitle'), this.$t('ncasigner.success.signSuccess'));
-        })
-        .catch((error) => {
-          this.signing = false;
-          if (error.response.status == 405) {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t(error.response.data),
-              life: 3000,
-            });
-          }
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else
+      api.post("/doc/sign", req, {headers: getHeader()})
+          .then(response => {
+            this.signing = false
+            this.getData()
+            this.showMessage('success', this.$t('ncasigner.signDocTitle'), this.$t('ncasigner.success.signSuccess'));
+          })
+          .catch((error) => {
             this.signing = false;
-        })
+            if (error.response.status == 405) {
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t(error.response.data),
+                life: 3000,
+              });
+            }
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else
+              this.signing = false;
+          })
     },
     getSignatures() {
-      api.post(`/workPlan/getSignatures`, { doc_id: this.plan.doc_id }, { headers: getHeader() }).then(res => {
+      api.post(`/workPlan/getSignatures`, {doc_id: this.plan.doc_id}, {headers: getHeader()}).then(res => {
         if (res.data) {
           this.signatures = res.data;
           const signUser = res.data.find(x => x.userId === this.loginedUserId);
@@ -517,14 +592,14 @@ export default {
           type: "jpeg",
           quality: 0.95,
         },
-        html2canvas: { scale: 3, letterRendering: true },
+        html2canvas: {scale: 3, letterRendering: true},
         jsPDF: {
           unit: "mm",
           format: "a4",
           orientation: "portrait",
           hotfixes: ["px_scaling"],
         },
-        pagebreak: { avoid: ["#qr"] },
+        pagebreak: {avoid: ["#qr"]},
         filename: this.docInfo.name + ".pdf",
       };
       const pdfContent = this.$refs.qrToPdf.$refs.qrToPdf;
@@ -620,7 +695,6 @@ export default {
           }
 
           for (let element of res.data.approvalStages) {
-            console.log(element)
             if (!element.signatures) {
               continue;
             }

@@ -1481,7 +1481,9 @@ export default {
         dissertationLanguage: "Язык диссертации",
         conclusionOfDepartment: "Отметка о выполнении или заключение кафедры",
         semester: "Семестр",
-        doctorsThesisInfo: "Информация о докторской диссертации"
+        doctorsThesisInfo: "Информация о докторской диссертации",
+        downloadProtocol: "Скачать протокол",
+        uploadProtocol: "Загрузить протокол"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
