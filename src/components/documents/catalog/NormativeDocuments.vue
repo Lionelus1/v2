@@ -417,6 +417,7 @@ export default {
         if (folder !== this.folderBreadCrumbs[this.folderBreadCrumbs.length - 1]) {
           this.folderBreadCrumbs.push(folder);
         }
+        console.log("folderBreadCrumbs: ", this.folderBreadCrumbs)
 
         this.folderStack.push(this.folders);
         this.getFolders(true, folder);
@@ -428,7 +429,7 @@ export default {
       }
     },
     navigateToFolder(folder) {
-      const folderIndex = this.folderHistory.findIndex(item => item && item.id === folder.id);
+      const folderIndex = this.folderBreadCrumbs.findIndex(item => item && item.id === folder.id);
 
       if (folderIndex !== -1) {
         this.folderHistory = this.folderHistory.slice(0, folderIndex + 1);
@@ -438,7 +439,6 @@ export default {
       }
 
       this.openFolder(folder);
-
     },
     getLongDateString: getLongDateString,
     getShortDateString: getShortDateString,
