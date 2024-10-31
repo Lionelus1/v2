@@ -308,9 +308,9 @@ export default {
       fd.append("file", event.files[0]);
       fd.append("workPlanId", this.docInfo?.id);
       this.service.createRelatedDocs(fd).then(response => {
-        console.log("sent")
+        
       }).catch(err => {
-        console.log("err")
+        
       });
       this.relatedFile = event.files[0];
     },
@@ -390,10 +390,9 @@ export default {
             this.hideDocRevision = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
             this.signatures.forEach(x => {
               if (x.userId === this.loginedUserId){
-                this.canUploadProtocol = x.user?.roles?.some(role => role.id === 22)
+                this.canUploadProtocol = x.user?.roles?.some(role => role.id === 22 || role.id === 23)
               }
             });
-            console.log(this.canUploadProtocol)
             let usersign = this.signatures.filter(x => x.userId === this.loginedUserId &&
                 (!x.signature || x.signature === '') && (x.signRight && x.signRight !== ''))
             if (usersign.length !== 0) {
@@ -661,7 +660,6 @@ export default {
           }
 
           for (let element of res.data.approvalStages) {
-            console.log(element)
             if (!element.signatures) {
               continue;
             }
