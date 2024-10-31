@@ -95,6 +95,7 @@ export default {
         yourVoice: "Сіздің дауысыңыз: ",
         fullName: "Толық аты-жөні",
         fullNameNote: "Студенттің толық аты-жөні",
+        existingPracticeAgreementsMessage: "Бұл студенттің тағылымдамадан өту келісімшарттары бар",
         hei: "ЖОО",
         updated: "Өзгертілді",
         type: "Типі",

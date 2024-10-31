@@ -95,6 +95,7 @@ export default {
         createdBy: "Автор",
         fullName: "ФИО",
         fullNameNote: "ФИО обучающегося",
+        existingPracticeAgreementsMessage: "У этого студента уже есть активные договоры на практику",
         hei: "ВУЗ",
         updated: "Изменен",
         type: "Тип",

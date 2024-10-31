@@ -96,6 +96,7 @@ export default {
         admissionyear: "Finish of study",
         fullName: "Full name",
         fullNameNote: "Full name of the student",
+        existingPracticeAgreementsMessage: "This student already has active internship contracts",
         forStudentsAndGraduates: "For students and graduates",
         hei: "HEI",
         updated: "Updated",

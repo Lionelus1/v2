@@ -160,11 +160,35 @@
         :total="total"
         :loading="loading"
     />
+    <Button
+        v-if="this.active === 1 && !findRole(null, 'student') && isWorkSchedule && selectedMembers && selectedMembers.length > 0"
+        type="button"
+        :label="$t('common.addMember')"
+        icon="pi pi-plus"
+        :badge="selectedMembers.length"
+        badgeSeverity="contrast"
+        @click="addMemberButton"
+    />
+    <WorkPlanScheduleEventTree
+        v-if="isWorkSchedule"
+        :menus="initItems"
+        :isPlanCreator="isPlanCreator"
 
+        :data="data"
+        :total="total"
+        @onPage="onPage"
+        @expand="onExpand"
+        :loading="loading"
 
-    <WorkPlanScheduleEventTree v-if="plan && planDoc && isWorkSchedule && members" :data="data" :loading="loading" :members="members"
-                               :menus="initItems" :total="total" :isPlanCreator="isPlanCreator"
-                               @expand="onExpand" @onToggle="actionsToggle" @onPage="onPage" @updateActive="handleActive"/>
+        :members="members"
+        :totalMembers="totalMembers"
+        @onPageMembers="onPageMembers"
+        :loadingMembers="loadingMembers"
+
+        @onToggle="actionsToggle"
+        @updateActive="handleActive"
+        @updateSelect="handleSelected"
+    />
   </div>
 
   <Sidebar
@@ -294,6 +318,7 @@
       @hide="hideDialog(dialog.info)"
       :plan="plan"
   />
+  Event^ {{ selectedMembers }}
   <WorkPlanEventAddMember
       v-if="dialog.addMember.state"
       :visible="dialog.addMember.state"
@@ -410,6 +435,7 @@ export default {
       totalMembers: 0,
       quarter: null,
       loading: false,
+      loadingMembers: false,
       showReportModal: false,
       parent: null,
       parentNode: null,
@@ -417,6 +443,7 @@ export default {
       members: null,
       searchQuery: "",
       filteredMembers: null,
+      selectedMembers: null,
       planDoc: null,
       approval_users: null,
       loginedUserId: JSON.parse(localStorage.getItem('loginedUser')).userID,
@@ -539,7 +566,6 @@ export default {
     this.isAdmin = this.findRole(null, 'main_administrator');
     this.getPlan();
     this.getEventsTree(null);
-    this.getWorkPlanApprovalUsers(this.work_plan_id);
   },
   mounted() {
     this.filteredMembers = this.members;
@@ -603,8 +629,14 @@ export default {
 
   },
   methods: {
+    addMemberButton() {
+      this.showDialog(this.dialog.addMember);
+    },
     handleActive(event){
       this.active = event
+    },
+    handleSelected(event){
+      this.selectedMembers = event
     },
     filterData() {
       const query = this.searchQuery.toLowerCase();
@@ -737,13 +769,14 @@ export default {
       this.windowHeight = window.innerHeight - 270;
     },
     //осы жерден адамдардын списогын алып алу керек
-    getWorkPlanApprovalUsers() {
-      this.planService.getWorkPlanApprovalUsers(parseInt(this.work_plan_id)).then(res => {
-        if (res.data) {
-          this.members = res.data;
-          this.filteredMembers = res.data;
-          this.totalMembers = res.data.length;
-          res?.data?.forEach(e => {
+    getWorkPlanApprovalUsersFunc(data) {
+      this.loadingMembers = true;
+      this.planService.getWorkPlanApprovalUsers(data).then(res => {
+        if (res.data && res.data.work_plan_users) {
+          this.members = res.data.work_plan_users;
+          this.filteredMembers = res.data.work_plan_users;
+          this.totalMembers = res.data.total;
+          res?.data?.work_plan_users?.forEach(e => {
             if (this.loginedUserId === e.id) {
               this.isApproval = true;
             }
@@ -751,7 +784,9 @@ export default {
         } else {
           this.isApproval = false;
         }
+        this.loadingMembers = false;
       }).catch(error => {
+        this.loadingMembers = false;
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -833,7 +868,13 @@ export default {
             }
           ];
           this.getRelatedFiles()
-          this.getWorkPlanApprovalUsers(this.work_plan_id)
+          let data = {
+            work_plan_id: parseInt(this.work_plan_id),
+            page: 0,
+            rows: 0,
+            is_contract: false
+          };
+          this.getWorkPlanApprovalUsersFunc(data)
         }
         if (this.isWorkSchedule) {
           this.planApprovalStage = [
@@ -878,7 +919,13 @@ export default {
             },
           ];
           this.getRelatedFiles()
-          this.getWorkPlanApprovalUsers(this.work_plan_id)
+          let data = {
+            work_plan_id: parseInt(this.work_plan_id),
+            page: 0,
+            rows: 10,
+            is_contract: true
+          };
+          this.getWorkPlanApprovalUsersFunc(data)
         }
         if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
             this.planApprovalStage = [
@@ -1120,6 +1167,15 @@ export default {
       this.lazyParams.rows = event.rows;
       this.getEventsTree();
     },
+    onPageMembers(event) {
+      let data = {
+        work_plan_id: parseInt(this.work_plan_id),
+        page: event.page,
+        rows: event.rows,
+        is_contract: true
+      };
+      this.getWorkPlanApprovalUsersFunc(data)
+    },
     planSentToApprove(data) {
       this.getPlan();
       this.getEventsTree(null);
@@ -1359,7 +1415,9 @@ export default {
       dialog.state = true;
     },
     hideDialog(dialog) {
-      this.selectedEvent = null;
+      this.loadingMembers = true;
+      this.selectedMembers = null;
+      this.members = null;
       dialog.state = false;
       this.showReportModal = false;
       this.getPlan();
@@ -1580,7 +1638,8 @@ export default {
         {
           label: this.$t('common.addMember'),
           icon: 'pi pi-plus',
-          visible: this.active === 1 && !findRole(null, 'student'),
+          visible: this.active === 1 && !findRole(null, 'student') && this.selectedMembers && this.selectedMembers.length > 0,
+          badge: 0,
           // color: 'blue',
           command: () => {
             this.showDialog(this.dialog.addMember)

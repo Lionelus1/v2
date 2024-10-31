@@ -7,8 +7,8 @@ export class WorkPlanService {
         return api.post(`/workPlan/getEventsTree`, lazyParams, {headers: getHeader()});
     }
 
-    getWorkPlanApprovalUsers(work_plan_id) {
-        return api.get(`/workPlan/getApprovalUsers/${work_plan_id}`);
+    getWorkPlanApprovalUsers(work_plan_data) {
+        return api.post(`/workPlan/getApprovalUsers`, work_plan_data, {headers: getHeader()});
     }
 
     getPlanById(planId) {

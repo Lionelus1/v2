@@ -1,4 +1,17 @@
 <template>
+    <Sidebar
+        v-model:visible="visibleRight"
+        :header=studentFullName
+        position="right"
+        class="w-6"
+        style="overflow-y: scroll"
+    >
+      <DocSignaturesInfo
+          :docIdParam=studentDocUUID
+          :isInsideSidebar="true"
+      ></DocSignaturesInfo>
+    </Sidebar>
+    {{loadMem}}
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel :header="$t('common.tasks')">
         <div>
@@ -50,8 +63,10 @@
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.members')" v-if="isPlanCreator && !findRole(null, 'student')">
-        <div v-if="members">
+        <div v-if="members && filterData">
+
           <div class="flex justify-end">
+            <!--Поле поиска студента   -->
             <div style="margin-bottom: 10px; width: 100%;"/>
             <IconField>
               <InputIcon class="pi pi-search"/>
@@ -59,15 +74,21 @@
             </IconField>
           </div>
 
-          <DataTable v-model:selection="selectedProduct"
+          <DataTable v-model:selection="selectedMembers"
                      :value="filteredMembers"
                      dataKey="id"
                      tableStyle="min-width: 50rem"
-                     :paginator="true"
+                    :lazy="true"
+                     paginator
+                     :loading="loadMem"
                      :rows="10"
-                     :rowsPerPageOptions="[5, 10, 25]">
+                     :total-records="totalMembers"
+                     :rowsPerPageOptions="[10, 20, 50]"
+                     @page="onPage($event)"
+                     :first="first"
+          >
 
-            <Column header=" " style="width: 10%;">
+            <Column header=" " style="width: 15%;">
               <template #header>
                 <Checkbox
                     v-model="allChecked"
@@ -85,14 +106,21 @@
               </template>
             </Column>
 
-            <Column field="fullName" :header="$t('common.fullName')" style="text-align: center; width: 40%;">
+            <Column field="fullName" :header="$t('common.fullName')" style="text-align: center; width: 30%;">
               <template #body="slotProps">
                 <div style="text-align: left;">
                   <p>{{ slotProps.data.user.fullName }}</p>
                 </div>
               </template>
             </Column>
-            <Column field="id" header="" style="text-align: center;">
+            <Column field="content" :header="$t('contracts.contract')">
+              <template #body="slotProps">
+                <a href="#" @click.prevent="viewContract(slotProps.data.doc_uuid, slotProps.data.user.fullName)">
+                  {{ slotProps.data[$i18n.locale === 'kz' ? 'contract_name_kz' : 'contract_name_ru']}}
+                </a>
+              </template>
+            </Column>
+            <Column field="id" :header="$t('workPlan.journalReports')" style="text-align: center;">
               <template #body="slotProps">
                 <div style="text-align: left;">
                   <button @click="navigateToJournalReports(slotProps.data.id)" style="background: none; border: none; cursor: pointer;">
@@ -102,36 +130,10 @@
               </template>
             </Column>
           </DataTable>
-          {{selectedProduct}}
-<!--          <TreeTable :value="filteredMembers"-->
-<!--                     scrollHeight="flex"-->
-<!--                     responsiveLayout="scroll"-->
-<!--                     :resizableColumns="true"-->
-<!--                     columnResizeMode="fit"-->
-<!--                     showGridlines-->
-<!--                     :paginator="true"-->
-<!--                     :rows="10"-->
-<!--                     :rowsPerPageOptions="[5, 10, 25]">-->
-<!--            <template #empty> {{ $t('common.noData') }}</template>-->
-<!--            <template #loading> {{ $t('common.loading') }}</template>-->
-
-<!--            <Column field="fullName" :header="$t('common.fullName')" style="text-align: center; width: 40%;" sortable>-->
-<!--              <template #body="{ node }">-->
-<!--                <div style="text-align: left;">-->
-<!--                  <p>{{ node.user.fullName }}</p>-->
-<!--                </div>-->
-<!--              </template>-->
-<!--            </Column>-->
-<!--            <Column field="id" header="" style="text-align: center;">-->
-<!--              <template #body="{ node }">-->
-<!--                <div style="text-align: left;">-->
-<!--                  <button @click="navigateToJournalReports(node.id)" style="background: none; border: none; cursor: pointer;">-->
-<!--                    <i class="fas fa-eye"></i> &lt;!&ndash; Иконка глаза &ndash;&gt;-->
-<!--                  </button>-->
-<!--                </div>-->
-<!--              </template>-->
-<!--            </Column>-->
-<!--          </TreeTable>-->
+          {{selectedMembers.length}}
+        </div>
+        <div v-else>
+          {{ $t('common.noData') }}
         </div>
       </TabPanel>
     </TabView>
@@ -142,65 +144,86 @@
 <script setup>
 import moment from "moment";
 import ActionButton from "@/components/ActionButton.vue";
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {findRole} from "../../../config/config";
 import {useToast} from "primevue/usetoast";
+import {useI18n} from "vue-i18n";
+import DocSignaturesInfo from "../../DocSignaturesInfo.vue";
 
+const {t, locale} = useI18n()
 const toast = useToast()
 const router = useRouter()
 const route = useRoute()
-const props = defineProps(['data', 'loading', 'total', 'menus', 'isPlanCreator', 'members'])
-const emits = defineEmits(['expand', 'onPage', 'onToggle', 'updateActive']);
-
+const props = defineProps(['data', 'loading', 'loadingMembers', 'total', 'totalMembers', 'menus', 'isPlanCreator', 'members'])
+const emits = defineEmits(['expand', 'onPage', 'onPageMembers', 'onToggle', 'updateActive', 'updateSelect']);
+const visibleRight = ref(false);
 const searchQuery = ref("")
-const filteredMembers = ref(props.members)
+const filteredMembers = computed(() => props.members)
+const loadMem = computed(() => props.loadingMembers)
+
+// Следим за изменениями filteredMembers и обнуляем selectedMembers
+watch(filteredMembers, () => {
+  selectedMembers.value = [];
+  allChecked.value = false;
+  loadMem.value = !loadMem.value
+});
 const workPlanId = computed(() => parseInt(route.params.id)).value
 const loginedUserId = computed(() => JSON.parse(localStorage.getItem("loginedUser")).userID).value
 const active = ref(0)
+const first = ref(0)
+
+const totalMembers = computed(() => props.totalMembers)
 
 const tabChanged = () => {
   emits('updateActive', active.value)
 }
+const studentDocUUID = ref("")
+const studentFullName = ref("")
+const viewContract = (docUUID, fullName) => {
+  studentDocUUID.value = docUUID
+  studentFullName.value = fullName
+  visibleRight.value = true
+}
 
-const selectedProduct = ref([]);
+const selectedMembers = ref([]);
 const metaKey = ref(true);
 const allChecked = ref(false);
 // Логика для определения, доступна ли строка для выбора
 const isSelectable = (student) => {
-  // Например, делать запись недоступной, если quantity меньше 10
-  return student.id >= 162275;
+  return !student.contract_name_kz;
 };
-
 
 const checkBoxSelect = (slotProps) => {
   if(!isSelectable(slotProps.data)) {
     // Если поле недоступно, показываем сообщение
     slotProps.data.checked = !slotProps.data.checked;
-    toast.add({ severity: 'warn', summary: 'Внимание', detail: 'Данное поле не доступно', life: 3000 });
+    toast.add({ severity: 'warn', summary: t('common.existingPracticeAgreementsMessage'), life: 3000 });
     return
   }
   if (slotProps.data.checked) {
-    selectedProduct.value.push(slotProps.data)
+    selectedMembers.value.push(slotProps.data)
   } else {
-    selectedProduct.value = selectedProduct.value.filter(item => item !== slotProps.data);
+    selectedMembers.value = selectedMembers.value.filter(item => item !== slotProps.data);
   }
+  emits('updateSelect', selectedMembers.value)
 }
 
 const selectAllCheckBox = () => {
+  selectedMembers.value = []
   allChecked.value = !allChecked.value;
   if (allChecked.value) {
     filteredMembers.value.forEach(member => {
       member.checked = false;
     });
-    selectedProduct.value = []
+    selectedMembers.value = []
   } else {
     filteredMembers.value.forEach(member => {
       let isChecked = false;
 
       if(isSelectable(member)){
         isChecked = true
-        selectedProduct.value.push(member)
+        selectedMembers.value.push(member)
       }
 
       if (isChecked) {
@@ -209,6 +232,7 @@ const selectAllCheckBox = () => {
     });
   }
   allChecked.value = !allChecked.value;
+  emits('updateSelect', selectedMembers.value)
 }
 
 const filterData = () => {
@@ -224,6 +248,11 @@ const navigateToJournalReports = studentId => {
 
 const formatDateMoment = (date) => {
   return moment(new Date(date)).utc().format("DD.MM.YYYY")
+}
+
+const onPage = (event) => {
+  first.value = event.first;
+  emits('onPageMembers', event)
 }
 
 </script>

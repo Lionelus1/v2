@@ -306,7 +306,8 @@ export default {
           )
             .then(response => {
               (
-                this.files.push(this.b64toBlob(response.data.file))
+                  // this.files.push(this.b64toBlob(response.data.file))
+                  this.files.push(this.b64toBlob(response.data))
               )
             })
         }
