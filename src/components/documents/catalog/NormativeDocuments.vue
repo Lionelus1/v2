@@ -417,7 +417,6 @@ export default {
         if (folder !== this.folderBreadCrumbs[this.folderBreadCrumbs.length - 1]) {
           this.folderBreadCrumbs.push(folder);
         }
-        console.log("folderBreadCrumbs: ", this.folderBreadCrumbs)
 
         this.folderStack.push(this.folders);
         this.getFolders(true, folder);
@@ -1264,39 +1263,42 @@ export default {
 .breadcrumbs {
   display: inline-flex;
   align-items: center;
-  gap: 5px; /* Отступ между элементами */
+  gap: 8px; /* Увеличенные отступы */
+  font-size: 1.1em; /* Увеличенный размер шрифта */
 }
 
 .breadcrumb-item {
   display: inline-flex;
   align-items: center;
-  max-width: 120px; /* Задайте нужную ширину */
-  margin: 5px 0; /* Отступ сверху и снизу */
+  max-width: 140px; /* Увеличенная ширина */
+  margin: 8px 0; /* Больший отступ сверху и снизу */
 }
 
 .breadcrumb-link {
   display: inline-block;
-  max-width: 100%; /* Для обрезки текста по ширине элемента */
-  white-space: nowrap; /* Запрещает перенос текста */
-  overflow: hidden; /* Обрезка текста */
-  text-overflow: ellipsis; /* Добавляет "..." для длинного текста */
-  color: #333;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #555; /* Более мягкий цвет */
   text-decoration: none;
+  transition: color 0.3s ease; /* Плавный переход цвета при наведении */
 }
 
 .breadcrumb-link:hover {
-  color: #007be5; /* Цвет текста при наведении */
+  color: #0066cc; /* Цвет текста при наведении */
 }
 
 .current-folder {
-  font-weight: bold;
-  color: #555;
+  color: #333; /* Убрал жирность, сделал цвет менее заметным */
 }
 
 .breadcrumb-separator {
-  margin: 0 5px; /* Пространство между элементами */
-  color: #888;
+  color: #aaa; /* Более мягкий цвет для разделителя */
+  margin: 0 8px; /* Увеличенные отступы */
+  font-size: 1.2em; /* Небольшое увеличение размера разделителя */
 }
+
 
 
 </style>
