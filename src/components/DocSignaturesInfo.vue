@@ -123,8 +123,7 @@
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.protocol')" v-if="isReport">
-        <CustomFileUpload v-if="!relatedFile && canUploadProtocol" @upload="uploadFile($event)" v-model="uploadedFile" :multiple="false"
-                          :button="true"/>
+        <Files v-if="!relatedFile" folder="workplan" :fileID="docInfo?.id" fileType="image/*, .pdf, .doc, .docx, .txt"></Files>
         <div class="mb-2" v-if="relatedFile">{{relatedFile.name}}</div>
         <Button v-if="relatedFile"
                 :label="$t('workPlan.downloadProtocol')" icon="pi pi-download"
@@ -147,11 +146,11 @@ import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
 import QrGuideline from "./QrGuideline.vue";
 import {DocService} from "@/service/doc.service";
-import CustomFileUpload from "@/components/CustomFileUpload.vue";
+import Files from "@/components/documents/Files.vue"
 
 export default {
   name: "DocSignaturesInfo",
-  components: {CustomFileUpload, QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue},
+  components: { QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue, Files},
   props: {
     docIdParam: {
       type: String,
@@ -303,17 +302,6 @@ export default {
       URL.revokeObjectURL(link.href);
     },
 
-    uploadFile(event) {
-      const fd = new FormData();
-      fd.append("file", event.files[0]);
-      fd.append("workPlanId", this.docInfo?.id);
-      this.service.createRelatedDocs(fd).then(response => {
-        
-      }).catch(err => {
-        
-      });
-      this.relatedFile = event.files[0];
-    },
     findRole: findRole,
     b64toBlob: b64toBlob,
     showMessage(msgtype, message, content) {
