@@ -116,17 +116,6 @@ export const downloadFile = function (filePath, id) {
       link.download = response.data.file_path;
       link.click();
       URL.revokeObjectURL(link.href);
-    })
-    .catch((error) => {
-      if (error.response.status == 401) {
-        this.$store.dispatch("logLout");
-      } else {
-        this.$toast.add({
-          severity: "error",
-          summary: "downloadFileError:\n" + error,
-          life: 3000,
-        });
-      }
     });
 };
 

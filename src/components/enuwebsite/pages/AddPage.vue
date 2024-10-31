@@ -42,7 +42,6 @@
                         </div>
                         <div class="field">
                             <label>{{ $t("common.contentInQazaq") }}</label>
-                            <!--            <RichEditor ref="kztext" v-model="formData.content_kz" editorStyle="height: 320px"></RichEditor>-->
                             <TinyEditor v-model="formData.content_kz" :height="400" :custom-file-upload="true" :accordion="true"
                                 @onAfterUpload="onAfterUpload" />
                         </div>
@@ -58,7 +57,6 @@
                         </div>
                         <div class="field">
                             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-                            <!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
                             <TinyEditor v-model="formData.content_ru" :height="400" :custom-file-upload="true" :accordion="true"
                                 @onAfterUpload="onAfterUpload" />
                         </div>
@@ -74,7 +72,6 @@
                         </div>
                         <div class="field">
                             <label>{{ $t("common.contentInEnglish") }}</label>
-                            <!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
                             <TinyEditor v-model="formData.content_en" :height="400" :custom-file-upload="true" :accordion="true"
                                 @onAfterUpload="onAfterUpload" />
                         </div>
@@ -118,13 +115,11 @@
 </template>
 
 <script>
-import RichEditor from "@/components/documents/editor/RichEditor.vue";
-import { EnuWebService } from "@/service/enu.web.service";
+import {EnuWebService} from "@/service/enu.web.service";
 import TinyEditor from "../../TinyEditor.vue";
 import Gallery from "@/components/Gallery.vue";
-import { downloadRoute, getHeader, smartEnuApi } from "@/config/config";
-import { findRole } from "@/config/config";
-import { useStore } from "vuex";
+import {downloadRoute, findRole, getHeader, smartEnuApi} from "@/config/config";
+import {useStore} from "vuex";
 
 export default {
     name: "AddPage",

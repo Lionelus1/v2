@@ -47,17 +47,14 @@
 </template>
 
 <script setup>
-import { inject, onUnmounted, ref, unref, defineProps } from "vue";
-import { useToast } from "primevue/usetoast";
-import { useI18n } from "vue-i18n";
-import { AdmissionInfoService } from "@/service/admission.info.service";
-import { EnuWebService } from "@/service/enu.web.service";
-import RichEditor from "@/components/documents/editor/RichEditor.vue";
+import {defineProps, inject, ref, unref} from "vue";
+import {useToast} from "primevue/usetoast";
+import {useI18n} from "vue-i18n";
 
-import { generateYears } from "@/helpers/HelperUtil";
-import { EduScoreService } from "@/service/edu.score.service";
-import { EduService } from "@/service/edu.service";
-import { useRoute } from "vue-router";
+import {generateYears} from "@/helpers/HelperUtil";
+import {EduScoreService} from "@/service/edu.score.service";
+import {EduService} from "@/service/edu.service";
+import {useRoute} from "vue-router";
 
 const props = defineProps(["isShow", "selectedData"]);
 

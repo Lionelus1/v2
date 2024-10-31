@@ -35,7 +35,7 @@
           <div class="p-fluid text-left">
             <div class="field col-12">
               <label for="inputtext">{{ $t('common.enterLogin') }}</label>
-              <InputText id="inputtext" type="text" v-model="loginData.username"/>
+              <InputText id="inputtext" type="text" v-model="loginData.username" @keyup.enter="login"/>
               <small class="p-error" v-if="loginDataCheck.username"> {{ $t("common.requiredField") }}
               </small>
             </div>
