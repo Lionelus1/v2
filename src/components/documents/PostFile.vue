@@ -390,6 +390,11 @@ export default {
             name: 'FileDescription',
             description: 'FileDescription'
           };
+
+        if (!this.file.params) {
+          this.file.params = [];
+        }
+
           this.file.params.push(param);
       }
         fd.append('info', JSON.stringify({directory: this.directory, count: fcount, folderID: locFolderId, fileInfo: this.file}));

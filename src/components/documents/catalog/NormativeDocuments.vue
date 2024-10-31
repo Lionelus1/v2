@@ -185,11 +185,11 @@
                   v-tooltip="$t('educomplex.file.delete')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-file-circle-minus fa-xl" />
           </Button>
-          <Button v-if="selectedNode?.isHidden === true && loginedUser.userID === selectedNode?.creatorID"
+          <Button v-if="tooltip.file && selectedNode?.isHidden === false && loginedUser.userID === selectedNode?.creatorID"
                   @click="hideFile()" v-tooltip="$t('educomplex.file.hide')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye-slash fa-xl" />
           </Button>
-          <Button v-if="selectedNode?.isHidden === false && loginedUser.userID === selectedNode.creatorID"
+          <Button v-if="tooltip.file && selectedNode?.isHidden === true && loginedUser.userID === selectedNode.creatorID"
                   @click="showFile()" v-tooltip="$t('educomplex.file.show')" class="p-button-text p-button-info p-1">
             <i class="fa-solid fa-eye fa-xl" />
           </Button>
@@ -407,6 +407,11 @@ export default {
     },
     onCardSelected(folder) {
       this.selectedNode = folder;
+      if (folder.nodeType === 'file') {
+        this.tooltip.file = true
+      } else {
+        this.tooltip.folder = true
+      }
     },
     openFolder(folder) {
       this.selectedFolder = folder;
