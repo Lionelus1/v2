@@ -26,30 +26,41 @@
                  @show="firstShow"
                  @after-hide="resetNot"
                  :baseZIndex="10000" position="right"
-                 style="width: 25%;">
+                 style="width: 25%;" header=" ">
             <h4>{{ $t('common.notifications') }}</h4>
             <div>
-                <div v-for="(n,ni) in notifications" :key="ni"
+              <div class="surface-card" v-if="notLoading">
+                <ul class="m-0 p-0 list-none">
+                  <li class="mb-5" v-for="i of 10" :key="i">
+                    <div class="flex">
+                      <Skeleton shape="circle" size="4rem" class="mr-2"></Skeleton>
+                      <div class="align-self-center" style="flex: 1">
+                        <Skeleton width="100%" class="mb-2"></Skeleton>
+                        <Skeleton width="75%"></Skeleton>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+                <div v-else v-for="(n,ni) in notifications" :key="ni"
                      style="clear: left; width: 100%; display: block; margin-bottom:25px;padding-bottom:15px;border-bottom:1px dotted #ccc;">
                     <div class="flex">
                         <img class="notification_img round mr-3"
                              v-if="n.senderObject.photo != null && n.senderObject.photo !=''"
                              :src="'data:image/jpeg;base64,' + n.senderObject.photo " rounded/>
+                      <div v-else class="ava_user flex justify-content-center align-items-center notification_img round mr-3"><i class="pi pi-user"></i></div>
                         <div class="flex flex-column gap-1" style="width: 75%;word-wrap: break-word;">
                             <h6 :style="{margin:0,marginBottom:'2px',fontWeight : n.isSeen==0 ? 'bolder' : '400'}">
                                 {{ n.senderObject.fullName }}</h6>
                             <div :style="{fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="font-semibold"
                                  v-html="n['description_' + $i18n.locale]">
                             </div>
-                            <span class="text-gray-500">{{
-                                timeDifference(n.createdDate)
-                                }}</span>
+                            <span class="text-gray-500">{{formatDateTime(n.createdDate)}}</span>
                         </div>
                         <div v-if="n.isSeen===0" class="new_notification"></div>
                     </div>
                 </div>
                 <div class="p-w-full p-text-center">
-                    <span v-if="notLoading">Loading please wait . . .</span>
                     <Button v-if="showCalc && !notLoading" icon="pi pi-refresh" @click="loadByPage()"
                             style="width:100%;" class="p-w-full p-button-rounded p-button-outlined" iconPos="right"
                             :label="$t('common.loadMore')"/>
@@ -64,6 +75,7 @@ import {getHeader, smartEnuApi, socketApi} from "@/config/config";
 import moment from "moment";
 import {mapState} from "vuex";
 import {NotificationService} from "@/service/notification.service";
+import {formatDate} from "./helpers/HelperUtil";
 
 export default {
     components: {LanguageDropdown},
@@ -72,7 +84,7 @@ export default {
     },
     data() {
         return {
-            visibleRight: false,
+            visibleRight: true,
             socket: null,
             isShowGuide: process.env.VUE_APP_SHOW_GUIDE === 'true',
             notifications: [],
@@ -83,13 +95,20 @@ export default {
             firstShown: false,
             notificationService: new NotificationService(),
             loginedUser: null,
+            notLoading: false,
         }
     },
     methods: {
+      formatDate,
         resetNot() {
             this.notifications = [];
             this.pageNum = 1;
         },
+      formatDateTime(dateTime) {
+        const [date, time] = dateTime.split(' ');
+        const [year, month, day] = date.split('-');
+        return `${day}.${month}.${year} ${time.slice(0, 5)}`;
+      },
         firstShow() {
             this.loadNotifications();
         },
@@ -145,6 +164,7 @@ export default {
 
               });
               this.notifications = this.notifications.concat(nots);
+              console.log(this.notifications)
               this.pageNum = this.pageNum + 1;
               this.notLoading = false;
               let newNots = this.notifications.filter(f => parseInt(f.isSeen) == 0);
@@ -181,8 +201,6 @@ export default {
                     yy: this.$i18n.locale === "kz" ? "%d жыл бұрын" : this.$i18n.locale === "en" ? "%d years" : "",
                 }
             });
-            console.log(now);
-            console.log(given);
             return moment.duration(given.diff(now)).humanize();
 
         },
@@ -292,6 +310,7 @@ export default {
   width: 60px;
   min-width: 60px;
   height: 60px;
+  object-fit: cover;
 }
 
 .new_notification {
@@ -313,7 +332,12 @@ export default {
 ::v-deep(.p-dropdown .p-dropdown-trigger){
     color: #293042!important;
 }
-
+.ava_user{
+  border: 1px solid #ccc;
+  i{
+    color: #ccc;
+  }
+}
 @media print {
   .no-print, .no-print * {
     display: none !important;
