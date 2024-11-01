@@ -123,7 +123,7 @@
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.protocol')" v-if="isReport">
-        <Files v-if="!relatedFile" folder="workplan" :fileID="docInfo?.id" fileType="image/*, .pdf, .doc, .docx, .txt"></Files>
+        <Files v-if="!relatedFile && canUploadProtocol" folder="workplan" :fileID="docInfo?.id" fileType="image/*, .pdf, .doc, .docx, .txt" @selected="fileUploaded"></Files>
         <div class="mb-2" v-if="relatedFile">{{relatedFile.name}}</div>
         <Button v-if="relatedFile"
                 :label="$t('workPlan.downloadProtocol')" icon="pi pi-download"
@@ -265,6 +265,9 @@ export default {
     });
   },
   methods: {
+    fileUploaded(){
+      location.reload()
+    },
     getRelatedFiles() {
       this.service
           .getRelatedDocs({fileID: this.docInfo?.id, uuid: null})
