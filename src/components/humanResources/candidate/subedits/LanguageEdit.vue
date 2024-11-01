@@ -31,7 +31,7 @@
                 v-model="value.isNative"
                 :options="states"
                 optionValue="id"
-                optionLabel="name"
+                :optionLabel="'name_' + $i18n.locale"
             />
           </div>
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
@@ -120,8 +120,8 @@ export default {
       knowledgeLevels: [],
       file: null,
       states: [
-        {id: true, name: 'Свободное'},
-        {id: false, name: 'Ограниченное'},
+        {id: true, name_ru: 'Свободное', name_kz: 'Еркін', name_en: 'Free'},
+        {id: false, name_ru: 'Ограниченное', name_kz: 'Шектеулі', name_en: 'Limited'},
       ],
       value: this.modelValue,
       active: null,
