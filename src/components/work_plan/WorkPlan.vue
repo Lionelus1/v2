@@ -231,10 +231,9 @@ export default {
             label: this.$t('common.delete'),
             icon: 'fa-solid fa-trash',
             disabled: !(this.isAdmin || 
-                  (this.data?.user?.id === this.loginedUserId && 
-                    (this.data?.doc_info?.docHistory?.stateId === Enum.REVISION.ID ||
-                    this.data?.doc_info?.docHistory?.stateId === Enum.CREATED.ID ||
-                    this.data?.doc_info?.docHistory?.stateId === Enum.INAPPROVAL.ID))),
+                  (data?.user?.id === this.loginedUserId &&
+                    (data?.doc_info?.docHistory?.stateId === Enum.REVISION.ID ||
+                        data?.doc_info?.docHistory?.stateId === Enum.CREATED.ID ))),
             visible: true,
             command: () => {
               this.deleteConfirm(data)
