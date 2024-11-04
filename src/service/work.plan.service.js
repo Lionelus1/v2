@@ -6,9 +6,9 @@ export class WorkPlanService {
     getEventsTree(lazyParams) {
         let data = JSON.parse(JSON.stringify(lazyParams));
         if (data?.parent_id) {
-            lazyParams.rows = 0;
+            data.rows = 0;
         }
-        return api.post(`/workPlan/getEventsTree`, lazyParams, {headers: getHeader()});
+        return api.post(`/workPlan/getEventsTree`, data, {headers: getHeader()});
     }
 
     getWorkPlanApprovalUsers(work_plan_id) {
