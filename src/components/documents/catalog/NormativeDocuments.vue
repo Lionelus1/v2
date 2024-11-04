@@ -99,10 +99,10 @@
       >
         <Column :header="$t('common.name')" :expander="true">
           <template #body="slotProps">
-      <span v-if="slotProps.node.hidden || slotProps.node.isHidden">
+      <span v-if="slotProps.node.hidden || slotProps.node.isHidden" @dblclick="onNodeDoubleClick(slotProps.node)">
         <i class="fa-solid fa-folder"></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
       </span>
-            <span v-else>
+            <span v-else @dblclick="onNodeDoubleClick(slotProps.node)">
         <i :class="getFileIconClass(slotProps.node.name)"
            :title="slotProps.node.newParams?.FileDescription?.value || $t('hdfs.noDescription')"
            class="custom-tooltip-icon"
@@ -301,7 +301,7 @@
 import api from '@/service/api';
 import Tooltip from 'primevue/tooltip';
 import { FilterMatchMode } from "primevue/api";
-import { getHeader, smartEnuApi, findRole } from "@/config/config";
+import {getHeader, smartEnuApi, findRole, downloadFile} from "@/config/config";
 import Enum from "@/enum/docstates/index"
 
 import DepartmentList from "@/components/smartenu/DepartmentList.vue"
@@ -411,6 +411,15 @@ export default {
         this.tooltip.file = true
       } else {
         this.tooltip.folder = true
+      }
+    },
+    onNodeDoubleClick(node) {
+      if (node.nodeType === "file") {
+        if (node.is_view_only) {
+          this.openSidebar(node)
+        } else {
+          this.downloadFile()
+        }
       }
     },
     openFolder(folder) {
