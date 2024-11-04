@@ -19,17 +19,16 @@
                 <i class="fa-regular fa-bell"/>
                 <Badge :value="notLength" severity="primary"></Badge>
             </div>
-            <LanguageDropdown class="top_lang"/>
+            <LanguageDropdown class="top_lang ml-2"/>
         </div>
         <Sidebar v-model:visible="visibleRight"
                  blockScroll=false
                  @show="firstShow"
                  @after-hide="resetNot"
                  :baseZIndex="10000" position="right"
-                 style="width: 25%;" header=" ">
-            <h4>{{ $t('common.notifications') }}</h4>
+                 style="width: 25%;" :header="$t('common.notifications')" class="sidebar_notific">
             <div>
-              <div class="surface-card" v-if="notLoading">
+              <div class="surface-card skeleton_notific" v-if="notLoading">
                 <ul class="m-0 p-0 list-none">
                   <li class="mb-5" v-for="i of 10" :key="i">
                     <div class="flex">
@@ -42,8 +41,7 @@
                   </li>
                 </ul>
               </div>
-                <div v-else v-for="(n,ni) in notifications" :key="ni"
-                     style="clear: left; width: 100%; display: block; margin-bottom:25px;padding-bottom:15px;border-bottom:1px dotted #ccc;">
+                <div v-else v-for="(n,ni) in notifications" :key="ni" class="notific_item">
                     <div class="flex">
                         <img class="notification_img round mr-3"
                              v-if="n.senderObject.photo != null && n.senderObject.photo !=''"
@@ -52,8 +50,8 @@
                         <div class="flex flex-column gap-1" style="width: 75%;word-wrap: break-word;">
                             <h6 :style="{margin:0,marginBottom:'2px',fontWeight : n.isSeen==0 ? 'bolder' : '400'}">
                                 {{ n.senderObject.fullName }}</h6>
-                            <div :style="{fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="font-semibold"
-                                 v-html="n['description_' + $i18n.locale]">
+                            <div :style="{fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="content_notific font-semibold"
+                                 v-html="getContentWithLinkHandler(n['description_' + $i18n.locale])">
                             </div>
                             <span class="text-gray-500">{{formatDateTime(n.createdDate)}}</span>
                         </div>
@@ -84,7 +82,7 @@ export default {
     },
     data() {
         return {
-            visibleRight: true,
+            visibleRight: false,
             socket: null,
             isShowGuide: process.env.VUE_APP_SHOW_GUIDE === 'true',
             notifications: [],
@@ -96,6 +94,7 @@ export default {
             notificationService: new NotificationService(),
             loginedUser: null,
             notLoading: false,
+            imgPreview: null
         }
     },
     methods: {
@@ -164,7 +163,7 @@ export default {
 
               });
               this.notifications = this.notifications.concat(nots);
-              console.log(this.notifications)
+              console.log('dddddddd ', this.notifications)
               this.pageNum = this.pageNum + 1;
               this.notLoading = false;
               let newNots = this.notifications.filter(f => parseInt(f.isSeen) == 0);
@@ -207,6 +206,19 @@ export default {
       isMobile() {
         return window.innerWidth <= 1024;
       },
+      getContentWithLinkHandler(content) {
+        const div = document.createElement('div');
+        div.innerHTML = content;
+        const link = div.querySelector('a');
+
+        if (link) {
+          link.addEventListener('click', (event) => {
+            event.preventDefault();
+            this.visibleRight = false
+          });
+        }
+        return div.innerHTML;
+      }
     },
     computed: {
         ...mapState(["loginedUser"]),
@@ -305,12 +317,14 @@ export default {
   /* Радиус скругления */
   margin-right: 5px;
 }
-
 .notification_img {
   width: 60px;
   min-width: 60px;
   height: 60px;
   object-fit: cover;
+  i{
+    font-size: 20px;
+  }
 }
 
 .new_notification {
@@ -320,6 +334,19 @@ export default {
   background: #4eb0ff;
   border-radius: 50%;
   //box-shadow: 0 0 3px 1px #2196F3;
+}
+.notific_item{
+  clear: left;
+  width: 100%;
+  display: block;
+  padding: 14px;
+  border-bottom:1px solid #e3e3e3;
+}
+.skeleton_notific{
+  padding: 14px;
+}
+.notific_item:hover{
+  background: #f4f4f4;
 }
 .telegram {
     width: 21px;
@@ -336,6 +363,11 @@ export default {
   border: 1px solid #ccc;
   i{
     color: #ccc;
+  }
+}
+.content_notific p{
+  img{
+    width: 300px!important;
   }
 }
 @media print {
