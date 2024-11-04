@@ -205,7 +205,7 @@ export default {
       };
 
       this.planService.getWorkPlanApprovalUsers(data).then(res => {
-        if (res.data) {
+        if (res.data?.work_plan_users) {
           this.approvals = [];
           const d = res.data;
           this.isPlanApproved = d.every(x => x.is_success);
@@ -413,6 +413,11 @@ export default {
   &.status-2 {
     background: #FEEDAF;
     color: #8A5340;
+  }
+
+  &.status-1 {
+    background: #B3E5FC;
+    color: #23547B;
   }
 }
 </style>
