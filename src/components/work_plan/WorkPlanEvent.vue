@@ -672,7 +672,7 @@ export default {
     },
     onExpand(node) {
       this.lazyParams.parent_id = Number(node.work_plan_event_id)
-      this.lazyParams.rows = 0
+      // this.lazyParams.rows = 0
       this.parentNode = node
       this.getEventsTree(node)
     },
@@ -693,6 +693,8 @@ export default {
       this.lazyParams.quarter = this.quarter
       if (parent == null) {
         this.lazyParams.parent_id = null;
+      } else {
+        this.lazyParams.rows = 0
       }
 
       this.planService.getEventsTree(this.lazyParams).then(res => {
