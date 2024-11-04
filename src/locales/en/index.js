@@ -295,6 +295,7 @@ export default {
             actionError: "An error occurred during this action",
             actionErrorContactAdmin: "Please contact the administrators to resolve this issue",
             attachFile: "Please attach the necessary files",
+            mustChooseProtocol: "Please first upload the protocol!",
         },
         language: {
             kz: "in kazakh",

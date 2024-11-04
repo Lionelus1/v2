@@ -294,6 +294,7 @@ export default {
             actionError: "Бұл әрекетті орындау кезінде қате пайда болды",
             actionErrorContactAdmin: "Бұл мәселені шешу үшін әкімшілерге хабарласыңыз",
             attachFile: "Қажетті файлдарды тіркеңіз",
+            mustChooseProtocol: "Алдымен хаттаманы жүктеп салыңыз!"
         },
         language: {
             kz: "қазақша",

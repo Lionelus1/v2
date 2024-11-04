@@ -318,7 +318,7 @@
       @hide="hideDialog(dialog.info)"
       :plan="plan"
   />
-  Event^ {{ selectedMembers }}
+  {{ selectedMembers }}
   <WorkPlanEventAddMember
       v-if="dialog.addMember.state"
       :visible="dialog.addMember.state"
