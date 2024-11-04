@@ -123,11 +123,14 @@
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.protocol')" v-if="isReport">
-        <Files v-if="!relatedFile && canUploadProtocol" folder="workplan" :fileID="docInfo?.id" fileType="image/*, .pdf, .doc, .docx, .txt" @selected="fileUploaded"></Files>
-        <div class="mb-2" v-if="relatedFile">{{relatedFile.name}}</div>
-        <Button v-if="relatedFile"
-                :label="$t('workPlan.downloadProtocol')" icon="pi pi-download"
-                @click="downloadProtocol" class="p-button"/>
+        <Files class="mb-3" v-if="canUploadProtocol" folder="workplan" :fileID="docInfo?.id"
+               fileType="image/*, .pdf, .doc, .docx, .txt" @uploaded="fileUploaded" simple-upload="true"></Files>
+        <div v-for="item in relatedFile" :key="item.id" class="mb-3">
+          <p class="mb-1">{{ item.name }}</p>
+          <Button
+              :label="$t('workPlan.downloadProtocol')" icon="pi pi-download"
+              @click="downloadProtocol(item.filePath)" class="p-button"/>
+        </div>
       </TabPanel>
     </TabView>
   </div>
@@ -150,7 +153,7 @@ import Files from "@/components/documents/Files.vue"
 
 export default {
   name: "DocSignaturesInfo",
-  components: { QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue, Files},
+  components: {QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue, Files},
   props: {
     docIdParam: {
       type: String,
@@ -247,7 +250,6 @@ export default {
                 {documentUuid: this.doc_id, signatureId: data},
                 {headers: getHeader(),})
             .then(res => {
-              console.log(res.data)
               let result = res.data
               var link = document.createElement('a');
               link.innerHTML = 'Download file';
@@ -265,27 +267,26 @@ export default {
     });
   },
   methods: {
-    fileUploaded(){
-      location.reload()
+    fileUploaded() {
+      this.getRelatedFiles()
+      this.$toast.add({
+        severity: 'success',
+        summary: this.$t('hdfs.toastMsg'),
+        life: 3000,
+      });
     },
     getRelatedFiles() {
       this.service
           .getRelatedDocs({fileID: this.docInfo?.id, uuid: null})
           .then((response) => {
             this.relatedFile = response.data;
-            if (this.relatedFile.length > 0) {
-              this.relatedFile = this.relatedFile[0];
-            }else{
-              this.relatedFile = null
-            }
           })
           .catch((_) => {
             this.uploading = false;
           });
     },
-    downloadProtocol() {
-      let url = this.relatedFile.filePath
-      if (!url) {
+    downloadProtocol(filePath) {
+      if (!filePath) {
         this.$toast.add({
           severity: 'info',
           summary: this.$t('common.noData'),
@@ -294,13 +295,13 @@ export default {
         return;
       }
 
-      url = smartEnuApi + fileRoute + url;
+      filePath = smartEnuApi + fileRoute + filePath;
 
       const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', url);
+      link.href = filePath;
+      link.setAttribute('download', filePath);
       link.setAttribute('target', '_blank');
-      link.download = url;
+      link.download = filePath;
       link.click();
       URL.revokeObjectURL(link.href);
     },
@@ -380,7 +381,7 @@ export default {
             this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
             this.hideDocRevision = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
             this.signatures.forEach(x => {
-              if (x.userId === this.loginedUserId){
+              if (x.userId === this.loginedUserId) {
                 this.canUploadProtocol = x.user?.roles?.some(role => role.id === 22 || role.id === 23)
               }
             });
@@ -474,6 +475,14 @@ export default {
       return showSign
     },
     sign() {
+      if (this.relatedFile === null || this.relatedFile.length === 0) {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t('common.message.mustChooseProtocol'),
+          life: 3000,
+        });
+        return
+      }
       this.signing = true;
       api.post("/downloadFile", {
         filePath: this.docInfo.filePath
