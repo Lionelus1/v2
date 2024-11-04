@@ -139,11 +139,12 @@ export default {
 }
 
 .card.selected {
-  border: 2px solid #007ad9; /* More prominent border */
-  box-shadow: 0 0 20px rgba(0, 122, 217, 0.5); /* Stronger shadow */
-  background: linear-gradient(135deg, #f0f9ff, #e0f7ff); /* Subtle gradient for selected folder */
-  transform: scale(1.05); /* Slightly larger when selected */
+  border: 1px solid #007ad9; /* Более тонкая рамка */
+  box-shadow: 0 0 10px rgba(0, 122, 217, 0.3); /* Более прозрачная тень */
+  background: linear-gradient(135deg, #f0f9ff, #e0f7ff); /* Лёгкий градиент для выделенной папки */
+  transform: scale(1.05); /* Немного увеличивается при выделении */
 }
+
 
 .card-icon {
   color: #007be5;
@@ -152,8 +153,8 @@ export default {
 }
 
 .card-name {
-  font-size: 0.9em; /* Reduced font size */
-  font-weight: 500; /* Slightly lighter font weight */
+  font-size: 0.9em;
+  font-weight: 500;
   color: #333;
   word-wrap: break-word;
   max-width: 100%;
@@ -161,6 +162,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  user-select: none; /* Предотвращает выделение текста */
 }
 
 /* Custom icon colors */
