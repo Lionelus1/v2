@@ -87,6 +87,12 @@ export default {
     openFolder(folder) {
       if (folder.nodeType === "folder") {
         this.$emit('open-folder', folder);
+      } else if (folder.nodeType === "file") {
+        if (this.selectedCard.is_view_only) {
+          this.$emit('open-side-bar', folder)
+        } else {
+          this.$emit('download-file', folder)
+        }
       }
     },
     selectFolder(folder) {

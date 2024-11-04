@@ -232,7 +232,7 @@
   </span>
       </div>
 
-      <GridComponent :folders="folders" :folderHistory="folderHistory" @card-selected="onCardSelected" @open-folder="openFolder" @go-back="goBack" />
+      <GridComponent :folders="folders" :folderHistory="folderHistory" @card-selected="onCardSelected" @open-folder="openFolder" @download-file="downloadFile()" @open-side-bar="openSidebar" @go-back="goBack" />
     </div>
   </BlockUI>
   <!-- панель для фильтра -->
