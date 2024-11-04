@@ -693,8 +693,6 @@ export default {
       this.lazyParams.quarter = this.quarter
       if (parent == null) {
         this.lazyParams.parent_id = null;
-      } else {
-        this.lazyParams.rows = 0
       }
 
       this.planService.getEventsTree(this.lazyParams).then(res => {
