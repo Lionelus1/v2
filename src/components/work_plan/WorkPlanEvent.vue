@@ -38,7 +38,7 @@
                  @page="onPage($event)">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
-        <Column field="event_name" :header="$t('workPlan.eventName')" style="min-width:300px;width: 30%;">
+        <Column field="event_name" :expander="true" :header="$t('workPlan.eventName')" style="min-width:300px;width: 30%;">
           <template #body="{ node }">
             <span><i class="fa-solid fa-folder" style="margin-left: 30px;"></i>&nbsp;{{ node.event_name }}</span>
           </template>
