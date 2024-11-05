@@ -386,6 +386,7 @@ export default {
       }).then(res => {
         if (res.data) {
           this.docInfo = res.data;
+          console.log(this.docInfo)
           this.isReport = this.docInfo?.filePath.includes("report")
           this.getRelatedFiles();
           this.signatures = res.data.signatures;
@@ -506,7 +507,7 @@ export default {
       return showSign;
     },
     sign() {
-      if (this.relatedFile === null || this.relatedFile.length === 0) {
+      if (this.canUploadProtocol && (this.relatedFile === null || this.relatedFile.length === 0)) {
         this.$toast.add({
           severity: "error",
           summary: this.$t('common.message.mustChooseProtocol'),
