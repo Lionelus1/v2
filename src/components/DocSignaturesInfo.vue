@@ -476,7 +476,7 @@ export default {
       return showSign
     },
     sign() {
-      if (this.canUploadProtocol && (this.relatedFile === null || this.relatedFile.length === 0)) {
+      if (this.canUploadProtocol && this.showProtocol && (this.relatedFile === null || this.relatedFile.length === 0)) {
         this.$toast.add({
           severity: "error",
           summary: this.$t('common.message.mustChooseProtocol'),
