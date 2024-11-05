@@ -11,8 +11,8 @@ export class WorkPlanService {
         return api.post(`/workPlan/getEventsTree`, data, {headers: getHeader()});
     }
 
-    getWorkPlanApprovalUsers(work_plan_id) {
-        return api.get(`/workPlan/getApprovalUsers/${work_plan_id}`);
+    getWorkPlanApprovalUsers(work_plan_data) {
+        return api.post(`/workPlan/getApprovalUsers`, work_plan_data, {headers: getHeader()});
     }
 
     getPlanById(planId) {
@@ -114,6 +114,10 @@ export class WorkPlanService {
         return api.get(`/workPlan/getWorkPlanReports/${planId}`, {headers: getHeader()});
     }
 
+    getWorkPlanDiaryReports(data) {
+        return api.post(`/workPlan/getWorkPlanDiaryReports`, data, {headers: getHeader()});
+    }
+
     deletePlanReport(id) {
         return api.post(`/workPlan/deleteReport/${id}`, null, {headers: getHeader()});
     }
@@ -175,6 +179,18 @@ export class WorkPlanService {
     }
     getWorkPlanTypes() {
         return api.get('/workPlan/types', {headers: getHeader()});
+    }
+
+    getStudents(planId) {
+        return api.post('/workPlan/students', {work_plan_id: planId},{headers: getHeader()});
+    }
+
+    getPracticeTypes() {
+        return api.get('/workPlan/practiceTypes', {headers: getHeader()});
+    }
+
+    getEduProgByManagerId() {
+        return api.get('/workPlan/eduProgramsByManagerId', {headers: getHeader()});
     }
 
     updatePlanAttachments(data) {

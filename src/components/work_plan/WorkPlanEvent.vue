@@ -41,7 +41,7 @@
     </div>
     <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
     <div class="card" v-if="plan && planDoc">
-      <TreeTable v-if="(!isMastersPlan && !isDoctorsPlan)" ref="workplantreetable" class="p-treetable-sm" :rowsPerPageOptions="[10, 25, 50]" v-model:selectionKeys="selectedWorkPlanEvent" selectionMode="single" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
+      <TreeTable v-if="(!isMastersPlan && !isDoctorsPlan && !isWorkSchedule)" ref="workplantreetable" class="p-treetable-sm" :rowsPerPageOptions="[10, 25, 50]" v-model:selectionKeys="selectedWorkPlanEvent" selectionMode="single" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows" :total-records="total" :rowHover="true" :paginatorTemplate="paginatorTemplate"
                  @page="onPage($event)">
         <template #empty> {{ $t('common.noData') }}</template>
@@ -133,7 +133,7 @@
             </div>
           </template>
         </Column>
-        <Column field="status" :header="$t('common.status')">
+        <Column field="status" :header="$t('common.status')" style="text-align: center;">
           <template #body="{ node }">
             <span :class="'customer-badge status-' + node.status.work_plan_event_status_id">{{
                 $i18n.locale === "kz" ? node.status.name_kz : $i18n.locale === "ru" ? node.status.name_ru :
@@ -158,6 +158,27 @@
           @onToggle="actionsToggle"
           :total="total"
           :loading="loading"
+      />
+
+      <WorkPlanScheduleEventTree
+          v-if="isWorkSchedule"
+          :menus="initItems"
+          :isPlanCreator="isPlanCreator"
+
+          :data="data"
+          :total="total"
+          @onPage="onPage"
+          @expand="onExpand"
+          :loading="loading"
+
+          :members="members"
+          :totalMembers="totalMembers"
+          @onPageMembers="onPageMembers"
+          :loadingMembers="loadingMembers"
+
+          @onToggle="actionsToggle"
+          @updateActive="handleActive"
+          @updateSelect="handleSelected"
       />
     </div>
   </div>
@@ -316,17 +337,14 @@
         />
       </div>
       <div class="field">
-        <Button
-          :label="$t('common.clear')"
-          @click="clearFilter"
-          class="mb-2 p-button-outlined"
-        />
+        <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined"/>
         <Button :label="$t('common.search')" @click="initFilter" class="mt-2" />
       </div>
     </div>
   </OverlayPanel>
 
   <add-info v-if="dialog.info.state" :visible="dialog.info.state" @hide="hideDialog(dialog.info)" :plan="plan"/>
+    <WorkPlanEventAddMember v-if="dialog.addMember.state" :visible="dialog.addMember.state" @hide="hideDialog(dialog.addMember)"/>
   <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null"
                        :isMain="!!selectedEvent" :plan-data="plan" @hide="hideDialog(dialog.add)"/>
   <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :isEditResponsiveUsers="editRespUser" :event="selectedEvent" :copiedEvent="selectedEvent" @hide="hideDialog(dialog.edit)"/>
@@ -338,28 +356,34 @@
 </template>
 
 <script>
-import WorkPlanEventAdd from '@/components/work_plan/WorkPlanEventAdd';
-import { fileRoute, findRole, smartEnuApi } from '@/config/config';
-import WorkPlanApprove from '@/components/work_plan/WorkPlanApprove';
-import WorkPlanEventEditModal from '@/components/work_plan/WorkPlanEventEditModal';
-import moment from 'moment';
-import { FilterMatchMode } from 'primevue/api';
-import { WorkPlanService } from '@/service/work.plan.service';
-import DocSignaturesInfo from '@/components/DocSignaturesInfo';
-import WorkPlanEventResult from '@/components/work_plan/WorkPlanEventResult.vue';
-import Enum from '@/enum/workplan/index';
-import DocEnum from '@/enum/docstates/index';
-import WorkPlanReportApprove from '@/components/work_plan/WorkPlanReportApprove.vue';
-import { DocService } from '@/service/doc.service';
-import CustomFileUpload from '@/components/CustomFileUpload.vue';
-import DocState from '@/enum/docstates/index';
-import ToolbarMenu from '@/components/ToolbarMenu.vue';
+import WorkPlanEventAdd from "@/components/work_plan/WorkPlanEventAdd";
+import WorkPlanEventAddMember from "@/components/work_plan/WorkPlanEventAddMember";
+import {fileRoute, findRole, smartEnuApi} from "@/config/config";
+import WorkPlanApprove from "@/components/work_plan/WorkPlanApprove";
+import WorkPlanEventEditModal from "@/components/work_plan/WorkPlanEventEditModal";
+import moment from "moment";
+import {FilterMatchMode} from "primevue/api";
+import {WorkPlanService} from "@/service/work.plan.service";
+import DocSignaturesInfo from "@/components/DocSignaturesInfo"
+import WorkPlanEventResult from "@/components/work_plan/WorkPlanEventResult.vue";
+import Enum from "@/enum/workplan/index"
+import DocEnum from "@/enum/docstates/index"
+import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove.vue";
+import {DocService} from "@/service/doc.service";
+import ActionButton from "@/components/ActionButton.vue";
+import CustomFileUpload from "@/components/CustomFileUpload.vue";
+import DocState from "@/enum/docstates/index";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import WorkPlanScheduleEventTree from "@/components/work_plan/table/WorkPlanScheduleEventTree.vue";
 import DoctorsMastersTable from './table/DoctorsMastersTable.vue';
 import RolesByName from "@/components/smartenu/RolesByName.vue";
+import FindUser from "../../helpers/FindUser.vue";
 
 export default {
-  name: 'WorkPlanEvent',
+  name: "WorkPlanEvent",
   components: {
+    FindUser,
+    WorkPlanScheduleEventTree,
     ToolbarMenu,
     CustomFileUpload,
     WorkPlanReportApprove,
@@ -371,11 +395,13 @@ export default {
     ActionButton,
     RolesByName,
     DoctorsMastersTable,
+    WorkPlanEventAddMember
   },
   props:['isEditResponsiveUsers'],
   data() {
     return {
-      data: [],
+      active: 0,
+      data: null,
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
       Enum: Enum,
       DocEnum: DocEnum,
@@ -405,12 +431,18 @@ export default {
         },
       ],
       total: 0,
+      totalMembers: 0,
       quarter: null,
       loading: false,
+      loadingMembers: false,
       showReportModal: false,
       parent: null,
       parentNode: null,
       plan: null,
+      members: null,
+      searchQuery: "",
+      filteredMembers: null,
+      selectedMembers: null,
       planDoc: null,
       approval_users: null,
       loginedUserId: JSON.parse(localStorage.getItem('loginedUser')).userID,
@@ -439,41 +471,45 @@ export default {
       statuses: [
         {
           id: 1,
-          nameRu: 'Жоспарланды',
-          nameKz: 'Запланировано',
-          nameEn: 'Planned',
-          value: 'planned',
+          nameRu: "Жоспарланды",
+          nameKz: "Запланировано",
+          nameEn: "Planned",
+          value: "planned"
         },
         {
           id: 2,
-          nameRu: 'Орындалды',
-          nameKz: 'Выполнено',
-          nameEn: 'Done',
-          value: 'done',
+          nameRu: "Орындалды",
+          nameKz: "Выполнено",
+          nameEn: "Done",
+          value: "done"
         },
         {
           id: 4,
-          nameRu: 'Жартылай орындалды',
-          nameKz: 'Частично выполнено',
-          nameEn: 'Partially completed',
-          value: 'partially',
+          nameRu: "Жартылай орындалды",
+          nameKz: "Частично выполнено",
+          nameEn: "Partially completed",
+          value: "partially"
         },
         {
           id: 5,
-          nameRu: 'Тексерілуде',
-          nameKz: 'На проверке',
-          nameEn: 'On inspection',
-          value: 'inspection',
+          nameRu: "Тексерілуде",
+          nameKz: "На проверке",
+          nameEn: "On inspection",
+          value: "inspection"
         },
         {
           id: 6,
-          nameRu: 'Түзетуде',
-          nameKz: 'На доработке',
-          nameEn: 'Under revision',
-          value: 'revision',
-        },
+          nameRu: "Түзетуде",
+          nameKz: "На доработке",
+          nameEn: "Under revision",
+          value: "revision"
+        }
       ],
-      numMatches: [{ value: 'lt' }, { value: 'gt' }, { value: 'equals' }],
+      numMatches: [
+        {value: 'lt'},
+        {value: 'gt'},
+        {value: 'equals'}
+      ],
       planService: new WorkPlanService(),
       selectedEvent: null,
       scienceReport: null,
@@ -483,6 +519,9 @@ export default {
       dialog: {
         add: {
           state: false,
+        },
+        addMember: {
+          state: false
         },
         edit: {
           state: false,
@@ -533,9 +572,10 @@ export default {
     this.isAdmin = this.findRole(null, 'main_administrator');
     this.getPlan();
     this.getEventsTree(null);
-    this.getWorkPlanApprovalUsers(this.work_plan_id);
   },
   mounted() {
+    this.filteredMembers = this.members;
+
     this.emitter.on('workPlanEventIsAdded', (data) => {
       if (data.is_success && !data.is_main) {
         this.getEventsTree(this.parentNode);
@@ -608,6 +648,21 @@ export default {
     },
   },
   methods: {
+    addMemberButton() {
+      this.showDialog(this.dialog.addMember);
+    },
+    handleActive(event){
+      this.active = event
+    },
+    handleSelected(event){
+      this.selectedMembers = event
+    },
+    filterData() {
+      const query = this.searchQuery.toLowerCase();
+      this.filteredMembers = this.members.filter(member => {
+        return member.user.fullName.toLowerCase().includes(query);
+      });
+    },
     findRole: findRole,
     updateResponsivePersons() {
       this.submitted = true;
@@ -839,36 +894,38 @@ export default {
     onResize() {
       this.windowHeight = window.innerHeight - 270;
     },
-    getWorkPlanApprovalUsers() {
-      this.planService
-        .getWorkPlanApprovalUsers(parseInt(this.work_plan_id))
-        .then((res) => {
-          if (res.data) {
-            res?.data?.forEach((e) => {
-              if (this.loginedUserId === e.id) {
-                this.isApproval = true;
-              }
-            });
-          } else {
-            this.isApproval = false;
-          }
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch('logLout');
-          } else {
-            this.$toast.add({
-              severity: 'error',
-              summary: error,
-              life: 3000,
-            });
-          }
-        });
+    //осы жерден адамдардын списогын алып алу керек
+    getWorkPlanApprovalUsersFunc(data) {
+      this.loadingMembers = true;
+      this.planService.getWorkPlanApprovalUsers(data).then(res => {
+        if (res.data && res.data.work_plan_users) {
+          this.members = res.data.work_plan_users;
+          this.filteredMembers = res.data.work_plan_users;
+          this.totalMembers = res.data.total;
+          res?.data?.work_plan_users?.forEach(e => {
+            if (this.loginedUserId === e.id) {
+              this.isApproval = true;
+            }
+          });
+        } else {
+          this.isApproval = false;
+        }
+        this.loadingMembers = false;
+      }).catch(error => {
+        this.loadingMembers = false;
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
     },
     getPlan() {
-      this.planService
-        .getPlanById(this.work_plan_id)
-        .then((res) => {
+      this.planService.getPlanById(this.work_plan_id).then((res) => {
           this.plan = res.data;
           this.planDoc = res.data.doc_info;
           this.oldPlan =
@@ -876,72 +933,127 @@ export default {
             new Date().getFullYear();
           this.isFinish = this.plan.is_finish != null;
           if (this.planDoc && this.planDoc.docHistory) {
-            this.isRejected =
-              this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value;
+            this.isRejected = this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value;
           }
-          this.isPlanCreator = !!(
-            this.plan && this.plan.user.id === this.loginedUserId
-          );
-
-          if (this.isSciencePlan) {
-            this.planApprovalStage = [
-              {
-                stage: 1,
-                users: [],
-                titleRu: 'Научный руководитель проекта',
-                titleKz: 'Жобаның ғылыми жетекшісі',
-                titleEn: 'Project Scientific Director',
-                certificate: {
-                  namekz: 'Жеке тұлғаның сертификаты',
-                  nameru: 'Сертификат физического лица',
-                  nameen: 'Certificate of an individual',
-                  value: 'individual',
-                },
+          // кайта орнына келтырып кою керек
+          this.isPlanCreator =true;
+              // !!(this.plan && this.plan.user && this.plan.user.id === this.loginedUserId);
+        if (this.isSciencePlan) {
+          this.planApprovalStage = [
+            {
+              stage: 1,
+              users: [],
+              titleRu: "Научный руководитель проекта",
+              titleKz: "Жобаның ғылыми жетекшісі",
+              titleEn: "Project Scientific Director",
+              certificate: {
+                namekz: "Жеке тұлғаның сертификаты",
+                nameru: "Сертификат физического лица",
+                nameen: "Certificate of an individual",
+                value: "individual"
+              }
+            },
+            {
+              stage: 2,
+              users: [],
+              titleRu: "Ответственные от управления научных проектов",
+              titleKz: "Ғылыми жобалар басқармасынан жауапты тұлға",
+              titleEn: "Employee of Scientific Projects Management",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
               },
-              {
-                stage: 2,
-                users: [],
-                titleRu: 'Ответственные от управления научных проектов',
-                titleKz: 'Ғылыми жобалар басқармасынан жауапты тұлға',
-                titleEn: 'Employee of Scientific Projects Management',
-                certificate: {
-                  namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
-                  nameru: 'Для внутреннего документооборота (ГОСТ)',
-                  nameen: 'For internal document management (GOST)',
-                  value: 'internal',
-                },
+            },
+            {
+              stage: 3,
+              users: [],
+              titleRu: "Заместитель директора департамента науки",
+              titleKz: "Ғылым департаменті директорының орынбасары",
+              titleEn: "Deputy Director of the Department of Science",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
               },
-              {
-                stage: 3,
-                users: [],
-                titleRu: 'Заместитель директора департамента науки',
-                titleKz: 'Ғылым департаменті директорының орынбасары',
-                titleEn: 'Deputy Director of the Department of Science',
-                certificate: {
-                  namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
-                  nameru: 'Для внутреннего документооборота (ГОСТ)',
-                  nameen: 'For internal document management (GOST)',
-                  value: 'internal',
-                },
+            },
+            {
+              stage: 4,
+              users: [],
+              titleRu: "И.о. директора департамента науки",
+              titleKz: "Ғылым департаменті директорының м.а",
+              titleEn: "Acting Director of the Department of Science",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
               },
-              {
-                stage: 4,
-                users: [],
-                titleRu: 'И.о. директора департамента науки',
-                titleKz: 'Ғылым департаменті директорының м.а',
-                titleEn: 'Acting Director of the Department of Science',
-                certificate: {
-                  namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
-                  nameru: 'Для внутреннего документооборота (ГОСТ)',
-                  nameen: 'For internal document management (GOST)',
-                  value: 'internal',
-                },
+            }
+          ];
+          this.getRelatedFiles()
+          let data = {
+            work_plan_id: parseInt(this.work_plan_id),
+            page: 0,
+            rows: 0,
+            is_contract: false
+          };
+          this.getWorkPlanApprovalUsersFunc(data)
+        }
+        if (this.isWorkSchedule) {
+          this.planApprovalStage = [
+            {
+              stage: 1,
+              users: [],
+              titleRu: "Руководитель практики кафедры",
+              titleKz: "Кафедрасының практика меңгерушісі",
+              titleEn: "Head of Department Practice",
+              certificate: {
+                namekz: "Жеке тұлғаның сертификаты",
+                nameru: "Сертификат физического лица",
+                nameen: "Certificate of an individual",
+                value: "individual"
+              }
+            },
+            {
+              stage: 2,
+              users: [],
+              titleRu: "Заведующий кафедрой",
+              titleKz: "Кафедра меңгерушісі",
+              titleEn: "Head of the department",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
               },
-            ];
-            this.getRelatedFiles();
-            this.getWorkPlanApprovalUsers(this.work_plan_id);
-          }
-          if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
+            },
+            {
+              stage: 3,
+              users: [],
+              titleRu: "Декан",
+              titleKz: "Декан",
+              titleEn: "Dean",
+              certificate: {
+                namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                nameru: "Для внутреннего документооборота (ГОСТ)",
+                nameen: "For internal document management (GOST)",
+                value: "internal"
+              },
+            },
+          ];
+          this.getRelatedFiles()
+          let data = {
+            work_plan_id: parseInt(this.work_plan_id),
+            page: 0,
+            rows: 10,
+            is_contract: true
+          };
+          this.getWorkPlanApprovalUsersFunc(data)
+        }
+        if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
             this.planApprovalStage = [
               {
                 stage: 1,
@@ -997,18 +1109,17 @@ export default {
               },
             ];
           }
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch('logLout');
-          } else {
-            this.$toast.add({
-              severity: 'error',
-              summary: error,
-              life: 3000,
-            });
-          }
-        });
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
     },
     getRelatedFiles() {
       this.docService
@@ -1116,6 +1227,9 @@ export default {
         params: { id: this.work_plan_id },
       });
     },
+    navigateToJournalReports() {
+      this.$router.push({name: 'WorkPlanJournalReport', params: {id: this.work_plan_id, userId: this.loginedUserId}});
+    },
     isUserApproval(data) {
       let userApproval = false;
       data.user.forEach((e) => {
@@ -1178,6 +1292,15 @@ export default {
       this.lazyParams.page = event.page;
       this.lazyParams.rows = event.rows;
       this.getEventsTree();
+    },
+    onPageMembers(event) {
+      let data = {
+        work_plan_id: parseInt(this.work_plan_id),
+        page: event.page,
+        rows: event.rows,
+        is_contract: true
+      };
+      this.getWorkPlanApprovalUsersFunc(data)
     },
     planSentToApprove(data) {
       this.getPlan();
@@ -1419,7 +1542,9 @@ export default {
       this.editRespUser = isEditPerson
     },
     hideDialog(dialog) {
-      this.selectedEvent = null;
+      this.loadingMembers = true;
+      this.selectedMembers = null;
+      this.members = null;
       dialog.state = false;
       this.showReportModal = false;
       this.getPlan();
@@ -1429,7 +1554,6 @@ export default {
       const isStatusValid = [1, 4, 5, 6, 8].includes(
         this.selectedEvent.status.work_plan_event_status_id
       );
-      console.log('Hello this is execute event!');
       return (
         (this.isPlanCreator || this.isUserApproval(this.selectedEvent)) &&
         isStatusValid
@@ -1553,6 +1677,15 @@ export default {
           },
         },
         {
+          label: this.$t('common.addMember'),
+          icon: 'fa-solid fa-plus',
+          disabled: !(this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent?.user) && !this.isFinish),
+          visible: !this.isFinish && !this.isWorkSchedule && !this.isMastersPlan && !this.isDoctorsPlan,
+          command: () => {
+            this.showDialog(this.dialog.addMember)
+          }
+        },
+        {
           label: this.$t('common.edit'),
           icon: 'fa-solid fa-pen',
           disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
@@ -1587,6 +1720,9 @@ export default {
         this.plan.plan_type &&
         this.plan.plan_type.code === Enum.WorkPlanTypes.Science
       );
+    },
+    isWorkSchedule() {
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule
     },
     isOperPlan() {
       return (
@@ -1634,9 +1770,19 @@ export default {
     toolbarMenus() {
       return [
         {
+          label: this.$t('common.addMember'),
+          icon: 'pi pi-plus',
+          visible: this.active === 1 && !findRole(null, 'student') && this.selectedMembers && this.selectedMembers.length > 0,
+          badge: 0,
+          // color: 'blue',
+          command: () => {
+            this.showDialog(this.dialog.addMember)
+          }
+        },
+        {
           label: this.$t('common.add'),
           icon: 'pi pi-plus',
-          visible: (this.isPlanCreator || this.isEventsNull) && !this.isFinish,
+          visible: (this.isPlanCreator || this.isEventsNull) && !this.isFinish && this.active !== 1,
           color: 'blue',
           command: () => {
             this.showDialog(this.dialog.add);
@@ -1659,7 +1805,7 @@ export default {
           label: this.$t('common.complete'),
           icon: 'pi pi-check',
           disabled: !this.data || this.data.length === 0,
-          visible: this.plan && this.isPlanCreator && !this.isFinish,
+          visible: this.plan && this.isPlanCreator && !this.isFinish && this.active !== 1,
           color: 'yellow',
           command: () => {
             this.confirmFinish();
@@ -1697,9 +1843,10 @@ export default {
           label: this.$t('workPlan.reports'),
           visible:
             this.isFinish &&
-            !this.isSciencePlan &&
-            (this.isApproval || this.isPlanCreator || this.isAdmin) &&
-            (!(this.isMastersPlan || this.isDoctorsPlan) ||
+              !this.isWorkSchedule &&
+              !this.isSciencePlan &&
+              (this.isApproval || this.isPlanCreator || this.isAdmin) &&
+              (!(this.isMastersPlan || this.isDoctorsPlan) ||
               this.isPlanApproved),
           command: () => {
             this.navigateToReports();
@@ -1715,6 +1862,14 @@ export default {
           command: () => {
             this.confirmGenerateScienceReport();
           },
+        },
+        {
+          label: this.$t('workPlan.journalReports'),
+          // icon: 'pi pi-plus',
+          visible: this.isFinish && this.isWorkSchedule && this.isPlanApproved && findRole(null, 'student'),
+          command: () => {
+            this.navigateToJournalReports()
+          }
         },
         {
           label: this.$t('contracts.contract'),

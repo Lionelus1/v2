@@ -73,13 +73,13 @@
                 </h6>
               </div>
               <div v-if="mgovMobileRedirectUri && isIndivid">
-                <hr/>
+                <hr />
               </div>
               <div v-if="mgovMobileRedirectUri && isIndivid" class="text-center">
                 <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile"/>
               </div>
               <div v-if="mgobBusinessRedirectUri && !isIndivid">
-                <hr/>
+                <hr />
               </div>
               <div v-if="mgobBusinessRedirectUri && !isIndivid" class="text-center">
                 <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness"/>
@@ -123,7 +123,7 @@
         </div>
         <div class="flex justify-content-center">
           <Button icon="fa-solid fa-user-check" class="p-button-success md:col-3" @click="changeApprovals" :label="$t('common.change')" :loading="loading"
-                  :disabled="currentApprovalUsers.length < 1"/>
+            :disabled="currentApprovalUsers.length < 1" />
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.protocol')" v-if="showProtocol">
@@ -240,21 +240,10 @@ export default {
 
     const tokenData = JSON.parse(window.localStorage.getItem("authUser"));
     if (tokenData !== null) {
-      let signUri =
-          smartEnuApi +
-          "/mobileSignParams/" +
-          this.doc_id +
-          "/" +
-          tokenData.access_token;
-      this.mgovSignUri = "mobileSign:" + signUri;
-      this.mgovMobileRedirectUri =
-          "https://mgovsign.page.link/?link=" +
-          signUri +
-          "?mgovSign&apn=kz.mobile.mgov&isi=1476128386&ibi=kz.egov.mobile";
-      this.mgobBusinessRedirectUri =
-          "https://egovbusiness.page.link/?link=" +
-          signUri +
-          "?mgovSign&apn=kz.mobile.mgov.business&isi=1597880144&ibi=kz.mobile.mgov.business";
+      let signUri = smartEnuApi + '/mobileSignParams/' + this.doc_id + "/" + tokenData.access_token
+      this.mgovSignUri = 'mobileSign:' + signUri
+      this.mgovMobileRedirectUri = "https://mgovsign.page.link/?link=" + signUri + "?mgovSign&apn=kz.mobile.mgov&isi=1476128386&ibi=kz.egov.mobile"
+      this.mgobBusinessRedirectUri = "https://egovbusiness.page.link/?link=" + signUri + "?mgovSign&apn=kz.mobile.mgov.business&isi=1597880144&ibi=kz.mobile.mgov.business"
     }
     this.isTspRequired = this.tspParam;
     this.signerIin = this.signerIinParam;
@@ -278,14 +267,13 @@ export default {
               link.download = result.fileName;
               link.href = result.data;
               link.click();
-            })
-            .catch((error) => {
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-            });
+            }).catch(error => {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        });
       }
     });
   },
@@ -656,14 +644,10 @@ export default {
             summary: response.errorMessage,
             life: 3000,
           });
-        } else if (response.result === "success") {
-          t.getData();
-          t.showMessage(
-              "success",
-              t.$t("ncasigner.signDocTitle"),
-              t.$t("ncasigner.success.signSuccess")
-          );
-        } else if (response.result === "unsigned") {
+        } else if (response.result === 'success') {
+          t.getData()
+          t.showMessage('success', t.$t('ncasigner.signDocTitle'), t.$t('ncasigner.success.signSuccess'));
+        } else if (response.result === 'unsigned') {
           this.$toast.add({
             severity: "error",
             summary: t.$t(response.errorMessage),
@@ -785,8 +769,7 @@ export default {
         }
 
         this.loading = false;
-      })
-          .catch((err) => {
+      }).catch((err) => {
             this.loading = false;
 
             if (err.response && err.response.status == 401) {
@@ -904,7 +887,7 @@ export default {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       });
-    },
+    }
   }
 }
 </script>

@@ -8,13 +8,15 @@
                  :loading="loading" :paginatorTemplate="paginatorTemplate" :currentPageReportTemplate="currentPageReportTemplate" responsiveLayout="scroll" :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows" :totalRecords="total" stripedRows class="flex-grow-1"  @page="onPage">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
-        <Column field="content" :header="$t('workPlan.planName')" sortable>
-          <template #body="{ data }">
-            <router-link :to="{ name: 'WorkPlanEvent', params: { id: data.work_plan_id }, query: {first: lazyParams.first, page: lazyParams.page, rows: lazyParams.rows} }" tag="a">
-              {{ data.work_plan_name }}
-            </router-link>
-          </template>
-        </Column>
+        <template>
+          <Column field="content" :header="$t('workPlan.planName')" sortable>
+            <template #body="slotProps">
+              <a href="#" @click.prevent="handleClick(slotProps.data, slotProps.data.doc_info.docHistory.stateEn)">
+                {{ slotProps.data.work_plan_name }}
+              </a>
+            </template>
+          </Column>
+        </template>
         <Column field="sing" :header="$t('ncasigner.sign')">
           <template #body="{ data }">
             <div v-if="showMySign(data.doc_info.approvalStages)">
@@ -390,6 +392,54 @@ export default {
       this.selectedPlanType = null;
       this.filter.filtered = false;
       this.getPlans();
+    },
+    handleClick(data, code) {
+      // Проверка, что параметр id существует
+      if (!data.work_plan_id) {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t('common.error'),
+          detail: this.$t('workPlan.missingIdError'),
+          life: 3000
+        });
+        return; // Прерываем выполнение, если нет id
+      }
+
+      // Выполняем проверку если студент и согласованный ли план
+      if (this.isStudent() && code !== "approved" &&
+        (
+            data.plan &&
+            data.plan.plan_type &&
+            data.plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule
+        )) {
+        // Обработка ошибки planCheckApprove
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t('workPlan.planCheckApprove'),
+          life: 3000
+        });
+      } else {
+        // Если проверка пройдена, показываем тост
+        this.$toast.add({
+          severity: "success",
+          summary: this.$t('common.success'),
+          life: 3000
+        });
+
+        // Переход по маршруту
+        this.$router.push({
+          name: 'WorkPlanEvent',
+          params: { id: data.work_plan_id }, // Здесь проверяем, что id не пустой
+          query: {
+            first: this.lazyParams.first,
+            page: this.lazyParams.page,
+            rows: this.lazyParams.rows
+          }
+        });
+      }
+    },
+    isStudent(){
+      return findRole(null, 'student');
     },
     getDocStatus(code) {
       const foundStatus = this.docStatus.find(status => status.code === code);

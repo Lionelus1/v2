@@ -349,38 +349,37 @@ export class MenuService {
         ]
     }
 
-  getLoginedUser() {
-    let user = window.localStorage.getItem("loginedUser");
-    if (user) {
-      return JSON.parse(user);
+    getLoginedUser() {
+        let user = window.localStorage.getItem("loginedUser");
+        if (user) {
+            return JSON.parse(user);
+        }
+
+        return null;
     }
 
-    return null;
-  }
-
-  findRole(roleName) {
-    let loginedUser = this.getLoginedUser();
-    if (!loginedUser || !loginedUser.roles) {
-      return false;
+    findRole(roleName) {
+        let loginedUser = this.getLoginedUser();
+        if (!loginedUser || !loginedUser.roles) {
+            return false;
+        }
+        for (let i = 0; i < loginedUser.roles.length; i++) {
+            if (loginedUser.roles[i].name === roleName) {
+                return true;
+            }
+        }
+        return false;
     }
-    for (let i = 0; i < loginedUser.roles.length; i++) {
-      if (loginedUser.roles[i].name === roleName) {
-        return true;
-      }
-    }
-    return false;
-  }
 
-  isVacancyRightsValidity() {
-    let role =
-      this.findRole("hr_administrator") ||
-      this.findRole("career_administrator") ||
-      this.findRole("hr_moderator") ||
-      this.findRole("career_moderator") ||
-      this.findRole("vacancy_initial_approve") ||
-      this.findRole("vacancy_final_approve");
-    return role;
-  }
+    isVacancyRightsValidity() {
+        let role = this.findRole('hr_administrator') ||
+            this.findRole('career_administrator') ||
+            this.findRole('hr_moderator') ||
+            this.findRole('career_moderator') ||
+            this.findRole('vacancy_initial_approve') ||
+            this.findRole('vacancy_final_approve');
+        return role;
+    }
 
   isRoleGroupMember(groupPrefix) {
     let loginedUser = this.getLoginedUser();

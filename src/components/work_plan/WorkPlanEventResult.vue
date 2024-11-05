@@ -731,7 +731,6 @@ export default {
     this.getEvent();
     this.loading = false
   },
-
   methods: {
     findRole: findRole,
     openModiPersonHistory(data) {
