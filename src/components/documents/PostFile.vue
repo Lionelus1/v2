@@ -105,19 +105,19 @@
           <label for="viewOnlyCheckbox">{{ $t('common.viewOnlyCheckbox') }}</label>
         </div>
         <div v-if="showUploader" class="field">
-          <label>{{$t('common.doc')}}</label>
+          <label>{{ $t('common.doc') }}</label>
           <FileUpload
               :showUploadButton="false"
               :showCancelButton="false"
               ref="ufile"
               :multiple="false"
               fileLimit="1"
-              accept=".doc,.docx,.pdf,.xls,.xlsx,.zip, .mp4, .pptx"
+              accept=".doc,.docx,.pdf,.xls,.xlsx,.zip,.mp4,.pptx"
               @upload="onUpload"
               @select="onFileSelect"
           >
             <template #empty>
-              <p>{{$t('hdfs.dragMsg')}}</p>
+              <p>{{ $t('hdfs.dragMsg') }}</p>
             </template>
 
             <template #content>
@@ -130,7 +130,7 @@
                 </div>
 
                 <div class="field">
-                  <label for="fileDescription">{{$t('hdfs.fileDescription')}}</label>
+                  <label for="fileDescription">{{ $t('hdfs.fileDescription') }}</label>
                   <textarea
                       id="fileDescription"
                       v-model="file.fileDescription"
@@ -141,7 +141,9 @@
               </div>
             </template>
           </FileUpload>
-          <small class="p-error" v-if="validation.file">{{ $t("hdfs.chooseFile") }}</small>
+          <small class="p-error" v-if="validation.file && file.is_view_only">{{ validation.file }}</small>
+
+          <small class="p-error" v-if="validation.file && !file.is_view_only">{{ $t("hdfs.chooseFile") }}</small>
         </div>
         <div v-if="showCatalog" class="field">
           <label>{{$t('common.catalog')}}</label>
@@ -257,7 +259,18 @@ export default {
   methods: {
     onFileSelect(event) {
       if (event.files.length > 0) {
-        this.selectedFile = event.files[0];
+        const file = event.files[0];
+        const isPdf = file.type === "application/pdf";
+
+        if (this.file.is_view_only && !isPdf) {
+          this.validation.file = this.$t("hdfs.onlyPdfAllowed");
+          this.selectedFile = null;
+          this.$refs.ufile.clear();
+        } else {
+          this.selectedFile = file;
+          this.validation.file = null;
+          console.log(this.selectedFile.name);
+        }
       }
     },
     removeFile() {

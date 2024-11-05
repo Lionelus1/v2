@@ -100,13 +100,15 @@
         <Column :header="$t('common.name')" :expander="true">
           <template #body="slotProps">
       <span v-if="slotProps.node.hidden || slotProps.node.isHidden" @dblclick="onNodeDoubleClick(slotProps.node)">
-        <i class="fa-solid fa-folder"></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
+        <i class="fa-solid fa-folder"></i>&nbsp;
+        <span class="folder-name">{{ slotProps.node['name' + $i18n.locale] }}</span>
       </span>
-            <span v-else @dblclick="onNodeDoubleClick(slotProps.node)">
+            <span v-else @dblclick="onNodeDoubleClick(slotProps.node)"  :title="slotProps.node.newParams?.FileDescription?.value || slotProps.node['name' + $i18n.locale]">
         <i :class="getFileIconClass(slotProps.node.name)"
-           :title="slotProps.node.newParams?.FileDescription?.value || $t('hdfs.noDescription')"
+           :title="slotProps.node.newParams?.FileDescription?.value || slotProps.node['name' + $i18n.locale]"
            class="custom-tooltip-icon"
-        ></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
+        ></i>&nbsp;
+               <span class="folder-name">{{ slotProps.node['name' + $i18n.locale] }}</span>
       </span>
           </template>
         </Column>
@@ -219,14 +221,18 @@
         @click.prevent="navigateToFolder(folder)"
         href="#"
         class="breadcrumb-link"
+        :title="folder.newParams?.FileDescription?.value || folder['name' + $i18n.locale]"
     >
-      {{ folder.namekz }}
+      {{ $i18n.locale === 'kz' ? folder.namekz : $i18n.locale === 'ru'
+        ? folder.nameru : folder.nameen }}
     </a>
     <span
         v-else
         class="current-folder breadcrumb-link"
+        :title="folder.newParams?.FileDescription?.value || folder['name' + $i18n.locale]"
     >
-      {{ folder.namekz }}
+       {{ $i18n.locale === 'kz' ? folder.namekz : $i18n.locale === 'ru'
+        ? folder.nameru : folder.nameen }}
     </span>
     <span v-if="index !== folderBreadCrumbs.length - 1" class="breadcrumb-separator"> / </span>
   </span>
@@ -546,6 +552,7 @@ export default {
       if (isGrid) {
         this.fetchFolders(parent);
       } else {
+        this.folderBreadCrumbs = [];
         this.fetchTreeTable(parent);
       }
     },
@@ -677,6 +684,12 @@ export default {
         if (!data) {
           this.loading = false
           return
+        }
+
+        if (!this.folders && this.isGrid) {
+          this.folders = res.data.documents
+          this.loading = false
+          return;
         }
 
         if (!parent.children) {
@@ -1313,6 +1326,8 @@ export default {
   font-size: 1.2em; /* Небольшое увеличение размера разделителя */
 }
 
-
-
+.folder-name {
+  user-select: none;
+  max-width: 100%;
+}
 </style>
