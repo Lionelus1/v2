@@ -706,12 +706,18 @@ export default {
 
       return firstMonthOfQuarter;
     },
+    getSecondMonthOfQuarter() {
+      const firstMonthOfQuarter = this.getFirstMonthOfQuarter();
+      const secondMonthOfQuarter = firstMonthOfQuarter + 1;
+
+      return secondMonthOfQuarter;
+    },
     filterQuarters() {
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentQuarter = Math.ceil(currentMonth / 3);
       const currentDay = currentDate.getDate();
-      if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter()) {
+      if (currentDay <= 15 && (currentMonth === this.getFirstMonthOfQuarter() || currentMonth === this.getSecondMonthOfQuarter())) {
         // Agymdagy ai agymdagy toqsannyng birinshi aiy bolsa aldyngy toqsanga natije toltyra alady
         return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
       } else {
