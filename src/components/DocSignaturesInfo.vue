@@ -117,7 +117,7 @@
             :disabled="currentApprovalUsers.length < 1" />
         </div>
       </TabPanel>
-      <TabPanel :header="$t('common.protocol')" v-if="isReport">
+      <TabPanel :header="$t('common.protocol')" v-if="showProtocol">
         <Files class="mb-3" v-if="canUploadProtocol && !hideDocSign" folder="workplan" :fileID="docInfo?.id"
                fileType="image/*, .pdf, .doc, .docx, .txt" @uploaded="fileUploaded" simple-upload="true"></Files>
         <div v-for="item in relatedFile" :key="item.id" class="mb-3">
@@ -223,8 +223,8 @@ export default {
       currentApprovalUsersLoading: true,
       uploadedFile: null,
       relatedFile: null,
-      isReport: false,
       canUploadProtocol: false,
+      showProtocol: false
     }
   },
 
@@ -386,11 +386,11 @@ export default {
       }).then(res => {
         if (res.data) {
           this.docInfo = res.data;
-          console.log(this.docInfo)
-          this.isReport = this.docInfo?.filePath.includes("report")
           this.getRelatedFiles();
           this.signatures = res.data.signatures;
-
+          if (this.docInfo?.docType === 26 || this.docInfo?.docType === 27) {
+            this.showProtocol = true;
+          }
           if (this.showAllSignsParam) {
             this.isShow = true;
           } else {
