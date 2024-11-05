@@ -2239,17 +2239,4 @@ export default {
     },
     status_resume: "Түйіндемені толтыру статусы",
     people_special_needs: "Ерекше қажеттіліктері бар адамдар",
-    enuTopicSettings: {
-        normalVersion: 'Қалыпты нұсқа',
-        inputType: 'Енгізу Стилі',
-        inputOutlined: 'Көрсетілген',
-        inputFilled: 'Толтырылған',
-        rippleEffect: 'Толқындық Әсер',
-        menuColor: 'Мәзір Түсі',
-        menuColorDark: 'Қараңғы',
-        menuColorLight: 'Жарық',
-        ssdfgsdfg: 'sdfgsdfg',
-        epg: 'Мамандық/БББТ',
-        ep: 'Мамандану/БББ'
-    }
 }
