@@ -3,56 +3,62 @@
     <ProgressSpinner class="progress-spinner" style="width: 50px; height: 50px"/>
   </div>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
-  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
+  <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')"
+                       backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <div class="col-12" v-if="plan && event">
     <div>
-      <div v-if="!resultId" @click="navigateToBack" class="inline-block"><i class="fa-solid fa-arrow-left mr-3" style="font-size: 16px;cursor: pointer"></i>
+      <div v-if="!resultId" @click="navigateToBack" class="inline-block"><i class="fa-solid fa-arrow-left mr-3"
+                                                                            style="font-size: 16px;cursor: pointer"></i>
       </div>
       <div class="mb-0 mt-0 inline-block" style="font-size: 24px"> {{ $t('common.result') }}</div>
     </div>
-     <div class="text-right" style="margin-top:-30px;padding-bottom: 3px;" v-if="plan && isPlanCreator || plan && isAdmin">
+    <div class="text-right" style="margin-top:-30px;padding-bottom: 3px;"
+         v-if="plan && isPlanCreator || plan && isAdmin">
       <Button type="button" icon="fa-solid fa-filter" :label="$t('common.filter')"
-                        @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
-                        class="p-button-outlined mr-2" />
-                <OverlayPanel ref="global-filter" class="overlay-panel" style="max-width: 50vw;">
-                  <div class="p-fluid">
-                    <div class="field">
-                      <label>{{ $t('cafedra.responsible') }}</label>
-                      <FindUser v-model="resultFilter.responsiveUser" :max="1" searchMode="local" :user-type="3" editMode="true"/>
-                    </div>
-                    </div>
-                    <div v-if="isOperPlan || isStandartPlan" class="field p-fluid">
-                      <label>{{ $t('dissertation.dissQuarter') }}</label>
-                      <Dropdown v-model="resultFilter.quarter" :options="quarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full" optionValue="value"/>
-                    </div>
-                    <div class="p-fluid">
-                        <div class="field">
-                            <br />
-                            <Button icon="pi pi-trash" class="ml-1" @click="clearResultFilter()"
-                                    :label="$t('common.clear')" outlined />
-                        </div>
-                        <div class="field">
-                            <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="getData()" />
-                        </div>
-                    </div>
-                </OverlayPanel>
-              
-      </div>
+              @click="toggle('global-filter', $event)" aria:haspopup="true" aria-controls="overlay_panel"
+              class="p-button-outlined mr-2"/>
+      <OverlayPanel ref="global-filter" class="overlay-panel" style="max-width: 50vw;">
+        <div class="p-fluid">
+          <div class="field">
+            <label>{{ $t('cafedra.responsible') }}</label>
+            <FindUser v-model="resultFilter.responsiveUser" :max="1" searchMode="local" :user-type="3" editMode="true"/>
+          </div>
+        </div>
+        <div v-if="isOperPlan || isStandartPlan" class="field p-fluid">
+          <label>{{ $t('dissertation.dissQuarter') }}</label>
+          <Dropdown v-model="resultFilter.quarter" :options="quarters" :optionLabel="('quarter_'+$i18n.locale)"
+                    :placeholder="$t('common.select')" class="w-full" optionValue="value"/>
+        </div>
+        <div class="p-fluid">
+          <div class="field">
+            <br/>
+            <Button icon="pi pi-trash" class="ml-1" @click="clearResultFilter()"
+                    :label="$t('common.clear')" outlined/>
+          </div>
+          <div class="field">
+            <Button icon="pi pi-search" :label="$t('common.search')" class="ml-1" @click="getData()"/>
+          </div>
+        </div>
+      </OverlayPanel>
+
+    </div>
     <div>
       <TabView v-model:activeIndex="activeIndex" @tab-change="changeTab">
         <TabPanel :header="$t('common.properties')">
           <div v-if="isVisibleWritableField || isPlanCreator">
             <div :style="{ 'z-index': 9999, 'position': 'relative' }"
-                v-if="(event &&
+                 v-if="(event &&
                 (isCurrentUserApproval && (event.status.work_plan_event_status_id === 1 || event.status.work_plan_event_status_id === 4 || event.status.work_plan_event_status_id === 6))) || (event && isPlanCreator)">
               <Menubar :model="userMenuItems" :key="active" class="userMenu"></Menubar>
             </div>
           </div>
 
-          <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
-            <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
+          <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5 && !isMastersPlan && !isDoctorsPlan">
+            <Menubar :model="verifyMenu" :key="active"
+                     style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
-          <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
+          <div class="grid mt-3"
+               v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
               <div class="field" v-if="event && isOperPlan">
                 <label class="bold">{{ $t('common.fact') }}: </label>
@@ -98,7 +104,7 @@
             </div>
           </div>
           <div class="grid mt-3" v-else>
-            <div class="p-fluid" v-if="(!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
+            <div class="p-fluid" v-if="(isMastersPlan || isDoctorsPlan) || (!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
               event.status.work_plan_event_status_id !== 5 &&
               event.status.work_plan_event_status_id !== 2 && event.status.work_plan_event_status_id !== 6) || (isRespUser && isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
               event.status.work_plan_event_status_id !== 5 &&
@@ -113,21 +119,26 @@
 
               </div>
               <div class="field" v-if="isVisibleWritableField && isRespUser && isOperPlan">
-                <Dropdown v-model="selectedQuarter" :options="filteredQuarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full md:w-14rem" required @change="validate"/>
-                <small class="p-error" v-if="validation.quarter">{{$t('common.requiredField')}}</small>
+                <Dropdown v-model="selectedQuarter" :options="filteredQuarters" :optionLabel="('quarter_'+$i18n.locale)"
+                          :placeholder="$t('common.select')" class="w-full md:w-14rem" required @change="validate"/>
+                <small class="p-error" v-if="validation.quarter">{{ $t('common.requiredField') }}</small>
               </div>
               <div class="field" v-if="!hasResultToApprove">
                 <label>{{ $t('common.result') }}</label>
-                  <div v-if="isVisibleWritableField">
-                      <TinyEditor v-if="plan && isRespUser && !isOperPlan" v-model="result" :min-word="wordLimit" @wordCount="initWordCount" :height="300"
-                                :style="{ height: '100%', width: '100%' }"
-                                @selectionChange="editorChange"/>
-                    <TinyEditor v-if="plan && isRespUser && isOperPlan" :min-word="wordLimit" @wordCount="initWordCount" v-model="newResult" :height="300" @selectionChange="editorChange"/>
-                    <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)" class="p-error">{{ $t('workPlan.minWordCount') }}</small>
+                <div v-if="isVisibleWritableField">
+                  <TinyEditor v-if="plan && isRespUser && !isOperPlan" v-model="result" :min-word="wordLimit"
+                              @wordCount="initWordCount" :height="300"
+                              :style="{ height: '100%', width: '100%' }"
+                              @selectionChange="editorChange"/>
+                  <TinyEditor v-if="plan && isRespUser && isOperPlan" :min-word="wordLimit" @wordCount="initWordCount"
+                              v-model="newResult" :height="300" @selectionChange="editorChange"/>
+                  <small v-if="isSciencePlan && submitted && (inputWordCount < wordLimit)"
+                         class="p-error">{{ $t('workPlan.minWordCount') }}</small>
                 </div>
               </div>
               <div class="field" v-if="isVisibleWritableField && isRespUser">
-                <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true" :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
+                <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true"
+                            :multiple="true" :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
               </div>
               <div class="field">
                 <div ref="content" class="p-fileupload-content">
@@ -183,15 +194,20 @@
                            v-if="((item.plan_event_result_history[0].state_id === 6) && (loginedUserId === item.result_text[0].user.userID)) || ((item.plan_event_result_history[0].state_id === 1) && (loginedUserId === item.result_text[0].user.userID)) || (isPlanCreator && isSciencePlan && (item.plan_event_result_history[0].state_id === 5))">
                         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success" @click="saveEditResult(item)"
                                 :loading="loading"/>
-                        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1" @click="cancelEdit(item)"/>
-                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />
+                        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1"
+                                @click="cancelEdit(item)"/>
+                        <Button :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1"
+                                @click="deleteConfirmItem($event, item)"/>
                       </div>
                       <div class="field">
-                        <TinyEditor v-model="item.result_text[0].text" :height="300" :style="{ height: '100%', width: '100%' }"/>
+                        <TinyEditor v-model="item.result_text[0].text" :height="300"
+                                    :style="{ height: '100%', width: '100%' }"/>
                       </div>
                       <!--Edit jaslaganda-->
                       <div class="field">
-                        <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true" :multiple="true" :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
+                        <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)"
+                                    :auto="true" :multiple="true"
+                                    :chooseLabel="$t('smartenu.chooseAdditionalFile')"></FileUpload>
                       </div>
                       <div class="field">
                         <div ref="content" class="p-fileupload-content">
@@ -200,7 +216,8 @@
                               <span class="mr-3"><i class="pi pi-paperclip"></i></span>
                               <span>{{ file.name }}</span>
                               <span class="ml-5">
-                                <Button icon="pi pi-times" class="p-button-rounded p-button-text" @click="removeFile(index)"/>
+                                <Button icon="pi pi-times" class="p-button-rounded p-button-text"
+                                        @click="removeFile(index)"/>
                               </span>
                             </div>
                           </div>
@@ -213,9 +230,13 @@
                         <div class="p-fileupload-row" v-for="(file, index) of item.result_files" :key="index">
                           <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
                             <i class="fa-solid fa-file-arrow-down fa-lg color-success"></i></span>
-                          <span @click="downloadFile(file)" style="cursor: pointer;">{{ file.file_name ? file.file_name : file.event_result_file }}</span>
+                          <span @click="downloadFile(file)" style="cursor: pointer;">{{
+                              file.file_name ? file.file_name : file.event_result_file
+                            }}</span>
                           <span class="ml-5" v-if="file.user_id && file.user_id === loginedUserId">
-                            <Button icon="pi pi-times" class="p-button-rounded p-button-text" v-if="event && item.plan_event_result_history[0].state_id === 6" @click="deleteFileConfirm($event, file.id)"/>
+                            <Button icon="pi pi-times" class="p-button-rounded p-button-text"
+                                    v-if="event && item.plan_event_result_history[0].state_id === 6"
+                                    @click="deleteFileConfirm($event, file.id)"/>
                           </span>
                         </div>
                       </div>
@@ -223,9 +244,9 @@
                         <slot name="empty"></slot>
                       </div>
                       <!--End Edit jaslaganda-->
-                      
+
                     </template>
-                    
+
                   </Inplace>
                   <div v-else class="p-0">
                     <p v-html="item.result_text[0].text"></p>
@@ -238,7 +259,9 @@
                         <div class="p-fileupload-row" v-for="(file, index) of item.result_files" :key="index">
                           <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
                             <i class="fa-solid fa-file-arrow-down fa-lg color-success"></i></span>
-                          <span @click="downloadFile(file)" style="cursor: pointer;">{{ file.file_name ? file.file_name : file.event_result_file }}</span>
+                          <span @click="downloadFile(file)" style="cursor: pointer;">{{
+                              file.file_name ? file.file_name : file.event_result_file
+                            }}</span>
                         </div>
                       </div>
                       <div class="p-fileupload-empty" v-if="files.length === 0">
@@ -248,19 +271,26 @@
                   </div>
                   <br/>
                   <Button v-if="((item.plan_event_result_history[0].state_id === 1 || item.plan_event_result_history[0].state_id === 6) && (item.result_text[0].userId === loginedUserId))" :label="$t('common.send')" icon="fa-regular fa-paper-plane" class="p-button p-button-primary" @click="sendResultConfirmItem($event, item, 'send')" style="float: left; margin-right: 10px;"></Button>
-                  <div style="margin-left: -12px;" v-if="isPlanCreator || findRole(null, 'main_administrator')">
-                    <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check" class="p-button-rounded p-button-text"
-                            @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)" :label="$t('common.action.accept')"></Button>
-                    <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-times" class="p-button-rounded p-button-text"
-                            @click="showToCorrectSidebarNew(item.user.userID, item.event_result_id)" :label="$t('workPlan.toCorrect')"></Button>
-                    <Button v-if="findRole(null, 'main_administrator')" :label="$t('common.delete')" icon="pi pi-trash" class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)" />
+                  <div style="margin-left: -12px;"
+                       v-if="(!isMastersPlan && !isDoctorsPlan && isPlanCreator || findRole(null, 'main_administrator')) || ((isMastersPlan || isDoctorsPlan) && isAdviser)">
+                    <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check"
+                            class="p-button-rounded p-button-text"
+                            @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)"
+                            :label="$t('common.action.accept')"></Button>
+                    <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-times"
+                            class="p-button-rounded p-button-text"
+                            @click="showToCorrectSidebarNew(item.user.userID, item.event_result_id)"
+                            :label="$t('workPlan.toCorrect')"></Button>
+                    <Button v-if="findRole(null, 'main_administrator')" :label="$t('common.delete')" icon="pi pi-trash"
+                            class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)"/>
                     <br/><br/>
                   </div>
-
                   <div v-else class="p-0">
-                    <span style="float:right;margin-top: -7px;" v-if="isPlanCreator">
-                      <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)" :label="$t('common.action.accept')"></Button>
-                      <Button icon="pi pi-fw pi-times" class="p-button-rounded p-button-text" @click="showToCorrectSidebar()" :label="$t('workPlan.toCorrect')"></Button>
+                    <span style="float:right;margin-top: -7px;" v-if="isPlanCreator && (!isMastersPlan && !isDoctorsPlan)">
+                      <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)"
+                              :label="$t('common.action.accept')"></Button>
+                      <Button icon="pi pi-fw pi-times" class="p-button-rounded p-button-text"
+                              @click="showToCorrectSidebar()" :label="$t('workPlan.toCorrect')"></Button>
                     </span>
                   </div>
                 </div>
@@ -276,9 +306,13 @@
                     <div class="p-fileupload-row" v-for="(file, index) of resultData.result_files" :key="index">
                       <span class="mr-3" style="cursor: pointer;" @click="downloadFile(file)">
                         <i class="fa-solid fa-file-arrow-down fa-2x color-success"></i></span>
-                      <span @click="downloadFile(file)" style="cursor: pointer;">{{ file.file_name ? file.file_name : file.event_result_file }}</span>
+                      <span @click="downloadFile(file)" style="cursor: pointer;">{{
+                          file.file_name ? file.file_name : file.event_result_file
+                        }}</span>
                       <span class="ml-5" v-if="file.user_id && file.user_id === loginedUserId">
-                        <Button icon="pi pi-times" class="p-button-rounded p-button-text" v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)" @click="deleteFileConfirm($event, file.id)"/>
+                        <Button icon="pi pi-times" class="p-button-rounded p-button-text"
+                                v-if="event && (event.status.work_plan_event_status_id !== 5 && event.status.work_plan_event_status_id !== 2)"
+                                @click="deleteFileConfirm($event, file.id)"/>
                       </span>
                     </div>
                   </div>
@@ -292,22 +326,23 @@
         </TabPanel>
         <TabPanel :header="$t('common.history')">
           <div>
-          <DataTable :value="history" class="p-datatable-sm" responsiveLayout="scroll" v-if="history && history.length > 0">
-            <Column field="id" header="ID"></Column>
-            <Column :header="$t('common.date')">
-              <template #body="{ data }">
-                {{ formatDateMoment(data.modi_date) }}
-              </template>
-            </Column>
-            <Column field="user" :header="$t('common.user')">
-              <template #body="{ data }">
-                {{ data.modi_user.fullName }}
-              </template>
-            </Column>
-            <Column field="state" :header="$t('common.actionTitle')">
-              <template #body="{ data }">
-                <!-- {{ data.state ? $t(`common.states.${data.state}`) : "" }} -->
-                <span :class="'customer-badge status-' + data.state_id">
+            <DataTable :value="history" class="p-datatable-sm" responsiveLayout="scroll"
+                       v-if="history && history.length > 0">
+              <Column field="id" header="ID"></Column>
+              <Column :header="$t('common.date')">
+                <template #body="{ data }">
+                  {{ formatDateMoment(data.modi_date) }}
+                </template>
+              </Column>
+              <Column field="user" :header="$t('common.user')">
+                <template #body="{ data }">
+                  {{ data.modi_user.fullName }}
+                </template>
+              </Column>
+              <Column field="state" :header="$t('common.actionTitle')">
+                <template #body="{ data }">
+                  <!-- {{ data.state ? $t(`common.states.${data.state}`) : "" }} -->
+                  <span :class="'customer-badge status-' + data.state_id">
                   {{ data.state ? getResultStatus(data.state_id) : "" }}
                 </span>
               </template>
@@ -333,7 +368,8 @@
     <h3>{{ $t('workPlan.toCorrect') }}</h3>
     <div class="field">
       <div>
-        <Button icon="pi pi-fw pi-check" class="p-button-outlined" @click="confirmToRevision()" :label="$t('common.send')"></Button>
+        <Button icon="pi pi-fw pi-check" class="p-button-outlined" @click="confirmToRevision()"
+                :label="$t('common.send')"></Button>
       </div>
     </div>
     <div class="p-col p-fluid">
@@ -344,7 +380,8 @@
     </div>
   </Sidebar>
 
-  <Sidebar v-model:visible="rejectMessageSidebar" position="right" :header="$t('workPlan.rejectionMessage')" style="width: 30%;" >
+  <Sidebar v-model:visible="rejectMessageSidebar" position="right" :header="$t('workPlan.rejectionMessage')"
+           style="width: 30%;">
     <div v-for="item in rejectHistory" :key="item.event_result_id">
       <div v-if="item?.plan_event_result_history[0]?.state_id === 6 && item?.user?.userID === loginedUserId">
         <div class="p-fluid">
@@ -352,8 +389,8 @@
             <label><b>{{ $t('contracts.assigner') }}:</b></label> {{ item?.reject_history?.user?.fullName }}
           </div>
           <div v-if="item?.reject_history?.created_date" class="mt-1">
-          <label><b>{{ $t('common.date') }}:</b></label> {{ formatDateMoment(item?.reject_history.created_date) }}
-        </div>
+            <label><b>{{ $t('common.date') }}:</b></label> {{ formatDateMoment(item?.reject_history.created_date) }}
+          </div>
           <div class="mt-3" v-if="item?.reject_history?.message">
             <label><b>{{ $t('common.comment') }}:</b></label>
             <div style="margin-top: -10px;">
@@ -363,7 +400,7 @@
         </div>
       </div>
     </div>
-</Sidebar>
+  </Sidebar>
 <Dialog v-model:visible="modifiedHistory" :header="$t('workPlan.editRespUser')" :position="position" modal :style="{ width: '400px' }" class="p-fluid" :breakpoints="{ '960px': '75vw', '640px': '90vw' }">
   <div class="dialog-content">
       <div class="field">
@@ -380,8 +417,8 @@
           <p class="value" v-if="commentParseJson?.comment && commentParseJson?.comment?.length > 0">{{ commentParseJson?.comment }}</p>
         </div>
         <div v-else>{{ $t('common.noComment') }}</div>
-        
-       
+
+
       </div>
       <div class="field" v-if="commentParseJson?.summary_department">
         <label class="bold">{{ $t('workPlan.operationalPlan') + ":"}}</label>
@@ -456,8 +493,8 @@
                       <div v-if="item.en.removed">{{ item.en.removed }}</div>
                     </div>
                   </div>
-                  
-                
+
+
               </template>
 
               <template #content="slotProps">
@@ -472,12 +509,11 @@
                 </div>
               </template>
             </Timeline>
-            
+
         </div>
       </div>
     </div>
 </Dialog>
-
 </template>
 
 <script>
@@ -486,7 +522,7 @@ import moment from "moment";
 import {WorkPlanService} from '../../service/work.plan.service'
 import Enum from "@/enum/workplan/index"
 import FindUser from "@/helpers/FindUser";
-import { log } from "qrcode/lib/core/galois-field";
+import {log} from "qrcode/lib/core/galois-field";
 
 
 export default {
@@ -547,7 +583,7 @@ export default {
         {name_kz: "Түзетуде", name_ru: "На доработке", name_en: "Under revision", id: 6},
         {name_kz: "Тексерілді", name_ru: "Проверено", name_en: "Inspected", id: 7},
         {name_kz: "Өзгертілген", name_ru: "Измененный", name_en: "Modified", id: 9},
-        
+
 
       ],
       isInspected: true,
@@ -563,16 +599,16 @@ export default {
         responsiveUser: null,
         quarter: null
       },
-      givenDate:null,
+      givenDate: null,
       selectedQuarter: null,
       quarters: [
-        { quarter_kz: 'I тоқсан', quarter_ru: 'I квартал', quarter_en: 'I quarter', value: 1 },
-        { quarter_kz: 'II тоқсан', quarter_ru: 'II квартал', quarter_en: 'II quarter', value: 2 },
-        { quarter_kz: 'III тоқсан', quarter_ru: 'III квартал', quarter_en: 'III quarter', value: 3 },
-        { quarter_kz: 'IV тоқсан', quarter_ru: 'IV квартал', quarter_en: 'IV quarter', value: 4 }
+        {quarter_kz: 'I тоқсан', quarter_ru: 'I квартал', quarter_en: 'I quarter', value: 1},
+        {quarter_kz: 'II тоқсан', quarter_ru: 'II квартал', quarter_en: 'II quarter', value: 2},
+        {quarter_kz: 'III тоқсан', quarter_ru: 'III квартал', quarter_en: 'III quarter', value: 3},
+        {quarter_kz: 'IV тоқсан', quarter_ru: 'IV квартал', quarter_en: 'IV quarter', value: 4}
       ],
       isQuarterValid: true,
-      validation:{
+      validation: {
         quarter: false
       },
       inputWordCount: 0,
@@ -585,7 +621,7 @@ export default {
   },
 
   computed: {
-    getFilteredData(){
+    getFilteredData() {
       return userID => this.resultData.filter(item => item.user_id === userID)
     },
     userMenuItems() {
@@ -627,19 +663,36 @@ export default {
     isOperPlan() {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
     },
+    isMastersPlan() {
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters
+    },
+    isDoctorsPlan() {
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors
+    },
     isStandartPlan() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Standart
     },
     isRespUser() {
       return this.event && this.respUserExists(this.loginedUserId)
     },
-    isSummaryDepartmentUser(){
+    isAdviser() {
+      let res = false
+      this.plan?.doc_info?.params.forEach((e) => {
+        if (e.name === 'sci_advisor') {
+          console.log(e.value[0].userID, this.loginedUserId)
+          res = e.value[0].userID === this.loginedUserId
+        }
+      })
+
+      return res
+    },
+    isSummaryDepartmentUser() {
       return this.event && this.summaryDepartmentExists(this.loginedUserId);
     },
     currentDate() {
       return new Date();
     },
-    isVisibleWritableField(){
+    isVisibleWritableField() {
       if (!this.resultData) {
         return true
       }
@@ -656,10 +709,10 @@ export default {
       const resultData = this.resultData;
 
       return (
-        resultData &&
-        resultData[0].plan_event_result_history[0].state_id === 6 &&
-        ((this.loginedUserId === resultData[0].result_text[0].user.userID && event) ||
-          (this.isAdmin && event) || (this.isPlanCreator && event))
+          resultData &&
+          resultData[0].plan_event_result_history[0].state_id === 6 &&
+          ((this.loginedUserId === resultData[0].result_text[0].user.userID && event) ||
+              (this.isAdmin && event) || (this.isPlanCreator && event))
       );
     },
     rejectHistory() {
@@ -686,7 +739,7 @@ export default {
             if(this.modiDialogData?.text?.length > 0){
               this.commentParseJson = JSON.parse(this.modiDialogData.text);
             }
-            
+
             this.modifiedHistory = true;
     },
     getFirstMonthOfQuarter() {
@@ -725,12 +778,12 @@ export default {
         return this.quarters.filter(quarter => quarter.value === currentQuarter);
       }
     },
-    getQuarter(quarterValue){
+    getQuarter(quarterValue) {
       const selectedLangKey = 'quarter_' + this.$i18n.locale;
       const quarter = this.quarters.find(quarter => quarter.value === quarterValue && quarter[selectedLangKey]);
       return quarter ? quarter[selectedLangKey] : '';
     },
-    validate(){
+    validate() {
       this.validation.quarter = !this.selectedQuarter
       return this.validation.quarter
     },
@@ -749,10 +802,13 @@ export default {
       this.inputWordCount = count
     },
     respUserExists(id) {
-      return this.event.user.some(user => user.id === id)
+      if (this.isMastersPlan || this.isDoctorsPlan) {
+        return this.event?.summary_department_id === id || this.event?.creator_id == id
+      }
+      return this.event?.user?.some(user => user.id === id)
     },
-    summaryDepartmentExists(id){
-      return this.event.user.some(user => user.id === id && user.is_summary_department)
+    summaryDepartmentExists(id) {
+      return this.event?.user?.some(user => user.id === id && user.is_summary_department)
     },
     getEvent() {
       this.planService.getEventById(this.event_id).then(res => {
@@ -766,8 +822,8 @@ export default {
             this.isPlanCreator = false;
           }
           if (this.event && this.event.user) {
-            this.isPlanCreatorApproval = this.event.user.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
-            this.isCurrentUserApproval = this.event.user.find(e => e.id === this.loginedUserId);
+            this.isPlanCreatorApproval = this.event.user?.find(e => e.id === this.loginedUserId) !== null && this.isPlanCreator;
+            this.isCurrentUserApproval = this.event.user?.find(e => e.id === this.loginedUserId);
           }
           this.getData();
         }
@@ -785,7 +841,7 @@ export default {
     },
     getData() {
       const data = {
-        event_id : this.event.work_plan_event_id,
+        event_id: this.event.work_plan_event_id,
         result_filter: JSON.parse(JSON.stringify(this.resultFilter))
       }
 
@@ -815,13 +871,13 @@ export default {
               this.hasResultToApprove = !this.isPlanCreator && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))
             }
           })
-        }else if(res.data === null){
+        } else if (res.data === null) {
           this.resultData = res.data;
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
-        }else {
+        } else {
           this.$toast.add({
             severity: "error",
             summary: error,
@@ -846,23 +902,23 @@ export default {
               status_code: status_code || null,
             };
             this.planService
-              .updateEventStatus(params)
-              .then((res) => {
-                this.$toast.add({
-                  severity: "success",
-                  detail: this.$t("common.success"),
-                  life: 3000,
+                .updateEventStatus(params)
+                .then((res) => {
+                  this.$toast.add({
+                    severity: "success",
+                    detail: this.$t("common.success"),
+                    life: 3000,
+                  });
+                  //this.getEventsTree();
+                  this.getEvent();
+                })
+                .catch((error) => {
+                  this.$toast.add({
+                    severity: "error",
+                    summary: error.message || this.$t('workPlan.errorUpdatingStatus'),
+                    life: 3000,
+                  });
                 });
-                //this.getEventsTree();
-                this.getEvent();
-              })
-              .catch((error) => {
-                this.$toast.add({
-                  severity: "error",
-                  summary: error.message || this.$t('workPlan.errorUpdatingStatus'),
-                  life: 3000,
-                });
-              });
           },
           reject: () => {
             this.$toast.add({
@@ -892,32 +948,32 @@ export default {
           },
         },
         {
-        label: this.$t('common.action.accept'),
-        icon: 'pi pi-check',
-        visible: this.isPlanCreator && (this.isOperPlan || this.isStandartPlan),
-        items: [
-        {
-          label: this.$t("common.done"),
-          icon: "pi pi-verified",
-          command: () => {
-            this.$confirm.require(createConfirmationDialog(2));
-          },
-        },
-        {
-          label: this.$t("workPlan.partiallyCompleted"),
-          icon: "pi pi-chart-pie",
-          command: () => {
-            this.$confirm.require(createConfirmationDialog(4));
-          },
-        },
-        {
-          label: this.$t("common.notDone"),
-          icon: "pi pi-times-circle",
-          command: () => {
-            this.$confirm.require(createConfirmationDialog(3));
-          },
-        },
-        ]
+          label: this.$t('common.action.accept'),
+          icon: 'pi pi-check',
+          visible: this.isPlanCreator && (this.isOperPlan || this.isStandartPlan),
+          items: [
+            {
+              label: this.$t("common.done"),
+              icon: "pi pi-verified",
+              command: () => {
+                this.$confirm.require(createConfirmationDialog(2));
+              },
+            },
+            {
+              label: this.$t("workPlan.partiallyCompleted"),
+              icon: "pi pi-chart-pie",
+              command: () => {
+                this.$confirm.require(createConfirmationDialog(4));
+              },
+            },
+            {
+              label: this.$t("common.notDone"),
+              icon: "pi pi-times-circle",
+              command: () => {
+                this.$confirm.require(createConfirmationDialog(3));
+              },
+            },
+          ]
         },
       ];
     },
@@ -940,15 +996,15 @@ export default {
       this.isBlockUI = true;
 
       const fd = new FormData();
-      if (this.isOperPlan){
+      if (this.isOperPlan) {
         this.wordLimit = 0
       }
-      if (!this.isStandartPlan && (this.inputWordCount > this.wordMaxLimit || this.inputWordCount < this.wordLimit)) {
+      if (!this.isStandartPlan && !this.isMastersPlan && !this.isDoctorsPlan && (this.inputWordCount > this.wordMaxLimit || this.inputWordCount < this.wordLimit)) {
         this.$toast.add({severity: 'warn', detail: this.$t('workPlan.maxWordCount', this.wordMaxLimit), life: 3000})
         this.isBlockUI = false;
         return;
       }
-      
+
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.isOperPlan ? this.newResult ? this.newResult : "" : this.result);
 
@@ -961,8 +1017,8 @@ export default {
       }
 
       if (this.authUser?.mainPosition?.department &&
-        !this.authUser.mainPosition.department.isFaculty &&
-        this.isOperPlan) {
+          !this.authUser.mainPosition.department.isFaculty &&
+          this.isOperPlan) {
         fd.append("fact", this.event.fact);
       }
 
@@ -986,6 +1042,7 @@ export default {
           this.isBlockUI = false;
         }
         this.files = [];
+        this.isDisabled = true
         this.submitted = false
         this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
       }).catch(error => {
@@ -1018,7 +1075,7 @@ export default {
     },
     getResultHistory() {
       let data = {
-        event_id : this.event.work_plan_event_id
+        event_id: this.event.work_plan_event_id
       }
       this.planService.getEventResultHistory(data).then(res => {
         if (res.data) {
@@ -1079,8 +1136,7 @@ export default {
     verifyHistory(isInspected, userId, resultId) {
       let comment = "";
       comment = this.rejectComment
-
-      this.planService.verifyEventResultHistory(this.isInspected, comment, this.resultUserId, this.user_id, this.eventResultId).then(res => {
+      this.planService.verifyEventResultHistory(this.isInspected, comment, this.user_id, this.user_id, this.eventResultId, this.event_id).then(res => {
         if (res.data) {
           this.$toast.add({
             severity: 'success',
@@ -1208,7 +1264,7 @@ export default {
       item.isActive = true;
     },
     saveEditResult(item, editType) {
-     
+
       // if ((this.isOperPlan || this.isStandartPlan) && this.validate()) {
       //   this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
       //   return
@@ -1294,8 +1350,8 @@ export default {
         return;
       }
       const data = {
-        result_text_id : item.result_text[0].id,
-        event_result_id : item.event_result_id
+        result_text_id: item.result_text[0].id,
+        event_result_id: item.event_result_id
       }
       this.planService.deleteEventResult(data).then(res => {
         if (res.data.is_success) {
@@ -1555,6 +1611,7 @@ td {
   padding: 8px;
   text-align: left;
 }
+
 .userMenu {
   height: 36px;
   margin: -7px -14px 10px;
@@ -1580,6 +1637,7 @@ td {
   background-color: #cc33ff;
   color: #ffffff;
 }
+
 @media screen and (max-width: 768px) {
   .overlay-panel {
     max-width: 90vw; /* Adjust the percentage as needed */

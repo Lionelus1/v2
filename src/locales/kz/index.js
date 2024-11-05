@@ -300,6 +300,7 @@ export default {
             actionError: "Бұл әрекетті орындау кезінде қате пайда болды",
             actionErrorContactAdmin: "Бұл мәселені шешу үшін әкімшілерге хабарласыңыз",
             attachFile: "Қажетті файлдарды тіркеңіз",
+            mustChooseProtocol: "Алдымен хаттаманы жүктеп салыңыз!"
         },
         language: {
             kz: "қазақша",
@@ -1466,6 +1467,7 @@ export default {
             approvalUserError: "Жауапты тұлғаларды таңдаңыз",
             quarterError: "Тоқсан таңдаңыз",
             langError: "Тіл таңдаңыз",
+            pleaseChoose: "Таңдаңыз"
         },
         message: {
             eventCreated: "Іс-шара сәтті құрылды",
@@ -1511,7 +1513,27 @@ export default {
         editRespUser: "Жауапты тұлғаны өзгерту",
         modifiedPerson: "Өзгеріс енгізген",
         changeCreatedPerson: "Құрушыны өзгерту",
-        requiredCreatedPerson: "Құрушыны өрісін міндетті түрде толтыру керек"
+        requiredCreatedPerson: "Құрушыны өрісін міндетті түрде толтыру керек",
+        mastersThesisInfo: "Магистрлік диссертация туралы мәлімет",
+        mastersThesisGeneralPlan: "Магистрлік диссертациямен жұмыс істеудің жалпы жоспары",
+        content: "Мазмұны",
+        viewDoc: "Документті көру",
+        expectingResults: "Күтілетін нәтижелер",
+        relevance: "Маңыздылығы",
+        goal: "Мақсат",
+        mainGoals: "Негізгі тапсырмалар",
+        theoreticalSignificance: "Теориялық маңызы",
+        scientificNovelty: "Ғылыми жаңалық",
+        practicalSignificance: "Практикалық маңыздылығы",
+        researchMetodology: "Зерттеу әдістемесі",
+        publications: "Жарияланымдар",
+        plannedTesting: "Жоспарлы тестілеу",
+        dissertationLanguage: "Диссертация тілі",
+        conclusionOfDepartment: "Кафедраны аяқтау немесе қорытындылау белгісі",
+        semester: "Семестр",
+        doctorsThesisInfo: "Докторлық диссертация туралы мәлімет",
+        downloadProtocol: "Протоколды жүктеп алу",
+        uploadProtocol: "Протокол енгізу"
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",

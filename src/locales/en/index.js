@@ -307,6 +307,7 @@ export default {
             actionError: "An error occurred during this action",
             actionErrorContactAdmin: "Please contact the administrators to resolve this issue",
             attachFile: "Please attach the necessary files",
+            mustChooseProtocol: "Please first upload the protocol!",
         },
         language: {
             kz: "in kazakh",
@@ -1448,6 +1449,7 @@ export default {
             approvalUserError: "Select the responsible persons",
             quarterError: "Select a quarter",
             langError: "Choose language",
+            pleaseChoose: "Choose"
         },
         message: {
             eventCreated: "Event created successfully",
@@ -1493,7 +1495,27 @@ export default {
         editRespUser: "Edit responsive person",
         modifiedPerson: "Modified",
         changeCreatedPerson: "Change creator",
-        requiredCreatedPerson: "The creator field must be filled"
+        requiredCreatedPerson: "The creator field must be filled",
+        mastersThesisInfo: "Information about the master's thesis",
+        mastersThesisGeneralPlan: "General plan for working on a master's thesis",
+        content: "Content",
+        viewDoc: "View document",
+        expectingResults: "Expecting results",
+        relevance: "Relevance",
+        goal: "Goal",
+        mainGoals: "Main goals",
+        theoreticalSignificance: "Theoretical significance",
+        scientificNovelty: "Scientific novelty",
+        practicalSignificance: "Practical Significance",
+        researchMetodology: "Research metodology",
+        publications: "Publications",
+        plannedTesting: "Planned testing",
+        dissertationLanguage: "Dissertation language",
+        conclusionOfDepartment: "Mark of completion or conclusion of the department",
+        semester: "Semester",
+        doctorsThesisInfo: "Information about the doctoral dissertation",
+        downloadProtocol: "Download protocol",
+        uploadProtocol: "Upload protocol"
     },
     queue: {
         title: "Queue",
