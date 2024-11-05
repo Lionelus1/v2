@@ -289,7 +289,7 @@
                             class="p-button-rounded p-button-text"
                             @click="showToCorrectSidebarNew(item.user.userID, item.event_result_id)"
                             :label="$t('workPlan.toCorrect')"></Button>
-                    <Button v-if="(!isMastersPlan && !isDoctorsPlan)" :label="$t('common.delete')" icon="pi pi-trash"
+                    <Button v-if="findRole(null, 'main_administrator')" :label="$t('common.delete')" icon="pi pi-trash"
                             class="p-button p-button-danger ml-1" @click="deleteConfirmItem($event, item)"/>
                     <br/><br/>
                   </div>
