@@ -71,6 +71,7 @@ export default {
         error: "Error",
         add: "Add",
         addMember: "Add member",
+        selectContr: "Specify the contract",
         edit: "edit",
         print: "Print",
         orgname: "L.N. Gumilyov Eurasian National University",

@@ -344,7 +344,8 @@
   </OverlayPanel>
 
   <add-info v-if="dialog.info.state" :visible="dialog.info.state" @hide="hideDialog(dialog.info)" :plan="plan"/>
-    <WorkPlanEventAddMember v-if="dialog.addMember.state" :visible="dialog.addMember.state" @hide="hideDialog(dialog.addMember)"/>
+    <WorkPlanEventAddMember v-if="dialog.addMember.state" :visible="dialog.addMember.state" @hide="hideDialog(dialog.addMember)" :data="selectedMembers"
+  :isAddMember="isAddMem" />
   <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null"
                        :isMain="!!selectedEvent" :plan-data="plan" @hide="hideDialog(dialog.add)"/>
   <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :isEditResponsiveUsers="editRespUser" :event="selectedEvent" :copiedEvent="selectedEvent" @hide="hideDialog(dialog.edit)"/>
@@ -442,7 +443,7 @@ export default {
       members: null,
       searchQuery: "",
       filteredMembers: null,
-      selectedMembers: null,
+      selectedMembers: [],
       planDoc: null,
       approval_users: null,
       loginedUserId: JSON.parse(localStorage.getItem('loginedUser')).userID,
@@ -1294,6 +1295,7 @@ export default {
       this.getEventsTree();
     },
     onPageMembers(event) {
+      this.selectedMembers = []
       let data = {
         work_plan_id: parseInt(this.work_plan_id),
         page: event.page,
@@ -1542,9 +1544,7 @@ export default {
       this.editRespUser = isEditPerson
     },
     hideDialog(dialog) {
-      this.loadingMembers = true;
-      this.selectedMembers = null;
-      this.members = null;
+      this.selectedMembers = [];
       dialog.state = false;
       this.showReportModal = false;
       this.getPlan();
@@ -1724,6 +1724,9 @@ export default {
     isWorkSchedule() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule
     },
+    isAddMem(){
+      return !(this.selectedMembers.length > 0);
+    },
     isOperPlan() {
       return (
         this.plan &&
@@ -1770,11 +1773,11 @@ export default {
     toolbarMenus() {
       return [
         {
-          label: this.$t('common.addMember'),
+          label: this.isAddMem ? this.$t('common.addMember') : (this.$t('common.selectContr') + " (" + this.selectedMembers.length + ")"),
           icon: 'pi pi-plus',
-          visible: this.active === 1 && !findRole(null, 'student') && this.selectedMembers && this.selectedMembers.length > 0,
+          visible: this.active === 1 && !findRole(null, 'student') && this.isWorkSchedule,
           badge: 0,
-          // color: 'blue',
+          color: 'blue',
           command: () => {
             this.showDialog(this.dialog.addMember)
           }

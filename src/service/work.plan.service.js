@@ -47,6 +47,10 @@ export class WorkPlanService {
         return api.post(`/workPlan/addPlan`, data, {headers: getHeader()});
     }
 
+    confContr(data) {
+        return api.post(`/document/create`, data, {headers: getHeader()});
+    }
+
     savePlanFile(fd) {
         return api.post(`/workPlan/savePlanFile`, fd, {headers: getMultipartHeader()});
     }

@@ -1,17 +1,28 @@
 <template>
-  <Dialog :header="$t('common.addMember')" v-model:visible="showModal" :style="{width: '600px'}" class="p-fluid" @hide="closeBasic">
-    <div class="field">
+  <Dialog
+      :header="isAddMember ? $t('common.addMember') : ($t('common.selectContr') + ' (' + data.length + ')')"
+      v-model:visible="showModal"
+      :style="{width: '600px'}"
+      class="p-fluid"
+      @hide="closeBasic"
+  >
+    {{isAddMember}}
+    <div class="field" v-if="isAddMember">
       <label>{{ $t('common.fullNameNote') }}</label>
       <Dropdown v-model="formData.fio" :options="students" optionLabel="fullName" optionValue="userID" :placeholder="$t('common.select')"/>
     </div>
+
+    {{filter}}
+
     <div class="field">
       <label>{{ $t('common.organization') }}</label>
       <ContragentSelectV2
           :contragent="selectedOrganiztaion"
-          @contragentUpdated="(event) => contragentUpdated(event)"
+          @contragentUpdated="contragentUpdated"
           :select-person="false"
       />
     </div>
+    {{sendData}}
     <div class="field">
       <label>{{ $t('contracts.contract') + ' / ' + $t('contracts.columns.regNumber') }}</label>
       <Dropdown
@@ -19,16 +30,20 @@
           :loading="tableLoading"
           :options="documents"
           optionLabel= "newParams.contragent.value.data.name"
-          optionValue="id"
           class="w-full md:w-[14rem]"
           :placeholder="tableLoading ? $t('hdfs.loading') : $t('common.select')"
       >
         <template #option="slotProps">
           <div class="flex align-items-center">
-            <div>{{ slotProps.option.newParams.contragent.value.data.name }} / {{ slotProps.option.number }}</div>
+            <div>{{ slotProps.option.newParams.number.id }} / {{ slotProps.option.newParams.contragent.value.data.name }}</div>
           </div>
         </template>
       </Dropdown>
+
+      <div class="card flex justify-content-center">
+        <Dropdown v-model="sendData.folderId" :options="documents" optionValue="id" class="w-full md:w-14rem" />
+      </div>
+
       <small class="p-error" v-if="submitted && !formData.plan_type">{{ $t('common.requiredField') }}</small>
     </div>
 
@@ -43,7 +58,7 @@
 
 <script setup>
 import {WorkPlanService} from "@/service/work.plan.service";
-import {computed, onMounted, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref, watch} from "vue";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
 import ContragentSelectV2 from "@/components/contragent/v2/ContragentSelectV2.vue";
@@ -51,7 +66,6 @@ import {DocService} from "@/service/doc.service";
 import {useRoute} from "vue-router";
 
 const service = new DocService()
-const currentPage = ref(1);
 const rows = ref(10);
 const documents = ref(null);
 const total = ref(0);
@@ -73,69 +87,58 @@ const formData = reactive({
 
 const filter = reactive({
   filter: {
+    isPracticeManager: true,
     orgId: null,
     name: null,
     status: "status_signed",
     author: null,
     createdFrom: null,
-    createdTo: null
+    createdTo: null,
   },
   sourceType: 0,
   templateId: 34,
   folderId: null,
   docType: 5,
-  page: currentPage.value,
-  rows: rows.value,
+  page: 0,
+  rows: 5,
+  // page: currentPage.value,
+  // rows: rows.value,
+});
+
+// Watch for changes in formData.reg_num
+watch(() => formData.reg_num, (newVal) => {
+  if (newVal) {
+    sendData.templateId = newVal.templateId;
+    sendData.docType = newVal.docType;
+    sendData.parent = newVal.uuid;
+  }
+});
+
+const sendData = reactive({
+  templateId:34,
+  folderId:null,
+  docType:5,
+  language:1,
+  parent:"",
+  user_ids: computed(() => props.data.map(student => student.id))
 });
 
 const getContracts = async () => {
   tableLoading.value = true;
   service.getDocumentsV2(filter).then(res => {
-    // if(documents.value){
-    //   documents.value = [...documents.value, ...res.data.documents];
-    // }else{
-    //   documents.value = [...res.data.documents];
-    // }
-
     documents.value = res.data.documents
     total.value = res.data.total;
-    currentPage.value += 1;
     currentDocument.value = null;
     tableLoading.value = false;
   }).catch(err => {
     documents.value = [];
     total.value = 0;
-    currentPage.value = 1;
     currentDocument.value = null;
     tableLoading.value = false;
-
-    // if (err.response && err.response.status === 401) {
-    //   store.dispatch("logOut");
-    // } else if (err.response && err.response.data && err.response.data.localized) {
-    //   showMessage('error', t(err.response.data.localizedPath), null);
-    // } else {
-    //   console.error(err);
-    //   showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
-    // }
   });
 };
-const loadLazyTimeout = ref();
-const onLazyLoad = (event) => {
-  if (loadLazyTimeout.value) {
-    clearTimeout(loadLazyTimeout.value);
-  }
 
-  const { _, last } = event;
-  console.log(event);
-  if (last >= (documents.value ? documents.value.length : 0) - 1) {
-    // If last visible item is close to the end, fetch more data
-    loadLazyTimeout.value = setTimeout(() => {
-      getContracts();
-    }, Math.random() * 1000 + 250);
-  }
-};
-
-const props = defineProps(['visible', 'isAdded', 'isSub'])
+const props = defineProps(['visible', 'isAddMember', 'isSub', 'data'])
 const selectedOrganiztaion = ref({
   data: null,
   type: 1,
@@ -148,18 +151,32 @@ const {t} = useI18n()
 
 const showModal = ref(props.visible)
 const submitted = ref(false)
-
-
-
 const isDisabled = computed(() => !validate())
 const students = ref([])
-
 const planService = new WorkPlanService()
 const contractFiles = ref(null)
 const documentFiles = ref(null)
 
 const closeBasic = () => {
   emit('hide')
+}
+
+const configContract = () => {
+  if (!validate()) return
+
+  planService.confContr(sendData).then(res => {
+    if (res.data.is_success) {
+      toast.add({severity: 'success', summary: t('common.success'), life: 3000});
+    } else {
+      toast.add({severity: "error", summary: "Contract error", life: 3000});
+    }
+    closeBasic()
+  }).catch(error => {
+    toast.add({severity: "error", summary: error, life: 3000});
+    submitted.value = false;
+  });
+
+
 }
 
 const createPlan = () => {
@@ -203,47 +220,23 @@ const createPlan = () => {
 }
 
 const validate = () => {
-  let paramValidation = false
-  let filesValidation = false
-  if (formData.plan_type === 3) {
-    params?.value?.forEach(param => {
-      if (param.value === null || param.value === '') {
-        paramValidation = true
-      }
-    })
-
-    filesValidation = !((contractFiles.value && contractFiles.value.length !== 0) && (documentFiles.value && documentFiles.value.length !== 0))
-  }
-  if (formData.plan_type === 4) {
-    paramsWork?.value?.forEach(param => {
-      if (param.value === null || param.value === '') {
-        paramValidation = true
-      }
-    })
-  }
-
-  return formData.work_plan_name && formData.lang && formData.plan_type && !paramValidation && !filesValidation;
-}
-
-const getStudents = () => {
-  planService.getStudents(work_plan_id.value).then(res => {
-    students.value = res.data
-  }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
-  })
+  if(!props.isAddMember && sendData.parent !== "")
+    return true;
+  else
+    return false;
 }
 
 const contragentUpdated = (event) => {
   if (event){
-    formData.organization = event["data"]["id"]
-    // filter.filter.orgId =  event["data"]["id"]
-    //
-    // getContracts();
+    formData.organization = event["data"]["id"];
+    filter.filter.orgId =  event["data"]["id"];
+    console.log(event)
+    getContracts();
   }
 }
 
 onMounted(() => {
-  getStudents();
   getContracts();
 })
+
 </script>

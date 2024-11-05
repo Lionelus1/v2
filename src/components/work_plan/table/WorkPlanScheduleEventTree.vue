@@ -11,7 +11,6 @@
           :isInsideSidebar="true"
       ></DocSignaturesInfo>
     </Sidebar>
-    {{loadMem}}
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel :header="$t('common.tasks')">
         <div>
@@ -130,7 +129,6 @@
               </template>
             </Column>
           </DataTable>
-          {{selectedMembers.length}}
         </div>
         <div v-else>
           {{ $t('common.noData') }}
@@ -166,7 +164,7 @@ const loadMem = computed(() => props.loadingMembers)
 watch(filteredMembers, () => {
   selectedMembers.value = [];
   allChecked.value = false;
-  loadMem.value = !loadMem.value
+  loadMem.value = !loadMem.value;
 });
 const workPlanId = computed(() => parseInt(route.params.id)).value
 const loginedUserId = computed(() => JSON.parse(localStorage.getItem("loginedUser")).userID).value
