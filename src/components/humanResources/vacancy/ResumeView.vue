@@ -102,17 +102,7 @@
         this.candidateService.getUserCandidate(req).then((res) => {
           this.candidate = res.data;
           this.visible = true;
-        }).catch((error) => {
-          if (error.response.status === 404) {
-            this.candidate = null;
-            this.visible.notFound = true;
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          }
+        }).catch((_) => {
         });
       },
       isDisabled() {

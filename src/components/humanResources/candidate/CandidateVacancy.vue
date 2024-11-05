@@ -536,16 +536,7 @@ export default {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+      }).catch((_) => {
       });
     },
 
@@ -695,12 +686,7 @@ export default {
         this.candidateService.documentsCreate(fd).then(_ => {
           this.visible.documents = false
           this.vacancy = null
-        }).catch(error => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
+        }).catch(_ => {
         })
       }
     }

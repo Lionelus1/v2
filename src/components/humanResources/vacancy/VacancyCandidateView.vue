@@ -296,12 +296,7 @@ export default {
             this.menu[1].visible = false
             this.menu[2].visible = false
           }
-        }).catch(error => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
+        }).catch(_ => {
         })
       }
     }

@@ -264,12 +264,7 @@ export default {
         this.view.delete = false
         this.vacancy = null
         this.getVacancies()
-      }).catch(error => {
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
+      }).catch(_ => {
       });
     },
     clearData() {
@@ -366,15 +361,8 @@ export default {
         } else {
           this.loading = false
         }
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
+      }).catch((_) => {
+
       });
     },
 

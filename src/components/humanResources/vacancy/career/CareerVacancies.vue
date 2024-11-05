@@ -411,24 +411,15 @@ export default {
             this.lazyParams.navigateToVacancies = query;
           }
         }
-      } catch (error) {
-        this.$toast.add({severity: "error", summary: this.$t('common.error'), life: 3000});
+      } catch (_) {
+        return;
       }
 
       api.post("/vacancy/public", this.lazyParams, {headers: getHeader()}).then((response) => {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+      }).catch((_) => {
         this.loading = false;
       });
     },
@@ -441,16 +432,7 @@ export default {
           {}, {headers: getHeader()}).then((res) => {
         this.vacancySources = res.data
         this.getUserCandidate()
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.visible.login = true
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+      }).catch((_) => {
       });
     },
 
@@ -461,17 +443,7 @@ export default {
       api.post("/candidate/get",
           {}, {headers: getHeader()}).then(res => {
         this.visible.apply = true
-      }).catch(error => {
-        if (error.response.status === 404) {
-          this.candidate = null
-          this.visible.notFound = true
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+      }).catch(_ => {
       });
     },
 
@@ -491,16 +463,8 @@ export default {
             }
           }
           this.visible.apply = false;
-        }).catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          }
+        }).catch((_) => {
+
         });
       }
     },
