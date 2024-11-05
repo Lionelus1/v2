@@ -530,12 +530,7 @@ export default {
       let NCALaClient = new NCALayerClientExtension();
       try {
         await NCALaClient.connect();
-      } catch (error) {
-        this.$toast.add({
-          severity: 'error',
-          summary: this.$t('ncasigner.failConnectToNcaLayer'),
-          life: 3000
-        });
+      } catch (_) {
         return;
       }
       try {
@@ -545,7 +540,7 @@ export default {
         // this.signature = await NCALaClient.createCAdESFromBase64('PKCS12', this.resumeBlob, 'SIGNATURE', false)
         this.visible.resume = false
       } catch (_) {
-        this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
+        return
       }
     },
 
@@ -598,16 +593,7 @@ export default {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          /*this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });*/
-        }
+      }).catch((_) => {
         this.loading = false;
       });
     },
@@ -620,16 +606,7 @@ export default {
           {}, {headers: getHeader()}).then((res) => {
         this.vacancySources = res.data
         this.getUserCandidate()
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.visible.login = true
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+      }).catch((_) => {
       });
     },
 
@@ -641,17 +618,7 @@ export default {
           {}, {headers: getHeader()}).then(res => {
         this.visible.apply = true
         this.candidate = res.data
-      }).catch(error => {
-        if (error.response.status === 404) {
-          this.candidate = null
-          this.visible.notFound = true
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+      }).catch(_ => {
       });
     },
 

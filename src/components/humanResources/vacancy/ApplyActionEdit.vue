@@ -238,15 +238,7 @@ export default {
               });
             }
           }
-        }).catch(error => {
-          this.$toast.add({
-            severity: 'error',
-            summary: error,
-            life: 3000
-          });
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
+        }).catch(_ => {
         })
       } else {
         this.send()
@@ -260,12 +252,7 @@ export default {
         this.vacancyService.applyAction(this.request, this.path).then(response => {
           this.view.sending = false
           this.emitter.emit("updateForm", true);
-        }).catch(error => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
+        }).catch(_ => {
           this.view.sending = false
         })
       }
@@ -280,12 +267,7 @@ export default {
           this.menu[0].disabled = false
           this.view.signing = false
           this.view.signerInfo = true
-        }).catch(error => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
+        }).catch(_ => {
         })
       } else {
         this.view.signing = false

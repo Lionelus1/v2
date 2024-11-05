@@ -397,12 +397,7 @@ export default {
       let NCALaClient = new NCALayerClientExtension();
       try {
         await NCALaClient.connect();
-      } catch (error) {
-        this.$toast.add({
-          severity: 'error',
-          summary: this.$t('ncasigner.failConnectToNcaLayer'),
-          life: 3000
-        });
+      } catch (_) {
         return;
       }
       try {
@@ -411,8 +406,8 @@ export default {
         this.signature = await NCALaClient.sign('cms', {}, dataBase64, 'fl', this.$i18n.locale, true)
         // this.signature = await NCALaClient.createCAdESFromBase64('PKCS12', this.resumeBlob, 'SIGNATURE', false)
         this.visible.resume = false
-      } catch (_) {
-        this.$toast.add({severity: 'error', summary: this.$t('ncasigner.failToSign'), life: 3000});
+      }catch (_) {
+        return;
       }
     },
 
@@ -471,12 +466,7 @@ export default {
           },
           {headers: getHeader()}).then((response) => {
         this.vacancy = response.data;
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
+      }).catch((_) => {
       });
     },
     getCatalog() {
@@ -484,16 +474,7 @@ export default {
           {}, {headers: getHeader()}).then((res) => {
         this.vacancySources = res.data
         this.getUserCandidate()
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.visible.login = true
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+      }).catch((_) => {
       });
     },
 
@@ -505,17 +486,7 @@ export default {
           {}, {headers: getHeader()}).then(res => {
         this.visible.apply = true
         this.candidate = res.data
-      }).catch(error => {
-        if (error.response.status === 404) {
-          this.candidate = null
-          this.visible.notFound = true
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+      }).catch(_ => {
       });
     },
 
@@ -540,16 +511,7 @@ export default {
             fd, {headers: getHeader()}).then((response) => {
           this.visible.apply = false;
           this.vacancy.isApply = true
-        }).catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          }
+        }).catch((_) => {
         });
       }
     },

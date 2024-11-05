@@ -148,13 +148,8 @@ export default {
         link.href = response.data;
         link.click();
         this.disabled = false
-      }).catch(error => {
+      }).catch(_ => {
         this.disabled = false
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
       })
     },
   }
