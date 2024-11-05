@@ -493,19 +493,10 @@ export default {
         this.currentDocument = null
 
         this.tableLoading = false
-      }).catch(err => {
+      }).catch(_ => {
         this.documents = []
         this.total = 0
         this.currentDocument = null
-
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-        } else {
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-        }
-
         this.tableLoading = false
       });
     },
@@ -526,15 +517,7 @@ export default {
             this.getScienceWorks();
 
             this.loading = false;
-          }).catch(err => {
-            if (err.response && err.response.status == 401) {
-              this.$store.dispatch("logLout")
-            } else if (err.response && err.response.data && err.response.data.localized) {
-              this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-            } else {
-              this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-            }
-
+          }).catch(_ => {
             this.loading = false;
           })
         },
@@ -689,15 +672,7 @@ export default {
         this.loading = false;
 
         this.showMessage("success", this.$t('common.success'), this.$t('scienceWorks.messages.successPlatonus'))
-      }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-        } else {
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-        }
-
+      }).catch(_ => {
         this.loading = false;
       });
     },
@@ -708,15 +683,7 @@ export default {
         this.loading = false;
 
         this.showMessage("success", this.$t('common.success'), this.$t('scienceWorks.messages.successScopus'))
-      }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-        } else {
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-        }
-
+      }).catch(_ => {
         this.loading = false;
       });
     },
@@ -731,15 +698,7 @@ export default {
         this.loading = false;
 
         this.$router.push('/documents/scienceWorks/' + res.data.uuid)
-      }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-        } else {
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-        }
-
+      }).catch(_ => {
         this.loading = false;
       });
     },
@@ -761,14 +720,7 @@ export default {
         this.koksnvo.editionsTotal = res.data.total;
 
         this.koksnvo.loading = false;
-      }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-        } else {
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-        }
+      }).catch(_ => {
 
         this.koksnvo.loading = false;
       });
@@ -783,15 +735,7 @@ export default {
 
         this.koksnvo.loading = false;
         this.getKoksnvoEditions();
-      }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-        } else {
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-        }
-
+      }).catch(_ => {
         this.koksnvo.loading = false;
       });
     },
@@ -817,14 +761,7 @@ export default {
         this.koksnvo.requestsTotal = res.data.total;
 
         this.koksnvo.loading = false;
-      }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-        } else {
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-        }
+      }).catch(_ => {
 
         this.koksnvo.loading = false;
       });

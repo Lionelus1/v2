@@ -118,8 +118,7 @@ const toast = useToast()
             totalRecords.value = res.data.total
             loading.value = false
             isView.value.check = true
-        }).catch(err => {
-        toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+        }).catch(_ => {
         loading.value=false
         isView.value.check = true
         })
@@ -156,8 +155,7 @@ const toast = useToast()
             loading.value = false
             toast.add({severity: "success", summary: t('common.success'), life: 3000});
             getLaborActivity()
-          }).catch(error => {
-            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+          }).catch(_ => {
             loading.value = false;
           })
         },

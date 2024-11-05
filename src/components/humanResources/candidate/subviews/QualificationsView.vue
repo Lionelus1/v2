@@ -68,12 +68,7 @@
 
         scienceService.deleteQualificationsScience(data).then(res  => {
             emitter.emit("qualifications", true)
-        }).catch(err => {
-            toast.add({
-            severity: "error",
-            summary: t('message.actionError'),
-            life: 3000,
-            })
+        }).catch(_ => {
         })
     }
 

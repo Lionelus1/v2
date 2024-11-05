@@ -109,8 +109,7 @@
       scienceService.getScienceInterests(payload.value).then(res => {
         areaOfInterest.value = res.data.interests
         loading.value = false
-      }).catch(error => {
-        toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+      }).catch(_ => {
         loading.value = false;
       })
     }
@@ -124,8 +123,7 @@
       scienceService.createOrUpdateScienceInterests(payload.value).then(res => {
           loading.value = false
           emitter.emit('researchInterest', true)
-      }).catch(error => {
-        toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+      }).catch(_ => {
         loading.value = false;
       })
     }

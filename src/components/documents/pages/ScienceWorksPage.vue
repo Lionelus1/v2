@@ -283,14 +283,8 @@ export default {
         rows: 25,
       }).then(res => {
         this.koksnvoEditions = res.data.editions;
-      }).catch(err => {
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
-        } else {
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-        }
+      }).catch(_ => {
+
       });
     },
     sendToApprove(approvalUsers) {

@@ -194,8 +194,7 @@
           totalRecords.value = res.data.total
           loading.value = false
           isView.value.check = true
-      }).catch(err => {
-          toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+      }).catch(_ => {
           loading.value=false
           isView.value.check = true
       })
