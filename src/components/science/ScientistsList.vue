@@ -165,9 +165,8 @@ const getScientists = () => {
     list.value = res.data.scientists
     total.value = res.data.total
     loading.value = false
-  }).catch(error => {
+  }).catch(_ => {
     loading.value = false;
-    toast.add({severity: 'error', summary: t('common.error'), life: 3000})
   }).finally(() => {
     const query = {
       first: first.value,

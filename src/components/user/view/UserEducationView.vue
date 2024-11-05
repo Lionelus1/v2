@@ -240,13 +240,8 @@
       totalRecords.value = response.data.total
       
       loading.value = false
-    }).catch(error => {
+    }).catch(_ => {
       loading.value = false
-      toast.add({
-        severity: "error",
-        summary: t('message.actionError'),
-        life: 3000,
-      })
     })
 
     confirmDelete.value = false;
@@ -268,12 +263,7 @@
         userService.deleteEducation(data).then(res  => {
           toast.add({severity: "success", summary: t('common.success'), life: 3000});
           getUserAcademicDegree()
-        }).catch(err => {
-          toast.add({
-            severity: "error",
-            summary: t('message.actionError'),
-            life: 3000,
-          })
+        }).catch(_ => {
         })
       },
     });
@@ -383,12 +373,7 @@
             academicTitleDictionary.value = res.data
           }
         })
-        .catch((error) => {
-            toast.add({
-              severity: "error",
-              summary: "Dictionary load error:\n" + error,
-              life: 3000,
-            })
+        .catch(_ => {
         });
     }
 
@@ -423,13 +408,8 @@
       totalRecordsSchools.value = response.data.total
 
       loading.value = false
-    }).catch(error => {
+    }).catch(_ => {
       loading.value = false
-      toast.add({
-        severity: "error",
-        summary: t('message.actionError'),
-        life: 3000,
-      })
     })
 
     confirmDelete.value = false;
@@ -451,12 +431,7 @@
         scienceService.scienceSchoolDelete(req).then(res  => {
           toast.add({severity: "success", summary: t('common.success'), life: 3000});
           getSchools()
-        }).catch(err => {
-          toast.add({
-            severity: "error",
-            summary: t('message.actionError'),
-            life: 3000,
-          })
+        }).catch(_ => {
         })
       },
     });

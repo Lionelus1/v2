@@ -237,8 +237,7 @@ const create = () => {
     loading.value = false
     toast.add({severity: "success", summary: t('common.success'), life: 3000});
     emitter.emit('scienceSchool', true)
-  }).catch(error => {
-    // toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+  }).catch(_ => {
     loading.value = false;
   })
 }
@@ -247,7 +246,7 @@ const create = () => {
     const req = {}
     scienceService.getScientificGrantPositions(req).then(res => {
       positions.value = res.data.positions
-    }).catch(error => {
+    }).catch(_ => {
       loading.value = false;
     })
 }
