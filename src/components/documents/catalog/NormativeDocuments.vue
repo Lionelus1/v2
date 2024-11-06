@@ -688,6 +688,9 @@ export default {
 
         if (!this.folders && this.isGrid) {
           this.folders = res.data.documents
+          for (let i = 0; i < this.folders.length; i++) {
+            this.folders[i].nodeType = 'file'
+          }
           this.loading = false
           return;
         }
