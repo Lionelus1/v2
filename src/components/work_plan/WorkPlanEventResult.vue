@@ -50,7 +50,8 @@
             </div>
           </div>
 
-          <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5 && !isMastersPlan && !isDoctorsPlan">
+          <div
+              v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5 && !isMastersPlan && !isDoctorsPlan">
             <Menubar :model="verifyMenu" :key="active"
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
@@ -294,7 +295,8 @@
                     <br/><br/>
                   </div>
                   <div v-else class="p-0">
-                    <span style="float:right;margin-top: -7px;" v-if="isPlanCreator && (!isMastersPlan && !isDoctorsPlan)">
+                    <span style="float:right;margin-top: -7px;"
+                          v-if="isPlanCreator && (!isMastersPlan && !isDoctorsPlan)">
                       <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)"
                               :label="$t('common.action.accept')"></Button>
                       <Button icon="pi pi-fw pi-times" class="p-button-rounded p-button-text"
@@ -555,7 +557,6 @@ export default {
       let res = false
       this.plan?.doc_info?.params.forEach((e) => {
         if (e.name === 'sci_advisor') {
-          console.log(e.value[0].userID, this.loginedUserId)
           res = e.value[0].userID === this.loginedUserId
         }
       })
@@ -577,7 +578,7 @@ export default {
       if (this.isPlanCreator) {
         userResults = this.resultData.filter(x => x.user_id === this.loginedUserId)
       }
-      let userData = !userResults.some(x => x.plan_event_result_history?.every(x => x.modi_user_id === this.loginedUserId && (x.state_id === 5 || x.state_id === 6)))
+      let userData = !userResults.some(x => x.plan_event_result_history?.every(x => x.modi_user_id === this.loginedUserId || (x.state_id === 5 || x.state_id === 6)))
       return userData
     },
     shouldShowRejectSidebar() {
@@ -809,6 +810,7 @@ export default {
           label: this.$t("common.save"),
           icon: "pi pi-fw pi-save",
           disabled: this.isDisabled,
+          visible: this.isVisibleWritableField,
           command: () => {
             this.saveResult();
           },
