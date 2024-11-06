@@ -123,7 +123,7 @@
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.protocol')" v-if="showProtocol">
-        <Files class="mb-3" v-if="canUploadProtocol" folder="workplan" :fileID="docInfo?.id"
+        <Files class="mb-3" v-if="canUploadProtocol && this.docInfo?.docHistory?.stateId !== Enum.APPROVED.ID" folder="workplan" :fileID="docInfo?.id"
                fileType="image/*, .pdf, .doc, .docx, .txt" @uploaded="fileUploaded" simple-upload="true"></Files>
         <div v-for="item in relatedFile" :key="item.id" class="mb-3">
           <p class="mb-1">{{ item.name }}</p>

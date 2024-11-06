@@ -578,7 +578,7 @@ export default {
       if (this.isPlanCreator) {
         userResults = this.resultData.filter(x => x.user_id === this.loginedUserId)
       }
-      let userData = !userResults.some(x => x.plan_event_result_history?.every(x => x.modi_user_id === this.loginedUserId || (x.state_id === 5 || x.state_id === 6)))
+      let userData = !userResults.some(x => x.plan_event_result_history?.every(x => x.modi_user_id === this.loginedUserId && (x.state_id === 5 || x.state_id === 6)))
       return userData
     },
     shouldShowRejectSidebar() {

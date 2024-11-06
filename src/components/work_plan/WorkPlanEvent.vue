@@ -1,17 +1,17 @@
 <template>
   <div class="col-12">
-    <TitleBlock :title="plan?.work_plan_name" :show-back-button="true" />
+    <TitleBlock :title="plan?.work_plan_name" :show-back-button="true"/>
     <div class="card" v-if="plan && planDoc && isRejected">
       <div class="p-fluid">
         <div class="field">
           <label>{{ $t('common.state') }}:</label>
           <div v-if="plan.doc_info.docHistory">
             <span
-              v-if="plan.status"
-              :class="
+                v-if="plan.status"
+                :class="
                 'customer-badge status-' + plan.doc_info.docHistory.stateEn
               "
-              >{{
+            >{{
                 $t('common.states.' + plan.doc_info.docHistory.stateEn)
               }}</span
             >
@@ -33,86 +33,86 @@
           <label>{{ $t('common.comment') }}:</label>
           <div>
             <Message :closable="false" severity="warn"
-              ><span v-html="planDoc.docHistory.comment"></span
+            ><span v-html="planDoc.docHistory.comment"></span
             ></Message>
           </div>
         </div>
       </div>
     </div>
     <ToolbarMenu
-      v-if="plan && planDoc"
-      :data="toolbarMenus"
-      @filter="toggle('global-filter', $event)"
-      :filter="true"
-      :filtered="filtered"
+        v-if="plan && planDoc"
+        :data="toolbarMenus"
+        @filter="toggle('global-filter', $event)"
+        :filter="true"
+        :filtered="filtered"
     />
 
     <DoctorsMastersTable
-      v-if="plan && planDoc && (isMastersPlan || isDoctorsPlan)"
-      :data="data"
-      :items="initItems"
-      @onPage="onPage"
-      @onExpand="onExpand"
-      @onToggle="actionsToggle"
-      :total="total"
-      :loading="loading"
+        v-if="plan && planDoc && (isMastersPlan || isDoctorsPlan)"
+        :data="data"
+        :items="initItems"
+        @onPage="onPage"
+        @onExpand="onExpand"
+        @onToggle="actionsToggle"
+        :total="total"
+        :loading="loading"
     />
   </div>
 
   <Sidebar
-    v-model:visible="dialog.planView.state"
-    position="right"
-    class="w-6"
-    style="overflow-y: scroll"
-    @hide="hideDialog(dialog.planView)"
+      v-model:visible="dialog.planView.state"
+      position="right"
+      class="w-6"
+      style="overflow-y: scroll"
+      @hide="hideDialog(dialog.planView)"
   >
     <DocSignaturesInfo
-      :docIdParam="plan.doc_id"
-      :isInsideSidebar="true"
+        :docIdParam="plan.doc_id"
+        :isInsideSidebar="true"
     ></DocSignaturesInfo>
   </Sidebar>
 
   <Sidebar
-    v-model:visible="isShowPlanExecute"
-    position="right"
-    style="overflow-y: scroll; width: 50%"
-    @hide="closePlanExecuteSidebar"
+      v-model:visible="isShowPlanExecute"
+      position="right"
+      style="overflow-y: scroll; width: 50%"
+      @hide="closePlanExecuteSidebar"
   >
     <WorkPlanEventResult
-      v-if="isShowPlanExecute && selectedEvent"
-      :result-id="selectedEvent.work_plan_event_id"
+        v-if="isShowPlanExecute && selectedEvent"
+        :result-id="selectedEvent.work_plan_event_id"
     />
   </Sidebar>
 
   <Dialog
-    v-if="dialog.uploadAdditionalFile.state"
-    v-model:visible="dialog.uploadAdditionalFile.state"
-    :style="{ width: '450px' }"
-    :header="$t('common.additionalInfo')"
-    :modal="true"
-    class="p-fluid"
+      v-if="dialog.uploadAdditionalFile.state"
+      v-model:visible="dialog.uploadAdditionalFile.state"
+      :style="{ width: '450px' }"
+      :header="$t('common.additionalInfo')"
+      :modal="true"
+      class="p-fluid"
   >
     <div class="field">
       <label>{{ $t('common.doc') }}</label>
       <CustomFileUpload
-        @upload="uploadFile($event, 'documentFiles')"
-        v-model="documentFiles"
-        :multiple="false"
-        :button="true"
+          @upload="uploadFile($event, 'documentFiles')"
+          v-model="documentFiles"
+          :multiple="false"
+          :button="true"
       />
     </div>
     <template #footer>
       <Button
-        :label="$t('common.cancel')"
-        icon="pi pi-times"
-        class="p-button-text"
-        @click="hideDialog(dialog.uploadAdditionalFile)"
+          :label="$t('common.cancel')"
+          icon="pi pi-times"
+          class="p-button-text"
+          @click="hideDialog(dialog.uploadAdditionalFile)"
       />
       <Button
-        :label="$t('common.save')"
-        icon="pi pi-check"
-        class="p-button-text"
-        @click="uploadRelatedDocs"
+          :label="$t('common.save')"
+          icon="pi pi-check"
+          class="p-button-text"
+          @click="uploadRelatedDocs"
       />
     </template>
   </Dialog>
@@ -122,33 +122,33 @@
       <div class="field">
         <label>{{ $t('workPlan.eventName') }}</label>
         <InputText
-          class="mt-2"
-          type="text"
-          :placeholder="$t('workPlan.eventName')"
-          v-model="filters.name.value"
+            class="mt-2"
+            type="text"
+            :placeholder="$t('workPlan.eventName')"
+            v-model="filters.name.value"
         />
       </div>
       <div class="field">
         <label for="status-filter">{{ $t('common.status') }}</label>
         <Dropdown
-          v-model="filters.status.value"
-          optionValue=""
-          :options="statuses"
-          :placeholder="$t('common.select')"
-          class="p-column-filter"
-          :showClear="true"
+            v-model="filters.status.value"
+            optionValue=""
+            :options="statuses"
+            :placeholder="$t('common.select')"
+            class="p-column-filter"
+            :showClear="true"
         >
           <template #value="slotProps">
             <span
-              v-if="slotProps.value"
-              :class="'customer-badge status-' + slotProps.value.id"
+                v-if="slotProps.value"
+                :class="'customer-badge status-' + slotProps.value.id"
             >
               {{
                 $i18n.locale === 'kz'
-                  ? slotProps.value.nameKz
-                  : $i18n.locale === 'ru'
-                  ? slotProps.value.nameRu
-                  : slotProps.value.nameEn
+                    ? slotProps.value.nameKz
+                    : $i18n.locale === 'ru'
+                        ? slotProps.value.nameRu
+                        : slotProps.value.nameEn
               }}
             </span>
           </template>
@@ -156,10 +156,10 @@
             <span :class="'customer-badge status-' + slotProps.option.id">
               {{
                 $i18n.locale === 'kz'
-                  ? slotProps.option.nameKz
-                  : $i18n.locale === 'ru'
-                  ? slotProps.option.nameRu
-                  : slotProps.option.nameEn
+                    ? slotProps.option.nameKz
+                    : $i18n.locale === 'ru'
+                        ? slotProps.option.nameRu
+                        : slotProps.option.nameEn
               }}
             </span>
           </template>
@@ -168,79 +168,79 @@
       <div class="field">
         <label>{{ $t('cafedra.responsible') }}</label>
         <FindUser
-          v-model="filters.author.value"
-          :max="1"
-          :editMode="false"
-          :user-type="3"
+            v-model="filters.author.value"
+            :max="1"
+            :editMode="false"
+            :user-type="3"
         />
       </div>
       <div class="field">
         <Button
-          :label="$t('common.clear')"
-          @click="clearFilter"
-          class="mb-2 p-button-outlined"
+            :label="$t('common.clear')"
+            @click="clearFilter"
+            class="mb-2 p-button-outlined"
         />
-        <Button :label="$t('common.search')" @click="initFilter" class="mt-2" />
+        <Button :label="$t('common.search')" @click="initFilter" class="mt-2"/>
       </div>
     </div>
   </OverlayPanel>
 
   <add-info
-    v-if="dialog.info.state"
-    :visible="dialog.info.state"
-    @hide="hideDialog(dialog.info)"
-    :plan="plan"
+      v-if="dialog.info.state"
+      :visible="dialog.info.state"
+      @hide="hideDialog(dialog.info)"
+      :plan="plan"
   />
   <work-plan-event-add
-    v-if="dialog.add.state"
-    :visible="dialog.add.state"
-    :data="selectedEvent"
-    :items="selectedEvent ? selectedEvent.children : null"
-    :isMain="!!selectedEvent"
-    :plan-data="plan"
-    @hide="hideDialog(dialog.add)"
+      v-if="dialog.add.state"
+      :visible="dialog.add.state"
+      :data="selectedEvent"
+      :items="selectedEvent ? selectedEvent.children : null"
+      :isMain="!!selectedEvent"
+      :plan-data="plan"
+      @hide="hideDialog(dialog.add)"
   />
   <work-plan-event-edit-modal
-    v-if="dialog.edit.state"
-    :visible="dialog.edit.state"
-    :planData="plan"
-    :event="selectedEvent"
-    @hide="hideDialog(dialog.edit)"
+      v-if="dialog.edit.state"
+      :visible="dialog.edit.state"
+      :planData="plan"
+      :event="selectedEvent"
+      @hide="hideDialog(dialog.edit)"
   />
   <WorkPlanReportApprove
-    v-if="showReportModal && scienceReport && plan"
-    :approval-stages="approval_users"
-    :visible="showReportModal && scienceReport"
-    :doc-id="scienceReport.doc_id"
-    :report="scienceReport"
-    :plan="plan"
-    @sentToApprove="hideDialog(dialog.reportApprove)"
+      v-if="showReportModal && scienceReport && plan"
+      :approval-stages="approval_users"
+      :visible="showReportModal && scienceReport"
+      :doc-id="scienceReport.doc_id"
+      :report="scienceReport"
+      :plan="plan"
+      @sentToApprove="hideDialog(dialog.reportApprove)"
   />
   <work-plan-approve
-    v-if="dialog.planApprove.state"
-    :visible="dialog.planApprove.state"
-    :approval-stages="planApprovalStage"
-    :plan="plan"
-    :events="data"
-    @hide="hideDialog(dialog.planApprove)"
-    @isSent="planSentToApprove"
+      v-if="dialog.planApprove.state"
+      :visible="dialog.planApprove.state"
+      :approval-stages="planApprovalStage"
+      :plan="plan"
+      :events="data"
+      @hide="hideDialog(dialog.planApprove)"
+      @isSent="planSentToApprove"
   ></work-plan-approve>
 </template>
 
 <script>
 import WorkPlanEventAdd from '@/components/work_plan/WorkPlanEventAdd';
-import { fileRoute, findRole, smartEnuApi } from '@/config/config';
+import {fileRoute, findRole, smartEnuApi} from '@/config/config';
 import WorkPlanApprove from '@/components/work_plan/WorkPlanApprove';
 import WorkPlanEventEditModal from '@/components/work_plan/WorkPlanEventEditModal';
 import moment from 'moment';
-import { FilterMatchMode } from 'primevue/api';
-import { WorkPlanService } from '@/service/work.plan.service';
+import {FilterMatchMode} from 'primevue/api';
+import {WorkPlanService} from '@/service/work.plan.service';
 import DocSignaturesInfo from '@/components/DocSignaturesInfo';
 import WorkPlanEventResult from '@/components/work_plan/WorkPlanEventResult.vue';
 import Enum from '@/enum/workplan/index';
 import DocEnum from '@/enum/docstates/index';
 import WorkPlanReportApprove from '@/components/work_plan/WorkPlanReportApprove.vue';
-import { DocService } from '@/service/doc.service';
+import {DocService} from '@/service/doc.service';
 import CustomFileUpload from '@/components/CustomFileUpload.vue';
 import DocState from '@/enum/docstates/index';
 import ToolbarMenu from '@/components/ToolbarMenu.vue';
@@ -318,9 +318,9 @@ export default {
       isShowPlanExecute: false,
       showReportDoc: false,
       filters: {
-        name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-        status: { value: null, matchMode: FilterMatchMode.EQUALS },
-        author: { value: null, matchMode: FilterMatchMode.EQUALS },
+        name: {value: null, matchMode: FilterMatchMode.CONTAINS},
+        status: {value: null, matchMode: FilterMatchMode.EQUALS},
+        author: {value: null, matchMode: FilterMatchMode.EQUALS},
       },
       statuses: [
         {
@@ -359,7 +359,7 @@ export default {
           value: 'revision',
         },
       ],
-      numMatches: [{ value: 'lt' }, { value: 'gt' }, { value: 'equals' }],
+      numMatches: [{value: 'lt'}, {value: 'gt'}, {value: 'equals'}],
       planService: new WorkPlanService(),
       selectedEvent: null,
       scienceReport: null,
@@ -501,205 +501,208 @@ export default {
       }
 
       this.planService
-        .getEventsTree(this.lazyParams)
-        .then((res) => {
-          if (parent == null) {
-            if (res.data?.items) {
-              res.data.items.sort(function (a, b) {
-                return a.semester - b.semester;
+          .getEventsTree(this.lazyParams)
+          .then((res) => {
+            if (parent == null) {
+              if (res.data?.items) {
+                res.data.items.sort(function (a, b) {
+                  return a.semester - b.semester;
+                });
+              }
+              this.data = res.data.items;
+              this.total = res.data.total;
+              if (this.data) {
+                this.data.map((e) => {
+                  if (
+                      e.creator_id === this.loginedUserId &&
+                      e.parent_id == null
+                  ) {
+                    this.isCreator = true;
+                  }
+                  if (e.result && e.result.length > 100) {
+                    e.result_short = `${e.result.substring(0, 100)}...`;
+                  }
+                });
+              }
+            } else {
+              parent.children = res.data.items;
+              if (parent.children) {
+                parent.children.map((e) => {
+                  if (e.creator_id === this.loginedUserId) {
+                    this.isCreator = true;
+                  }
+                  if (e.result && e.result.length > 100) {
+                    e.result_short = `${e.result.substring(0, 100)}...`;
+                  }
+                });
+              }
+              this.total = 0;
+            }
+            this.loading = false;
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              this.$store.dispatch('logLout');
+            } else {
+              this.$toast.add({
+                severity: 'error',
+                summary: error,
+                life: 3000,
               });
             }
-            this.data = res.data.items;
-            this.total = res.data.total;
-            if (this.data) {
-              this.data.map((e) => {
-                if (
-                  e.creator_id === this.loginedUserId &&
-                  e.parent_id == null
-                ) {
-                  this.isCreator = true;
-                }
-                if (e.result && e.result.length > 100) {
-                  e.result_short = `${e.result.substring(0, 100)}...`;
-                }
-              });
-            }
-          } else {
-            parent.children = res.data.items;
-            if (parent.children) {
-              parent.children.map((e) => {
-                if (e.creator_id === this.loginedUserId) {
-                  this.isCreator = true;
-                }
-                if (e.result && e.result.length > 100) {
-                  e.result_short = `${e.result.substring(0, 100)}...`;
-                }
-              });
-            }
-            this.total = 0;
-          }
-          this.loading = false;
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch('logLout');
-          } else {
-            this.$toast.add({
-              severity: 'error',
-              summary: error,
-              life: 3000,
-            });
-          }
-          this.loading = false;
-        });
+            this.loading = false;
+          });
     },
     onResize() {
       this.windowHeight = window.innerHeight - 270;
     },
     getWorkPlanApprovalUsers() {
       this.planService
-        .getWorkPlanApprovalUsers(parseInt(this.work_plan_id))
-        .then((res) => {
-          if (res.data) {
-            res?.data?.forEach((e) => {
-              if (this.loginedUserId === e.id) {
-                this.isApproval = true;
-              }
-            });
-          } else {
-            this.isApproval = false;
-          }
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch('logLout');
-          } else {
-            this.$toast.add({
-              severity: 'error',
-              summary: error,
-              life: 3000,
-            });
-          }
-        });
+          .getWorkPlanApprovalUsers(parseInt(this.work_plan_id))
+          .then((res) => {
+            if (res.data) {
+              res?.data?.forEach((e) => {
+                if (this.loginedUserId === e.id) {
+                  this.isApproval = true;
+                }
+              });
+            } else {
+              this.isApproval = false;
+            }
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              this.$store.dispatch('logLout');
+            } else {
+              this.$toast.add({
+                severity: 'error',
+                summary: error,
+                life: 3000,
+              });
+            }
+          });
     },
     getPlan() {
       this.planService
-        .getPlanById(this.work_plan_id)
-        .then((res) => {
-          this.plan = res.data;
-          this.planDoc = res.data.doc_info;
-          this.oldPlan =
-            new Date(this.plan.create_date).getFullYear() <
-            new Date().getFullYear();
-          this.isFinish = this.plan.is_finish != null;
-          if (this.planDoc && this.planDoc.docHistory) {
-            this.isRejected =
-              this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value;
-          }
-          this.isPlanCreator = !!(
-            this.plan && this.plan.user.id === this.loginedUserId
-          );
+          .getPlanById(this.work_plan_id)
+          .then((res) => {
+            this.plan = res.data;
+            this.planDoc = res.data.doc_info;
+            this.oldPlan =
+                new Date(this.plan.create_date).getFullYear() <
+                new Date().getFullYear();
+            this.isFinish = this.plan.is_finish != null;
+            if (this.planDoc && this.planDoc.docHistory) {
+              this.isRejected =
+                  this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value;
+            }
+            this.isPlanCreator = !!(
+                this.plan && this.plan.user.id === this.loginedUserId
+            );
 
-          if (this.isSciencePlan) {
-            this.planApprovalStage = [
-              {
-                stage: 1,
-                users: [],
-                titleRu: 'Научный руководитель проекта',
-                titleKz: 'Жобаның ғылыми жетекшісі',
-                titleEn: 'Project Scientific Director',
-                certificate: {
-                  namekz: 'Жеке тұлғаның сертификаты',
-                  nameru: 'Сертификат физического лица',
-                  nameen: 'Certificate of an individual',
-                  value: 'individual',
+            if (this.isSciencePlan) {
+              this.planApprovalStage = [
+                {
+                  stage: 1,
+                  users: [],
+                  titleRu: 'Научный руководитель проекта',
+                  titleKz: 'Жобаның ғылыми жетекшісі',
+                  titleEn: 'Project Scientific Director',
+                  certificate: {
+                    namekz: 'Жеке тұлғаның сертификаты',
+                    nameru: 'Сертификат физического лица',
+                    nameen: 'Certificate of an individual',
+                    value: 'individual',
+                  },
                 },
-              },
-              {
-                stage: 2,
-                users: [],
-                titleRu: 'Ответственные от управления научных проектов',
-                titleKz: 'Ғылыми жобалар басқармасынан жауапты тұлға',
-                titleEn: 'Employee of Scientific Projects Management',
-                certificate: {
-                  namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
-                  nameru: 'Для внутреннего документооборота (ГОСТ)',
-                  nameen: 'For internal document management (GOST)',
-                  value: 'internal',
+                {
+                  stage: 2,
+                  users: [],
+                  titleRu: 'Ответственные от управления научных проектов',
+                  titleKz: 'Ғылыми жобалар басқармасынан жауапты тұлға',
+                  titleEn: 'Employee of Scientific Projects Management',
+                  certificate: {
+                    namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
+                    nameru: 'Для внутреннего документооборота (ГОСТ)',
+                    nameen: 'For internal document management (GOST)',
+                    value: 'internal',
+                  },
                 },
-              },
-              {
-                stage: 3,
-                users: [],
-                titleRu: 'Заместитель директора департамента науки',
-                titleKz: 'Ғылым департаменті директорының орынбасары',
-                titleEn: 'Deputy Director of the Department of Science',
-                certificate: {
-                  namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
-                  nameru: 'Для внутреннего документооборота (ГОСТ)',
-                  nameen: 'For internal document management (GOST)',
-                  value: 'internal',
+                {
+                  stage: 3,
+                  users: [],
+                  titleRu: 'Заместитель директора департамента науки',
+                  titleKz: 'Ғылым департаменті директорының орынбасары',
+                  titleEn: 'Deputy Director of the Department of Science',
+                  certificate: {
+                    namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
+                    nameru: 'Для внутреннего документооборота (ГОСТ)',
+                    nameen: 'For internal document management (GOST)',
+                    value: 'internal',
+                  },
                 },
-              },
-              {
-                stage: 4,
-                users: [],
-                titleRu: 'И.о. директора департамента науки',
-                titleKz: 'Ғылым департаменті директорының м.а',
-                titleEn: 'Acting Director of the Department of Science',
-                certificate: {
-                  namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
-                  nameru: 'Для внутреннего документооборота (ГОСТ)',
-                  nameen: 'For internal document management (GOST)',
-                  value: 'internal',
+                {
+                  stage: 4,
+                  users: [],
+                  titleRu: 'И.о. директора департамента науки',
+                  titleKz: 'Ғылым департаменті директорының м.а',
+                  titleEn: 'Acting Director of the Department of Science',
+                  certificate: {
+                    namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
+                    nameru: 'Для внутреннего документооборота (ГОСТ)',
+                    nameen: 'For internal document management (GOST)',
+                    value: 'internal',
+                  },
                 },
-              },
-            ];
-            this.getRelatedFiles();
-            this.getWorkPlanApprovalUsers(this.work_plan_id);
-          }
-          if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
-            this.planApprovalStage = [
-              {
-                stage: 1,
-                users: null,
-                certificate: {
-                  namekz: 'Жеке тұлғаның сертификаты',
-                  nameru: 'Сертификат физического лица',
-                  nameen: 'Certificate of an individual',
-                  value: 'individual',
+              ];
+              this.getRelatedFiles();
+              this.getWorkPlanApprovalUsers(this.work_plan_id);
+            }
+            if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
+              this.planApprovalStage = [
+                {
+                  stage: 1,
+                  users: null,
+                  certificate: {
+                    namekz: 'Жеке тұлғаның сертификаты',
+                    nameru: 'Сертификат физического лица',
+                    nameen: 'Certificate of an individual',
+                    value: 'individual',
+                  },
+                  titleRu: 'Cтудент',
+                  titleKz: 'Cтудент',
+                  titleEn: 'Student',
                 },
-                titleRu: 'Cтудент',
-                titleKz: 'Cтудент',
-                titleEn: 'Student',
-              },
-              {
-                stage: 2,
-                users: null,
-                titleRu: 'Научный руководитель',
-                titleKz: 'Ғылыми жетекші',
-                titleEn: 'Scientific adviser',
-                certificate: {
-                  namekz: 'Жеке тұлғаның сертификаты',
-                  nameru: 'Сертификат физического лица',
-                  nameen: 'Certificate of an individual',
-                  value: 'individual',
+                {
+                  stage: 2,
+                  users: null,
+                  titleRu: 'Научный руководитель',
+                  titleKz: 'Ғылыми жетекші',
+                  titleEn: 'Scientific adviser',
+                  certificate: {
+                    namekz: 'Жеке тұлғаның сертификаты',
+                    nameru: 'Сертификат физического лица',
+                    nameen: 'Certificate of an individual',
+                    value: 'individual',
+                  },
                 },
-              },
-              {
-                stage: 3,
-                users: null,
-                titleRu: 'Заведующий кафедры',
-                titleKz: 'Кафедра меңгерушісі',
-                titleEn: 'Head of Department',
-                certificate: {
-                  namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
-                  nameru: 'Для внутреннего документооборота (ГОСТ)',
-                  nameen: 'For internal document management (GOST)',
-                  value: 'internal',
+                {
+                  stage: 3,
+                  users: null,
+                  titleRu: 'Заведующий кафедры',
+                  titleKz: 'Кафедра меңгерушісі',
+                  titleEn: 'Head of Department',
+                  certificate: {
+                    namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
+                    nameru: 'Для внутреннего документооборота (ГОСТ)',
+                    nameen: 'For internal document management (GOST)',
+                    value: 'internal',
+                  },
                 },
-              },
-              {
+              ];
+            }
+            if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
+              this.planApprovalStage.push({
                 stage: 4,
                 users: null,
                 titleRu: 'Декан факультета',
@@ -711,31 +714,30 @@ export default {
                   nameen: 'For internal document management (GOST)',
                   value: 'internal',
                 },
-              },
-            ];
-          }
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch('logLout');
-          } else {
-            this.$toast.add({
-              severity: 'error',
-              summary: error,
-              life: 3000,
-            });
-          }
-        });
+              },)
+            }
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              this.$store.dispatch('logLout');
+            } else {
+              this.$toast.add({
+                severity: 'error',
+                summary: error,
+                life: 3000,
+              });
+            }
+          });
     },
     getRelatedFiles() {
       this.docService
-        .getRelatedDocs({ fileID: this.plan.doc_info.id, uuid: null })
-        .then((response) => {
-          this.scienceDocs = response.data;
-        })
-        .catch((_) => {
-          this.uploading = false;
-        });
+          .getRelatedDocs({fileID: this.plan.doc_info.id, uuid: null})
+          .then((response) => {
+            this.scienceDocs = response.data;
+          })
+          .catch((_) => {
+            this.uploading = false;
+          });
     },
     confirmFinish() {
       this.$confirm.require({
@@ -751,31 +753,31 @@ export default {
     },
     finish() {
       this.planService
-        .finishEvent(this.work_plan_id)
-        .then((res) => {
-          if (res.data.is_success) {
-            this.isCreator = false;
-            this.isFinish = true;
-            this.getPlan();
-            this.getEventsTree(null);
-            this.$toast.add({
-              severity: 'success',
-              summary: this.$t('common.success'),
-              life: 3000,
-            });
-          }
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch('logLout');
-          } else {
-            this.$toast.add({
-              severity: 'error',
-              summary: error,
-              life: 3000,
-            });
-          }
-        });
+          .finishEvent(this.work_plan_id)
+          .then((res) => {
+            if (res.data.is_success) {
+              this.isCreator = false;
+              this.isFinish = true;
+              this.getPlan();
+              this.getEventsTree(null);
+              this.$toast.add({
+                severity: 'success',
+                summary: this.$t('common.success'),
+                life: 3000,
+              });
+            }
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              this.$store.dispatch('logLout');
+            } else {
+              this.$toast.add({
+                severity: 'error',
+                summary: error,
+                life: 3000,
+              });
+            }
+          });
     },
     remove_event() {
       this.$confirm.require({
@@ -791,29 +793,29 @@ export default {
     },
     remove(event_id) {
       this.planService
-        .removeEvent(event_id)
-        .then((res) => {
-          if (res.data.is_success) {
-            this.$toast.add({
-              severity: 'success',
-              summary: this.$t('common.success'),
-              life: 3000,
-            });
-            this.getPlan();
-            this.getEventsTree(this.parentNode);
-          }
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch('logLout');
-          } else {
-            this.$toast.add({
-              severity: 'error',
-              summary: error,
-              life: 3000,
-            });
-          }
-        });
+          .removeEvent(event_id)
+          .then((res) => {
+            if (res.data.is_success) {
+              this.$toast.add({
+                severity: 'success',
+                summary: this.$t('common.success'),
+                life: 3000,
+              });
+              this.getPlan();
+              this.getEventsTree(this.parentNode);
+            }
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              this.$store.dispatch('logLout');
+            } else {
+              this.$toast.add({
+                severity: 'error',
+                summary: error,
+                life: 3000,
+              });
+            }
+          });
     },
     isUserResp(data) {
       if (!Array.isArray(data)) return false;
@@ -824,13 +826,13 @@ export default {
     viewDoc() {
       this.$router.push({
         name: 'WorkPlanView',
-        params: { id: this.work_plan_id },
+        params: {id: this.work_plan_id},
       });
     },
     navigateToReports() {
       this.$router.push({
         name: 'WorkPlanReport',
-        params: { id: this.work_plan_id },
+        params: {id: this.work_plan_id},
       });
     },
     isUserApproval(data) {
@@ -902,14 +904,14 @@ export default {
     },
     showEventResultModal(node) {
       return (
-        (this.isPlanCreator &&
-          !this.isUserResp(node.user) &&
-          !(
-            node.status.work_plan_event_status_id === 4 ||
-            node.status.work_plan_event_status_id === 6
-          )) ||
-        node.status.work_plan_event_status_id === 5 ||
-        node.status.work_plan_event_status_id === 2
+          (this.isPlanCreator &&
+              !this.isUserResp(node.user) &&
+              !(
+                  node.status.work_plan_event_status_id === 4 ||
+                  node.status.work_plan_event_status_id === 6
+              )) ||
+          node.status.work_plan_event_status_id === 5 ||
+          node.status.work_plan_event_status_id === 2
       );
     },
     openPlanExecuteSidebar() {
@@ -923,29 +925,29 @@ export default {
     },
     updateEventStatus(eventId) {
       this.planService
-        .updateEventStatus({ event_id: eventId, status_code: 2 })
-        .then((res) => {
-          if (res.data.is_success) {
-            this.$toast.add({
-              severity: 'success',
-              summary: this.$t('common.success'),
-              life: 3000,
-            });
-            this.getPlan();
-            this.getEventsTree(this.parentNode);
-          }
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch('logLout');
-          } else {
-            this.$toast.add({
-              severity: 'error',
-              summary: error,
-              life: 3000,
-            });
-          }
-        });
+          .updateEventStatus({event_id: eventId, status_code: 2})
+          .then((res) => {
+            if (res.data.is_success) {
+              this.$toast.add({
+                severity: 'success',
+                summary: this.$t('common.success'),
+                life: 3000,
+              });
+              this.getPlan();
+              this.getEventsTree(this.parentNode);
+            }
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              this.$store.dispatch('logLout');
+            } else {
+              this.$toast.add({
+                severity: 'error',
+                summary: error,
+                life: 3000,
+              });
+            }
+          });
     },
     updateConfirmEvent(eventId) {
       this.$confirm.require({
@@ -981,89 +983,89 @@ export default {
         department_id: null,
       };
       this.planService
-        .createWorkPlanReport(data)
-        .then((res) => {
-          this.scienceReport = res.data;
-          this.approval_users = [
-            {
-              stage: 1,
-              users: [],
-              titleRu: 'Участники проекта',
-              titleKz: 'Жоба қатысушылары',
-              titleEn: 'Project participants',
-              certificate: {
-                namekz: 'Жеке тұлғаның сертификаты',
-                nameru: 'Сертификат физического лица',
-                nameen: 'Certificate of an individual',
-                value: 'individual',
+          .createWorkPlanReport(data)
+          .then((res) => {
+            this.scienceReport = res.data;
+            this.approval_users = [
+              {
+                stage: 1,
+                users: [],
+                titleRu: 'Участники проекта',
+                titleKz: 'Жоба қатысушылары',
+                titleEn: 'Project participants',
+                certificate: {
+                  namekz: 'Жеке тұлғаның сертификаты',
+                  nameru: 'Сертификат физического лица',
+                  nameen: 'Certificate of an individual',
+                  value: 'individual',
+                },
               },
-            },
-            {
-              stage: 2,
-              users: [],
-              titleRu: 'Научный руководитель проекта',
-              titleKz: 'Жобаның ғылыми жетекшісі',
-              titleEn: 'Project Scientific Director',
-              certificate: {
-                namekz: 'Жеке тұлғаның сертификаты',
-                nameru: 'Сертификат физического лица',
-                nameen: 'Certificate of an individual',
-                value: 'individual',
+              {
+                stage: 2,
+                users: [],
+                titleRu: 'Научный руководитель проекта',
+                titleKz: 'Жобаның ғылыми жетекшісі',
+                titleEn: 'Project Scientific Director',
+                certificate: {
+                  namekz: 'Жеке тұлғаның сертификаты',
+                  nameru: 'Сертификат физического лица',
+                  nameen: 'Certificate of an individual',
+                  value: 'individual',
+                },
               },
-            },
-            {
-              stage: 3,
-              users: [],
-              titleRu: 'Ответственные от управления научных проектов',
-              titleKz: 'Ғылыми жобалар басқармасынан жауапты тұлға',
-              titleEn: 'Employee of Scientific Projects Management',
-              certificate: {
-                namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
-                nameru: 'Для внутреннего документооборота (ГОСТ)',
-                nameen: 'For internal document management (GOST)',
-                value: 'internal',
+              {
+                stage: 3,
+                users: [],
+                titleRu: 'Ответственные от управления научных проектов',
+                titleKz: 'Ғылыми жобалар басқармасынан жауапты тұлға',
+                titleEn: 'Employee of Scientific Projects Management',
+                certificate: {
+                  namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
+                  nameru: 'Для внутреннего документооборота (ГОСТ)',
+                  nameen: 'For internal document management (GOST)',
+                  value: 'internal',
+                },
               },
-            },
-            {
-              stage: 3,
-              users: [],
-              titleRu: 'Заместитель директора департамента науки',
-              titleKz: 'Ғылым департаменті директорының орынбасары',
-              titleEn: 'Deputy Director of the Department of Science',
-              certificate: {
-                namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
-                nameru: 'Для внутреннего документооборота (ГОСТ)',
-                nameen: 'For internal document management (GOST)',
-                value: 'internal',
+              {
+                stage: 3,
+                users: [],
+                titleRu: 'Заместитель директора департамента науки',
+                titleKz: 'Ғылым департаменті директорының орынбасары',
+                titleEn: 'Deputy Director of the Department of Science',
+                certificate: {
+                  namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
+                  nameru: 'Для внутреннего документооборота (ГОСТ)',
+                  nameen: 'For internal document management (GOST)',
+                  value: 'internal',
+                },
               },
-            },
-            {
-              stage: 4,
-              users: [],
-              titleRu: 'И.о. директора департамента науки',
-              titleKz: 'Ғылым департаменті директорының м.а',
-              titleEn: 'Acting Director of the Department of Science',
-              certificate: {
-                namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
-                nameru: 'Для внутреннего документооборота (ГОСТ)',
-                nameen: 'For internal document management (GOST)',
-                value: 'internal',
+              {
+                stage: 4,
+                users: [],
+                titleRu: 'И.о. директора департамента науки',
+                titleKz: 'Ғылым департаменті директорының м.а',
+                titleEn: 'Acting Director of the Department of Science',
+                certificate: {
+                  namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
+                  nameru: 'Для внутреннего документооборота (ГОСТ)',
+                  nameen: 'For internal document management (GOST)',
+                  value: 'internal',
+                },
               },
-            },
-          ];
-          this.showReportModal = true;
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch('logLout');
-          } else {
-            this.$toast.add({
-              severity: 'error',
-              summary: error,
-              life: 3000,
-            });
-          }
-        });
+            ];
+            this.showReportModal = true;
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 401) {
+              this.$store.dispatch('logLout');
+            } else {
+              this.$toast.add({
+                severity: 'error',
+                summary: error,
+                life: 3000,
+              });
+            }
+          });
     },
     rejectPlan(comment) {
       this.loading = true;
@@ -1074,33 +1076,33 @@ export default {
         work_plan_name: this.plan.work_plan_name,
       };
       this.planService
-        .rejectPlan(data)
-        .then((_) => {
-          this.loading = false;
-          this.hideDialog(this.dialog.planView);
-          this.getPlan();
-          this.getEventsTree(null);
-        })
-        .catch((error) => {
-          this.$toast.add({ severity: 'error', summary: error, life: 3000 });
-          this.loading = false;
-        });
+          .rejectPlan(data)
+          .then((_) => {
+            this.loading = false;
+            this.hideDialog(this.dialog.planView);
+            this.getPlan();
+            this.getEventsTree(null);
+          })
+          .catch((error) => {
+            this.$toast.add({severity: 'error', summary: error, life: 3000});
+            this.loading = false;
+          });
     },
     downloadContract(type) {
       let url = '';
       if (this.scienceDocs) {
         this.scienceDocs.forEach((e) => {
           if (
-            type === 'contract' &&
-            e.docType === this.docEnum.DocType.Contract
+              type === 'contract' &&
+              e.docType === this.docEnum.DocType.Contract
           ) {
             url = e.filePath;
             return;
           }
 
           if (
-            type === 'additional' &&
-            e.docType === this.docEnum.DocType.RelatedDoc
+              type === 'additional' &&
+              e.docType === this.docEnum.DocType.RelatedDoc
           ) {
             url = e.filePath;
             return;
@@ -1143,12 +1145,12 @@ export default {
     },
     canExecuteEvent() {
       const isStatusValid = [1, 4, 5, 6, 8].includes(
-        this.selectedEvent.status.work_plan_event_status_id
+          this.selectedEvent.status.work_plan_event_status_id
       );
       console.log('Hello this is execute event!');
       return (
-        (this.isPlanCreator || this.isUserApproval(this.selectedEvent)) &&
-        isStatusValid
+          (this.isPlanCreator || this.isUserApproval(this.selectedEvent)) &&
+          isStatusValid
       );
     },
     uploadFile(event, name) {
@@ -1163,19 +1165,19 @@ export default {
       }
       fd.append('workPlanId', this.plan.work_plan_id);
       this.planService
-        .updatePlanAttachments(fd)
-        .then((_) => {
-          this.hideDialog(this.dialog.uploadAdditionalFile);
-          this.getPlan();
-          this.getEventsTree(null);
-        })
-        .catch((_) => {
-          this.$toast.add({
-            severity: 'error',
-            summary: this.$t('common.message.uploadError'),
-            life: 3000,
+          .updatePlanAttachments(fd)
+          .then((_) => {
+            this.hideDialog(this.dialog.uploadAdditionalFile);
+            this.getPlan();
+            this.getEventsTree(null);
+          })
+          .catch((_) => {
+            this.$toast.add({
+              severity: 'error',
+              summary: this.$t('common.message.uploadError'),
+              life: 3000,
+            });
           });
-        });
     },
     initSearch(searchText) {
       this.filters.name.value = searchText;
@@ -1225,8 +1227,8 @@ export default {
             }
 
             if (
-              stage.users[j].userID === this.loginedUserId &&
-              stage.usersApproved[j] < 1
+                stage.users[j].userID === this.loginedUserId &&
+                stage.usersApproved[j] < 1
             ) {
               signed = false;
             }
@@ -1263,9 +1265,9 @@ export default {
           label: this.$t('common.add'),
           icon: 'fa-solid fa-plus',
           disabled: !(
-            this.isPlanCreator ||
-            this.isCreator ||
-            (this.isUserResp(this.selectedEvent?.user) && !this.isFinish)
+              this.isPlanCreator ||
+              this.isCreator ||
+              (this.isUserResp(this.selectedEvent?.user) && !this.isFinish)
           ),
           visible: !this.isFinish && !this.isMastersPlan && !this.isDoctorsPlan,
           command: () => {
@@ -1294,17 +1296,17 @@ export default {
     },
     isSciencePlan() {
       return (
-        this.plan &&
-        this.plan.plan_type &&
-        this.plan.plan_type.code === Enum.WorkPlanTypes.Science
+          this.plan &&
+          this.plan.plan_type &&
+          this.plan.plan_type.code === Enum.WorkPlanTypes.Science
       );
     },
     isOperPlan() {
       return (
-        this.plan &&
-        ((this.plan.plan_type &&
-          this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) ||
-          this.plan.is_oper)
+          this.plan &&
+          ((this.plan.plan_type &&
+                  this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) ||
+              this.plan.is_oper)
       );
     },
     isEventListEmpty() {
@@ -1312,34 +1314,34 @@ export default {
     },
     isCreatedPlan() {
       return (
-        this.planDoc &&
-        this.planDoc.docHistory?.stateEn === this.DocState.CREATED.Value
+          this.planDoc &&
+          this.planDoc.docHistory?.stateEn === this.DocState.CREATED.Value
       );
     },
     isPlanApproved() {
       return (
-        this.planDoc &&
-        this.planDoc.docHistory?.stateEn === this.DocState.APPROVED.Value
+          this.planDoc &&
+          this.planDoc.docHistory?.stateEn === this.DocState.APPROVED.Value
       );
     },
     isPlanUnderRevision() {
       return (
-        this.planDoc &&
-        this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
+          this.planDoc &&
+          this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
       );
     },
     isMastersPlan() {
       return (
-        this.plan &&
-        this.plan.plan_type &&
-        this.plan.plan_type.code === Enum.WorkPlanTypes.Masters
+          this.plan &&
+          this.plan.plan_type &&
+          this.plan.plan_type.code === Enum.WorkPlanTypes.Masters
       );
     },
     isDoctorsPlan() {
       return (
-        this.plan &&
-        this.plan.plan_type &&
-        this.plan.plan_type.code === Enum.WorkPlanTypes.Doctors
+          this.plan &&
+          this.plan.plan_type &&
+          this.plan.plan_type.code === Enum.WorkPlanTypes.Doctors
       );
     },
     // isGenerateActVisible(){
@@ -1375,11 +1377,11 @@ export default {
           label: this.$t('common.action.sendToApprove'),
           icon: 'pi pi-send',
           visible:
-            this.plan &&
-            this.planDoc &&
-            (this.isCreatedPlan || this.isPlanUnderRevision) &&
-            this.isPlanCreator &&
-            this.isFinish,
+              this.plan &&
+              this.planDoc &&
+              (this.isCreatedPlan || this.isPlanUnderRevision) &&
+              this.isPlanCreator &&
+              this.isFinish,
           command: () => {
             this.showDialog(this.dialog.planApprove);
           },
@@ -1399,11 +1401,11 @@ export default {
           icon: 'pi pi-eye',
           color: this.isFinish ? '' : 'green',
           visible:
-            ((this.isMastersPlan || this.isDoctorsPlan) &&
-              (!this.isFinish || this.isApproval)) ||
-            (this.isFinish &&
-              this.planDoc &&
-              !(this.isCreatedPlan || this.isPlanUnderRevision)),
+              ((this.isMastersPlan || this.isDoctorsPlan) &&
+                  (!this.isFinish || this.isApproval)) ||
+              (this.isFinish &&
+                  this.planDoc &&
+                  !(this.isCreatedPlan || this.isPlanUnderRevision)),
           command: () => {
             if (this.isFinish) {
               this.showDialog(this.dialog.planView);
@@ -1415,21 +1417,21 @@ export default {
         {
           label: this.$t('contracts.menu.actsJournal'),
           visible:
-            this.isFinish &&
-            this.isSciencePlan &&
-            this.planDoc.docHistory?.stateEn === this.DocState.APPROVED.Value,
+              this.isFinish &&
+              this.isSciencePlan &&
+              this.planDoc.docHistory?.stateEn === this.DocState.APPROVED.Value,
           command: () => {
-            this.$router.push({ path: '/documents/catalog/acts' });
+            this.$router.push({path: '/documents/catalog/acts'});
           },
         },
         {
           label: this.$t('workPlan.reports'),
           visible:
-            this.isFinish &&
-            !this.isSciencePlan &&
-            (this.isApproval || this.isPlanCreator || this.isAdmin) &&
-            (!(this.isMastersPlan || this.isDoctorsPlan) ||
-              this.isPlanApproved),
+              this.isFinish &&
+              !this.isSciencePlan &&
+              (this.isApproval || this.isPlanCreator || this.isAdmin) &&
+              (!(this.isMastersPlan || this.isDoctorsPlan) ||
+                  this.isPlanApproved),
           command: () => {
             this.navigateToReports();
           },
@@ -1437,10 +1439,10 @@ export default {
         {
           label: this.$t('workPlan.generateAct'),
           visible:
-            this.isFinish &&
-            this.isPlanCreator &&
-            this.isPlanApproved &&
-            this.isSciencePlan,
+              this.isFinish &&
+              this.isPlanCreator &&
+              this.isPlanApproved &&
+              this.isSciencePlan,
           command: () => {
             this.confirmGenerateScienceReport();
           },
@@ -1448,11 +1450,11 @@ export default {
         {
           label: this.$t('contracts.contract'),
           visible:
-            this.isSciencePlan &&
-            this.scienceDocs &&
-            this.scienceDocs.some(
-              (e) => e.docType === this.docEnum.DocType.Contract
-            ),
+              this.isSciencePlan &&
+              this.scienceDocs &&
+              this.scienceDocs.some(
+                  (e) => e.docType === this.docEnum.DocType.Contract
+              ),
           icon: 'fa-solid fa-download',
           command: () => {
             this.downloadContract('contract');
@@ -1461,11 +1463,11 @@ export default {
         {
           label: this.$t('common.additionalInfo'),
           visible:
-            this.isSciencePlan &&
-            this.scienceDocs &&
-            this.scienceDocs.some(
-              (e) => e.docType === this.docEnum.DocType.RelatedDoc
-            ),
+              this.isSciencePlan &&
+              this.scienceDocs &&
+              this.scienceDocs.some(
+                  (e) => e.docType === this.docEnum.DocType.RelatedDoc
+              ),
           icon: 'fa-solid fa-download',
           command: () => {
             this.downloadContract('additional');
@@ -1474,11 +1476,11 @@ export default {
         {
           label: this.$t('common.additionalInfo'),
           visible:
-            this.isSciencePlan &&
-            this.scienceDocs &&
-            !this.scienceDocs.some(
-              (e) => e.docType === this.docEnum.DocType.RelatedDoc
-            ),
+              this.isSciencePlan &&
+              this.scienceDocs &&
+              !this.scienceDocs.some(
+                  (e) => e.docType === this.docEnum.DocType.RelatedDoc
+              ),
           icon: 'fa-solid fa-eye',
           command: () => {
             this.showDialog(this.dialog.uploadAdditionalFile);
@@ -1486,15 +1488,15 @@ export default {
         },
         {
           label: this.$t(
-            this.isMastersPlan
-              ? 'workPlan.mastersThesisInfo'
-              : 'workPlan.doctorsThesisInfo'
+              this.isMastersPlan
+                  ? 'workPlan.mastersThesisInfo'
+                  : 'workPlan.doctorsThesisInfo'
           ),
           icon: 'pi pi-file',
           visible:
-            this.isPlanCreator &&
-            !this.isFinish &&
-            (this.isMastersPlan || this.isDoctorsPlan),
+              this.isPlanCreator &&
+              !this.isFinish &&
+              (this.isMastersPlan || this.isDoctorsPlan),
           color: 'grey',
           command: () => {
             this.showDialog(this.dialog.info);

@@ -174,7 +174,7 @@ export default {
       this.planService
           .getWorkPlanReports(this.work_plan_id)
           .then((res) => {
-            this.data = res.data.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
+            this.data = res.data?.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
             this.loading = false;
           })
           .catch((error) => {
