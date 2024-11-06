@@ -189,12 +189,7 @@ export default {
                 if (res.data) {
                     this.emitter.emit("pageCreated", res.data);
                 }
-            }).catch(error => {
-                this.$toast.add({
-                    severity: "error",
-                    summary: error,
-                    life: 3000,
-                });
+            }).catch(_ => {
             });
 
         },
@@ -211,16 +206,7 @@ export default {
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
-            }).catch(error => {
-                if (error.response && error.response.status === 401) {
-                    this.$store.dispatch("logLout");
-                } else {
-                    this.$toast.add({
-                        severity: "error",
-                        summary: error,
-                        life: 3000,
-                    });
-                }
+            }).catch(_ => {
             });
         },
         deleteFileConfirm(event, item, index) {
@@ -247,8 +233,7 @@ export default {
                     this.getPageFiles();
                     this.$toast.add({ severity: 'success', detail: this.$t('common.done'), life: 3000 });
                 }
-            }).catch((error) => {
-                this.$toast.add({ severity: "error", summary: error, life: 3000 });
+            }).catch((_) => {
             });
         },
         onAfterUpload(item) {

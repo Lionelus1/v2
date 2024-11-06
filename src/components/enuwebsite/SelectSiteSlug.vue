@@ -39,9 +39,8 @@ const getSlugs = () => {
       selectedSlug.value = slugs.value.find(x => x.id === slug.id)
     }
     loading.value = false
-  }).catch(error => {
+  }).catch(_ => {
     loading.value = false;
-    toast.add({ severity: "error", summary: error, life: 3000 })
   })
 }
 

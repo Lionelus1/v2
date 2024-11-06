@@ -309,13 +309,8 @@ export default {
           }
         }
         this.loading = false;
-      }).catch(error => {
+      }).catch(_ => {
         this.loading = false;
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
       });
     },
     mapMenu(menus) {
@@ -396,11 +391,6 @@ export default {
           });
         }
       }).catch(error => {
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
       });
     },
     onPageLoad(event) {
@@ -414,13 +404,8 @@ export default {
         if (data)
           this.formData.page_id = data.enu_page_id;
         this.pageLoading = false;
-      }).catch(error => {
+      }).catch(_ => {
         this.pageLoading = false;
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
       });
     },
     hideDialog() {

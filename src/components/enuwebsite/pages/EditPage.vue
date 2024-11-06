@@ -170,7 +170,6 @@ const getPage = () => {
       haveAccess.value = false
     } else {
       loading.value = false
-      toast.add({severity: "error", summary: error, life: 3000});
     }
   });
 }
@@ -191,8 +190,7 @@ const save = () => {
       emitter.emit('pageCreateEditMsg', true)
     }
     navigateToPages()
-  }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
+  }).catch(_ => {
   });
 }
 

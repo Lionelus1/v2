@@ -207,9 +207,8 @@ export default {
           e.main_image_file ? e.imageUrl = smartEnuApi + fileRoute + fileUrl: null
         });
         loading.value = false;
-      }).catch(error => {
+      }).catch(_ => {
         loading.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
       });
     }
 
@@ -236,9 +235,8 @@ export default {
         submitted.value = false;
         isCreateModal.value = false;
         getBlockElements();
-      }).catch(error => {
+      }).catch(_ => {
         submitted.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
       });
     }
 
@@ -263,11 +261,10 @@ export default {
         selectedData.value = null;
         isCreateModal.value = false;
         getBlockElements()
-      }).catch(error => {
+      }).catch(_ => {
         submitted.value = false;
         selectedData.value = null;
         isCreateModal.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
       })
     }
 
@@ -277,8 +274,7 @@ export default {
           toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
           getBlockElements()
         }
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     }
     const removeMainImageFile = (node) => {
@@ -306,8 +302,7 @@ export default {
     const getBlockListFiles = () => {
       enuService.getBlockListFiles(formData.value.block_list_id).then(res => {
         formData.value.files = res.data;
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     }
 
@@ -332,12 +327,7 @@ export default {
         document.body.appendChild(a);
         a.click();
         a.remove();
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          store.dispatch("logLout");
-        } else {
-          toast.add({severity: "error", summary: error, life: 3000});
-        }
+      }).catch(_ => {
       });
     }
 
@@ -366,8 +356,7 @@ export default {
           getBlockListFiles();
           toast.add({severity: 'success', detail: i18n.t('common.done'), life: 3000});
         }
-      }).catch((error) => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch((_) => {
       });
     }
     const uploadFile = (event) => {
@@ -425,8 +414,7 @@ export default {
         } else {
           toast.add({severity: "error", summary: i18n.t('common.error'), life: 3000});
         }
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     }
 
