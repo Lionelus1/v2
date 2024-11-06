@@ -353,8 +353,9 @@ export default {
               window.localStorage.setItem('authUser', JSON.stringify(authUser));
               const sessionID = this.$route.params.sessionID || localStorage.getItem('sessionID');
               if (sessionID) {
-
-                window.location.href = 'https://t.me/local_bot_test_for_us_bot?start=' + res.data.session_uuid;
+                localStorage.removeItem("sessionID");
+                const botURL = process.env.VUE_APP_BOT_URL;
+                window.location.href = `${botURL}${res.data.session_uuid}`;
               } else {
                 this.$router.push({name: 'AfterAuth'});
               }
