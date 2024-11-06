@@ -743,6 +743,7 @@ export default {
     fileUpdated(event) {
       this.close('fileUploadDialog')
 
+      this.openFolder(this.selectedNode)
       if (this.newNode.id !== this.selectedNode.id) {
         if (!this.selectedNode.children) {
           this.selectedNode.children = []
