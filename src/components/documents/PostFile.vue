@@ -112,7 +112,7 @@
               ref="ufile"
               :multiple="false"
               fileLimit="1"
-              accept=".doc,.docx,.pdf,.xls,.xlsx,.zip"
+              :accept="accept || '.doc,.docx,.pdf,.xls,.xlsx,.zip'"
               @upload="onUpload"
               @select="onFileSelect"
           >
@@ -210,7 +210,8 @@ export default {
       approveInfo: {
         default: false
       },
-      docType: null
+      docType: null,
+      accept: null
     },
     emits: ['updated'],
     setup(props, context) {
