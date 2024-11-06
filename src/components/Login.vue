@@ -339,10 +339,11 @@ export default {
       if (!this.checkLoginAndPassword()) {
         return
       }
-      api.post('/login', {
-        'username': this.loginData.username,
-        'password': this.loginData.password
-      }, {headers: getHeader()})
+      const data = {
+        username: this.loginData.username,
+        password: this.loginData.password
+      };
+      api.post('/login', data, {headers: getHeader()})
           .then((res) => {
             if (res.status === 200) {
               authUser.access_token = res.data.access_token;
