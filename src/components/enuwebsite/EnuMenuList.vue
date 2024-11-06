@@ -218,8 +218,7 @@ export default {
                 this.toast.add({severity: "error", summary: this.i18n.t('common.error'), life: 3000});
               }
             })
-            .catch(error => {
-              this.toast.add({severity: "error", summary: error, life: 3000});
+            .catch(_ => {
             });
       } else {
         const current = this.menus[index];
@@ -238,8 +237,7 @@ export default {
                 this.toast.add({severity: "error", summary: this.i18n.t('common.error'), life: 3000});
               }
             })
-            .catch(error => {
-              this.toast.add({severity: "error", summary: error, life: 3000});
+            .catch(_ => {
             });
       }
     },
@@ -288,8 +286,6 @@ export default {
         this.loading = false;
         if (error?.response.status === 403) {
           this.haveAccess = false
-        } else {
-          this.$toast.add({severity: "error", summary: error, life: 3000});
         }
       });
     },
@@ -330,12 +326,7 @@ export default {
         if (res.data) {
           this.pages = res.data.pages;
         }
-      }).catch(error => {
-        if (error?.response.status === 403) {
-          this.haveAccess = false
-        } else {
-          this.$toast.add({severity: "error", summary: error, life: 3000});
-        }
+      }).catch(_ => {
       });
     },
     clearMenuTypeFilter() {
@@ -388,8 +379,7 @@ export default {
           this.$toast.add({severity: "success", summary: "Successfully deleted", life: 3000});
         }
         this.getMenus(this.parentNode || null);
-      }).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     },
     showPage(data) {

@@ -98,8 +98,7 @@
             blockInfo.value = res.data;
             getAcademicDegrees(blockInfo.value.block_id)
           }
-        }).catch(error => {
-          toast.add({severity: "error", summary: error, life: 3000});
+        }).catch(_ => {
         });
       }
   
@@ -108,8 +107,7 @@
           if (res.data) {
             degrees.value = res.data[0]
           }
-        }).catch(error => {
-          toast.add({severity: "error", summary: error, life: 3000});
+        }).catch(_ => {
         });
       }
       getBlock();
@@ -124,9 +122,8 @@
           }
           submitted.value = false;
           hideDialog();
-        }).catch(error => {
+        }).catch(_ => {
           submitted.value = false;
-          toast.add({severity: "error", summary: error, life: 3000});
         });
       }
   
@@ -142,9 +139,8 @@
           }
           submitted.value = false;
           hideDialog();
-        }).catch(error => {
+        }).catch(_ => {
           submitted.value = false;
-          toast.add({severity: "error", summary: error, life: 3000});
         });
       }
   

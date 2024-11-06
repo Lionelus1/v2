@@ -95,8 +95,7 @@ export default {
         if (res.data) {
           degrees.value = res.data
         }
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     }
 
@@ -105,8 +104,7 @@ export default {
         if (res.data) {
           categories.value = res.data
         }
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       })
     }
 
@@ -122,9 +120,8 @@ export default {
         }
         submitted.value = false;
         hideDialog();
-      }).catch(error => {
+      }).catch(_ => {
         submitted.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
       });
     }
 
@@ -140,9 +137,8 @@ export default {
         }
         submitted.value = false;
         hideDialog();
-      }).catch(error => {
+      }).catch(_ => {
         submitted.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
       });
     }
 

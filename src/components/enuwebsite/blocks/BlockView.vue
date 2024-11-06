@@ -137,7 +137,6 @@ export default {
           haveAccess.value = false
         } else {
           loading.value = false
-          toast.add({severity: "error", summary: error, life: 3000});
         }
       });
     }
@@ -169,9 +168,8 @@ export default {
             toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
           }
           getBlockContent(blockId)
-        }).catch(error => {
+        }).catch(_ => {
           submitted.value = false;
-          toast.add({severity: "error", summary: error, life: 3000});
         });
       } else {
         enuService.addBlockContent(formData.value).then(res => {
@@ -179,9 +177,8 @@ export default {
             submitted.value = false;
             toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
           }
-        }).catch(error => {
+        }).catch(_ => {
           submitted.value = false;
-          toast.add({severity: "error", summary: error, life: 3000});
         });
       }
     }
@@ -238,8 +235,6 @@ export default {
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           store.dispatch("logLout");
-        } else {
-          toast.add({severity: "error", summary: error, life: 3000});
         }
       });
     }
@@ -269,16 +264,14 @@ export default {
           getBlockContentFiles();
           toast.add({severity: 'success', detail: i18n.t('common.done'), life: 3000});
         }
-      }).catch((error) => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch((_) => {
       });
     }
 
     const getBlockContentFiles = () => {
       enuService.getBlockContentFiles(formData.value.block_content_id).then(res => {
         formData.value.files = res.data;
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     }
 
