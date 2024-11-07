@@ -14,17 +14,17 @@
         <div class="field">
           <label for="filename" >{{$t('common.nameInQazaq')}}</label>
           <InputText id="fodernamekaz" v-model="file.namekz" type="text" />
-          <small class="p-error" v-if="validation.namekz">{{ $t("common.requiredField") }}</small>
+          <small class="p-error" v-if="validation.namekz && validation.nameru && validation.nameen">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field">
           <label for="filename" >{{$t('common.nameInRussian')}}</label>
           <InputText id="fodernameru" v-model="file.nameru" type="text" />
-          <small class="p-error" v-if="validation.nameru">{{ $t("common.requiredField") }}</small>
+          <small class="p-error" v-if="validation.namekz && validation.nameru && validation.nameen">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field">
           <label for="filename" >{{$t('common.nameInEnglish')}}</label>
           <InputText id="fodernameen" v-model="file.nameen" type="text" />
-          <small class="p-error" v-if="validation.nameen">{{ $t("common.requiredField") }}</small>
+          <small class="p-error" v-if="validation.namekz && validation.nameru && validation.nameen">{{ $t("common.requiredField") }}</small>
         </div>
         <div v-if="docType == attestationDocReportType" class="field">
                 <label for="filename" >{{$t('web.chooseDegree')}}</label>
@@ -141,7 +141,7 @@
               </div>
             </template>
           </FileUpload>
-          <small class="p-error" v-if="validation.file && file.is_view_only">{{ validation.file }}</small>
+          <small class="p-error" v-if="validation.file && file.is_view_only">{{ $t("hdfs.onlyPdfAllowed") }}</small>
 
           <small class="p-error" v-if="validation.file && !file.is_view_only">{{ $t("hdfs.chooseFile") }}</small>
         </div>
@@ -365,9 +365,31 @@ export default {
       this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
     },
     onUpload() {
-      this.$toast.add({severity: 'success', summary: this.$t('hdfs.success'), detail: this.$t('hdfs.toastMsg'), life: 3000});
+      if (this.file.is_view_only && !this.isPdf(this.file.path)) {
+        this.validation.file = this.$t("hdfs.onlyPdfAllowed");
+        return;
+      } else {
+        this.$toast.add({severity: 'success', summary: this.$t('hdfs.success'), detail: this.$t('hdfs.toastMsg'), life: 3000});
+      }
+    },
+    isPdf(fileName) {
+      if (!fileName || typeof fileName !== 'string') {
+        return false;
+      }
+      const extension = fileName.split('.').pop().toLowerCase();
+      switch (extension) {
+        case 'pdf': return true;
+        default: return false;
+      }
     },
     updateFile() {
+      if (this.file.is_view_only && this.selectedFile && !this.isPdf(this.selectedFile.name)) {
+        this.validation.file = this.$t("hdfs.onlyPdfAllowed");
+        this.selectedFile = null;
+        this.$refs.ufile.clear();
+        return;
+      }
+
         if (this.notValid()) {
             return;
         }
