@@ -126,6 +126,7 @@ export default {
         main: "Негізгі",
         more: "Толық",
         loadMore: "Көбірек жүктеу",
+        readMore: "Толығырақ",
         meetingUrl: "Онлайн жиналысқа сілтеме",
         meetingPlace: "Жиналыс өтетін орын",
         move: "Орнын ауыстыру",

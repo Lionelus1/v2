@@ -51,7 +51,10 @@
               <h6 :style="{margin:0,marginBottom:'2px',fontWeight : n.isSeen==0 ? 'bolder' : '400'}">
                 {{ n.senderObject.fullName }}</h6>
               <div :style="{fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="content_notific font-semibold"
-                   v-html="getContentWithLinkHandler(n['description_' + $i18n.locale])">
+                   v-html="getContentWithLinkHandler(n['description_' + $i18n.locale])" :class="{ 'visible': n.isShow }">
+              </div>
+              <div v-if="n.description_kz.length > maxLength" class="read_more" @click="toggleShowMore(n)" :class="{ 'visible': n.isShow }">
+                {{ n.isShow ? $t("educomplex.tooltip.cover")+'^' : $t("common.readMore")+'...' }}
               </div>
               <span class="text-gray-500">{{ timeDifference(n.createdDate) }}</span>
             </div>
@@ -95,7 +98,8 @@ export default {
       loginedUser: null,
       notLoading: false,
       btnLoading: false,
-      imgPreview: null
+      imgPreview: null,
+      maxLength: 340,
     }
   },
   methods: {
@@ -189,6 +193,9 @@ export default {
         });
       }
       return div.innerHTML;
+    },
+    toggleShowMore(item) {
+      item.isShow = !item.isShow;
     }
   },
   computed: {
@@ -315,6 +322,24 @@ export default {
   display: block;
   padding: 14px;
   border-bottom: 1px solid #e3e3e3;
+}
+.content_notific{
+  max-height: 200px;
+  overflow: hidden;
+}
+.read_more{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  cursor: pointer;
+  color: #2196f3;
+  font-weight: 600;
+  text-align: center;
+}
+.content_notific.visible {
+  max-height: 5000px !important;
+  //transition: max-height 3s ease-in;
 }
 
 .skeleton_notific {
