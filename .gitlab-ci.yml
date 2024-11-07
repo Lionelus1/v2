@@ -5,7 +5,6 @@ stages:
 
 variables:
   SSH_PRIVATE_KEY: "$SSH_PRIVATE_KEY"
-  TG_ACCESS_TOKEN: 6776695616:AAEiwTHzfZPwdOiJnnBFPLfP2DzlkmrT8fA
   MASTER_ARTIFACT_PATH: "dist_prod/"
   TEST_ARTIFACT_PATH: "dist_test/"
   NODE_OPTIONS: "--max-old-space-size=4096"

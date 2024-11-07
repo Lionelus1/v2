@@ -14,17 +14,17 @@
         <div class="field">
           <label for="filename" >{{$t('common.nameInQazaq')}}</label>
           <InputText id="fodernamekaz" v-model="file.namekz" type="text" />
-          <small class="p-error" v-if="validation.namekz">{{ $t("common.requiredField") }}</small>
+          <small class="p-error" v-if="validation.namekz && validation.nameru && validation.nameen">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field">
           <label for="filename" >{{$t('common.nameInRussian')}}</label>
           <InputText id="fodernameru" v-model="file.nameru" type="text" />
-          <small class="p-error" v-if="validation.nameru">{{ $t("common.requiredField") }}</small>
+          <small class="p-error" v-if="validation.namekz && validation.nameru && validation.nameen">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="field">
           <label for="filename" >{{$t('common.nameInEnglish')}}</label>
           <InputText id="fodernameen" v-model="file.nameen" type="text" />
-          <small class="p-error" v-if="validation.nameen">{{ $t("common.requiredField") }}</small>
+          <small class="p-error" v-if="validation.namekz && validation.nameru && validation.nameen">{{ $t("common.requiredField") }}</small>
         </div>
         <div v-if="docType == attestationDocReportType" class="field">
                 <label for="filename" >{{$t('web.chooseDegree')}}</label>
@@ -97,14 +97,53 @@
             <small class="p-error" v-if="validation.approveDate">{{ $t("common.requiredField") }}</small>
           </div>
         </div>
+        <div class="field-checkbox col-12 md:col-6">
+          <Checkbox
+              v-model="file.is_view_only" :binary="true"
+              inputId="viewOnlyCheckbox"
+          />
+          <label for="viewOnlyCheckbox">{{ $t('common.viewOnlyCheckbox') }}</label>
+        </div>
         <div v-if="showUploader" class="field">
-          <label>{{$t('common.doc')}}</label>
-          <FileUpload  :showUploadButton="false" :showCancelButton="true" ref="ufile" :multiple="false" fileLimit="1" :accept="accept">
+          <label>{{ $t('common.doc') }}</label>
+          <FileUpload
+              :showUploadButton="false"
+              :showCancelButton="false"
+              ref="ufile"
+              :multiple="false"
+              fileLimit="1"
+              :accept="accept || '.doc,.docx,.pdf,.xls,.xlsx,.zip,.mp4,.pptx'"
+              @upload="onUpload"
+              @select="onFileSelect"
+          >
             <template #empty>
-              <p>{{$t('hdfs.dragMsg')}}</p>
+              <p>{{ $t('hdfs.dragMsg') }}</p>
+            </template>
+
+            <template #content>
+              <div class="upload-content">
+                <div v-if="selectedFile" class="selected-file">
+                  <p>{{ selectedFile.name }}</p>
+                  <button @click="removeFile" class="remove-file-button">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                </div>
+
+                <div class="field">
+                  <label for="fileDescription">{{ $t('hdfs.fileDescription') }}</label>
+                  <textarea
+                      id="fileDescription"
+                      v-model="file.fileDescription"
+                      :placeholder="$t('hdfs.hintEnterDescription')"
+                      rows="3"
+                  ></textarea>
+                </div>
+              </div>
             </template>
           </FileUpload>
-          <small class="p-error" v-if="validation.file">{{ $t("hdfs.chooseFile") }}</small>
+          <small class="p-error" v-if="validation.file && file.is_view_only">{{ $t("hdfs.onlyPdfAllowed") }}</small>
+
+          <small class="p-error" v-if="validation.file && !file.is_view_only">{{ $t("hdfs.chooseFile") }}</small>
         </div>
         <div v-if="showCatalog" class="field">
           <label>{{$t('common.catalog')}}</label>
@@ -134,6 +173,7 @@ export default {
     data() {
       return {
         file: this.modelValue,
+        selectedFile: null,
         catalogs: null,
         catalog: null,
         state: this.visible,
@@ -141,11 +181,9 @@ export default {
         uploading: false,
         imageUrl: smartEnuApi + fileRoute,
         showUploader: this.fileUpload,
+        uploadedFiles: [],
         languages: [{name:"kz", value: 0}, {name:"ru", value:1},  {name:"en", value:2}],
         validation: {
-            namekz: false,
-            nameru: false,
-            nameen: false,
             parent: false,
             file: false,
             param: false,
@@ -156,6 +194,7 @@ export default {
             catalog: false,
             academicLevel:false,
             eduProg:false,
+            nameGroup: false,
         },
         Enums: Enums,
         selectedEducationLevel: null,
@@ -171,10 +210,8 @@ export default {
       approveInfo: {
         default: false
       },
-      accept: {
-        default: ".doc,.docx,.pdf"
-      },
-      docType: null
+      docType: null,
+      accept: null
     },
     emits: ['updated'],
     setup(props, context) {
@@ -188,6 +225,11 @@ export default {
   watch: {
     'file.params': {
       handler(params) {
+
+        if (!params) {
+          return;
+        }
+
         params.forEach(param => {
           if (param.name === 'saceduprogram') {
             this.selectedSpecialities = param.value;
@@ -216,7 +258,27 @@ export default {
 
   },
   methods: {
-    
+    onFileSelect(event) {
+      if (event.files.length > 0) {
+        const file = event.files[0];
+        const isPdf = file.type === "application/pdf";
+
+        if (this.file.is_view_only && !isPdf) {
+          this.validation.file = this.$t("hdfs.onlyPdfAllowed");
+          this.selectedFile = null;
+          this.$refs.ufile.clear();
+        } else {
+          this.selectedFile = file;
+          this.validation.file = null;
+          console.log(this.selectedFile.name);
+        }
+      }
+    },
+    removeFile() {
+      this.selectedFile = null;
+      this.file.fileDescription = '';
+      this.$refs.ufile.clear();
+    },
     levelValidate(){
       let docType = parseInt(this.docType)
       if (docType === this.attestationDocReportType){
@@ -226,9 +288,39 @@ export default {
 
     },
     notValid() {
-      this.validation.namekz = this.file.namekz === null || this.file.namekz === ''
-      this.validation.nameru = this.file.nameru === null || this.file.nameru === ''
-      this.validation.nameen = this.file.nameen === null || this.file.nameen === ''
+      this.validation.namekz = this.file.namekz === null || this.file.namekz === '';
+      this.validation.nameru = this.file.nameru === null || this.file.nameru === '';
+      this.validation.nameen = this.file.nameen === null || this.file.nameen === '';
+
+      if (this.validation.namekz && this.validation.nameru && this.validation.nameen) {
+        this.validation.nameGroup = true;
+      } else {
+        this.validation.nameGroup = false;
+
+        if (!this.validation.namekz) {
+          if (this.validation.nameru) {
+            this.file.nameru = this.file.namekz;
+          }
+          if (this.validation.nameen) {
+            this.file.nameen = this.file.namekz;
+          }
+        } else if (!this.validation.nameru) {
+          if (this.validation.namekz) {
+            this.file.namekz = this.file.nameru;
+          }
+          if (this.validation.nameen) {
+            this.file.nameen = this.file.nameru;
+          }
+        } else if (!this.validation.nameen) {
+          if (this.validation.namekz) {
+            this.file.namekz = this.file.nameen;
+          }
+          if (this.validation.nameru) {
+            this.file.nameru = this.file.nameen;
+          }
+        }
+      }
+
       //this.validation.parent = this.file.parentID === null || this.file.parentID === undefined
       this.levelValidate();
       this.validation.lang = (this.file.id === null && this.file.lang === null)
@@ -256,6 +348,10 @@ export default {
       var errors = [];
       Object.keys(this.validation).forEach(function(k)
       {
+        if (k === 'namekz' || k === 'nameru' || k === 'nameen') {
+          return;
+
+        }
           if (validation[k] === true) errors.push(validation[k])
           //result = result && validation[k];
       });
@@ -269,9 +365,31 @@ export default {
       this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
     },
     onUpload() {
-      this.$toast.add({severity: 'success', summary: this.$t('hdfs.success'), detail: this.$t('hdfs.toastMsg'), life: 3000});
+      if (this.file.is_view_only && !this.isPdf(this.file.path)) {
+        this.validation.file = this.$t("hdfs.onlyPdfAllowed");
+        return;
+      } else {
+        this.$toast.add({severity: 'success', summary: this.$t('hdfs.success'), detail: this.$t('hdfs.toastMsg'), life: 3000});
+      }
+    },
+    isPdf(fileName) {
+      if (!fileName || typeof fileName !== 'string') {
+        return false;
+      }
+      const extension = fileName.split('.').pop().toLowerCase();
+      switch (extension) {
+        case 'pdf': return true;
+        default: return false;
+      }
     },
     updateFile() {
+      if (this.file.is_view_only && this.selectedFile && !this.isPdf(this.selectedFile.name)) {
+        this.validation.file = this.$t("hdfs.onlyPdfAllowed");
+        this.selectedFile = null;
+        this.$refs.ufile.clear();
+        return;
+      }
+
         if (this.notValid()) {
             return;
         }
@@ -302,6 +420,19 @@ export default {
         //var fcount = this.file.id !== null ? 0 : this.$refs.ufile.files.length
           fcount = this.$refs.ufile.files.length
         }
+      if (this.file.fileDescription) {
+          let param = {
+            value: this.file.fileDescription,
+            name: 'FileDescription',
+            description: 'FileDescription'
+          };
+
+        if (!this.file.params) {
+          this.file.params = [];
+        }
+
+          this.file.params.push(param);
+      }
         fd.append('info', JSON.stringify({directory: this.directory, count: fcount, folderID: locFolderId, fileInfo: this.file}));
         api.post("/doc/updateFile", fd, {
           headers: getFileHeader()
@@ -334,9 +465,6 @@ export default {
           this.folder.key = response.data.id;
           this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
           this.$emit("updated", this.folder);
-      },
-      error =>{
-        console.log(error);
       })
     },
     getReadyDocCatalog() {
@@ -347,12 +475,6 @@ export default {
         headers: getHeader()
       }).then(res => {
         this.catalogs = res.data
-      }).catch(err => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          console.log(err)
-        }
       })
     },
   },
@@ -363,3 +485,27 @@ export default {
   },
 }
 </script>
+
+<style>
+
+.selected-file {
+  margin-bottom: 10px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+}
+
+.remove-file-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #d9534f; /* Красный цвет для иконки */
+  margin-left: 10px; /* Отступ между текстом и иконкой */
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+</style>

@@ -59,17 +59,17 @@
       <h5 style="margin-top: 0">{{ $t("enuTopicSettings.inputType") }}</h5>
       <div class="p-formgroup-inline">
         <div class="field-radiobutton">
-          <RadioButton id="input_outlined" name="inputstyle" value="outlined" :modelValue="inputStyle" @update:modelValue="changeInputStyle" />
+          <RadioButton id="input_outlined" name="inputstyle" value="outlined" :modelValue="inputStyle" @update:modelValue="changeInputStyle"/>
           <label for="input_outlined">{{ $t('enuTopicSettings.inputOutlined') }}</label>
         </div>
         <div class="field-radiobutton">
-          <RadioButton id="input_filled" name="inputstyle" value="filled" :modelValue="inputStyle" @update:modelValue="changeInputStyle" />
+          <RadioButton id="input_filled" name="inputstyle" value="filled" :modelValue="inputStyle" @update:modelValue="changeInputStyle"/>
           <label for="input_filled">{{ $t('enuTopicSettings.inputFilled') }}</label>
         </div>
       </div>
 
       <h5>{{ $t("enuTopicSettings.rippleEffect") }}</h5>
-      <InputSwitch :modelValue="rippleActive" @update:modelValue="changeRipple" />
+      <InputSwitch :modelValue="rippleActive" @update:modelValue="changeRipple"/>
 
       <!-- <h5>Menu Type</h5>
       <div class="p-formgroup-inline">
@@ -86,11 +86,11 @@
       <h5>{{ $t("enuTopicSettings.menuColor") }}</h5>
       <div class="p-formgroup-inline">
         <div class="field-radiobutton">
-          <RadioButton id="dark" name="layoutColorMode" value="dark" v-model="d_layoutColorMode" @change="changeLayoutColor('dark')" />
+          <RadioButton id="dark" name="layoutColorMode" value="dark" v-model="d_layoutColorMode" @change="changeLayoutColor('dark')"/>
           <label for="dark">{{ $t("enuTopicSettings.menuColorDark") }}</label>
         </div>
         <div class="field-radiobutton">
-          <RadioButton id="light" name="layoutColorMode" value="light" v-model="d_layoutColorMode" @change="changeLayoutColor('light')" />
+          <RadioButton id="light" name="layoutColorMode" value="light" v-model="d_layoutColorMode" @change="changeLayoutColor('light')"/>
           <label for="light">{{ $t("enuTopicSettings.menuColorLight") }}</label>
         </div>
       </div>
@@ -105,8 +105,8 @@
 </template>
 
 <script>
-import { smartEnuApi, getHeader } from "@/config/config";
-import axios from 'axios';
+import {getHeader, smartEnuApi} from "@/config/config";
+import api from "@/service/api";
 
 export default {
   props: {
@@ -159,7 +159,7 @@ export default {
     darkTheme() {
       this.setTheme("dark-theme");
     },
-    blueTheme(){
+    blueTheme() {
       this.setTheme("blue-theme");
     },
     brownTheme() {
@@ -221,14 +221,14 @@ export default {
       localStorage.setItem("change-input", value);
       this.$primevue.config.inputStyle = value;
     },
-    getInputStyle(){
+    getInputStyle() {
       return localStorage.getItem("change-input")
     },
     changeRipple(value) {
       localStorage.setItem("change-ripple", value);
       this.$primevue.config.ripple = value;
     },
-    getRippleActive(){
+    getRippleActive() {
       return localStorage.getItem("change-ripple",)
     },
     // changeLayout(layoutMode) {
@@ -243,7 +243,7 @@ export default {
       localStorage.setItem("layout-color", layoutColor);
       this.$emit('layout-color-change', layoutColor);
     },
-    getLayoutColorMode(){
+    getLayoutColorMode() {
       return localStorage.getItem("layout-color")
     },
     bindOutsideClickListener() {
@@ -273,7 +273,7 @@ export default {
       const ripple = localStorage.getItem("change-ripple")
       const layoutModeColor = localStorage.getItem("layout-color")
 
-      const anyValueMissing = [userTheme, userFontSize, inputStyle, ripple,layoutModeColor].some(value => value === null || value === undefined);
+      const anyValueMissing = [userTheme, userFontSize, inputStyle, ripple, layoutModeColor].some(value => value === null || value === undefined);
 
       if (anyValueMissing) {
         this.userTheme = userTheme;
@@ -283,33 +283,23 @@ export default {
         this.$emit('layout-color-change', layoutModeColor);
 
       } else {
-        axios
-            .get(smartEnuApi + "/smartenu/settings/get",
-                {
-                  headers: getHeader()
-                },
-            )
-            .then((res) => {
-              if (res.data && res.data.enu_settings){
-                this.setTheme(res.data.enu_settings.user_theme)
-                this.setFz(res.data.enu_settings.user_font_size)
-                this.changeInputStyle(res.data.enu_settings.input_style)
-                this.changeRipple(res.data.enu_settings.change_ripple)
-                // this.changeLayoutColor(res.data.enu_settings.layout_mode)
-                this.changeLayoutColor(res.data.enu_settings.layout_color_mode)
-              } else{
-                this.setFz("default");
-                this.setTheme("default-theme");
-                this.changeInputStyle('outlined');
-                this.changeRipple(true);
-                // this.changeLayout('static');
-                this.changeLayoutColor('dark')
-              }
-
-            })
-            .catch((err) => {
-              // Обрабатываем ошибку запроса
-              console.error("Error loading data:", err);
+        api.get(smartEnuApi + "/smartenu/settings/get", {headers: getHeader()}).then((res) => {
+          if (res.data && res.data.enu_settings) {
+            this.setTheme(res.data.enu_settings.user_theme)
+            this.setFz(res.data.enu_settings.user_font_size)
+            this.changeInputStyle(res.data.enu_settings.input_style)
+            this.changeRipple(res.data.enu_settings.change_ripple)
+            // this.changeLayoutColor(res.data.enu_settings.layout_mode)
+            this.changeLayoutColor(res.data.enu_settings.layout_color_mode)
+          } else {
+            this.setFz("default");
+            this.setTheme("default-theme");
+            this.changeInputStyle('outlined');
+            this.changeRipple(true);
+            // this.changeLayout('static');
+            this.changeLayoutColor('dark')
+          }
+        }).catch(_ => {
               this.setFz("default");
               this.setTheme("default-theme");
               this.changeInputStyle('outlined');
@@ -320,25 +310,19 @@ export default {
       }
     },
 
-    saveThemeStyles(){
-      axios
-          .post(smartEnuApi + "/smartenu/settings/insert",{
-
-                theme: this.userTheme,
-                font_size: this.userFontSize,
-                layout_color: this.d_layoutColorMode,
-                input_style: this.$primevue.config.inputStyle,
-                change_ripple: Boolean(this.$primevue.config.ripple),
-              },
-              {
-                headers: getHeader()
-              },).then((res) => {
+    saveThemeStyles() {
+      api.post(smartEnuApi + "/smartenu/settings/insert", {
+            theme: this.userTheme,
+            font_size: this.userFontSize,
+            layout_color: this.d_layoutColorMode,
+            input_style: this.$primevue.config.inputStyle,
+            change_ripple: Boolean(this.$primevue.config.ripple),
+          },
+          {
+            headers: getHeader()
+          }).then((res) => {
 
       }).catch((err) => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
-
         this.$toast.add({
           severity: "error",
           detail: this.$t("common.message.saveError"),
@@ -365,16 +349,17 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.vi_card{
+.vi_card {
   margin-bottom: 10px;
-  .btns{
-    .vi_btn{
+
+  .btns {
+    .vi_btn {
       display: inline-flex;
       justify-content: center;
       align-items: center;
       font-weight: 700;
-      width: 40px!important;
-      height: 40px!important;
+      width: 40px !important;
+      height: 40px !important;
       border-radius: 50%;
       background: transparent;
       margin-right: 10px;
@@ -383,51 +368,55 @@ export default {
       cursor: pointer;
       margin-bottom: 10px;
     }
+
     .small {
       font-size: 18px;
-      width: 30px!important;
-      height: 30px!important;
+      width: 30px !important;
+      height: 30px !important;
     }
 
     .middle {
       font-size: 25px;
-      width: 35px!important;
-      height: 35px!important;
+      width: 35px !important;
+      height: 35px !important;
     }
 
     .big {
       font-size: 30px;
     }
-    .black{
+
+    .black {
       background: #000;
       color: #fff;
     }
-    .blue{
+
+    .blue {
       background: #9dd1ff;
       color: #195183;
     }
-    .brown{
+
+    .brown {
       background: #3b2716;
       color: #a7e44d;
     }
-    .milky{
+
+    .milky {
       background: #f7f3d6;
       color: #4d4b43;
     }
   }
 }
-@media print
-{
-  .no-print, .no-print *
-  {
-    display:none !important;
+
+@media print {
+  .no-print, .no-print * {
+    display: none !important;
   }
 }
-@media print{
-  .show-print, .show-print *
-  {
+
+@media print {
+  .show-print, .show-print * {
     display: block !important;
-    width:100% !important;
+    width: 100% !important;
   }
 }
 </style>

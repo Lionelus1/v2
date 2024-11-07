@@ -140,18 +140,6 @@ export default {
                 }
               }
             }, 50)
-          })
-          .catch((error) => {
-            console.log(error)
-            if (error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("common.error") + ":\n" + error,
-                life: 3000,
-              });
-            }
           });
     },
     validateGuides() {
@@ -228,8 +216,7 @@ export default {
           }
         }
         return null
-      } catch (e) {
-        console.log(e)
+      } catch (_) {
         /* this.$toast.add({
              severity: "error",
              summary: e,

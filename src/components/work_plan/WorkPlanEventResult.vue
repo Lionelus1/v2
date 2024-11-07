@@ -1,4 +1,7 @@
 <template>
+  <div v-if="!plan || resultData === ''" class="spinner-container">
+    <ProgressSpinner class="progress-spinner" style="width: 50px; height: 50px"/>
+  </div>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <div class="col-12" v-if="plan && event">
@@ -51,7 +54,6 @@
           </div>
           <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
-
               <div class="field" v-if="event && isOperPlan">
                 <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
@@ -110,7 +112,7 @@
                   <InputText v-model="event.fact" @input="factChange"/>
 
               </div>
-              <div class="field" v-if="isVisibleWritableField && isRespUser && (isOperPlan || isStandartPlan)">
+              <div class="field" v-if="isVisibleWritableField && isRespUser && isOperPlan">
                 <Dropdown v-model="selectedQuarter" :options="filteredQuarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full md:w-14rem" required @change="validate"/>
                 <small class="p-error" v-if="validation.quarter">{{$t('common.requiredField')}}</small>
               </div>
@@ -157,17 +159,18 @@
                         <span class="pb-2"><i class="fa-solid fa-user mr-1"></i><b>{{ item.user.thirdName + " " + item.user.firstName }}</b></span>
                         <span class="pb-2"><strong>{{ getQuarter(item.result_text[0].quarter) }}</strong> | {{ formatDateMoment(item.plan_event_result_history[0].create_date) }}</span>
                       </div>
-                      <div class="ml-3">
+                      <div class="ml-3" v-if="item?.plan_event_result_history[0]?.state_id !== 9">
                         <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">
                           {{ getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
                         <span style="float: right; margin-top: 0px;">
-                          <Button v-if="item.plan_event_result_history[0]?.state_id === 6" class="p-button p-component p-button-icon-only p-button-text" style="height: 20px;font-size: 16px;" @click="showRejectMessageSidebar" icon="fa-solid fa-eye" link />
+                         <Button v-if="item.plan_event_result_history[0]?.state_id === 6" class="p-button p-component p-button-icon-only p-button-text" style="height: 20px;font-size: 16px;" @click="showRejectMessageSidebar" icon="fa-solid fa-eye" link />
                         </span>
                       </div>
                     </div>
                   </Divider>
-                  <Inplace v-if="(item.result_text && (loginedUserId === item.result_text[0].user.userID) && event &&
-                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)) || (item.result_text && isPlanCreator && event &&
+                  <Inplace v-if="(item.result_text && item.result_text[0].user && (loginedUserId === item.result_text[0].user.userID) && event &&
+                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)) || (item.result_text && item.result_text[0].user && (loginedUserId === item.result_text[0].user.userID) && event &&
+                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 1)) || (item.result_text && isPlanCreator && event &&
                     (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 5) && isSciencePlan)" :active="item.isActive" @open="openInplace(item)">
                     <template #display>
                       <div>
@@ -177,7 +180,7 @@
                     </template>
                     <template #content>
                       <div class="py-2"
-                           v-if="((item.plan_event_result_history[0].state_id === 6) && (loginedUserId === item.result_text[0].user.userID)) || (isPlanCreator && isSciencePlan && (item.plan_event_result_history[0].state_id === 5))">
+                           v-if="((item.plan_event_result_history[0].state_id === 6) && (loginedUserId === item.result_text[0].user.userID)) || ((item.plan_event_result_history[0].state_id === 1) && (loginedUserId === item.result_text[0].user.userID)) || (isPlanCreator && isSciencePlan && (item.plan_event_result_history[0].state_id === 5))">
                         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success" @click="saveEditResult(item)"
                                 :loading="loading"/>
                         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1" @click="cancelEdit(item)"/>
@@ -220,7 +223,9 @@
                         <slot name="empty"></slot>
                       </div>
                       <!--End Edit jaslaganda-->
+                      
                     </template>
+                    
                   </Inplace>
                   <div v-else class="p-0">
                     <p v-html="item.result_text[0].text"></p>
@@ -241,6 +246,8 @@
                       </div>
                     </div>
                   </div>
+                  <br/>
+                  <Button v-if="((item.plan_event_result_history[0].state_id === 1 || item.plan_event_result_history[0].state_id === 6) && (item.result_text[0].userId === loginedUserId))" :label="$t('common.send')" icon="fa-regular fa-paper-plane" class="p-button p-button-primary" @click="sendResultConfirmItem($event, item, 'send')" style="float: left; margin-right: 10px;"></Button>
                   <div style="margin-left: -12px;" v-if="isPlanCreator || findRole(null, 'main_administrator')">
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check" class="p-button-rounded p-button-text"
                             @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)" :label="$t('common.action.accept')"></Button>
@@ -305,6 +312,13 @@
                 </span>
               </template>
             </Column>
+            <Column field="user" :header="$t('common.comment')">
+              <template #body="{ data }">
+                <div v-if="data?.state_id == 9">
+                  <Button icon="pi pi-eye" @click="openModiPersonHistory(data)" severity="secondary" alt-text="Resp Person"/>
+                </div>
+              </template>
+            </Column>
           </DataTable>
           <div v-else>
             {{ $t('common.recordsNotFound') }}
@@ -314,6 +328,7 @@
       </TabView>
     </div>
   </div>
+
   <Sidebar v-model:visible="toCorrectSidebar" position="right" class="p-sidebar-lg " style="overflow-y: scroll">
     <h3>{{ $t('workPlan.toCorrect') }}</h3>
     <div class="field">
@@ -349,6 +364,120 @@
       </div>
     </div>
 </Sidebar>
+<Dialog v-model:visible="modifiedHistory" :header="$t('workPlan.editRespUser')" :position="position" modal :style="{ width: '400px' }" class="p-fluid" :breakpoints="{ '960px': '75vw', '640px': '90vw' }">
+  <div class="dialog-content">
+      <div class="field">
+        <label class="bold">{{  $t('queue.time') + ":" }}</label>
+        <span class="value">{{ formatDateMoment(modiDialogData?.modi_date) }}</span>
+      </div>
+      <div class="field">
+        <label class="bold">{{ $t('workPlan.modifiedPerson') + ":" }}</label>
+        <span class="value">{{ modiDialogData?.modi_user?.fullName }}</span>
+      </div>
+      <div class="field">
+        <label class="bold">{{ $t('common.comment') + ":"}}</label>
+        <div v-if="commentParseJson?.comment !== ''">
+          <p class="value" v-if="commentParseJson?.comment && commentParseJson?.comment?.length > 0">{{ commentParseJson?.comment }}</p>
+        </div>
+        <div v-else>{{ $t('common.noComment') }}</div>
+        
+       
+      </div>
+      <div class="field" v-if="commentParseJson?.summary_department">
+        <label class="bold">{{ $t('workPlan.operationalPlan') + ":"}}</label>
+        <p>{{ $t('workPlan.summaryDepartment') }}</p>
+        <Timeline :value="commentParseJson?.summary_department?.modified" class="timeline_wp_history">
+              <template #opposite="slotProps">
+                  <div v-if='$i18n.locale === "kz"'>
+                    <div v-for="(item, index) in slotProps.item" :key="index" style="text-align:right; min-width: 80px;">
+                      <div v-if="item.kz.before">{{ item.kz.before }}</div>
+                      <div v-if="item.kz.after">{{ item.kz.after }}</div>
+                      <div v-if="item.kz.added">{{ item.kz.added }}</div>
+                      <div v-if="item.kz.removed">{{ item.kz.removed }}</div>
+                    </div>
+                  </div>
+                  <div v-if='$i18n.locale === "ru"'>
+                    <div v-for="(item, index) in slotProps.item" :key="index" style="text-align:right; min-width: 80px;">
+                      <div v-if="item.ru.before">{{ item.ru.before }}</div>
+                      <div v-if="item.ru.after">{{ item.ru.after }}</div>
+                      <div v-if="item.ru.added">{{ item.ru.added }}</div>
+                      <div v-if="item.ru.removed">{{ item.ru.removed }}</div>
+                    </div>
+                  </div>
+                  <div v-if='$i18n.locale === "en"'>
+                    <div v-for="(item, index) in slotProps.item" :key="index" style="text-align:right; min-width: 80px;">
+                      <div v-if="item.en.before">{{ item.en.before }}</div>
+                      <div v-if="item.en.after">{{ item.en.after }}</div>
+                      <div v-if="item.en.added">{{ item.en.added }}</div>
+                      <div v-if="item.en.removed">{{ item.en.removed }}</div>
+                    </div>
+                  </div>
+              </template>
+
+              <template #content="slotProps">
+                <div v-if='$i18n.locale === "kz"'>
+                  <div v-if="slotProps?.item?.status?.kz?.user" style="text-align: left;margin-bottom: 15px;">{{ slotProps?.item?.status?.kz?.user }}</div>
+                </div>
+                <div v-if='$i18n.locale === "ru"'>
+                  <div v-if="slotProps?.item?.status?.ru?.user">{{ slotProps?.item?.status?.ru?.user }}</div>
+                </div>
+                <div v-if='$i18n.locale === "en"'>
+                  <div v-if="slotProps?.item?.status?.en?.user">{{ slotProps?.item?.status?.en?.user }}</div>
+                </div>
+              </template>
+            </Timeline>
+      </div>
+      <div class="field">
+        <label class="bold">{{ $t('dissertation.dissReportActions') + ":"}}</label>
+        <div>
+          <Timeline :value="commentParseJson?.responsive_users?.modified" class="timeline_wp_history">
+              <template #opposite="slotProps">
+                  <div v-if='$i18n.locale === "kz"'>
+                    <div v-for="(item, index) in slotProps.item" :key="index" style="text-align:right; min-width: 80px;">
+                      <div v-if="item.kz.before">{{ item.kz.before }}</div>
+                      <div v-if="item.kz.after">{{ item.kz.after }}</div>
+                      <div v-if="item.kz.added">{{ item.kz.added }}</div>
+                      <div v-if="item.kz.removed">{{ item.kz.removed }}</div>
+                    </div>
+                  </div>
+                  <div v-if='$i18n.locale === "ru"'>
+                    <div v-for="(item, index) in slotProps.item" :key="index" style="text-align:right; min-width: 80px;">
+                      <div v-if="item.ru.before">{{ item.ru.before }}</div>
+                      <div v-if="item.ru.after">{{ item.ru.after }}</div>
+                      <div v-if="item.ru.added">{{ item.ru.added }}</div>
+                      <div v-if="item.ru.removed">{{ item.ru.removed }}</div>
+                    </div>
+                  </div>
+                  <div v-if='$i18n.locale === "en"'>
+                    <div v-for="(item, index) in slotProps.item" :key="index" style="text-align:right; min-width: 80px;">
+                      <div v-if="item.en.before">{{ item.en.before }}</div>
+                      <div v-if="item.en.after">{{ item.en.after }}</div>
+                      <div v-if="item.en.added">{{ item.en.added }}</div>
+                      <div v-if="item.en.removed">{{ item.en.removed }}</div>
+                    </div>
+                  </div>
+                  
+                
+              </template>
+
+              <template #content="slotProps">
+                <div v-if='$i18n.locale === "kz"'>
+                  <div v-if="slotProps?.item?.status?.kz?.users" style="text-align: left;margin-bottom: 15px;">{{ slotProps?.item?.status?.kz?.users }}</div>
+                </div>
+                <div v-if='$i18n.locale === "ru"'>
+                  <div v-if="slotProps?.item?.status?.ru?.users">{{ slotProps?.item?.status?.ru?.users }}</div>
+                </div>
+                <div v-if='$i18n.locale === "en"'>
+                  <div v-if="slotProps?.item?.status?.en?.users">{{ slotProps?.item?.status?.en?.users }}</div>
+                </div>
+              </template>
+            </Timeline>
+            
+        </div>
+      </div>
+    </div>
+</Dialog>
+
 </template>
 
 <script>
@@ -375,7 +504,7 @@ export default {
       isDisabled: true,
       active: null,
       menu: null,
-      resultData: null,
+      resultData: '',
       files: [],
       newResult: null,
       fact: null,
@@ -401,10 +530,12 @@ export default {
       isCurrentUserApproval: false,
       planService: new WorkPlanService(),
       resultStatus: [
+        {name_kz: "Құрылды", name_ru: "Создан", name_en: "Created", id: 1},
         {name_kz: "Тексерілуде", name_ru: "На проверке", name_en: "On inspection", id: 5},
         {name_kz: "Түзетуде", name_ru: "На доработке", name_en: "Under revision", id: 6},
         {name_kz: "Тексерілді", name_ru: "Проверено", name_en: "Inspected", id: 7},
         {name_kz: "Өшірілді", name_ru: "Удалено", name_en: "Deleted", id: 3},
+        {name_kz: "Өзгертілген", name_ru: "Измененный", name_en: "Modified", id: 9},
 
       ],
       historyStatus: [
@@ -415,6 +546,8 @@ export default {
         {name_kz: "Тексерілуде", name_ru: "На проверке", name_en: "On inspection", id: 5},
         {name_kz: "Түзетуде", name_ru: "На доработке", name_en: "Under revision", id: 6},
         {name_kz: "Тексерілді", name_ru: "Проверено", name_en: "Inspected", id: 7},
+        {name_kz: "Өзгертілген", name_ru: "Измененный", name_en: "Modified", id: 9},
+        
 
       ],
       isInspected: true,
@@ -442,7 +575,12 @@ export default {
       validation:{
         quarter: false
       },
-      inputWordCount: 0
+      inputWordCount: 0,
+      modifiedHistory:false,
+      modiDialogData: null,
+      position: 'topright',
+      commentParseJson: null
+
     }
   },
 
@@ -510,7 +648,7 @@ export default {
       if (this.isPlanCreator) {
         userResults = this.resultData.filter(x => x.user_id === this.loginedUserId)
       }
-      let userData = !userResults.some(x => x.plan_event_result_history?.every(x => x.modi_user_id === this.loginedUserId && (x.state_id === 5 || x.state_id === 6)))
+      let userData = !userResults.some(x => x.plan_event_result_history?.every(x => x.modi_user_id === this.loginedUserId && (x.state_id === 1 || x.state_id === 5 || x.state_id === 6)))
       return userData
     },
     shouldShowRejectSidebar() {
@@ -536,12 +674,21 @@ export default {
     if (!this.event_id) {
       this.event_id = this.$route.params.id;
     }
+    this.loading = true
     this.getEvent();
-
+    this.loading = false
   },
 
   methods: {
     findRole: findRole,
+    openModiPersonHistory(data) {
+            this.modiDialogData = data;
+            if(this.modiDialogData?.text?.length > 0){
+              this.commentParseJson = JSON.parse(this.modiDialogData.text);
+            }
+            
+            this.modifiedHistory = true;
+    },
     getFirstMonthOfQuarter() {
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1; //1-12
@@ -559,12 +706,18 @@ export default {
 
       return firstMonthOfQuarter;
     },
+    getSecondMonthOfQuarter() {
+      const firstMonthOfQuarter = this.getFirstMonthOfQuarter();
+      const secondMonthOfQuarter = firstMonthOfQuarter + 1;
+
+      return secondMonthOfQuarter;
+    },
     filterQuarters() {
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentQuarter = Math.ceil(currentMonth / 3);
       const currentDay = currentDate.getDate();
-      if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter()) {
+      if (currentDay <= 7 && (currentMonth === this.getFirstMonthOfQuarter() || currentMonth === this.getSecondMonthOfQuarter())) {
         // Agymdagy ai agymdagy toqsannyng birinshi aiy bolsa aldyngy toqsanga natije toltyra alady
         return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
       } else {
@@ -583,6 +736,9 @@ export default {
     },
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
+    },
+    toggleHistory(ref, data) {
+      this.$refs[ref].toggle(data);
     },
     clearResultFilter(){
       this.resultFilter.responsiveUser = null;
@@ -728,8 +884,8 @@ export default {
           },
         },
         {
-          label: this.$t("common.save"),
-          icon: "pi pi-fw pi-save",
+          label: this.$t("common.save"), //label: this.$t("common.send"),
+          icon: "pi pi-save", //icon: "fa-regular fa-paper-plane",
           disabled: this.isDisabled,
           command: () => {
             this.saveResult();
@@ -776,7 +932,7 @@ export default {
         return
       }
 
-      if ((this.isOperPlan || this.isStandartPlan) && this.validate()) {
+      if (this.isOperPlan && this.validate()) {
         this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
         return
       }
@@ -792,12 +948,16 @@ export default {
         this.isBlockUI = false;
         return;
       }
-
+      
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.isOperPlan ? this.newResult ? this.newResult : "" : this.result);
+
       if (this.plan && this.isOperPlan) {
         fd.append("quarter", this.selectedQuarter.value);
         fd.append("is_partially", true);
+      }
+      if (this.plan && this.isStandartPlan) {
+        fd.append("quarter", this.event.quarter);
       }
 
       if (this.authUser?.mainPosition?.department &&
@@ -1047,10 +1207,15 @@ export default {
       this.selectedQuarter = item.result_text[0].quarter
       item.isActive = true;
     },
-    saveEditResult(item) {
-      if ((this.isOperPlan || this.isStandartPlan) && this.validate()) {
-        this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
-        return
+    saveEditResult(item, editType) {
+     
+      // if ((this.isOperPlan || this.isStandartPlan) && this.validate()) {
+      //   this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
+      //   return
+      // }
+      let editTypeId = 1
+      if(editType === "send"){
+        editTypeId = 5
       }
 
       this.loading = true;
@@ -1058,7 +1223,8 @@ export default {
       fd.append("result_id", item.event_result_id)
       fd.append("result_text_id", item.result_text[0].id)
       fd.append("work_plan_event_id", item.work_plan_event_id)
-      fd.append("quarter", this.selectedQuarter);
+      fd.append("quarter", item.result_text[0].quarter);
+      fd.append("edit_type", editTypeId)
 
 
       if (this.isFactChanged)
@@ -1093,6 +1259,21 @@ export default {
     cancelEdit(item) {
       item.isActive = false;
     },
+    sendResultConfirmItem(event, item, editType) {
+      this.$confirm.require({
+        target: event.currentTarget,
+        group: 'deleteResult',
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.saveEditResult(item, editType);
+
+        }
+      });
+    },
     deleteConfirmItem(event, item) {
       this.$confirm.require({
         target: event.currentTarget,
@@ -1110,7 +1291,6 @@ export default {
     },
     deleteItem(item) {
       if (!item.result_text || !item.result_text[0] || !item.result_text[0].id || !item.event_result_id) {
-        console.error('Invalid item');
         return;
       }
       const data = {
@@ -1316,6 +1496,10 @@ export default {
   letter-spacing: .3px;
   display: inline-block;
   text-align: center;
+  &.status-9 {
+    background: #cc33ff;
+    color: #fff;
+  }
 
   &.status-7 {
     background: #10b981;
@@ -1400,5 +1584,44 @@ td {
   .overlay-panel {
     max-width: 90vw; /* Adjust the percentage as needed */
   }
+}
+.dialog-content {
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+.bold {
+  font-weight: bold;
+  color: #333;
+}
+
+.value {
+  display: block;
+  margin-top: 0.25rem;
+  color: #555;
+  font-size: 1rem;
+}
+
+p.value {
+  margin: 0;
+}
+.input-group-wrapper {
+  margin-top: 0.5rem; /* Space between fields and input group */
+}
+
+.input-group-addon {
+  margin-left: 1rem; /* Space between individual input group addons */
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full screen height */
 }
 </style>

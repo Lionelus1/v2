@@ -173,7 +173,6 @@ const getFacultyAbb = () => {
       haveAccess.value = false
     } else {
       loading.value = false
-      toast.add({severity: "error", summary: error, life: 3000});
     }
   });
 }
@@ -199,7 +198,6 @@ const getSettings = () => {
       haveAccess.value = false
     } else {
       loading.value = false
-      toast.add({severity: "error", summary: error, life: 3000});
     }
   });
 }
@@ -226,10 +224,9 @@ const update = () => {
     }
     submitted.value = false;
     loading.value = false;
-  }).catch(error => {
+  }).catch(_ => {
     submitted.value = false;
     loading.value = false;
-    toast.add({severity: "error", summary: error, life: 3000});
   });
 }
 
@@ -247,8 +244,7 @@ const uploadBg = (event) => {
       infoData.value.bg_image = res.data[0].filepath;
       infoData.value.bgUrl = smartEnuApi + fileRoute + infoData.value.bg_image;
     }
-  }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
+  }).catch(_ => {
   });
 }
 
@@ -290,8 +286,7 @@ const saveSiteInfo = () => {
     if (res.data)
       toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
     // getSettings();
-  }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
+  }).catch(_ => {
   })
 }
 
@@ -300,8 +295,7 @@ const saveMaintenaceMode = () => {
     if (res.data)
       toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
     // getSettings();
-  }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
+  }).catch(_ => {
   })
 }
 

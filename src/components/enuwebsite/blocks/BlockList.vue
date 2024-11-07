@@ -2,7 +2,7 @@
   <div class="col-12">
     <TitleBlock :title="$t('web.blocks')"/>
 
-    <BlockUI v-if="haveAccess" :blocked="loading">
+    <BlockUI v-if="haveAccess" >
       <ToolbarMenu :data="toolbarMenus" @search="initSearch($event)" :search="true"/>
 
       <div class="card" v-if="isWebAdmin">
@@ -33,7 +33,7 @@
                   {{ data.note }}
                 </template>
               </Column>
-              <Column :header="$t('faq.createDate')">
+              <Column :header="$t('faq.createDate')" sortable>
                 <template #body="{ data }">
                   {{ formatDate(data.create_date) }}
                 </template>
@@ -589,7 +589,6 @@ const getBlockList = () => {
       haveAccess.value = false
     } else {
       loading.value = false
-      toast.add({severity: "error", summary: error, life: 3000});
     }
   });
 }
@@ -623,7 +622,6 @@ const getBlockListViewTypes = () => {
       haveAccess.value = false
     } else {
       loading.value = false
-      toast.add({severity: "error", summary: error, life: 3000});
     }
   });
 }
@@ -641,11 +639,10 @@ const addBlock = () => {
     isCreateModal.value = false;
     formData.value = {}
     getBlockList()
-  }).catch(error => {
+  }).catch(_ => {
     submitted.value = false;
     isCreateModal.value = false;
     formData.value = {}
-    toast.add({severity: "error", summary: error, life: 3000});
   });
 }
 const isWebAdmin = computed(() => findRole(null, "enu_web_admin"))
@@ -683,12 +680,11 @@ const save = () => {
     formData.value = {}
     selectedBlock.value = null
     getBlockList()
-  }).catch(error => {
+  }).catch(_ => {
     submitted.value = false;
     isCreateModal.value = false;
     formData.value = {}
     selectedBlock.value = null
-    toast.add({severity: "error", summary: error, life: 3000});
   });
 }
 
@@ -730,8 +726,7 @@ const remove = (id) => {
       toast.add({severity: "warn", summary: i18n.t('common.message.title.saveError'), life: 3000});
     }
     getBlockList();
-  }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
+  }).catch(_ => {
   });
 }
 

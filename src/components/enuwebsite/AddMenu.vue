@@ -142,10 +142,13 @@
       <Textarea :placeholder="$t('common.enter')" class="pt-1" type="text" v-model="formData.description_en"
                 maxlength="80"></Textarea>
         </div>
-        <div class="field">
+        <div class="field menu_bg">
             <label>{{ $t('web.bgImg') }}</label>
             <CustomFileUpload @upload="uploadFile" :accept="'image/*'" v-model="bgImg" :multiple="false"
-                :preview="formData.background_image" :button="true"></CustomFileUpload>
+                :preview="formData.background_image" :button="!formData.background_image"></CustomFileUpload>
+          <span v-if="formData.background_image" class="btn-remove-image p-button p-button-danger p-button-sm w-fit" @click="removeBg(formData.background_image)">
+              {{ $t('common.delete') }}
+            </span>
         </div>
         <template #footer>
             <Button v-if="currentMenu" :label="$t('common.save')" icon="pi pi-check"
@@ -306,13 +309,8 @@ export default {
           }
         }
         this.loading = false;
-      }).catch(error => {
+      }).catch(_ => {
         this.loading = false;
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
       });
     },
     mapMenu(menus) {
@@ -366,13 +364,6 @@ export default {
             life: 3000,
           });
         }
-      }).catch(error => {
-        console.log(error)
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
       });
     },
 
@@ -400,11 +391,6 @@ export default {
           });
         }
       }).catch(error => {
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
       });
     },
     onPageLoad(event) {
@@ -418,13 +404,8 @@ export default {
         if (data)
           this.formData.page_id = data.enu_page_id;
         this.pageLoading = false;
-      }).catch(error => {
+      }).catch(_ => {
         this.pageLoading = false;
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
       });
     },
     hideDialog() {
@@ -490,6 +471,9 @@ export default {
       // }
       return errors.length === 0;
     },
+    removeBg(node){
+      this.formData.background_image = null;
+    }
   }
 }
 </script>
@@ -546,7 +530,10 @@ export default {
   top: 5px;
   right: 3px;
   cursor: pointer;
-
-
+}
+.menu_bg{
+  img{
+    margin-top: 20px!important;
+  }
 }
 </style>

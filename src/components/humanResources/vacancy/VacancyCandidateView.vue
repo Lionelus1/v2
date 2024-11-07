@@ -203,7 +203,6 @@ export default {
             candidateId: this.candidateRelation.candidate.id
           },
           {headers: getHeader()}).then(response => {
-        console.log(response.data)
         if (response.data.docId !== null) {
           this.docId = response.data.docId
           this.resumeView = true
@@ -214,13 +213,7 @@ export default {
           link.href = response.data.fileData;
           link.click();
         }
-      }).catch(error => {
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
-      })
+      });
     },
     view(data) {
       this.candidateRelation = data
@@ -235,33 +228,19 @@ export default {
             candidateId: data.candidate.id
           },
           {headers: getHeader()}).then(response => {
-        console.log(response.data)
         this.documentsPath = response.data
         this.docs = true
-      }).catch(error => {
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
-      })
+      });
     },
     downloadLetter() {
       this.vacancyService.downloadLetter(this.candidateRelation.vacancyId,
           this.candidateRelation.candidate.user.userID).then(response => {
-        console.log(response.data)
         var link = document.createElement('a');
         link.innerHTML = 'Download file';
         link.download = response.data.name;
         link.href = response.data.file;
         link.click();
-      }).catch(error => {
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
-      })
+      });
     },
     downloadResume() {
       let pdfOptions = {
@@ -285,12 +264,10 @@ export default {
         reader.readAsDataURL(pdf);
         reader.onloadend = function () {
           var base64data = reader.result;
-          console.log(base64data)
           var link = document.createElement('a');
           link.innerHTML = 'Download PDF file';
           link.download = 'Resume.pdf';
           link.href = base64data;
-          console.log(link.href)
           link.click();
         }
       });
@@ -319,12 +296,7 @@ export default {
             this.menu[1].visible = false
             this.menu[2].visible = false
           }
-        }).catch(error => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
+        }).catch(_ => {
         })
       }
     }
@@ -341,10 +313,36 @@ export default {
 
 <style lang="scss" scoped>
 .customer-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+
   &.status-8 {
     background: #b3e5fc;
     color: #23547b;
   }
 
+  &.status-9 {
+    background: #eccfff;
+    color: #694382;
+  }
+
+  &.status-10 {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.status-11 {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+
+  &.status-12 {
+    background: #ffd8b2;
+    color: #805b36;
+  }
 }
 </style>

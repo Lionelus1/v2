@@ -155,13 +155,8 @@ export default {
           this.TN = res.data.tn_res;
         }
         this.loading = false;
-      }).catch(error => {
+      }).catch(_ => {
         this.loading = false;
-        if (error?.response?.status === 403) {
-          this.haveAccess = false
-        } else {
-          this.$toast.add({severity: "error", summary: error, life: 3000});
-        }
       });
     },
     onPage(event) {

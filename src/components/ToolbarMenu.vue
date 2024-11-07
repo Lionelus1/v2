@@ -53,6 +53,13 @@
                 class="p-button-text p-button-secondary"
                 icon="fa-solid fa-filter"
                 @click="filterClick($event)"/>
+        <template v-if="rightBtn">
+          <Button
+              v-tooltip.bottom="$t('common.specialNeedsJobs')"
+              :class="['p-button-outlined', 'float_right']"
+              icon="fa-solid fa-wheelchair"
+              @click="rightBtnClick($event)"/>
+        </template>
         <template v-if="search">
           <div class="vertical_line"></div>
           <IconField iconPosition="left">
@@ -74,7 +81,7 @@
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref} from "vue";
 
-const props = defineProps(['data', 'notShowLabel', 'search', 'filter', 'filtered', 'border', 'filterLabel', 'change'])
+const props = defineProps(['data', 'notShowLabel', 'search', 'filter', 'filtered', 'border', 'filterLabel', 'change', 'rightBtn'])
 const containerRef = ref(null);
 const scrollStep = 50;
 const isScrollable = ref(false);
@@ -107,6 +114,9 @@ const searchClick = () => {
 }
 const filterClick = (event) => {
   emit('filter', event)
+}
+const rightBtnClick = (event) => {
+  emit('rightBtn', event)
 }
 const toggleSubMenu = (event, index) => {
   subMenu?.value[index].toggle(event)

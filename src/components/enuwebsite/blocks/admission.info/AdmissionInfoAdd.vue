@@ -15,13 +15,11 @@
       <TabPanel header="Қазақша">
         <div class="field mt-3">
           <label>{{ $t('web.shortInfo') }}</label>
-<!--          <RichEditor v-model="formData.short_info_kz" editorStyle="height: 100px"/>-->
           <TinyEditor v-model="formData.short_info_kz" :height="200" />
           <small v-show="!formData.short_info_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
         <div class="field">
           <label>{{ $t('web.enrollDocs') }}</label>
-<!--          <RichEditor v-model="formData.print_info_kz" editorStyle="height: 320px"></RichEditor>-->
           <TinyEditor v-model="formData.print_info_kz" />
           <small v-show="!formData.print_info_kz && submitted" class="p-error">
             {{ $t("smartenu.contentKzInvalid") }}
@@ -31,13 +29,11 @@
       <TabPanel header="Русский">
         <div class="field mt-3">
           <label>{{ $t('web.shortInfo') }}</label>
-<!--          <RichEditor v-model="formData.short_info_ru" editorStyle="height: 100px"/>-->
           <TinyEditor v-model="formData.short_info_ru" :height="200" />
           <small v-show="!formData.short_info_ru && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
         <div class="field">
           <label>{{ $t('web.shortInfo') }}</label>
-<!--          <RichEditor v-model="formData.print_info_ru" editorStyle="height: 320px"></RichEditor>-->
           <TinyEditor v-model="formData.print_info_ru"  />
           <small v-show="!formData.print_info_ru && submitted" class="p-error">
             {{ $t("smartenu.contentKzInvalid") }}
@@ -47,13 +43,11 @@
       <TabPanel header="English">
         <div class="field mt-3">
           <label>{{ $t('web.shortInfo') }}</label>
-<!--          <RichEditor v-model="formData.short_info_en" editorStyle="height: 100px"/>-->
           <TinyEditor v-model="formData.short_info_en" :height="200" />
           <small v-show="!formData.short_info_en && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
         <div class="field">
           <label>{{ $t('web.shortInfo') }}</label>
-<!--          <RichEditor v-model="formData.print_info_en" editorStyle="height: 320px"></RichEditor>-->
           <TinyEditor v-model="formData.print_info_en" />
           <small v-show="!formData.print_info_en && submitted" class="p-error">
             {{ $t("smartenu.contentKzInvalid") }}
@@ -71,9 +65,7 @@
 </template>
 
 <script>
-import RichEditor from "@/components/documents/editor/RichEditor.vue";
-import {computed, inject, ref, toRef, unref, watch} from "vue";
-import mitt from "mitt";
+import {inject, ref, unref} from "vue";
 import {AdmissionInfoService} from "@/service/admission.info.service";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
@@ -103,8 +95,7 @@ export default {
         if (res.data) {
           degrees.value = res.data
         }
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     }
 
@@ -113,8 +104,7 @@ export default {
         if (res.data) {
           categories.value = res.data
         }
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       })
     }
 
@@ -130,9 +120,8 @@ export default {
         }
         submitted.value = false;
         hideDialog();
-      }).catch(error => {
+      }).catch(_ => {
         submitted.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
       });
     }
 
@@ -148,9 +137,8 @@ export default {
         }
         submitted.value = false;
         hideDialog();
-      }).catch(error => {
+      }).catch(_ => {
         submitted.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
       });
     }
 

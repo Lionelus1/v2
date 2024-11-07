@@ -88,18 +88,25 @@ export class MenuService {
                         icon: 'fa-solid fa-rotate',
                         to: '/integrations',
                         visible: this.findRole("main_administrator")
-                    }
+                    },
+                    {
+                        label: $t('smartenu.mailingTitle'),
+                        icon: 'fa-regular fa-paper-plane',
+                        to: '/mailing',
+                        visible: this.findRole("mailing_manager")
+                    },
                 ]
             },
             {
                 label: $t('common.contragents'),
                 icon: 'pi pi-fw pi-users',
-                visible: this.isEnuWorker(),
                 items: [
                     {
                         label: $t('common.organizations'),
                         icon: 'pi pi-fw pi-home',
-                        to: '/contragent/organizations'},
+                        to: '/contragent/organizations',
+                        visible: this.findRole('student') || this.findRole('personal'),
+                    },
                     {
                       label: $t('common.individualEntrepreneur'),
                       icon: 'pi pi-fw pi-briefcase',
@@ -108,12 +115,19 @@ export class MenuService {
                     {
                         label: $t('common.personal'),
                         icon: 'fa-solid fa-person-shelter',
-                        to: '/contragent/persons/' + Enum.PersonType.OrganizationMember
+                        to: '/contragent/persons/' + Enum.PersonType.OrganizationMember,
+                        visible: this.isEnuWorker(),
                     },
                     {
                         label: $t('common.students'),
                         icon: 'fa-solid fa-graduation-cap',
-                        to: '/contragent/persons/' + Enum.PersonType.Student
+                        visible: this.isEnuWorker(),
+                        to: '/contragent/persons/' + Enum.PersonType.Student,
+                    },
+                    {
+                        label: $t('common.graduates'),
+                        icon: 'fa-solid fa-graduation-cap',
+                        to: '/contragent/persons/' + Enum.PersonType.Graduate
                     }
                 ]
             },
@@ -303,7 +317,6 @@ export class MenuService {
                         label: $t('course.courses'),
                         icon: 'fa-solid fa-chalkboard',
                         to: '/categories-courses',
-
                     },
 
                 ]
@@ -315,8 +328,8 @@ export class MenuService {
 
             },
             {
-                label: $t('Telegram'),
-                icon: 'fa-brands fa-telegram',
+                label: $t('telegram.title'),
+                icon: 'fa-solid fa-robot',
                 to: '/telegram',
                 visible: this.findRole('telegram') || this.findRole('main_administrator')
             },

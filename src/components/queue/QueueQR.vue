@@ -266,6 +266,7 @@ const called = ref(false);
 const phoneNumber = ref('');
 const isDisabled = ref(true);
 const queinfo = ref();
+const queError = ref();
 const queuesWS = ref([]);
 const currentStep = ref(2);
 const reservation = ref(false);
@@ -276,6 +277,7 @@ const currentTicketWS = ref(null)
 const currentTicketAPI = ref(null)
 const calledWindow = ref()
 const refusalVisible = ref(false)
+const testDataSocket = ref(null);
 const categoryName = ref()
 const name = ref('');
 const lastName = ref('');
@@ -331,7 +333,6 @@ const getDays = (data) => {
       })
       .catch((error) => {
         loading.value = false
-        console.log(error)
       });
 }
 const getTimes = (data,date) => {
@@ -346,7 +347,6 @@ const getTimes = (data,date) => {
       })
       .catch((error) => {
         loading.value = false
-        console.log(error)
       });
 }
 const changeQueues = (event) => {
@@ -394,9 +394,6 @@ const getQueue = (data) => {
       })
       .then((response) => {
         queues.value = response.data.queues
-      })
-      .catch((error) => {
-        console.log(error)
       });
 }
 getQueue(parentId.value)
@@ -454,7 +451,6 @@ const registerQueue = async (queueId, queue) => {
           currentStep.value = 4
         })
         .catch((error) => {
-          console.log(error)
           toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
           loading.value = false
           timeList.value = []
@@ -500,13 +496,59 @@ const getRegisterService = (queueId, queue) => {
           currentStep.value = 4
         })
         .catch((error) => {
-          console.log(error)
           toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
           loading.value = false
           currentStep.value = 2
           disabledRezervation.value = false
         });
   }
+}
+const useRealtimeStream = (qId = 0) => {
+  if (qId === 0) {
+    alert("must declrare to connect queue");
+    return
+  }
+  let socket = new WebSocket(socketApi + "/qws");
+
+  socket.onopen = () => {
+    const newTv = {
+      serviceId: 0,
+      windowId: 0,
+      queueId: qId
+    };
+    socket.send(JSON.stringify(newTv));
+  };
+
+  socket.onmessage = (event) => {
+    const msg = JSON.parse(event.data)
+    if (msg.lang === 'ru') {
+      msg.lang = 2
+    } else if (msg.lang === 'kz') {
+      msg.lang = 1
+    } else {
+      msg.lang = 3
+    }
+    msg.window = Number(msg.window)
+    queuesWS.value.unshift(JSON.parse(event.data));
+    currentTicketWS.value = queuesWS.value[0].ticket
+    calledWindow.value = queuesWS.value[0].window
+    if (queuesWS.value.length > 3) {
+      queuesWS.value = queuesWS.value.slice(0, 3);
+    }
+  };
+
+  socket.onclose = (event) => {
+    if (event.wasClean) {
+      //alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
+    } else {
+      // event.code is usually 1006 in this case
+      // alert('[close] Connection died');
+    }
+  };
+
+  socket.onerror = (error) => {
+    queError.value = JSON.stringify(error)
+  };
 }
 const padTo2Digits = (num) => {
   return num.toString().padStart(3, '0');
@@ -522,9 +564,6 @@ const refusal = () => {
         localStorage.removeItem('queueKey')
         currentStep.value = 2
         disabledRezervation.value = false
-      })
-      .catch((error) => {
-        console.log(error)
       });
 }
 const connected = () => {
@@ -544,7 +583,6 @@ const connected = () => {
       }
     });
     socket.on("connect_error", (err) => {
-      console.log(err)
     });
   },500)
 }
@@ -560,6 +598,7 @@ const previous = () => {
 }
 
 onMounted(() => {
+  useRealtimeStream(parentId.value)
   if (parentId.value !== parseInt(localStorage.getItem('queueParentId'))) {
     localStorage.removeItem('phoneNumber')
   }
@@ -581,6 +620,13 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+.talon_bg {
+  //background: #007dbe;
+  height: 100vh;
+  margin: -20px;
+  padding-top: 30px;
+}
+
 .talon {
   min-height: 300px;
   position: relative;
@@ -604,6 +650,7 @@ onMounted(() => {
 
   .dots {
     margin: 20px 0;
+    //border-bottom: 4px dotted #000e39;
     position: relative;
     bottom: 170px;
   }
@@ -615,6 +662,7 @@ onMounted(() => {
     width: 20px;
     height: 20px;
     border-radius: 50%;
+    //background: #000e39;
     padding: 5px;
     font-weight: 600;
   }
@@ -627,11 +675,11 @@ onMounted(() => {
   .bg {
     margin-top: 20px;
     background: #2cc511;
-    box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px, rgba(0, 0, 0, 0.24) 0 1px 2px;
-    border-radius: 8px;
-    padding-bottom: 30px;
-  }
-
+    //border: 2px solid #ccc;
+  box-shadow: rgba(0, 0, 0, 0.12) 0 1px 3px, rgba(0, 0, 0, 0.24) 0 1px 2px;
+  border-radius: 8px;
+  padding-bottom: 30px;
+}
   &_top {
     padding-bottom: 50px;
   }
@@ -659,6 +707,7 @@ onMounted(() => {
 .dashed {
   margin: 10px 0;
   padding: 5px 0;
+  //border-bottom: 2px dashed #ccc;
 }
 
 .talon_list {
@@ -672,6 +721,7 @@ onMounted(() => {
     font-size: 20px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
+    //box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   }
 
   .blinking {

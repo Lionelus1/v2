@@ -2,6 +2,9 @@
   <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
   <BlockUI v-if="contragentRequested" :blocked="loading" class="card">
     <div>
+      <div class="p-fluid pb-0" v-if="!contragent">
+        <Message severity="warn" :closable="false">{{ $t('contracts.contragentAsEnt') }}</Message>
+      </div>
       <div class="p-fluid md:col-6 pb-0">
         <label>{{ $t('contracts.contragentSigner') }}</label>
       </div>
@@ -9,19 +12,19 @@
         <div class="field mb-4" v-if="contragent">
           <IconField iconPosition="right">
             <InputIcon>
-              <i v-if="contragent" class="pi pi-id-card" @click="open('organizationCard')"></i>
+              <i v-if="contragent" class="pi pi-id-card" style="font-size: 1.2rem" @click="open('organizationCard')"></i>
             </InputIcon>
-            <InputText  :readonly="true" type="text" v-model="getOrganizationName" />
+            <InputText :readonly="true" type="text" v-model="getOrganizationName"></InputText>
           </IconField>
         </div>
         <div class="field mb-0" v-if="signer">
           <IconField iconPosition="right">
             <InputIcon>
               <i v-if="signer && signer.userID > 0"
-                 class="pi pi-id-card" style="right: 2.5rem;" @click="open('signerCard')"></i>
-              <i class="pi pi-ellipsis-h" style="right: 0;" @click="open('signerList')"></i>
+                 class="pi pi-id-card" style="font-size: 1.25rem;padding-right: 10px;" @click="open('signerCard')"></i>
+              <i class="pi pi-ellipsis-h" style="font-size: 1.25rem" @click="open('signerList')"></i>
             </InputIcon>
-            <InputText  :readonly="true" type="text" v-model="getSignerName"/>
+            <InputText :readonly="true" type="text" v-model="getSignerName"></InputText>
           </IconField>
           <label v-if="contragent">{{$t('contracts.signer')}}</label>
         </div>
@@ -198,6 +201,7 @@ export default {
         this.loading = false;
 
         if (this.contract.docHistory.stateId > this.DocEnum.CREATED.ID) {
+          this.$router.push('/sign/' + this.contract.uuid);
           return;
         }
         
@@ -215,25 +219,26 @@ export default {
         this.downloadContract();
       }).catch(err => {
         this.loading = false;
-
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else if (err.response && err.response.data && err.response.data.localized) {
+        if (err.response && err.response.data && err.response.data.localized) {
           if (err.response.status != 403) {
             this.showMessage('error', this.$t(err.response.data.localizedPath), null);
           }
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
     },
     downloadContract() {
+      this.loading = true;
+
       this.service.downloadDocumentV2({
         uuid: this.contract.uuid,
         preview: true,
+        organization: this.contragent,
+        signer: this.signer,
       }).then(res => {
         this.pdf = b64toBlob(res.data);
+        this.loading = false;
       }).catch(err => {
         this.loading = false;
 
@@ -242,7 +247,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
@@ -251,16 +255,19 @@ export default {
       this.close('organizationCard');
 
       this.contragent = JSON.parse(JSON.stringify(event));
+      this.downloadContract();
     },
     personUpdated(event) {
       this.close('signerCard');
 
       this.signer = JSON.parse(JSON.stringify(event));
+      this.downloadContract();
     },
     personSelected(event) {
       this.close('signerList');
 
       this.signer = JSON.parse(JSON.stringify(event));
+      this.downloadContract();
     },
     contragentAccept() {
       if (!this.signer || this.signer.userID < 1) {
@@ -289,7 +296,6 @@ export default {
             this.showMessage('error', this.$t(err.response.data.localizedPath), null);
           }
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })

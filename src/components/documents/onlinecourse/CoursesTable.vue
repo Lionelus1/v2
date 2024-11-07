@@ -166,6 +166,7 @@ export default {
       give_certificates: [],
       selectAllChecked: true,
       dic_course_type: null,
+      searchText: null,
       courseDialog: false,
       courseRequest: {
         namekz: '',
@@ -229,7 +230,6 @@ export default {
   },
   methods: {
     check(arg) {
-      console.log(arg)
     },
     findRole: findRole,
     showMessage(msgtype, message, content) {
@@ -333,7 +333,6 @@ export default {
           if (err.response && err.response.data && err.response.data.localized) {
             this.showMessage('error', this.$t(err.response.data.localizedPath), null)
           } else if (err.response) {
-            console.log("TEST: ", err)
             this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
           }
         } else {
@@ -350,9 +349,7 @@ export default {
       this.tableLoading = true
       this.service.getOod().then(_ => {
 
-      }).catch(error => {
-        console.log(error)
-      })
+      }).catch(_ => {})
         .finally(() => {
           this.getCourses()
           this.tableLoading = false
@@ -414,12 +411,12 @@ export default {
     },
 
     validateCourse() {
-      this.courseValidate.namekz = this.courseRequest.namekz === '' 
-      this.courseValidate.nameru = this.courseRequest.nameru === '' 
-      this.courseValidate.nameen = this.courseRequest.nameen === '' 
-      this.courseValidate.descriptionkz = this.courseRequest.descriptionkz === '' 
-      this.courseValidate.descriptionru = this.courseRequest.descriptionru === '' 
-      this.courseValidate.descriptionen = this.courseRequest.descriptionen === '' 
+      this.courseValidate.namekz = this.courseRequest.namekz === ''
+      this.courseValidate.nameru = this.courseRequest.nameru === ''
+      this.courseValidate.nameen = this.courseRequest.nameen === ''
+      this.courseValidate.descriptionkz = this.courseRequest.descriptionkz === ''
+      this.courseValidate.descriptionru = this.courseRequest.descriptionru === ''
+      this.courseValidate.descriptionen = this.courseRequest.descriptionen === ''
       this.courseValidate.start_time = this.courseRequest.history.startDate === null
       this.courseValidate.final_date = this.courseRequest.history.finalDate === null
       this.courseValidate.hours = (this.courseRequest.hours <= 0 && this.checkedHours)
@@ -451,11 +448,6 @@ export default {
       }).finally(() => {
         this.loading = false;
       })
-    },
-    handleSelectionChange() {
-      if (this.lazyParams.searchText) {
-        console.log(this.lazyParams.searchText)
-      }
     },
     itemLabel(item) {
       return item['name']

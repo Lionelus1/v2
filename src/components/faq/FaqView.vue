@@ -85,9 +85,6 @@ export default {
           this.faq = response.data;
 
           this.loading = false;
-        })
-        .catch((error) => {
-          console.log(error);
         });
     },
     downloadFile(fileName, fileType) {
@@ -134,6 +131,55 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.customer-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+
+  &.status-2 {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.status-3 {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+
+  &.status-negotiation {
+    background: #feedaf;
+    color: #8a5340;
+  }
+
+  &.status-1 {
+    background: #b3e5fc;
+    color: #23547b;
+  }
+
+  &.status-4 {
+    background: #eccfff;
+    color: #694382;
+  }
+
+  &.status-proposal {
+    background: #ffd8b2;
+    color: #805b36;
+  }
+
+  &.online {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.offline {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+}
+
 .card-title {
   color: #495057;
   font-weight: 500;

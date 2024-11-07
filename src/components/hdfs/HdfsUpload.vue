@@ -39,7 +39,6 @@ export default {
       this.$toast.add({severity: 'success', summary: this.$t('hdfs.success'), detail: this.$t('hdfs.toastMsg'), life: 3000});
     },
     upload(event) {
-      console.log("upload dir = " + this.dir)
       this.loading = true;
       const fd = new FormData();
       fd.append('myFile', event.files[0]);
@@ -49,7 +48,6 @@ export default {
           'Content-Type': 'multipart/form-data'
         }
       }, ).then((r) => {
-        console.log(r.data.path)
         if (r.data?.isUpload !== false) {
           this.onUpload();
           this.emitter.emit("updateAfterUpload", true);

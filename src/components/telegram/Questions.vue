@@ -105,7 +105,6 @@ const loading = ref(false);
 
 const deleteValue = (node) => {
   if (!node) {
-    console.error('Node is undefined');
     return;
   }
   const req = {
@@ -189,8 +188,7 @@ const getQuestions = (node = null) => {
       node.value.children = res.data.questions;
     }
     loading.value = false;
-  })
-      .catch(err => {
+  }).catch(err => {
         loading.value = false;
         toast.add({ severity: 'error', summary: t('common.error'), life: 3000 });
       });
@@ -215,6 +213,7 @@ const onExpand = (data) => {
 const onPage = (event) => {
   lazyParams.page = event.page;
   lazyParams.rows = event.rows;
+  lazyParams.parent_id = null;
   getQuestions();
 };
 

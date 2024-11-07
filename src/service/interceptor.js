@@ -2,12 +2,16 @@ import instance from "./api";
 import router from "@/router";
 import axios from "axios";
 import { smartEnuApi } from "../config/config";
+import {useToast} from "primevue/usetoast";
+import {useI18n} from "vue-i18n";
 
 let isRefreshing = false;
 const failedRequests = [];
 
 const setup = (store, app) => {
   const configG = app.config.globalProperties;
+  const toast = configG.$toast
+  const t = configG.$t;
 
   instance.interceptors.request.use(
     (config) => config,
@@ -25,7 +29,7 @@ const setup = (store, app) => {
 
           try {
             const tokenDataString = window.localStorage.getItem("authUser");
-            const tokenData = tokenDataString ? JSON.parse(tokenDataString) : null; 
+            const tokenData = tokenDataString ? JSON.parse(tokenDataString) : null;
             if (tokenData && tokenData.refresh_token) {
 
               const res = await axios.post(smartEnuApi + "/refreshToken", {
@@ -54,6 +58,29 @@ const setup = (store, app) => {
           return new Promise((resolve, reject) => {
             failedRequests.push({ resolve, reject });
           }).then((instance) => instance(originalRequest));
+        }
+      }
+
+      if (error.response && error.response.data && error.response.data.error) {
+        switch (error.response.status) {
+          case 400:
+            toast.add({severity: "error", summary: t('error.400'), life: 3000});
+            break;
+          case 401:
+            toast.add({severity: "error", summary: t('error.401'), life: 3000});
+            store.dispatch("logLout");
+            break;
+          case 403:
+            toast.add({severity: "error", summary: t('error.403'), life: 3000});
+            break;
+          case 404:
+            toast.add({severity: "error", summary: t('error.404'), life: 3000});
+            break;
+          case 500:
+            toast.add({severity: "error", summary: t('error.500'), life: 3000});
+            break;
+          default:
+            toast.add({severity: "error", summary: t('error.unknown'), life: 3000});
         }
       }
 

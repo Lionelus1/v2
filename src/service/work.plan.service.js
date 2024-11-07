@@ -4,7 +4,11 @@ import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
 export class WorkPlanService {
 
     getEventsTree(lazyParams) {
-        return api.post(`/workPlan/getEventsTree`, lazyParams, {headers: getHeader()});
+        let data = JSON.parse(JSON.stringify(lazyParams));
+        if (data?.parent_id) {
+            data.rows = 0;
+        }
+        return api.post(`/workPlan/getEventsTree`, data, {headers: getHeader()});
     }
 
     getWorkPlanApprovalUsers(work_plan_id) {
@@ -166,6 +170,9 @@ export class WorkPlanService {
         return api.post('/workPlan/reapprove', data, {headers: getHeader()});
     }
 
+    getEvents(data) {
+        return api.post('/workPlan/getEvents', data, {headers: getHeader()});
+    }
     getWorkPlanTypes() {
         return api.get('/workPlan/types', {headers: getHeader()});
     }
@@ -176,6 +183,10 @@ export class WorkPlanService {
 
     updateEventFact(data){
         return api.post('/workPlan/updateWorkPlanEventFact', data, {headers: getHeader()});
+    }
+
+    changePlanCreator(data){
+        return api.post('/workPlan/changeWorkPlanCreator', data, {headers: getHeader()});
     }
 
 }

@@ -35,7 +35,7 @@
           <div class="p-fluid text-left">
             <div class="field col-12">
               <label for="inputtext">{{ $t('common.enterLogin') }}</label>
-              <InputText id="inputtext" type="text" v-model="loginData.username"/>
+              <InputText id="inputtext" type="text" v-model="loginData.username" @keyup.enter="login"/>
               <small class="p-error" v-if="loginDataCheck.username"> {{ $t("common.requiredField") }}
               </small>
             </div>
@@ -271,7 +271,6 @@ export default {
     },
     async xmlSignature(res) {
       let NCALaClient = new NCALayerClientExtension();
-      console.log("nc object ", NCALaClient);
       try {
         await NCALaClient.connect();
       } catch (error) {
@@ -340,10 +339,11 @@ export default {
       if (!this.checkLoginAndPassword()) {
         return
       }
-      api.post('/login', {
-        'username': this.loginData.username,
-        'password': this.loginData.password
-      }, {headers: getHeader()})
+      const data = {
+        username: this.loginData.username,
+        password: this.loginData.password
+      };
+      api.post('/login', data, {headers: getHeader()})
           .then((res) => {
             if (res.status === 200) {
               authUser.access_token = res.data.access_token;
@@ -377,8 +377,7 @@ export default {
     },
     checkLoginAndPassword() {
       this.loginDataCheck.username = this.loginData.username.length === 0 
-      this.loginDataCheck.password = this.loginData.password.length === 0 
-      console.log(this.loginData.password.length)
+      this.loginDataCheck.password = this.loginData.password.length === 0
 
         return (
             !this.loginDataCheck.username &&

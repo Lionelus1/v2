@@ -403,7 +403,7 @@
       total.value = response.data.total;
       dic_course_type.value = response.data.dic_course_type;
     } catch (error) {
-      console.error(error);
+      showMessage('error', t('common.error'), '', 3000);
       // Handle error appropriately, e.g., show a user-friendly message.
     } finally {
       loading.value = false;
@@ -660,9 +660,8 @@
       getCourse()
       getCourseHistoryStudents()
       getCourseHistory()
-    }).catch(err => {
+    }).catch(_ => {
       loading.value = false
-      console.log(err)
     })
 
     // onlineCourseService.createCourse(req).then(_ => {
@@ -670,7 +669,6 @@
     //   loading.value = false
     //   getCourseHistoryStudents()
     // }).catch(_=> {
-    //   console.log(stateID, req, 'test')
     //
     //   loading.value = false;
     //   showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'), 3000)

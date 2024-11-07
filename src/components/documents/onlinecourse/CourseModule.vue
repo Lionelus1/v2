@@ -107,7 +107,7 @@ const getModuleByCourseID = async () => {
     const response = await service.getModulesByCourseID(course_id.value);
     modules.value = response.data;
   } catch (error) {
-    console.error(error);
+    showMessage('error', t('common.error'), '', 3000);
   } finally {
     loading.value = false;
   }
@@ -156,7 +156,7 @@ const addModulesToCourse = async () => {
     closeModuleDialog();
     getModuleByCourseID();
   } catch (error) {
-    console.error(error);
+    showMessage('error', t('common.error'), '', 3000);
   } finally {
     loading.value = false;
     submitted.value = false;
@@ -184,7 +184,7 @@ const getCourse = async () => {
     course.value = response.data;
     course.value.logo = smartEnuApi + fileRoute + course.value.logo;
   } catch (error) {
-    console.error(error);
+    showMessage('error', t('common.error'), '', 3000);
   } finally {
     loading.value = false;
   }
@@ -200,9 +200,7 @@ const deleteModule = (id) => {
           .then(() => {
             getModuleByCourseID();
             showMessage('success', t('common.success'), '', 3000);
-          })
-          .catch((error) => {
-            console.error(error);
+          }).catch((error) => {
             showMessage('error', t('common.message.saveError'), '', 3000);
           });
     },
@@ -239,7 +237,7 @@ const updateModuleOfCourse = async () => {
     await service.updateModuleOfCourse(formData);
     closeModuleDialog();
   } catch (error) {
-    console.error(error);
+    showMessage('error', t('common.error'), '', 3000);
   } finally {
     submitted.value = false;
     loading.value = false;

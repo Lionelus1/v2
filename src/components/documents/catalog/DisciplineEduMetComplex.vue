@@ -47,7 +47,7 @@
             </div>
           </template>
         </Toolbar>
-        <DataTable v-if="!screen.departments.minimized" :value="departments" dataKey="id" :rows="departmentRows" :totalRecords="totalDepartments"
+        <DataTable @row-click="rowClickHandler" v-if="!screen.departments.minimized" :value="departments" dataKey="id" :rows="departmentRows" :totalRecords="totalDepartments"
           :class="{'p-datatable-sm': !screen.isLarge}" :paginator="true" :paginatorTemplate="paginatorTemplate" :rowsPerPageOptions="[10, 25, 50]"
           :currentPageReportTemplate="currentPageReportTemplate" :lazy="true" :loading="departmentTableLoading" scrollable scrollHeight="flex"
           v-model:selection="currentDepartment" selectionMode="single" :rowHover="true" stripedRows class="flex-grow-1"
@@ -238,6 +238,10 @@
   <OverlayPanel ref="filterOverlayPanel" @hide="onHideFilterOverlayPanel">
     <div class="p-fluid">
       <div class="field">
+        <label>{{ $t('contracts.filter.author') }}</label>
+        <FindUser v-model="filter.author" @update:modelValue="onUpdateTextProfile"  :max="1" :userType="3"></FindUser>
+      </div>
+      <div class="field">
         <label>{{ $t('common.name') }}</label>
         <InputText type="text" v-model="filter.name" @update:modelValue="onUpdateText"/>
       </div>
@@ -294,10 +298,11 @@ import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import DocInfo from "@/components/documents/DocInfo";
 import PostFile from "@/components/documents/PostFile.vue"
 import ActionButton from "@/components/ActionButton.vue";
+import FindUser from "@/helpers/FindUser";
 
 export default {
   name: 'DisciplineEduMetComplex',
-  components: {ActionButton, ApprovalUsers, DocSignaturesInfo, DocInfo, PostFile },
+  components: {ActionButton, ApprovalUsers, DocSignaturesInfo, DocInfo, PostFile,FindUser },
   props: { },
   emits: [],
   data() {
@@ -332,7 +337,8 @@ export default {
       fileTableLoading: false,
 
       filter: {
-        global: false,
+        global: true,
+        author: [],
         name: null,
         status: null,
         years: [new Date(new Date().getFullYear(), 0)],
@@ -350,6 +356,7 @@ export default {
         name: null,
         status: null,
         years: [new Date(new Date().getFullYear(), 0)],
+        author: null,
       },
 
       departmentPage: 0,
@@ -437,7 +444,6 @@ export default {
                   visible:this.actionsNode && (this.actionsNode.docHistory.stateId === Enum.CREATED.ID ||
                       this.actionsNode.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === this.actionsNode.creatorID,
                   command: () => {
-                      console.log(this.actionsNode)
                       this.currentFile = this.actionsNode;
                       this.deleteFile(false)
                   }
@@ -462,7 +468,6 @@ export default {
     this.$emit('apply-flex', true)
     this.checkScreenSize();
     window.addEventListener('resize', this.checkScreenSize);
-
     this.getDepartments();
   },
   beforeUnmount() {
@@ -492,6 +497,9 @@ export default {
     },
     open(name) {
       this.visibility[name] = true
+    },
+    rowClickHandler(event) {
+      this.filter.global = false;
     },
     close(name) {
       this.visibility[name] = false
@@ -629,7 +637,6 @@ export default {
       this.neutral()
     },
     isTest(element) {
-      console.log(element)
     },
     cover(element) {
       if (this.screen[element].maximized) {
@@ -816,10 +823,12 @@ export default {
         name: this.filter.name,
         status: this.filter.status,
         years: this.filter.years,
+        author: this.filter.author.length > 0 && this.filter.author[0] ? this.filter.author[0].userID : null,
       };
     },
     clearDocFilter() {
       this.docFilter = {
+        author: null,
         name: null,
         status: null,
         years: [new Date(new Date().getFullYear(), 0)],
@@ -827,6 +836,7 @@ export default {
     },
     clearFilter() {
       this.filter = {
+        author: null,
         global: false,
         name: null,
         status: null,
@@ -891,7 +901,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -941,7 +950,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -975,7 +983,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -1007,7 +1014,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
 
@@ -1037,7 +1043,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -1063,7 +1068,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -1095,7 +1099,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e)
         return false
       }
 
@@ -1122,7 +1125,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e)
         return false
       }
 
@@ -1151,7 +1153,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e)
         return signed
       }
 
@@ -1163,6 +1164,11 @@ export default {
     onUpdateText() {
       if (this.filter.name.length < 1) {
         this.filter.name = null
+      }
+    },
+    onUpdateTextProfile(){
+      if (this.filter.author.length < 1) {
+        this.filter.author = null
       }
     }
   }

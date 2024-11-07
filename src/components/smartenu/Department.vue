@@ -73,9 +73,6 @@ export default {
     orgId: null,
     orgType: null,
   },
-  created() {
-    console.log(this.modelValue)
-  },
   data() {
     return {
       value: this.modelValue === null ? {} : this.modelValue,

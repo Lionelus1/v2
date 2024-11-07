@@ -114,11 +114,8 @@ export default {
             this.notificationService.viewNotifications({views: nots}).then(response => {
                     if (this.newCount > 0)
                         this.newCount = this.newCount - nots.length < 0 ? 0 : this.newCount - nots.length;
-                    console.info("view result", response)
                 }
-            ).catch(error => {
-                this.$toast.add({severity: "error", summary: error, life: 3000});
-            });
+            ).catch(_ => {});
         },
         loadNotifications() {
           if (this.loginedUser) {
@@ -151,9 +148,7 @@ export default {
               if (newNots.length > 0) {
                   this.ViewNotification(newNots);
               }
-            }).catch(error => {
-              console.log(error)
-            })
+            }).catch(_ => {})
           }
         },
         timeDifference(givenDate) {
@@ -181,8 +176,6 @@ export default {
                     yy: this.$i18n.locale === "kz" ? "%d жыл бұрын" : this.$i18n.locale === "en" ? "%d years" : "",
                 }
             });
-            console.log(now);
-            console.log(given);
             return moment.duration(given.diff(now)).humanize();
 
         },
@@ -217,9 +210,7 @@ export default {
           this.newCount = response.data.NewCount ? response.data.NewCount : 0;
           let recordCount = response.data.RecordCount;
           this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
-        }).catch(error => {
-          this.$toast.add({severity: "error", summary: error, life: 3000});
-        })
+        }).catch(_ => {})
       }
     },
     async created() {

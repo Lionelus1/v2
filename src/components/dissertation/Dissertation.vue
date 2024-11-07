@@ -147,8 +147,8 @@ import { mapState } from "vuex";
 import SpecialitySearch from "../smartenu/speciality/specialitysearch/SpecialitySearch.vue";
 import DepartmentList from "../smartenu/DepartmentList.vue"
 import Enums from "@/enum/docstates/index";
-import { getHeader, findRole, smartEnuApi } from "@/config/config";
-import { DissertationService } from "@/service/dissertation.service";
+import {getHeader, findRole, smartEnuApi} from "@/config/config";
+import {DissertationService} from "@/service/dissertation.service"
 
 export default {
   components: { SpecialitySearch, DepartmentList },
@@ -292,10 +292,7 @@ export default {
           this.CouncilsList.push(JSON.parse(JSON.stringify(this.newCouncil)));
           this.submitted = false;
           this.hideDialog(this.dialog.addCouncil);
-        }).catch((error) => {
-          console.log(error.response.data)
-          this.$toast.add({ severity: "error", summary: error, life: 3000 })
-        })
+        });
       }
     },
     validateAddConsulForm() {

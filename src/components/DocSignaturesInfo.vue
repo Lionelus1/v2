@@ -142,6 +142,7 @@ import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
 import QrGuideline from "./QrGuideline.vue";
 import { DocService } from "@/service/doc.service";
+import {isArray} from "chart.js/helpers";
 
 export default {
   name: "DocSignaturesInfo",
@@ -212,7 +213,6 @@ export default {
     }
   },
   created() {
-    console.log("ERHERHSKJFBN");
     if (this.docIdParam) {
       this.doc_id = this.docIdParam;
     } else {
@@ -243,9 +243,7 @@ export default {
     this.getData();
   },
   mounted() {
-    console.log("HERE1");
     this.wsconnect();
-    console.log("HERE2");
     this.emitter.on("downloadCMS", (data) => {
       if (data !== null) {
         api
@@ -255,7 +253,6 @@ export default {
             { headers: getHeader() }
           )
           .then((res) => {
-            console.log(res.data);
             let result = res.data;
             var link = document.createElement("a");
             link.innerHTML = "Download file";
@@ -528,12 +525,11 @@ export default {
             this.$i18n.locale
           )
             .then((sign) => {
-              if (sign != undefined) {
-                this.sendRequest(sign);
+              if (sign && sign.length > 0) {
+                this.sendRequest(sign[0]);
               }
             })
             .catch((e) => {
-              console.log(e);
               this.signing = false;
             });
         })
@@ -724,7 +720,6 @@ export default {
           }
 
           for (let element of res.data.approvalStages) {
-            console.log(element)
             if (!element.signatures) {
               continue;
             }
@@ -784,7 +779,6 @@ export default {
           } else if (err.response && err.response.data && err.response.data.localized) {
             this.showMessage('error', this.$t(err.response.data.localizedPath));
           } else {
-            console.log(err)
             this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
           }
         });
@@ -812,7 +806,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
 
@@ -893,7 +886,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath));
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       });

@@ -7,7 +7,7 @@
     </template>
   </Toolbar>
 
-  <ToolbarMenu @search="getVacancies" :search="true"/>
+  <ToolbarMenu @search="getVacancies" :search="true" @rightBtn="clickRightBtn($event)" :rightBtn="true"/>
   <!-- Авторизация -->
   <Dialog v-model:visible="visible.login" :style="{ width: '500px' }" :modal="true">
     <Login></Login>
@@ -204,12 +204,19 @@
     </Card>
 
     <template #footer>
-      <Button
-          v-bind:label="$t('common.close')"
-          icon="pi pi-times"
-          class="p-button p-component p-button-primary"
-          @click="visible.view = false"
-      />
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <div style="display: flex; align-items: center;" v-if="vacancy.isAccessibleVacancies">
+          <i class="fa-solid fa-wheelchair" style="margin-right: 8px;"></i>
+          <span>{{ $t('common.availabilityForSpecialNeeds') }}</span>
+        </div>
+
+        <Button
+            v-bind:label="$t('common.close')"
+            icon="pi pi-times"
+            class="p-button p-component p-button-primary"
+            @click="visible.view = false"
+        />
+      </div>
     </template>
 
   </Dialog>
@@ -381,6 +388,7 @@ export default {
       agreement: false,
       candidate: null,
       loading: false,
+      accessible: false,
     }
   },
   methods: {
@@ -394,20 +402,24 @@ export default {
       this.loading = true
       this.lazyParams.countMode = null;
       this.lazyParams.searchText = data;
+      this.lazyParams.isAccessibleVacancies = this.accessible
+      try {
+        const queryData = this.$route.query.data;
+        if (queryData) {
+          const query = JSON.parse(queryData);
+          if (query) {
+            this.lazyParams.navigateToVacancies = query;
+          }
+        }
+      } catch (_) {
+        return;
+      }
+
       api.post("/vacancy/public", this.lazyParams, {headers: getHeader()}).then((response) => {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+      }).catch((_) => {
         this.loading = false;
       });
     },
@@ -420,16 +432,7 @@ export default {
           {}, {headers: getHeader()}).then((res) => {
         this.vacancySources = res.data
         this.getUserCandidate()
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.visible.login = true
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+      }).catch((_) => {
       });
     },
 
@@ -440,17 +443,7 @@ export default {
       api.post("/candidate/get",
           {}, {headers: getHeader()}).then(res => {
         this.visible.apply = true
-      }).catch(error => {
-        if (error.response.status === 404) {
-          this.candidate = null
-          this.visible.notFound = true
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+      }).catch(_ => {
       });
     },
 
@@ -470,16 +463,8 @@ export default {
             }
           }
           this.visible.apply = false;
-        }).catch((error) => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          }
+        }).catch((_) => {
+
         });
       }
     },
@@ -538,6 +523,11 @@ export default {
       this.validation.source = !this.relation.vacancySource || this.relation.vacancySource === ""
       this.validation.ml = !this.file || this.file === ""
       return (!this.validation.source && !this.validation.ml)
+    },
+    clickRightBtn(){
+      this.accessible = !this.accessible
+
+      this.getVacancies()
     }
   },
   created() {
