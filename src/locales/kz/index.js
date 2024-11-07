@@ -1984,7 +1984,8 @@ export default {
     },
     helpDesk: {
         instructionNumber: "Оқыту тілі",
-        nameOftheTrainingProgram: "Оқыту бағдарламасының атауы", title: 'Менің өтінімдерім',
+        nameOftheTrainingProgram: "Оқыту бағдарламасының атауы",
+        title: 'Менің өтінімдерім',
         creationTime: 'Құру уақыты',
         priority: 'Басымдық',
         responsible: 'Жауапты',
@@ -2055,26 +2056,15 @@ export default {
     },
     telegram: {
         question: 'Сұрақтар',
-
         anwers: 'Жауаптар',
-
         author: 'Сұрақтың авторы',
-
         questionkz: 'Cұрақты қазақша еңгізіңіз',
-
         questionen: 'Cұрақты ағылшынша еңгізіңіз',
-
         questionru: 'Cұрақты орысша еңгізіңіз',
-
         anwerskz: 'Жауапты қазақша еңгізіңіз',
-
         anwersen: 'Жауапты ағылшынша еңгізіңіз',
-
         anwersru: 'Жауапты орысша еңгізіңіз',
-
-        crAndUpdEdu: 'Сұрақ-Жауап құру және өзгерту'
-
-
+        crAndUpdEdu: 'Сұрақ-Жауап құру және өзгерту',
     },
     enuTopicSettings: {
         normalVersion: 'Қалыпты нұсқа',

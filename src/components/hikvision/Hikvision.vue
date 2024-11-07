@@ -1,26 +1,14 @@
 <template>
   <div class="col-12">
     <h3>{{ $t('hikvision.employeeEntryExitReport') }}</h3>
+        <ToolbarMenu
+            :data="menuItems"
+        />
     <div class="card">
     <BlockUI>
       <DataTable selectionMode="single" v-model:selection="selectedReport" :lazy="true" :value="reports"
                    :loading="loading" :paginator="true" :rows="10" :totalRecords="totalRecords"
                    @page="onPageChange" class="p-datatable-sm wider-table">
-        <template #header>
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <Button
-                v-for="item in visibleMenuItems"
-                :key="item.label || item.icon"
-                :label="item.label"
-                :icon="item.icon"
-                :disabled="item.disabled"
-                @click="item.command"
-                class="p-button-text"
-                :class="{'p-button-success': item.icon.includes('plus'),'blue-text': item.icon.includes('plus')}"
-            />
-          </div>
-        </template>
-
         <Column :field="'start_date'" :header="$t('hikvision.dateRange')">
           <template #body="slotProps">
             {{ new Date(slotProps.data.start_date).toLocaleDateString( 'ru-RU', {
@@ -119,6 +107,7 @@ import Dialog from 'primevue/dialog';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import WorkScheduleDialog from '@/components/hikvision/WorkScheduleDialog.vue';
 import GenerateReportDialog from "@/components/hikvision/GenerateReportDialog.vue";
 import { ReportService } from "@/service/report.service";
@@ -146,8 +135,6 @@ const showError = (message) => {
 const showSuccess = (message) => {
   toast.add({ severity: 'success', detail: message, life: 3000 });
 };
-
-const visibleMenuItems = computed(() => menuItems.filter(item => item.visible !== false));
 
 const categoriesV2 = ref([
   { id: 1, name_kz: '', name_ru: '', name_en: '', code: t('hikvision.aup'), is_noted: false },
@@ -206,20 +193,6 @@ onMounted(() => {
 
 const showGenerateReport = () => {
   showGenerateReportDialog.value = true;
-};
-
-// const showWorkSchedule = () => {
-//   showWorkScheduleDialog.value = true;
-// };
-
-const viewReport = async (id) => {
-  try {
-    const response = await reportService.getReportById(id);
-    console.log('Просмотр отчета:', response.data);
-  } catch (error) {
-    console.error('Не удалось просмотреть отчет:', error);
-    showError('Не удалось просмотреть отчет');
-  }
 };
 
 const deleteReport = (id) => {
