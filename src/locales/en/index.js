@@ -728,6 +728,7 @@ export default {
         rating_place: 'Place in the rating'
     },
     hdfs: {
+        onlyPdfAllowed: "Only PDF files are allowed.",
         archiveBtn: "Аrchive",
         title: "Files",
         fileName: "File name",

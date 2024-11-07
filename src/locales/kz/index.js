@@ -719,6 +719,7 @@ export default {
         rating_place: 'Рейтингтегі орын'
     },
     hdfs: {
+        onlyPdfAllowed: "Тек PDF файлдарын ғана жүктеуге рұқсат етілген.",
         archiveBtn: "Мұрағаттау",
         title: "Файлдар",
         fileName: "Файл атауы",

@@ -720,6 +720,7 @@ export default {
         rating_place: 'Место в рейтинге'
     },
     hdfs: {
+        onlyPdfAllowed: "Допускается загрузка только PDF-файлов.",
         archiveBtn: "Архивировать",
         title: "Файлы",
         fileName: "Название файла",
