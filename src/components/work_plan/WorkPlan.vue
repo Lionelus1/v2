@@ -35,7 +35,7 @@
             {{ data.user.fullName }}
           </template>
         </Column>
-        <Column field="status" :header="$t('workPlan.planType')" v-if="isAdmin">
+        <Column field="status" :header="$t('workPlan.planType')">
           <template #body="{ data }">
             <span :class="'customer-badge ' + data.plan_type.code">
               {{ data.plan_type['name_' + $i18n.locale] }}
