@@ -960,6 +960,7 @@ export default {
         posterImageKkInvalid: "Постер на казахском не выбрана",
         posterImageRuInvalid: "Постер на русском не выбрана",
         posterImageEnInvalid: "Постер на английском не выбрана",
+        hiddenNews: "Скрыть новость"
     },
     mailing: {
         title: "Наименование",
