@@ -197,12 +197,7 @@ export default {
                   this.attached = false
                 }
               }
-            }).catch((error) => {
-          console.error(error);
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-        });
+            });
       }
     },
     verify() {
@@ -213,7 +208,6 @@ export default {
         api.post("/doc/verify", formData, {headers: getHeader()})
             .then((response) => {
               let totalResult = response.data
-              console.log(totalResult)
               if (totalResult.success === true) {
                 let result = totalResult.verificationResults
                 let nodes = []
@@ -344,7 +338,6 @@ export default {
                 }
                 this.resultNodes = nodes
                 this.verificationEnd = true
-                console.log(this.resultNodes)
               } else {
                 this.$toast.add({
                   severity: "error",
@@ -353,7 +346,6 @@ export default {
                 });
               }
             }).catch((error) => {
-          console.error(error);
           if (error.response.status == 401) {
             this.$store.dispatch("logLout");
           }

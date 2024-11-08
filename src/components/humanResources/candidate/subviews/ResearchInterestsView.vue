@@ -39,8 +39,7 @@
         scienceService.deleteScienceInterests(req).then(_ => {
             loading.value = false
             emitter.emit('researchInterest', true)
-        }).catch(error => {
-            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+        }).catch(_ => {
             loading.value = false;
         })
     }

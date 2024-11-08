@@ -56,18 +56,18 @@
               <div class="flex-grow-1 p-2" style="overflow: scroll; height: 150px;" v-if="selectedRequestParams">
                 <div v-for="param in selectedRequestParams" :key="param.id">
                   <label v-if="param.name == 'text' || param.name == 'date'">{{ $t('requests.params.' + param.description) }}</label>
-                  <div class="p-fluid lg:col-6 mb-3" v-if="param.name == 'text' && param.properties.translate">
+                  <div class="p-fluid lg:col-6 mb-3" v-if="param.name == 'text' && param.properties && param.properties.translate">
                     <InputText v-model="param.value.kz" type="text" class="mb-1" @input="input()"></InputText>
                     <InputText v-model="param.value.ru" type="text" class="mb-1" @input="input()"></InputText>
                     <InputText v-model="param.value.en" type="text" @input="input()"></InputText>
                   </div>
                   <div class="p-fluid lg:col-6 mb-3" v-else-if="param.name == 'text'">
                     <InputText v-model="param.value" type="text"
-                      :disabled="param.properties.readonly" @input="input()"></InputText>
+                      :disabled="param.properties && param.properties.readonly" @input="input()"></InputText>
                   </div>
                   <div class="p-fluid lg:col-6 mb-3" v-else-if="param.name == 'date'">
                     <PrimeCalendar v-model="param.value" dateFormat="dd.mm.yy" showIcon
-                      :disabled="param.properties.readonly" @update:modelValue="input()"></PrimeCalendar>
+                      :disabled="param.properties && param.properties.readonly" @update:modelValue="input()"></PrimeCalendar>
                   </div>
                 </div>
               </div>
@@ -179,7 +179,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -218,7 +217,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
 
@@ -233,7 +231,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -307,7 +304,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 

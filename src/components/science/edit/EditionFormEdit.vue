@@ -103,16 +103,9 @@
           this.showMessage('success', this.$t('common.success'));
           this.loading = false;
           this.$emit('editions', true)
-        }).catch(err => {
+        }).catch(_ => {
           this.loading = false;
           this.file = null
-          if (err.response && err.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else if (err.response && err.response.data && err.response.data.localized) {
-            this.showMessage('error', this.$t(err.response.data.localizedPath), null);
-          } else {
-            this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
-          }
         })
       },
     },

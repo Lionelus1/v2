@@ -201,7 +201,7 @@ export default {
             this.openResumeV2();
           },
           visible: () => {
-            if (this.customType === 'viewUser' && findRole(null, 'main_administrator') && this.showResume){
+            if (this.customType === 'viewUser' && findRole(null, 'personal') && this.showResume){
               return true;
             }
             return false;
@@ -359,7 +359,6 @@ export default {
       this.changed = true;
     },
     handleModelUpdate(newValue) {
-      console.log('Новое значение model-value:', newValue);
 
     },
     validate() {
@@ -430,7 +429,7 @@ export default {
           window.open(firstLink, '_blank'); 
         } 
       } else {
-          console.error("Ссылка на профиль отсутствует");
+        // TODO: Ссылка на профиль отсутствует
       } 
     },
     onMenuItemClick() {

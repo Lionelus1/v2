@@ -44,9 +44,31 @@
       </div>
       <div class="field col-12 md:col-6">
         <label>{{ $t("contragent.form") }}<span class="p-error" v-if="!pageReadonly">*</span></label>
-        <Dropdown :disabled="pageReadonly" filter v-model="org.form" dataKey="id" :placeholder="$t('common.select')" :options="orgforms" 
+        <Dropdown :disabled="pageReadonly" filter v-model="org.form" dataKey="id" :placeholder="$t('common.select')" :options="orgforms"
           :optionLabel="($i18n.locale === 'kz' ? 'name' : $i18n.locale === 'ru' ? 'namerus' : 'nameen')" @change="input"></Dropdown>
         <small class="p-error" v-if="validation.form">{{$t('common.requiredField')}}</small>
+      </div>
+      <div class="field col-12 md:col-6">
+        <label>{{ $t("contragent.companyCategory") }}</label>
+        <Dropdown :disabled="pageReadonly" v-model="org.companyCategory" dataKey="id" :placeholder="$t('common.select')" :options="orgCompanyCategory"
+                  :optionLabel="($i18n.locale === 'kz' ? 'name' : $i18n.locale === 'ru' ? 'namerus' : 'nameen')" @change="input"></Dropdown>
+<!--        <small class="p-error" v-if="validation.companyCategory">{{$t('common.requiredField')}}</small>-->
+      </div>
+      <div v-if="!loading" class="field col-12 md:col-6">
+        <label>{{ $t("contragent.organizationIndustry") }}</label>
+        <MultiSelect maxSelectedLabels="5" class="w-full md:w-50" display="chip" :disabled="pageReadonly" v-model="org.organizationIndustry" :options="organizationIndustry"
+                     :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name_en')"
+                     :placeholder="$t('common.select')"
+                     @change="input" />
+<!--        <small class="p-error" v-if="validation.organizationIndustry">{{$t('common.requiredField')}}</small>-->
+      </div>
+      <div v-if="!loading" class="field col-12 md:col-6">
+        <label>{{ $t("contragent.otherParameters") }}</label>
+        <MultiSelect maxSelectedLabels="5" class="w-full md:w-50" display="chip" :disabled="pageReadonly" v-model="org.otherParameters" :options="workOpportunities"
+                     :optionLabel="($i18n.locale === 'kz' ? 'name_kz' : $i18n.locale === 'ru' ? 'name_ru' : 'name_en')"
+                     :placeholder="$t('common.select')"
+                     @change="input" />
+<!--        <small class="p-error" v-if="validation.otherParameters">{{$t('common.requiredField')}}</small>-->
       </div>
       <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
         <label>{{ this.$t("common.head") }}</label>
@@ -302,7 +324,29 @@ export default {
       pageReadonly: false,
 
       org: null,
-      orgforms: [],
+      orgCompanyCategory: [
+        {
+          id: 0,
+          name: "Ірі бизнес(250 адамнан астам)",
+          namerus: "Крупный бизнес(более 250 человек)",
+          nameen: "Large Business(more than 250 people)"
+        },
+        {
+          id: 1,
+          name: "Орта бизнес(101-ден 250 адамға дейін)",
+          namerus: "Средний бизнес(от 101 до 250 человек)",
+          nameen: "Medium Business"
+        },
+        {
+          id: 2,
+          name: "Шағын бизнес(100 адамнан аспайды)",
+          namerus: "Малый бизнес(Не более 100 человек)",
+          nameen: "Small Business"
+        }
+      ],
+      workOpportunities: null,
+      organizationIndustry: [],
+      otherParameters:null,
       validation: {
         bin: false,
         namekz: false,
@@ -312,6 +356,9 @@ export default {
         email: false,
         country: false,
         swift: false,
+        companyCategory: false,
+        organizationIndustry: false,
+        otherParameters: false,
       },
 
       menu: [
@@ -320,6 +367,12 @@ export default {
           icon: "pi pi-fw pi-save",
           disabled: () => !this.changed,
           command: () => { this.save() },
+        },
+        {
+          label: this.$t('hr.vacancies'),
+          icon: 'pi pi-fw pi-user-plus',
+          // disabled: () => !this.changed,
+          command: () => { this.navigateToVacancies() },
         }
       ],
 
@@ -460,6 +513,8 @@ export default {
       this.getCooperations(this.org_id)
     } else {
       this.org = this.createEmptyOrganization()
+      this.getOrganizationIndustries()
+      this.getAdditionalParameters()
     }
   },
   mounted() {
@@ -521,6 +576,31 @@ export default {
       this.loading = true;
       this.org.bank = this.bank
 
+      if (this.org.organizationIndustry && this.org.otherParameters) {
+
+        this.org.industrySubject = [
+          ...this.org.organizationIndustry.map(item => ({
+            id: item?.id || null,
+            name_kz: item?.name_kz || '',
+            name_ru: item?.name_ru || '',
+            name_en: item?.name || '',
+            is_noted: true,
+            type: 1
+          })),
+          ...this.org.otherParameters.map(item => ({
+            id: item?.id || null,
+            name_kz: item?.name_kz || '',
+            name_ru: item?.name_ru || '',
+            name_en: item?.name || '',
+            is_noted: true,
+            type: 2
+          }))
+        ];
+      }
+
+      this.org.enterprise_category_id = this.org.companyCategory?.id || null;
+
+
       if (this.localityId > 0) {
         this.org.locality = {
           id: this.localityId
@@ -535,6 +615,8 @@ export default {
         }
 
         this.$emit('organizationUpdated', this.org)
+        this.showMessage('success', this.$t('common.success'), this.$t('common.message.successCompleted'));
+        this.$router.go(-1);
       }).catch(err => {
         this.loading = false;
 
@@ -543,7 +625,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       })
@@ -565,7 +646,55 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+        }
+      })
+    },
+    getOrganizationIndustries() {
+      this.loading = true;
+      const req = {
+        org_organization_id: this.org_id,
+        industry_type: 1,
+      }
+      this.service.getOrganizationIndustries(req).then(res => {
+        if (res.data && res.data.length > 0) {
+          this.org.organizationIndustry = []
+          this.organizationIndustry = res.data;
+          this.org.organizationIndustry = this.organizationIndustry.filter(item => item.is_noted === true);
+        } else {
+          this.showMessage('error', 'Данные не загружены или пусты', null);
+        }
+        this.loading = false;
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null);
+        } else {
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
+        }
+      })
+    },
+    getAdditionalParameters() {
+      this.loading = true;
+      const req = {
+        org_organization_id: this.org_id,
+        industry_type: 2,
+      }
+      this.service.getOrganizationIndustries(req).then(res => {
+        this.workOpportunities = res.data;
+        this.org.otherParameters = res.data.filter(item => item.is_noted === true);
+        this.loading = false;
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null);
+        } else {
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       })
@@ -585,7 +714,7 @@ export default {
       if(this.org.resident === 1){
         this.validation.email = !this.org.email || this.org.email.length < 1;
       }
-      
+
 
       if (this.org.type === 2) {
         this.validation.swift = !this.bank.swift || this.bank.swift.length < 1;
@@ -620,7 +749,7 @@ export default {
           this.org = res.data.organizations[0];
 
           if (this.org.bank) {
-            this.bank = this.org.bank
+            this.bank = this.org.banks
           }
 
           if (this.org.locality){
@@ -630,6 +759,15 @@ export default {
             this.getRatings()
           }
 
+          if (this.org.enterprise_category_id) {
+            const category = this.orgCompanyCategory.find(c => c.id === this.org.enterprise_category_id);
+            if (category) {
+              this.org.companyCategory = category;
+            }
+          }
+
+          this.getOrganizationIndustries()
+          this.getAdditionalParameters()
         }
       }).catch(err => {
         if (err.response && err.response.status == 401) {
@@ -637,7 +775,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
 
@@ -659,7 +796,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       });
@@ -700,7 +836,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
       });
@@ -711,7 +846,6 @@ export default {
       this.getCooperations(this.org_id);
     },
     editCoolection(actionsNode) {
-      console.log('test: ', actionsNode)
       this.cooperation = actionsNode
       this.cooperationDialog = true
     },
@@ -738,9 +872,7 @@ export default {
           this.service.deleteCooperation(req).then(res => {
             this.showMessage('success', this.$t('common.message.successCompleted'), null);
             this.getCooperations(this.org_id);
-          }).catch(err => {
-            console.log(err);
-          })
+          });
         }
       })
     },
@@ -756,8 +888,6 @@ export default {
       this.service.getRatings(this.ratingFilter).then(res => {
         this.ratings = res.data.ratings
         this.ratingTotal = res.data.total
-      }).catch(err => {
-        console.log(err);
       })
     },
     saveRating() {
@@ -771,8 +901,6 @@ export default {
       this.service.updateRating(this.rating).then(res => {
         this.getRatings()
         this.ratingDialog = false
-      }).catch(err => {
-        console.log(err)
       })
 
     },
@@ -810,12 +938,13 @@ export default {
           this.service.deleteRating(req).then(res => {
             this.showMessage('success', this.$t('common.message.successCompleted'), null);
             this.getRatings();
-          }).catch(err => {
-            console.log(err);
           })
         }
       })
     },
+    navigateToVacancies() {
+      this.$router.push({ path: '/human-resources/career/vacancies', query: { data: JSON.stringify(this.org.id) } });
+    }
   }
 }
 </script>

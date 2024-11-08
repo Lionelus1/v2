@@ -67,8 +67,6 @@ const store = createStore({
                 authUser.access_token = res.data.access_token;
                 authUser.refresh_token = res.data.refresh_token;
                 window.localStorage.setItem('authUser', JSON.stringify(authUser));
-            }).catch(error => {
-                console.log('refresh token error')
             });
         },
         GET_USER_INFO(state, context) {

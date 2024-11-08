@@ -79,13 +79,10 @@ const data = [
 
 ]
 const onExpand = (node)=> {
-    console.log(node)
 }
 const onPage = (node)=> {
-    console.log(node)
 }
 const navigateToEvent = (node)=> {
-    console.log(node)
 }
 </script>
 

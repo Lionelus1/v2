@@ -185,14 +185,12 @@
 
       scienceService.createOrUpdateQualificationsScience(fd).then(res  => {
           emitter.emit('qualifications', true)
-        }).catch(err => {
-          toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+        }).catch(_ => {
         })
       
     }
 
     const onIconUpload = (event) => {
-        console.log(event)
         file.value = event.files[0];
     };
 

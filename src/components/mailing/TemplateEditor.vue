@@ -108,7 +108,7 @@ export default {
             }
           })
           .catch(error => {
-            console.error('Error fetching template:', error);
+            this.toast.add({severity: "error", detail: this.$t('common.error'), life: 3000});
           });
     },
     uploadFile(event) {
@@ -138,7 +138,6 @@ export default {
       }).filter(role => role !== null);
 
       const processedEmails = this.emails.map(email => email.trim());
-    console.log("this.templateContent: ", this.templateContent.length)
       const mailingData = {
         mailingID: null,
         filters: {
@@ -167,13 +166,11 @@ export default {
             localStorage.removeItem('mailingData');
             this.$router.push('/mailing');
           })
-          .then(data => {
-            console.log('Success:', data);
+          .then(_ => {
             localStorage.removeItem('mailingData');
             this.$router.push('/mailing');
           })
           .catch(error => {
-            console.error('Error:', error);
             localStorage.removeItem('mailingData');
             this.toast.add({
               severity: "error",
@@ -209,7 +206,6 @@ export default {
           });
         }
       } catch (error) {
-        console.error('Error deleting file:', error);
         this.toast.add({
           severity: 'error',
           detail: this.$t('common.fileDeleteFailed'),

@@ -36,19 +36,15 @@
 </template>
 
 <script>
-import {inject, onUnmounted, ref, unref} from "vue";
+import {inject, ref, unref} from "vue";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
-import {AdmissionInfoService} from "@/service/admission.info.service";
-import {EnuWebService} from "@/service/enu.web.service";
-import RichEditor from "@/components/documents/editor/RichEditor.vue";
 import {generateYears} from "@/helpers/HelperUtil";
 import {EduPriceService} from "@/service/edu.price.service";
 import {EduService} from "@/service/edu.service";
 import {useRoute} from "vue-router";
 
 export default {
-    name: "EduPriceAdd",
     props: ['isShow', 'selectedData'],
     setup(props, context) {
         const emitter = inject('emitter');

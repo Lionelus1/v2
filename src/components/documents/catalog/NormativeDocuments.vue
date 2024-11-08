@@ -2,7 +2,17 @@
   <div class="flex flex-row mb-3">
     <h3 class="m-0">{{ $t("smartenu.catalogNormDoc") }}</h3>
   </div>
-  <BlockUI :blocked="loading" class="card">
+  <div class="calendar_buttons flex align-items-center mb-2">
+    <Button class="p-button-outlined calendar_btn_left"
+            :class="{'active': isGrid}"
+            icon="pi pi-th-large"
+            @click="getFolders(true)" />
+    <Button class="p-button-outlined calendar_btn_right"
+            :class="{'active': !isGrid}"
+            icon="pi pi-list"
+            @click="getFolders(false)" />
+  </div>
+  <BlockUI :blocked="loading" v-if="!isGrid" class="card">
     <Toolbar class="m-0 p-1">
       <template #start>
         <div v-if="findRole(null, 'normative_docs_admin') || isAdmin">
@@ -89,14 +99,16 @@
       >
         <Column :header="$t('common.name')" :expander="true">
           <template #body="slotProps">
-      <span v-if="slotProps.node.hidden || slotProps.node.isHidden">
-        <i class="fa-solid fa-folder"></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
+      <span v-if="slotProps.node.hidden || slotProps.node.isHidden" @dblclick="onNodeDoubleClick(slotProps.node)">
+        <i class="fa-solid fa-folder"></i>&nbsp;
+        <span class="folder-name">{{ slotProps.node['name' + $i18n.locale] }}</span>
       </span>
-            <span v-else>
+            <span v-else @dblclick="onNodeDoubleClick(slotProps.node)"  :title="slotProps.node.newParams?.FileDescription?.value || slotProps.node['name' + $i18n.locale]">
         <i :class="getFileIconClass(slotProps.node.name)"
-           :title="slotProps.node.newParams?.FileDescription?.value || $t('hdfs.noDescription')"
+           :title="slotProps.node.newParams?.FileDescription?.value || slotProps.node['name' + $i18n.locale]"
            class="custom-tooltip-icon"
-        ></i>&nbsp;{{ slotProps.node['name' + $i18n.locale] }}
+        ></i>&nbsp;
+               <span class="folder-name">{{ slotProps.node['name' + $i18n.locale] }}</span>
       </span>
           </template>
         </Column>
@@ -131,6 +143,102 @@
           </template>
         </Column>
       </DataTable>
+    </div>
+  </BlockUI>
+
+  <BlockUI :blocked="loading" v-if="isGrid" class="card">
+    <Toolbar class="m-0 p-1">
+      <template #start>
+        <Button @click="open('folderUploadDialog')"
+                :disabled="selectedNode?.nodeType !== 'folder'"
+                v-tooltip="$t('educomplex.folder.add')"
+                class="p-button-text p-button-info p-1">
+          <i class="fa-solid fa-folder-plus fa-xl" />
+        </Button>
+        <Button @click="open('folderUploadDialog', selectedNode)" :disabled="!selectedNode || selectedNode?.nodeType === 'file' || (!isAdmin && (!tooltip.folder || selectedNode?.parentID == null || loginedUser.userID != selectedNode?.ownerId))"
+                v-tooltip="$t('educomplex.folder.edit')" class="p-button-text p-button-info p-1">
+          <i class="fa-solid fa-square-pen fa-xl" />
+        </Button>
+        <Button @click="deleteFolder()" :disabled="!selectedNode || selectedNode?.nodeType === 'file' || (!isAdmin && (!tooltip.folder || selectedNode?.parentID == null || loginedUser.userID != selectedNode?.ownerId))"
+                v-tooltip="$t('educomplex.folder.delete')" class="p-button-text p-button-info p-1">
+          <i class="fa-solid fa-folder-minus fa-xl" />
+        </Button>
+        <Button v-if="tooltip.folder && !selectedNode?.hidden && selectedNode?.ownerId === loginedUser.userID"
+                @click="hideFolder()" :disabled="!tooltip.folder || selectedNode.parentID == null"
+                v-tooltip="$t('educomplex.folder.hide')" class="p-button-text p-button-info p-1">
+          <i class="fa-solid fa-eye-slash fa-xl" />
+        </Button>
+        <Button v-if="tooltip.folder && selectedNode?.hidden && selectedNode?.ownerId === loginedUser.userID"
+                @click="showFolder()" :disabled="selectedNode.parentID == null" v-tooltip="$t('educomplex.folder.show')" class="p-button-text p-button-info p-1">
+          <i class="fa-solid fa-eye fa-xl" />
+        </Button>
+      </template>
+      <template #end>
+        <div v-if="findRole(null, 'normative_docs_admin')">
+          <Button @click="open('fileUploadDialog')" :disabled="selectedNode?.nodeType !== 'folder'"
+                  v-tooltip="$t('educomplex.file.add')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-file-circle-plus fa-xl"/>
+          </Button>
+          <Button @click="open('fileUploadDialog', selectedNode)"  :disabled="selectedNode?.nodeType !== 'file' || loginedUser.userID != selectedNode?.creatorID"
+                  v-tooltip="$t('educomplex.file.edit')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-file-pen fa-xl" />
+          </Button>
+          <Button @click="deleteFile()" :disabled="selectedNode?.nodeType !== 'file' || loginedUser.userID !== selectedNode?.creatorID"
+                  v-tooltip="$t('educomplex.file.delete')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-file-circle-minus fa-xl" />
+          </Button>
+          <Button v-if="tooltip.file && selectedNode?.isHidden === false && loginedUser.userID === selectedNode?.creatorID"
+                  @click="hideFile()" v-tooltip="$t('educomplex.file.hide')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-eye-slash fa-xl" />
+          </Button>
+          <Button v-if="tooltip.file && selectedNode?.isHidden === true && loginedUser.userID === selectedNode.creatorID"
+                  @click="showFile()" v-tooltip="$t('educomplex.file.show')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-eye fa-xl" />
+          </Button>
+        </div>
+        <div>
+          <Button @click="toggle" aria:haspopup="true" aria-controls="overlay_panel" v-tooltip="$t('educomplex.search')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-search fa-xl" />
+          </Button>
+          <Button v-if="selectedNode && !selectedNode?.is_view_only" @click="downloadFile()" :disabled="!tooltip.file && !currentDocument" v-tooltip="$t('educomplex.file.download')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-file-arrow-down fa-xl" />
+          </Button>
+          <Button v-if="selectedNode && selectedNode?.is_view_only" @click="openSidebar(selectedNode)" :disabled="!tooltip.file && !currentDocument" v-tooltip="$t('educomplex.show')" class="p-button-text p-button-info p-1">
+            <i class="fa-solid fa-eye fa-xl"></i>
+          </Button>
+        </div>
+      </template>
+    </Toolbar>
+    <div class="grid-container-wrapper flex-grow-1" style="height: 300px;">
+      <div class="breadcrumbs">
+  <span
+      v-for="(folder, index) in folderBreadCrumbs"
+      :key="folder.id"
+      class="breadcrumb-item"
+  >
+    <a
+        v-if="index !== folderBreadCrumbs.length - 1"
+        @click.prevent="navigateToFolder(folder)"
+        href="#"
+        class="breadcrumb-link"
+        :title="folder.newParams?.FileDescription?.value || folder['name' + $i18n.locale]"
+    >
+      {{ $i18n.locale === 'kz' ? folder.namekz : $i18n.locale === 'ru'
+        ? folder.nameru : folder.nameen }}
+    </a>
+    <span
+        v-else
+        class="current-folder breadcrumb-link"
+        :title="folder.newParams?.FileDescription?.value || folder['name' + $i18n.locale]"
+    >
+       {{ $i18n.locale === 'kz' ? folder.namekz : $i18n.locale === 'ru'
+        ? folder.nameru : folder.nameen }}
+    </span>
+    <span v-if="index !== folderBreadCrumbs.length - 1" class="breadcrumb-separator"> / </span>
+  </span>
+      </div>
+
+      <GridComponent :folders="folders" :folderHistory="folderHistory" @card-selected="onCardSelected" @open-folder="openFolder" @download-file="downloadFile()" @open-side-bar="openSidebar" @go-back="goBack" />
     </div>
   </BlockUI>
   <!-- панель для фильтра -->
@@ -199,7 +307,7 @@
 import api from '@/service/api';
 import Tooltip from 'primevue/tooltip';
 import { FilterMatchMode } from "primevue/api";
-import { getHeader, smartEnuApi, findRole } from "@/config/config";
+import {getHeader, smartEnuApi, findRole, downloadFile} from "@/config/config";
 import Enum from "@/enum/docstates/index"
 
 import DepartmentList from "@/components/smartenu/DepartmentList.vue"
@@ -208,17 +316,16 @@ import PostFile from "@/components/documents/PostFile.vue"
 import {DocService} from "@/service/doc.service";
 import {getLongDateString, getShortDateString} from "@/helpers/helper";
 import ShowDocument from "@/components/documents/ShowDocument.vue";
+import GridComponent from "@/components/documents/catalog/GridComponent.vue";
 
 export default {
   name: 'NormativeDocuments',
-  components: {ShowDocument, PostFolder, PostFile, DepartmentList },
-  props: {
-
-  },
+  components: {GridComponent, ShowDocument, PostFolder, PostFile, DepartmentList },
   emits: [],
   data() {
     return {
       service: new DocService(),
+      isGrid: true,
       Enum: Enum,
       loginedUser: {},
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
@@ -227,10 +334,14 @@ export default {
         last: '{last}',
         totalRecords: '{totalRecords}',
       }),
-
+      folders: [],
+      folderStack: [],
+      folderHistory: [],
+      folderBreadCrumbs: [],
       fileUpload: false,
       loading: false,
       tableLoading: false,
+      selectedFolder: null,
 
       visibility: {
         folderUploadDialog: false,
@@ -300,6 +411,54 @@ export default {
       this.docId = selectedNode.id
       this.showDoc = true
     },
+    onCardSelected(folder) {
+      this.selectedNode = folder;
+      if (folder.nodeType === 'file') {
+        this.tooltip.file = true
+      } else {
+        this.tooltip.folder = true
+      }
+    },
+    onNodeDoubleClick(node) {
+      if (node.nodeType === "file") {
+        if (node.is_view_only) {
+          this.openSidebar(node)
+        } else {
+          this.downloadFile()
+        }
+      }
+    },
+    openFolder(folder) {
+      this.selectedFolder = folder;
+      if (!this.isGrid) {
+        this.getFolders(this.isGrid, folder);
+      } else {
+        this.folderHistory.push(this.folders);
+        if (folder !== this.folderBreadCrumbs[this.folderBreadCrumbs.length - 1]) {
+          this.folderBreadCrumbs.push(folder);
+        }
+
+        this.folderStack.push(this.folders);
+        this.getFolders(true, folder);
+      }
+    },
+    goBack() {
+      if (this.folderHistory.length > 0) {
+        this.folders = this.folderHistory.pop(); // Возвращаемся к предыдущим папкам
+      }
+    },
+    navigateToFolder(folder) {
+      const folderIndex = this.folderBreadCrumbs.findIndex(item => item && item.id === folder.id);
+
+      if (folderIndex !== -1) {
+        this.folderHistory = this.folderHistory.slice(0, folderIndex + 1);
+        this.folderBreadCrumbs = this.folderBreadCrumbs.slice(0, folderIndex + 1);
+      } else {
+        this.folderBreadCrumbs.pop();
+      }
+
+      this.openFolder(folder);
+    },
     getLongDateString: getLongDateString,
     getShortDateString: getShortDateString,
     findRole: findRole,
@@ -326,6 +485,10 @@ export default {
       }
 
       this.visibility[name] = true
+    },
+    isDisabled() {
+       return ((this.selectedNode == null || this.selectedNode.file !== 'file') || this.selectedNode && this.loginedUser.userID !== this.selectedNode.creatorID);
+
     },
     resetNewNode(type) {
       if (type === 1) {
@@ -380,11 +543,20 @@ export default {
       this.selectedMoveNode = node
     },
     onNodeExpand(node) {
-      this.getFolders(node)
+      this.getFolders(null, node)
     },
-    getFolders(parent = null) {
+    getFolders(isGrid, parent = null) {
       this.loading = true;
 
+      this.isGrid = isGrid;
+      if (isGrid) {
+        this.fetchFolders(parent);
+      } else {
+        this.folderBreadCrumbs = [];
+        this.fetchTreeTable(parent);
+      }
+    },
+    fetchFolders(parent = null) {
       if (parent === null) {
         this.expandedKeys = {}
       }
@@ -398,7 +570,7 @@ export default {
         headers: getHeader()
       }).then(res => {
         let data = res.data.folders
-
+        this.folders = res.data.folders;
         if (!data) {
           parent.children = null
           this.getFiles(parent)
@@ -440,6 +612,61 @@ export default {
         this.loading = false
       })
     },
+    fetchTreeTable(parent = null) {
+      if (parent === null) {
+        this.expandedKeys = {}
+      }
+
+      api.post('/folders', {
+        folderTypes: [Enum.FolderType.NormativeDocuments],
+        page: null,
+        rows: null,
+        parentId: parent !== null ? parent.id : null,
+      }, {
+        headers: getHeader()
+      }).then(res => {
+        let data = res.data.folders
+        this.folders = res.data.folders;
+        if (!data) {
+          parent.children = null
+          this.getFiles(parent)
+          return
+        }
+
+        for (let i = 0; i < data.length; i++) {
+          data[i].nodeType = 'folder'
+          data[i].key = parent !== null ? parent.key + '-' + i.toString() : i.toString()
+
+          if (!data[i].groups) {
+            continue
+          }
+
+          for (let j = 0; j < data[i].groups.length; j++) {
+            delete data[i].groups[j].users
+          }
+        }
+
+        if (parent === null) {
+          this.catalog = data
+          this.loading = false
+        } else {
+          parent.children = data
+          this.getFiles(parent)
+        }
+
+
+      }).catch(err => {
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+        } else {
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+
+        this.loading = false
+      })
+    },
     getFiles(parent) {
       this.loading = true;
 
@@ -457,6 +684,15 @@ export default {
         if (!data) {
           this.loading = false
           return
+        }
+
+        if (!this.folders && this.isGrid) {
+          this.folders = res.data.documents
+          for (let i = 0; i < this.folders.length; i++) {
+            this.folders[i].nodeType = 'file'
+          }
+          this.loading = false
+          return;
         }
 
         if (!parent.children) {
@@ -477,7 +713,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -508,6 +743,7 @@ export default {
     fileUpdated(event) {
       this.close('fileUploadDialog')
 
+      this.openFolder(this.selectedNode)
       if (this.newNode.id !== this.selectedNode.id) {
         if (!this.selectedNode.children) {
           this.selectedNode.children = []
@@ -564,6 +800,12 @@ export default {
           return 'fa-solid fa-file-excel excel-icon';
         case 'zip':
           return 'fa-solid fa-file-zipper zip-icon';
+        case 'mp4':
+          return 'fa-solid fa-file-video video-icon';
+        case 'MP4':
+          return 'fa-solid fa-file-video video-icon';
+        case 'pptx':
+          return 'fa-solid fa-file-powerpoint powerpoint-icon';
         default:
           return 'fa-solid fa-file';
       }
@@ -631,7 +873,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
 
@@ -668,7 +909,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
 
@@ -699,7 +939,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -734,7 +973,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
 
@@ -771,7 +1009,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
 
@@ -802,7 +1039,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -854,7 +1090,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -895,7 +1130,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -969,6 +1203,16 @@ export default {
   font-size: 1.4em;
 }
 
+.powerpoint-icon {
+  color: #ff6900;
+  font-size: 1.4em;
+}
+
+.video-icon {
+  color: #805b36;
+  font-size: 1.4em;
+}
+
 
 /* Стили для иконки */
 .custom-tooltip-icon {
@@ -988,5 +1232,106 @@ export default {
 
 .p-tooltip-arrow {
   border-top-color: #333;   /* Цвет стрелки */
+}
+
+.calendar_buttons {
+  display: flex;
+  justify-content: flex-end; /* Выравнивание кнопок по правому краю */
+  gap: 0; /* Расстояние между кнопками */
+  align-items: center; /* Выравнивание кнопок по вертикали */
+}
+
+.calendar_buttons button {
+  border-radius: 10px;
+  padding: 7px 20px;
+}
+
+.calendar_buttons .calendar_btn_left {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.calendar_buttons .calendar_btn_right {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.calendar_buttons button.active {
+  background: #007be5;
+  color: #fff;
+  border: 1px solid #007be5;
+}
+
+
+.left-btn {
+  flex-grow: 1; /* Заставляет левую кнопку занимать всё пространство слева */
+}
+
+.right-btns {
+  display: flex;
+  gap: 10px; /* Отступ между кнопками */
+}
+
+.active {
+  background-color: #007ad9;
+  color: white;
+}
+
+.grid-container-wrapper {
+  flex-grow: 1;
+  overflow-y: auto; /* Enable vertical scroll */
+  padding: 10px;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Flexible grid */
+  gap: 20px;
+  justify-items: center; /* Center cards in grid */
+  max-height: 100%; /* Ensure the grid fills available height */
+}
+
+.breadcrumbs {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; /* Увеличенные отступы */
+  font-size: 1.1em; /* Увеличенный размер шрифта */
+}
+
+.breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  max-width: 140px; /* Увеличенная ширина */
+  margin: 8px 0; /* Больший отступ сверху и снизу */
+}
+
+.breadcrumb-link {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #555; /* Более мягкий цвет */
+  text-decoration: none;
+  transition: color 0.3s ease; /* Плавный переход цвета при наведении */
+}
+
+.breadcrumb-link:hover {
+  color: #0066cc; /* Цвет текста при наведении */
+}
+
+.current-folder {
+  color: #333; /* Убрал жирность, сделал цвет менее заметным */
+}
+
+.breadcrumb-separator {
+  color: #aaa; /* Более мягкий цвет для разделителя */
+  margin: 0 8px; /* Увеличенные отступы */
+  font-size: 1.2em; /* Небольшое увеличение размера разделителя */
+}
+
+.folder-name {
+  user-select: none;
+  max-width: 100%;
 }
 </style>

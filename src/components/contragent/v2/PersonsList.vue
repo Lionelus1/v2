@@ -194,7 +194,7 @@ export default {
       {
         label: this.$t("contragent.menu.select"),
         icon: "fa-regular fa-square-check",
-        disabled: () => !this.currentPerson,
+        disabled: !this.currentPerson,
         visible: this.sidebar,
         command: () => { this.$emit('personSelected', this.currentPerson); }
       },
@@ -525,7 +525,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null);
         } else {
-          console.log(err);
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
         }
 
@@ -731,7 +730,7 @@ export default {
             this.departmentsGroup = res.data.departments;
             break;
           default:
-            console.error(`Unknown type: ${type}`);
+            // TODO: Unknown type
         }
 
         this.loading = false
@@ -745,7 +744,6 @@ export default {
             life: 3000,
           })
         } else {
-          console.log(err)
           this.$toast.add({
             severity: "error",
             summary: this.$t('common.message.actionError'),
@@ -915,7 +913,6 @@ export default {
       }
     },
     getEducationalProgramGroup(educationalProgramGroup) {
-      console.log("educationalProgramGroup: ", educationalProgramGroup)
       if (educationalProgramGroup === undefined || educationalProgramGroup === '') {
         return ''
       }
@@ -955,7 +952,7 @@ export default {
 
           saveAs(pdfBlob, `${selectedPersons[0].fullName}.pdf`);
         } catch (error) {
-          console.error('Failed to download resume:', error);
+          // TODO: Failed to download resume
         }
       } else if (selectedPersons.length > 1) {
         const zip = new JSZip();
@@ -976,7 +973,7 @@ export default {
 
             zip.file(`${person.fullName}.pdf`, pdfBlob);
           } catch (error) {
-            console.error(`Failed to download resume for ${person.name}:`, error);
+            // TODO: Failed to download resume for ${person.name}:
           }
         }
 
@@ -986,6 +983,7 @@ export default {
     },
 
     async getResume(studentId) {
+      /* eslint-disable */
       try {
         const response = await this.service.getResume({ userID: studentId, lang: this.$i18n.locale });
         if (!response.data) {
@@ -996,8 +994,7 @@ export default {
 
         return base64Data;
       } catch (error) {
-        console.error('Ошибка при загрузке резюме:', error);
-        throw error;
+        this.$toast.add({severity: "error", summary: this.$t('common.message.actionError'), life: this.$t('common.message.actionErrorContactAdmin'),})
       }
     },
 

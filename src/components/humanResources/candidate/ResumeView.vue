@@ -19,10 +19,10 @@
           <b>{{ $t('contact.phone') }}:</b> <em>{{ candidate?.phoneNumber + '\n\n' }}</em>
         </span>
 
-        <Checkbox v-model="candidate.isResumeVerified" @change="update" :binary="true" />
+        <Checkbox v-model="candidate.hasSpecialNeeds" @change="update" :binary="true" />
         {{ $t('people_special_needs') }}
         <br>
-        <Checkbox v-model="candidate.hasSpecialNeeds" @change="update" :binary="true" /> {{ $t('hr.sp.agreement') }}
+        <Checkbox v-model="candidate.isResumeVerified" @change="update" :binary="true" /> {{ $t('hr.sp.agreement') }}
         <hr>
         <p style="text-align: center">
           <b><em>{{ $t('hr.title.id') + ' '}}</em></b>
@@ -635,9 +635,7 @@ export default {
       this.resumeService.getCandidateReferees(this.candidate.id).then(response => {
         this.referees = response.data
         this.iter++
-      }).catch(error => {
-        console.log(error)
-      })
+      });
     },
     getCandidateIdentificationDetail() {
       this.resumeService.getCandidateIdentificationDetail(this.candidate.id).then(response => {
@@ -721,19 +719,10 @@ export default {
       this.exchange.title = this.titles.generalInfo
     },
     update() {
-      console.log(this.candidate.email, this.candidate.phoneNumber)
       let path = "/candidate/info/update"
-      api
-          .post(path, this.candidate, {headers: getHeader(),})
-          .then(res => {
+      api.post(path, this.candidate, {headers: getHeader(),}).then(res => {
             this.exchange.editMode = false
-          }).catch(error => {
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
-      });
+          })
     },
     validateEmail() {
       const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

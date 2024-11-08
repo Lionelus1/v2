@@ -192,16 +192,7 @@ export default {
             this.loading = false;
           })
           .catch((error) => {
-            console.log(error)
             this.loading = false;
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.loadError") + ":\n" + error,
-              life: 3000,
-            });
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            }
           });
     },
     callNextCustomer(call, number) {
@@ -236,17 +227,7 @@ export default {
             this.loading = false;
           })
           .catch((error) => {
-            console.log(error)
             this.loading = false;
-            console.log(error.response)
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("queue.norows"),
-              life: 3000,
-            });
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            }
           });
     },
     confirm(num, num2, id){
@@ -358,16 +339,7 @@ export default {
             }
           })
           .catch((error) => {
-            console.log(error)
             this.loading = false;
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.loadError") + ":\n" + error,
-              life: 3000,
-            });
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            }
           });
     },
   },

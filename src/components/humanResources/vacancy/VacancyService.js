@@ -89,19 +89,10 @@ export default class VacancyService {
     }
 
     vacancyAction(vacancyId, path) {
-        console.log(vacancyId + ', ' + path)
-        return api.post(
-            '/vacancy/' + path,
-            {
-                id: vacancyId,
-            },
-            {headers: getHeader()}
-        )
+        return api.post('/vacancy/' + path, {id: vacancyId,}, {headers: getHeader()})
     }
 
     applyAction(request, path) {
-        console.log(request)
-        console.log(path)
         return api.post(
             '/vacancy/apply/' + path,
             request,
@@ -121,8 +112,6 @@ export default class VacancyService {
     }
 
     checkAction(statusId, vacancy) {
-        console.log(statusId)
-        console.log(vacancy)
         return api.post(
             '/vacancy/check/action',
             {
@@ -134,7 +123,6 @@ export default class VacancyService {
     }
 
     checkApplyAction(statusId) {
-        console.log(statusId)
         return api.post(
             '/vacancy/check/apply/action',
             {

@@ -387,7 +387,10 @@ export default {
         removed: "Removed",
         modified: "Modified",
         socialMediaIds: 'Social Media',
-        viewOnlyCheckbox: 'Show in viewing mode'
+        viewOnlyCheckbox: 'Show in viewing mode',
+        specialNeedsJobs: 'Jobs for People with Special Needs',
+        availabilityForSpecialNeeds: 'Available for People with Special Needs',
+        getDataError: "Error while receiving data"
     },
     positions: {
         menuTitle: "Change position",
@@ -462,7 +465,10 @@ export default {
         },
         orgEmployees: "{org} employees",
         domesticPartners: 'Domestic Partners',
-        foreignPartners: 'Foreign Partners'
+        foreignPartners: 'Foreign Partners',
+        companyCategory: 'Категория предприятия',
+        organizationIndustry: 'Organization Industry',
+        otherParameters: 'Other Parameters',
     },
     doctemplate: {
         title: "Document template creation",
@@ -723,6 +729,7 @@ export default {
         rating_place: 'Place in the rating'
     },
     hdfs: {
+        onlyPdfAllowed: "Only PDF files are allowed.",
         archiveBtn: "Аrchive",
         title: "Files",
         fileName: "File name",
@@ -1476,8 +1483,8 @@ export default {
         plancontracttopic: "On topic",
         scienceParticipants: "Project participants",
         generateAct: "Form an act",
-        minWordCount: "The length of the text should not exceed 250 words",
-        maxWordCount: "The length of the text should not exceed 250 words",
+        minWordCount: "The text length should be between 50 and 250 words",
+        maxWordCount: "The text length should be between 50 and 250 words",
         partiallyCompleted: "Partially completed",
         errorUpdatingStatus: "Error updating status",
         operationCanceled: "Action  canceled",
@@ -2193,6 +2200,13 @@ export default {
         invalidEmail: "Invalid email address",
         invalidPhoneNumber: "Invalid phone number. It should contain 11 digits",
         applicationRequirement: "To apply for the position, it is necessary to provide a valid email address or phone number.",
+        400: "Bad request. Please check your data",
+        401: "Authorization required. Please log in",
+        403: "You do not have access to this page.",
+        404: "Page or data not found",
+        500: "Server error. Please try again later.",
+        network: "Server is not responding. Check your internet connection.",
+        unknown: "Unknown error.",
     },
     status_resume: "Status of filling out the resume",
     people_special_needs: "People with special needs"

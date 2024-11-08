@@ -35,8 +35,7 @@
         scienceService.deleteAwards(req).then(_ => {
             loading.value = false
             emitter.emit('award', true)
-        }).catch(error => {
-            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+        }).catch(_ => {
             loading.value = false;
         })
     }

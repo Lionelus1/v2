@@ -27,7 +27,6 @@
       <TabPanel header="Қазақша">
         <div class="field mt-3">
           <label>{{ $t('web.shortInfo') }}</label>
-<!--          <RichEditor v-model="formData.description_kz" editorStyle="height: 100px"/>-->
           <TinyEditor v-model="formData.description_kz" :height="200" />
           <small v-show="!formData.description_kz && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
@@ -36,7 +35,6 @@
       <TabPanel header="Русский">
         <div class="field mt-3">
           <label>{{ $t('web.shortInfo') }}</label>
-<!--          <RichEditor v-model="formData.description_ru" editorStyle="height: 100px"/>-->
           <TinyEditor v-model="formData.description_ru" :height="200" />
           <small v-show="!formData.description_ru && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
@@ -45,7 +43,6 @@
       <TabPanel header="English">
         <div class="field mt-3">
           <label>{{ $t('web.shortInfo') }}</label>
-<!--          <RichEditor v-model="formData.description_en" editorStyle="height: 100px"/>-->
           <TinyEditor v-model="formData.description_en" :height="200" />
           <small v-show="!formData.description_en && submitted" class="p-error">{{ $t("smartenu.titleKzInvalid") }}</small>
         </div>
@@ -64,14 +61,12 @@
   </template>
   
   <script>
-  import RichEditor from "@/components/documents/editor/RichEditor.vue";
   import {inject, onMounted, ref, unref} from "vue";
   import {useToast} from "primevue/usetoast";
   import {useI18n} from "vue-i18n";
-  import {AdmissionInfoService} from "@/service/admission.info.service";
   import {EnuWebService} from "@/service/enu.web.service";
   import {EduScoreService} from "@/service/edu.score.service";
-  
+
   export default {
     name: "EduScoreCategoryAdd",
     props: ['isShow', 'selectedData', 'parent'],
@@ -103,8 +98,7 @@
             blockInfo.value = res.data;
             getAcademicDegrees(blockInfo.value.block_id)
           }
-        }).catch(error => {
-          toast.add({severity: "error", summary: error, life: 3000});
+        }).catch(_ => {
         });
       }
   
@@ -113,8 +107,7 @@
           if (res.data) {
             degrees.value = res.data[0]
           }
-        }).catch(error => {
-          toast.add({severity: "error", summary: error, life: 3000});
+        }).catch(_ => {
         });
       }
       getBlock();
@@ -129,9 +122,8 @@
           }
           submitted.value = false;
           hideDialog();
-        }).catch(error => {
+        }).catch(_ => {
           submitted.value = false;
-          toast.add({severity: "error", summary: error, life: 3000});
         });
       }
   
@@ -147,9 +139,8 @@
           }
           submitted.value = false;
           hideDialog();
-        }).catch(error => {
+        }).catch(_ => {
           submitted.value = false;
-          toast.add({severity: "error", summary: error, life: 3000});
         });
       }
   
@@ -187,4 +178,3 @@
   <style scoped>
   
   </style>
-  

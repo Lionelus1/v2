@@ -99,16 +99,7 @@ export default {
         }
         this.approving = false;
         this.showModal = false;
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
+      }).catch(_ => {
         this.submitted = false;
       });
     },
@@ -146,17 +137,8 @@ export default {
       };
       this.planService.getWorkPlanData(data).then(res => {
         this.file = this.b64toBlob(res.data);
-      }).catch(error => {
+      }).catch(_ => {
         this.loading = false;
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       });
     },
     b64toBlob(b64Data, sliceSize = 512) {

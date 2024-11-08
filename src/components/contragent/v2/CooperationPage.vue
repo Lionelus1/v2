@@ -295,9 +295,6 @@ function saveCooperationDocument() {
 
         showMessage('success', t('common.message.succesSaved'), null);
         handleClose()
-      })
-      .catch((error) => {
-        console.error('Failed to save document:', error);
       });
 }
 
@@ -326,7 +323,6 @@ function createNewSubject() {
       getCoopertationSubjects()
     })
     .catch((error) => {
-      console.error('Failed to save document:', error);
       showMessage('error', t('common.message.errorSaving'), null);
     });
 
@@ -368,7 +364,6 @@ function validateForm() {
 
 function cancel() {
   // Implement cancel logic here
-  console.log('Cancel operation');
 }
 
 function showMessage(msgtype, message, content) {
@@ -389,10 +384,9 @@ function getCoopertationSubjects() {
   service.getCooperationSubjects(data)
       .then((response) => {
         cooperationSubjects.value = response.data.subjects;
-        console.log('Cooperation subjects fetched successfully:', cooperationSubjects.value);
       })
       .catch((error) => {
-        console.error('Error fetching cooperation subjects:', error);
+        toast.add({severity: "error", summary: t('common.getDataError'), life: 3000});
       });
 }
 
@@ -500,7 +494,6 @@ function countryLabel(data) {
 //     } else if (err.response && err.response.data && err.response.data.localized) {
 //       showMessage('error', t(err.response.data.localizedPath), null);
 //     } else {
-//       console.log(err);
 //       showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
 //     }
 //   });

@@ -200,8 +200,7 @@
     scienceService.createOrUpdateQualificationsScience(fd).then(res  => {
         toast.add({severity: "success", summary: t('common.success'), life: 3000});
         emitter.emit('qualifications', true)
-      }).catch(err => {
-        toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+      }).catch(_ => {
       })
     
   }
@@ -219,7 +218,7 @@
         }
 
         loading.value = false;
-      }).catch(err => {
+      }).catch(_ => {
           loading.value = false;
           toast.add({ severity: 'error', summary: t('common.error'), life: 3000 });
       });
@@ -237,9 +236,8 @@
         }
 
         loading.value = false;
-      }).catch(err => {
+      }).catch(_ => {
           loading.value = false;
-          toast.add({ severity: 'error', summary: t('common.error'), life: 3000 });
       });
   }
 
@@ -255,9 +253,8 @@
         }
 
         loading.value = false;
-      }).catch(err => {
+      }).catch(_ => {
           loading.value = false;
-          toast.add({ severity: 'error', summary: t('common.error'), life: 3000 });
       });
   }
 
@@ -268,7 +265,7 @@
       if (selectedFundingSource) {
           payload.value.funding_source = selectedFundingSource;
       } else {
-          console.error("Selected award type not found in awardTypes array");
+        // TODO: Selected award type not found in awardTypes array
       }
     }
   }
@@ -280,7 +277,7 @@
       if (selectedtrainingForm) {
           payload.value.training_form = selectedtrainingForm;
       } else {
-          console.error("Selected award type not found in awardTypes array");
+        // TODO: Selected award type not found in awardTypes array
       }
     }
   } 
@@ -292,13 +289,12 @@
       if (selectedproofDocumentType) {
           payload.value.proof_document_type = selectedproofDocumentType;
       } else {
-          console.error("Selected award type not found in awardTypes array");
+        // TODO: Selected award type not found in awardTypes array
       }
     }
   }
 
   const onIconUpload = (event) => {
-      console.log(event)
       file.value = event.files[0];
   };
 

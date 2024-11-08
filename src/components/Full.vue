@@ -300,10 +300,7 @@ export default {
                 this.fixedMenu = false
               }
             })
-            .catch((err) => {
-
-              console.error('Ошибка при получении значения fixedMenu из бэкенда:', err);
-
+            .catch((_) => {
               this.fixedMenu = false;
             });
       } else {
@@ -354,14 +351,13 @@ export default {
               },
           )
           .then((res) => {
-            console.log(res.data.enu_settings)
             if (res.data && res.data.enu_settings){
               this.changeShowAnymore(res.data.enu_settings.show_anymore)
               this.showOverlay = !res.data.enu_settings.show_anymore
             }
           })
           .catch((err) => {
-            console.error("Error loading data:", err);
+            this.$toast.add({severity: "error", summary: this.$t('common.getDataError'), life: 3000});
           });
     },
     checkBirthday() {

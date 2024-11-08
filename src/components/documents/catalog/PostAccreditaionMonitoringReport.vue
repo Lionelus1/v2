@@ -530,14 +530,7 @@ export default {
               }
             }
             this.loading = false
-          })
-          .catch(error => {
-            console.log(error)
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else
-              console.error(error)
-          })
+          });
     },
     resetFileInfo() {
       this.file = {
@@ -650,9 +643,6 @@ export default {
                     if (!hide) {
                       this.deleteChild(this.catalog[0])
                     }
-                  },
-                  error => {
-                    console.log(error);
                   });
         },
       });
@@ -678,14 +668,7 @@ export default {
             this.file.hidden = false
             this.selected.hidden = false
 
-          })
-          .catch(error => {
-            console.log(error)
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else
-              console.error(error)
-          })
+          });
     },
     downloadFile(path = null) {
       if (this.file || path) {
@@ -729,13 +712,6 @@ export default {
         this.file.revision = false;
         this.approving = false
       })
-          .catch(error => {
-            this.approving = false
-            if (error.response && error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else
-              console.log(error);
-          })
 
       this.dialogOpenState.revision = false;
     },

@@ -210,12 +210,7 @@ export default {
         this.view.delete = false
         this.vacancy = null
         this.getVacancies()
-      }).catch(error => {
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
+      }).catch(_ => {
       });
     },
     clearData() {
@@ -270,16 +265,7 @@ export default {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
-        console.log(response.data)
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
+      }).catch(() => {
         this.loading = false;
       });
     },
@@ -321,15 +307,7 @@ export default {
         } else {
           this.loading = false
         }
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
+      }).catch((_) => {
       });
     },
 
@@ -347,15 +325,8 @@ export default {
             this.report,
             {responseType: "blob", headers: getHeader()},
         ).then(response => {
-          console.log(response)
           this.reportResponse = response
-        }).catch(error => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        })
+        });
       }
 
     },

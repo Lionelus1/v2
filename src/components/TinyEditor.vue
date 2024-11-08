@@ -537,8 +537,6 @@ export default {
                     let item = res.data[0];
                     window.tinymce.activeEditor.execCommand('mceInsertContent', false, this.generateList(item));
                     this.$emit('onAfterUpload', item);
-                }).catch(error => {
-                    this.$toast.add({severity: "error", summary: error, life: 3000});
                 });
 
             });

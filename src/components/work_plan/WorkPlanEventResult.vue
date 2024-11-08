@@ -54,7 +54,6 @@
           </div>
           <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
-
               <div class="field" v-if="event && isOperPlan">
                 <label class="bold">{{ $t('common.fact') }}: </label>
                 <div>{{ event.fact }}</div>
@@ -113,7 +112,7 @@
                   <InputText v-model="event.fact" @input="factChange"/>
 
               </div>
-              <div class="field" v-if="isVisibleWritableField && isRespUser && (isOperPlan || isStandartPlan)">
+              <div class="field" v-if="isVisibleWritableField && isRespUser && isOperPlan">
                 <Dropdown v-model="selectedQuarter" :options="filteredQuarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('common.select')" class="w-full md:w-14rem" required @change="validate"/>
                 <small class="p-error" v-if="validation.quarter">{{$t('common.requiredField')}}</small>
               </div>
@@ -164,13 +163,14 @@
                         <span :class="'customer-badge status-' + item.plan_event_result_history[0].state_id">
                           {{ getResultStatus(item.plan_event_result_history[0].state_id) }}</span>
                         <span style="float: right; margin-top: 0px;">
-                          <Button v-if="item.plan_event_result_history[0]?.state_id === 6" class="p-button p-component p-button-icon-only p-button-text" style="height: 20px;font-size: 16px;" @click="showRejectMessageSidebar" icon="fa-solid fa-eye" link />
+                         <Button v-if="item.plan_event_result_history[0]?.state_id === 6" class="p-button p-component p-button-icon-only p-button-text" style="height: 20px;font-size: 16px;" @click="showRejectMessageSidebar" icon="fa-solid fa-eye" link />
                         </span>
                       </div>
                     </div>
                   </Divider>
                   <Inplace v-if="(item.result_text && item.result_text[0].user && (loginedUserId === item.result_text[0].user.userID) && event &&
-                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)) || (item.result_text && isPlanCreator && event &&
+                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 6)) || (item.result_text && item.result_text[0].user && (loginedUserId === item.result_text[0].user.userID) && event &&
+                    (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 1)) || (item.result_text && isPlanCreator && event &&
                     (item.plan_event_result_history && item.plan_event_result_history[0].state_id === 5) && isSciencePlan)" :active="item.isActive" @open="openInplace(item)">
                     <template #display>
                       <div>
@@ -180,7 +180,7 @@
                     </template>
                     <template #content>
                       <div class="py-2"
-                           v-if="((item.plan_event_result_history[0].state_id === 6) && (loginedUserId === item.result_text[0].user.userID)) || (isPlanCreator && isSciencePlan && (item.plan_event_result_history[0].state_id === 5))">
+                           v-if="((item.plan_event_result_history[0].state_id === 6) && (loginedUserId === item.result_text[0].user.userID)) || ((item.plan_event_result_history[0].state_id === 1) && (loginedUserId === item.result_text[0].user.userID)) || (isPlanCreator && isSciencePlan && (item.plan_event_result_history[0].state_id === 5))">
                         <Button :label="$t('common.save')" icon="pi pi-check" class="p-button p-button-success" @click="saveEditResult(item)"
                                 :loading="loading"/>
                         <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button ml-1" @click="cancelEdit(item)"/>
@@ -223,7 +223,9 @@
                         <slot name="empty"></slot>
                       </div>
                       <!--End Edit jaslaganda-->
+                      
                     </template>
+                    
                   </Inplace>
                   <div v-else class="p-0">
                     <p v-html="item.result_text[0].text"></p>
@@ -244,6 +246,8 @@
                       </div>
                     </div>
                   </div>
+                  <br/>
+                  <Button v-if="((item.plan_event_result_history[0].state_id === 1 || item.plan_event_result_history[0].state_id === 6) && (item.result_text[0].userId === loginedUserId))" :label="$t('common.send')" icon="fa-regular fa-paper-plane" class="p-button p-button-primary" @click="sendResultConfirmItem($event, item, 'send')" style="float: left; margin-right: 10px;"></Button>
                   <div style="margin-left: -12px;" v-if="isPlanCreator || findRole(null, 'main_administrator')">
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check" class="p-button-rounded p-button-text"
                             @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)" :label="$t('common.action.accept')"></Button>
@@ -526,6 +530,7 @@ export default {
       isCurrentUserApproval: false,
       planService: new WorkPlanService(),
       resultStatus: [
+        {name_kz: "Құрылды", name_ru: "Создан", name_en: "Created", id: 1},
         {name_kz: "Тексерілуде", name_ru: "На проверке", name_en: "On inspection", id: 5},
         {name_kz: "Түзетуде", name_ru: "На доработке", name_en: "Under revision", id: 6},
         {name_kz: "Тексерілді", name_ru: "Проверено", name_en: "Inspected", id: 7},
@@ -643,7 +648,7 @@ export default {
       if (this.isPlanCreator) {
         userResults = this.resultData.filter(x => x.user_id === this.loginedUserId)
       }
-      let userData = !userResults.some(x => x.plan_event_result_history?.every(x => x.modi_user_id === this.loginedUserId && (x.state_id === 5 || x.state_id === 6)))
+      let userData = !userResults.some(x => x.plan_event_result_history?.every(x => x.modi_user_id === this.loginedUserId && (x.state_id === 1 || x.state_id === 5 || x.state_id === 6)))
       return userData
     },
     shouldShowRejectSidebar() {
@@ -701,12 +706,18 @@ export default {
 
       return firstMonthOfQuarter;
     },
+    getSecondMonthOfQuarter() {
+      const firstMonthOfQuarter = this.getFirstMonthOfQuarter();
+      const secondMonthOfQuarter = firstMonthOfQuarter + 1;
+
+      return secondMonthOfQuarter;
+    },
     filterQuarters() {
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentQuarter = Math.ceil(currentMonth / 3);
       const currentDay = currentDate.getDate();
-      if (currentDay <= 20 && currentMonth === this.getFirstMonthOfQuarter()) {
+      if (currentDay <= 7 && (currentMonth === this.getFirstMonthOfQuarter() || currentMonth === this.getSecondMonthOfQuarter())) {
         // Agymdagy ai agymdagy toqsannyng birinshi aiy bolsa aldyngy toqsanga natije toltyra alady
         return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
       } else {
@@ -873,8 +884,8 @@ export default {
           },
         },
         {
-          label: this.$t("common.send"),
-          icon: "fa-regular fa-paper-plane",
+          label: this.$t("common.save"), //label: this.$t("common.send"),
+          icon: "pi pi-save", //icon: "fa-regular fa-paper-plane",
           disabled: this.isDisabled,
           command: () => {
             this.saveResult();
@@ -921,7 +932,7 @@ export default {
         return
       }
 
-      if ((this.isOperPlan || this.isStandartPlan) && this.validate()) {
+      if (this.isOperPlan && this.validate()) {
         this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
         return
       }
@@ -937,12 +948,16 @@ export default {
         this.isBlockUI = false;
         return;
       }
-
+      
       fd.append('work_plan_event_id', this.event.work_plan_event_id);
       fd.append('result', this.isOperPlan ? this.newResult ? this.newResult : "" : this.result);
+
       if (this.plan && this.isOperPlan) {
         fd.append("quarter", this.selectedQuarter.value);
         fd.append("is_partially", true);
+      }
+      if (this.plan && this.isStandartPlan) {
+        fd.append("quarter", this.event.quarter);
       }
 
       if (this.authUser?.mainPosition?.department &&
@@ -1192,10 +1207,15 @@ export default {
       this.selectedQuarter = item.result_text[0].quarter
       item.isActive = true;
     },
-    saveEditResult(item) {
-      if ((this.isOperPlan || this.isStandartPlan) && this.validate()) {
-        this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
-        return
+    saveEditResult(item, editType) {
+     
+      // if ((this.isOperPlan || this.isStandartPlan) && this.validate()) {
+      //   this.$toast.add({severity: 'error', detail: this.$t('common.message.fillError'), life: 3000});
+      //   return
+      // }
+      let editTypeId = 1
+      if(editType === "send"){
+        editTypeId = 5
       }
 
       this.loading = true;
@@ -1204,6 +1224,7 @@ export default {
       fd.append("result_text_id", item.result_text[0].id)
       fd.append("work_plan_event_id", item.work_plan_event_id)
       fd.append("quarter", item.result_text[0].quarter);
+      fd.append("edit_type", editTypeId)
 
 
       if (this.isFactChanged)
@@ -1238,6 +1259,21 @@ export default {
     cancelEdit(item) {
       item.isActive = false;
     },
+    sendResultConfirmItem(event, item, editType) {
+      this.$confirm.require({
+        target: event.currentTarget,
+        group: 'deleteResult',
+        message: this.$t('common.confirmation'),
+        header: this.$t('common.confirm'),
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-rounded p-button-success',
+        rejectClass: 'p-button-rounded p-button-danger',
+        accept: () => {
+          this.saveEditResult(item, editType);
+
+        }
+      });
+    },
     deleteConfirmItem(event, item) {
       this.$confirm.require({
         target: event.currentTarget,
@@ -1255,7 +1291,6 @@ export default {
     },
     deleteItem(item) {
       if (!item.result_text || !item.result_text[0] || !item.result_text[0].id || !item.event_result_id) {
-        console.error('Invalid item');
         return;
       }
       const data = {

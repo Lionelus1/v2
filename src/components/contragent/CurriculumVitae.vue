@@ -102,7 +102,6 @@ const userID = computed(() => {
     const bytes = CryptoJS.AES.decrypt(encrypted, "secretKey");
     return bytes.toString(CryptoJS.enc.Utf8);
   } catch (error) {
-    console.error('Ошибка расшифровки:', error);
     return '';
   }
 });

@@ -181,7 +181,6 @@
             researchInterests.value = res.data.interests
             loading.value = false
         }).catch(_ => {
-            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
             loading.value = false;
         })
     }
@@ -195,12 +194,7 @@
             user.value = response.data.user
             educations.value = response.data.educations 
 
-            }).catch(error => {
-            toast.add({
-                severity: "error",
-                summary: t('message.actionError'),
-                life: 3000,
-            })
+            }).catch(_ => {
         })
     } 
 
@@ -213,8 +207,7 @@
             scienceService.getLaborActivity(req).then(res => {
             experiences.value = res.data.laborActivities
             loading.value = false
-        }).catch(err => {
-            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+        }).catch(_ => {
             loading.value=false
         })
     }
@@ -227,8 +220,7 @@
         scienceService.getScienceAward(req).then(res => {
             awards.value = res.data.award
             loading.value = false
-        }).catch(err => {
-            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+        }).catch(_ => {
             loading.value=false
         })
     }
@@ -241,8 +233,7 @@
         scienceService.getQualificationsScience(req).then(res => {
             qualifications.value = res.data.qualifications
             loading.value = false
-        }).catch(err => {
-            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+        }).catch(_ => {
             loading.value=false
         })
 

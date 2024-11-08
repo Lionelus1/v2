@@ -333,7 +333,6 @@ const getDays = (data) => {
       })
       .catch((error) => {
         loading.value = false
-        console.log(error)
       });
 }
 const getTimes = (data,date) => {
@@ -348,7 +347,6 @@ const getTimes = (data,date) => {
       })
       .catch((error) => {
         loading.value = false
-        console.log(error)
       });
 }
 const changeQueues = (event) => {
@@ -396,9 +394,6 @@ const getQueue = (data) => {
       })
       .then((response) => {
         queues.value = response.data.queues
-      })
-      .catch((error) => {
-        console.log(error)
       });
 }
 getQueue(parentId.value)
@@ -456,7 +451,6 @@ const registerQueue = async (queueId, queue) => {
           currentStep.value = 4
         })
         .catch((error) => {
-          console.log(error)
           toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
           loading.value = false
           timeList.value = []
@@ -502,7 +496,6 @@ const getRegisterService = (queueId, queue) => {
           currentStep.value = 4
         })
         .catch((error) => {
-          console.log(error)
           toast.add({severity: "error", summary: t(`${error.response.data.error}`)});
           loading.value = false
           currentStep.value = 2
@@ -555,9 +548,6 @@ const useRealtimeStream = (qId = 0) => {
 
   socket.onerror = (error) => {
     queError.value = JSON.stringify(error)
-    console.log(JSON.parse(error))
-    console.error(JSON.parse(error))
-    alert(`[error] ${JSON.stringify(error)}`);
   };
 }
 const padTo2Digits = (num) => {
@@ -574,9 +564,6 @@ const refusal = () => {
         localStorage.removeItem('queueKey')
         currentStep.value = 2
         disabledRezervation.value = false
-      })
-      .catch((error) => {
-        console.log(error)
       });
 }
 const connected = () => {
@@ -596,7 +583,6 @@ const connected = () => {
       }
     });
     socket.on("connect_error", (err) => {
-      console.log(err)
     });
   },500)
 }

@@ -80,7 +80,6 @@ const getFullName = (senderJSON) => {
     const senderData = JSON.parse(senderJSON);
     return `${senderData.firstName || ''} ${senderData.lastName || ''} ${senderData.thirdName || ''}`.trim();
   } catch (error) {
-    console.error("Error parsing sender JSON:", error);
     return t("mailing.invalidSenderData");
   }
 };
@@ -96,14 +95,12 @@ const initMailing = () => {
           mailingList.value = res.data;
           count.value = res.data.NewCount;
         } else {
-          console.log('res.data is null');
           mailingList.value = [];
           count.value = 0;
         }
         loading.value = false;
       })
       .catch((err) => {
-        console.log(err);
         if (err.response && err.response.status === 401) {
           store.dispatch("logOut");
         }
@@ -146,7 +143,6 @@ const deleteMailing = (data) => {
         }
       })
       .catch((err) => {
-        console.error(err);
         toast.add({
           severity: "error",
           detail: t("mailing.deleteFailed"),

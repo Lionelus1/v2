@@ -130,7 +130,6 @@
                     plainData: arrayBufferToB64(documentByteArray)
                 }
                 axios.post(signerApi + '/signature/cms/verify', req, {headers: header}).then((response) => {
-                    console.log(response)
                     if (response.data.code === 1) {
                         if(!withSigning) {
                             this.correct = true

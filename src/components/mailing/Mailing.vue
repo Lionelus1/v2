@@ -77,7 +77,6 @@ export default {
         const senderData = JSON.parse(senderJSON);
         return `${senderData.firstName || ''} ${senderData.lastName || ''} ${senderData.thirdName || ''}`.trim();
       } catch (error) {
-        console.error("Error parsing sender JSON:", error);
         return this.$t("mailing.invalidSenderData");
       }
     },
@@ -91,7 +90,7 @@ export default {
             this.loading = false;
           })
           .catch((err) => {
-            console.error("Error loading mailing list:", err);
+            this.toast.add({severity: "error", detail: this.$t('common.error'), life: 3000});
           })
           .finally(() => {
             this.loading = false;
@@ -104,7 +103,6 @@ export default {
             callback(null, response.data);
           })
           .catch((error) => {
-            console.error("Error fetching mailing by ID:", error);
             callback(error, null);
           });
     },
@@ -124,7 +122,6 @@ export default {
       });
     },
     closeMailingView() {
-      console.log('Closing view from parent...');  // Лог для проверки
       this.mailingViewVisible = false;
     },
   },

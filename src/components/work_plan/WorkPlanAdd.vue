@@ -80,6 +80,7 @@ const closeBasic = () => {
 
 const createPlan = () => {
   submitted.value = true;
+  isDisabled.value = true;
   if (!validate()) return
 
   const fd = new FormData()

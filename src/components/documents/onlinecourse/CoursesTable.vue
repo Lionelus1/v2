@@ -230,7 +230,6 @@ export default {
   },
   methods: {
     check(arg) {
-      console.log(arg)
     },
     findRole: findRole,
     showMessage(msgtype, message, content) {
@@ -350,9 +349,7 @@ export default {
       this.tableLoading = true
       this.service.getOod().then(_ => {
 
-      }).catch(error => {
-        console.log(error)
-      })
+      }).catch(_ => {})
         .finally(() => {
           this.getCourses()
           this.tableLoading = false
@@ -451,11 +448,6 @@ export default {
       }).finally(() => {
         this.loading = false;
       })
-    },
-    handleSelectionChange() {
-      if (this.lazyParams.searchText) {
-        console.log(this.lazyParams.searchText)
-      }
     },
     itemLabel(item) {
       return item['name']

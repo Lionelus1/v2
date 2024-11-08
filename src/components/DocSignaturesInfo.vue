@@ -213,7 +213,6 @@ export default {
     }
   },
   created() {
-    console.log("ERHERHSKJFBN");
     if (this.docIdParam) {
       this.doc_id = this.docIdParam;
     } else {
@@ -244,9 +243,7 @@ export default {
     this.getData();
   },
   mounted() {
-    console.log("HERE1");
     this.wsconnect();
-    console.log("HERE2");
     this.emitter.on("downloadCMS", (data) => {
       if (data !== null) {
         api
@@ -256,7 +253,6 @@ export default {
             { headers: getHeader() }
           )
           .then((res) => {
-            console.log(res.data);
             let result = res.data;
             var link = document.createElement("a");
             link.innerHTML = "Download file";
@@ -534,7 +530,6 @@ export default {
               }
             })
             .catch((e) => {
-              console.log(e);
               this.signing = false;
             });
         })
@@ -725,7 +720,6 @@ export default {
           }
 
           for (let element of res.data.approvalStages) {
-            console.log(element)
             if (!element.signatures) {
               continue;
             }
@@ -785,7 +779,6 @@ export default {
           } else if (err.response && err.response.data && err.response.data.localized) {
             this.showMessage('error', this.$t(err.response.data.localizedPath));
           } else {
-            console.log(err)
             this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
           }
         });
@@ -813,7 +806,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
 
@@ -894,7 +886,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath));
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       });

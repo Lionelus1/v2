@@ -114,8 +114,7 @@
         
         scienceService.addOrUpdateScienceAward(fd).then(res  => {
           emitter.emit('award', true)
-        }).catch(err => {
-            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+        }).catch(_ => {
         })
     };
 

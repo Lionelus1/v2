@@ -16,7 +16,6 @@
                     <div class="field">
                         <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
                         <TinyEditor v-model="event.contentKz" :height="300" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
-                        <!--            <RichEditor ref="kztext" id="kz-content" v-model="event.contentKz" editorStyle="height: 320px"></RichEditor>-->
                         <small v-show="!event.contentKz && submitted" class="p-error">
                             {{ $t("smartenu.contentKzInvalid") }}
                         </small>
@@ -225,10 +224,7 @@
 </template>
 
 <script>
-import RichEditor from "../documents/editor/RichEditor";
 import {EventsService} from "../../service/event.service";
-import {resizeImages} from "../../helpers/HelperUtil";
-import * as imageResizeCompress from "image-resize-compress";
 import {PosterService} from "../../service/poster.service";
 import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "@/config/config";
 import {FileService} from "@/service/file.service";

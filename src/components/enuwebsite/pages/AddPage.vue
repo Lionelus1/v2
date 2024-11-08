@@ -42,7 +42,6 @@
                         </div>
                         <div class="field">
                             <label>{{ $t("common.contentInQazaq") }}</label>
-                            <!--            <RichEditor ref="kztext" v-model="formData.content_kz" editorStyle="height: 320px"></RichEditor>-->
                             <TinyEditor v-model="formData.content_kz" :height="400" :custom-file-upload="true" :accordion="true"
                                 @onAfterUpload="onAfterUpload" />
                         </div>
@@ -58,7 +57,6 @@
                         </div>
                         <div class="field">
                             <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-                            <!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
                             <TinyEditor v-model="formData.content_ru" :height="400" :custom-file-upload="true" :accordion="true"
                                 @onAfterUpload="onAfterUpload" />
                         </div>
@@ -74,7 +72,6 @@
                         </div>
                         <div class="field">
                             <label>{{ $t("common.contentInEnglish") }}</label>
-                            <!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
                             <TinyEditor v-model="formData.content_en" :height="400" :custom-file-upload="true" :accordion="true"
                                 @onAfterUpload="onAfterUpload" />
                         </div>
@@ -118,13 +115,11 @@
 </template>
 
 <script>
-import RichEditor from "@/components/documents/editor/RichEditor.vue";
-import { EnuWebService } from "@/service/enu.web.service";
+import {EnuWebService} from "@/service/enu.web.service";
 import TinyEditor from "../../TinyEditor.vue";
 import Gallery from "@/components/Gallery.vue";
-import { downloadRoute, getHeader, smartEnuApi } from "@/config/config";
-import { findRole } from "@/config/config";
-import { useStore } from "vuex";
+import {downloadRoute, findRole, getHeader, smartEnuApi} from "@/config/config";
+import {useStore} from "vuex";
 
 export default {
     name: "AddPage",
@@ -194,12 +189,7 @@ export default {
                 if (res.data) {
                     this.emitter.emit("pageCreated", res.data);
                 }
-            }).catch(error => {
-                this.$toast.add({
-                    severity: "error",
-                    summary: error,
-                    life: 3000,
-                });
+            }).catch(_ => {
             });
 
         },
@@ -216,16 +206,7 @@ export default {
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
-            }).catch(error => {
-                if (error.response && error.response.status === 401) {
-                    this.$store.dispatch("logLout");
-                } else {
-                    this.$toast.add({
-                        severity: "error",
-                        summary: error,
-                        life: 3000,
-                    });
-                }
+            }).catch(_ => {
             });
         },
         deleteFileConfirm(event, item, index) {
@@ -252,8 +233,7 @@ export default {
                     this.getPageFiles();
                     this.$toast.add({ severity: 'success', detail: this.$t('common.done'), life: 3000 });
                 }
-            }).catch((error) => {
-                this.$toast.add({ severity: "error", summary: error, life: 3000 });
+            }).catch((_) => {
             });
         },
         onAfterUpload(item) {
@@ -277,7 +257,6 @@ export default {
                     }
                 })
                 /*let found = galleryFiles.value.find(x => x.file_id === event.id)
-                console.log(found)
                 found.is_deleted = true;*/
             }
         },

@@ -4,7 +4,11 @@ import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
 export class WorkPlanService {
 
     getEventsTree(lazyParams) {
-        return api.post(`/workPlan/getEventsTree`, lazyParams, {headers: getHeader()});
+        let data = JSON.parse(JSON.stringify(lazyParams));
+        if (data?.parent_id) {
+            data.rows = 0;
+        }
+        return api.post(`/workPlan/getEventsTree`, data, {headers: getHeader()});
     }
 
     getWorkPlanApprovalUsers(work_plan_id) {

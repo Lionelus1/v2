@@ -33,7 +33,6 @@ export default {
         getSignerInfo() {
             axios.get(signerApi + '/signature/signer/info/' + this.signature.id, {headers: header}).then((response) => {
                 if(response.data.serialNumber !== null || response.data.serialNumber !=='') {
-                    console.log(response.data)
                     this.identifier = response.data.serialNumber.replace('IIN', '')
                     this.fullName = response.data.CN
                     this.signingDate = new Date(response.data.signingDate).toLocaleDateString() + ", " + new Date(response.data.signingDate).toLocaleTimeString()

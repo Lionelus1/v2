@@ -491,12 +491,7 @@
       educations.value = response.data.educations 
       bank.value =  response.data.user.bank
 
-    }).catch(error => {
-      toast.add({
-        severity: "error",
-        summary: t('message.actionError'),
-        life: 3000,
-      })
+    }).catch(_ => {
     })
   }
 
@@ -513,12 +508,7 @@
       })
 
       getMyAccount()
-    }).catch(err => {
-        toast.add({
-          severity: "error",
-          summary: err,
-          life: 3000,
-        })
+    }).catch(_ => {
       })
   }
 
@@ -532,8 +522,7 @@
     scienceService.getScienceInterests(req).then(res => {
       researchInterests.value = res.data.interests
       loading.value = false
-    }).catch(error => {
-      toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+    }).catch(_ => {
       loading.value = false;
     })
   }
@@ -547,8 +536,7 @@
     scienceService.getLaborActivity(req).then(res => {
       laborActivities.value = res.data.laborActivities
       loading.value = false
-    }).catch(err => {
-      toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+    }).catch(_ => {
       loading.value=false
     })
   }
@@ -561,8 +549,7 @@
     scienceService.getScienceAward(req).then(res => {
         awards.value = res.data.award
         loading.value = false
-      }).catch(err => {
-        toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+      }).catch(_ => {
         loading.value=false
       })
   }
@@ -575,8 +562,7 @@
     scienceService.getQualificationsScience(req).then(res => {
         qualifications.value = res.data.qualifications
         loading.value = false
-      }).catch(err => {
-        toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+      }).catch(_ => {
         loading.value=false
       })
 
