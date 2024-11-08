@@ -269,7 +269,6 @@ export default {
         } else {
           this.selectedFile = file;
           this.validation.file = null;
-          console.log(this.selectedFile.name);
         }
       }
     },
