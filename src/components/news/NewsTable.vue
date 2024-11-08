@@ -15,6 +15,9 @@
                 <Column field="titleKz" v-bind:header="$t('common.nameIn')" :sortable="true" style="width: 40%">
                     <template #body="{data}">
                         <span>{{ data['title' + locale] }}</span>
+                      <template v-if="data.isHiddenNews">
+                        (<a :href="data.url" target="_blank">{{ $t('common.link') }}</a>)
+                      </template>
                       <Badge style="margin-left:5px" :value="$t('web.isHidden')" v-if="data.isHiddenNews"></Badge>
                     </template>
                 </Column>
@@ -150,12 +153,14 @@ import {formatDate, upFirstLetter} from "@/helpers/HelperUtil";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
 import HistoryNews from "@/components/news/HistoryNews.vue";
+import {EnuWebService} from "@/service/enu.web.service";
 
 export default {
     name: "NewsTable",
     components: { HistoryNews, ActionButton, ToolbarMenu, AddEditNews, NewsView},
     data() {
         return {
+          enuService: new EnuWebService(),
             lazyParams: {
                 page: 0,
                 rows: 10,
@@ -313,7 +318,8 @@ export default {
                             e.poster.imageRuUrl = smartEnuApi + fileRoute + e.poster.imageRu;
                             e.poster.imageEnUrl = smartEnuApi + fileRoute + e.poster.imageEn;
                         }
-                        e.galleryFiles = e.files ? e.files.find(x => x.is_gallery === true) : null
+                        e.galleryFiles = e.files ? e.files.find(x => x.is_gallery === true) : null;
+                        e.url = `${this.getSiteUrl}/${this.$i18n.locale}/news/${e.id}`
                     });
                     this.newsCount = response.data.total;
                 }
@@ -674,6 +680,9 @@ export default {
             command: () => {this.rejectReason()},
           }
         ]
+      },
+      getSiteUrl() {
+        return this.enuService.getSiteUrl(this.$store, this.lazyParams.slug)
       },
       actions () {
         return [
