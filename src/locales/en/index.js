@@ -127,6 +127,7 @@ export default {
         main: "Main",
         more: "More",
         loadMore: "Load more",
+        readMore: "Read more",
         meetingUrl: "Link to online meeting",
         meetingPlace: "Meeting place",
         myData: "My details",

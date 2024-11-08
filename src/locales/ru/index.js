@@ -128,6 +128,7 @@ export default {
         main: "Основные",
         more: "Подробнее",
         loadMore: "Загрузить больше",
+        readMore: "Подробнее",
         meetingUrl: "Ссылка для онлайн собрания",
         meetingPlace: "Место собрания",
         move: "Перемещение",

@@ -118,6 +118,27 @@ a {
         }
     }
 }
+.sidebar_notific.p-sidebar .p-sidebar-content{
+    padding: 0;
+}
+.content_notific p {
+    img {
+        width: 300px !important;
+        height: auto;
+    }
+}
+.content_notific {
+    .enuImg{
+        width: 150px!important;
+        margin-bottom: 20px!important;
+    }
+    .monitor{
+        width: 150px!important;
+        aspect-ratio: auto!important;
+        height: auto!important;
+        margin-right: -360px;
+    }
+}
 .customer-badge {
     border-radius: 2px;
     padding: 0.25em 0.5rem;
