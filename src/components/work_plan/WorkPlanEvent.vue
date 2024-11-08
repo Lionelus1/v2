@@ -1785,7 +1785,7 @@ export default {
         {
           label: this.$t('common.add'),
           icon: 'pi pi-plus',
-          visible: (this.isPlanCreator || this.isEventsNull) && !this.isFinish && this.active !== 1,
+          visible: ((this.isPlanCreator || this.isEventsNull) && !this.isFinish) && (this.active === 0 && this.isWorkSchedule),
           color: 'blue',
           command: () => {
             this.showDialog(this.dialog.add);
@@ -1808,7 +1808,7 @@ export default {
           label: this.$t('common.complete'),
           icon: 'pi pi-check',
           disabled: !this.data || this.data.length === 0,
-          visible: this.plan && this.isPlanCreator && !this.isFinish && this.active !== 1,
+          visible: (this.plan && this.isPlanCreator && !this.isFinish) && (this.active === 0 && this.isWorkSchedule),
           color: 'yellow',
           command: () => {
             this.confirmFinish();

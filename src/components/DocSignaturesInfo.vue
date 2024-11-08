@@ -136,6 +136,23 @@
               @click="downloadProtocol(item.filePath)" class="p-button"/>
         </div>
       </TabPanel>
+      <TabPanel v-if="showStudents" :header="$t('common.members')" >
+        <DataTable
+            :value="memberList"
+            tableStyle="min-width: 50rem"
+            dataKey="id"
+            :lazy="true"
+            :loading="loadingMem"
+            paginator
+            :rows="10"
+            :total-records="totalMembers"
+            :rowsPerPageOptions="[10, 20, 50]"
+            @page="onPage($event)"
+            :first="first"
+        >
+          <Column field="fullName" :header="$t('common.fullName')" />
+        </DataTable>
+      </TabPanel>
     </TabView>
   </div>
 </template>
@@ -183,6 +200,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    docIdInt: {
+      type: Number,
+      default: null,
+    },
+    showStudents:{
+      type: Boolean,
+      default: false,
+    }
   },
   // emits: ['sentToRevision'],
   data() {
@@ -196,6 +221,10 @@ export default {
       isTspRequired: Boolean,
       signerIin: null,
       docInfo: null,
+      memberList: [],
+      totalMembers: 0,
+      first: 0,
+      loadingMem: false,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser"))
           ? JSON.parse(localStorage.getItem("loginedUser")).userID
           : null,
@@ -249,6 +278,9 @@ export default {
     this.signerIin = this.signerIinParam;
     this.showAllSigns = this.showAllSignsParam;
     this.getData();
+    if(this.showStudents){
+      this.getConrtactUsersForSchedulePlan({doc_id: this.docIdInt, page: 0, rows: 10})
+    }
   },
   mounted() {
     this.wsconnect();
@@ -342,13 +374,49 @@ export default {
         } else {
           api.post("/downloadFile", {filePath: this.docInfo.filePath,},
               {headers: getHeader(),}).then((response) => {
-            this.files.push(this.b64toBlob(response.data.file));
+            // this.files.push(this.b64toBlob(response.data.file));
+            this.files.push(this.b64toBlob(response.data));
           });
         }
       } else if (this.active == 2 && this.loginedUserId === null) {
         this.$store.dispatch("solveAttemptedUrl", this.$route);
         this.$router.push({path: "/login"});
       }
+    },
+    onPage(event) {
+      this.first = event.first;
+      let data = {
+        doc_id: this.docIdInt,
+        page: event.page,
+        rows: event.rows,
+      };
+      this.getConrtactUsersForSchedulePlan(data);
+    },
+    getConrtactUsersForSchedulePlan(data) {
+      this.loadingMem = true;
+      api.post(`/document/users`, data,
+          {headers: getHeader(),}
+      ).then((res) => {
+        if (res.data && res.data.users) {
+          this.memberList = res.data.users;
+          this.totalMembers = res.data.total;
+        }
+        this.loadingMem = false;
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else if (error.response && error.response.status === 403) {
+          this.$store.dispatch("solveAttemptedUrl", this.$route)
+          this.$router.push({path: '/login'});
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+        this.loadingMem = false;
+      });
     },
     getData() {
       this.loading = true;

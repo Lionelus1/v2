@@ -1856,6 +1856,8 @@ export default {
         importAlreadyOnProcess:
             "Import process is already on. Please wait for results.",
         notFound: "The requested resource was not found",
+        userDetailInvalid: 'You have entered a user who is not associated with this educational program. Please verify the user\'s details',
+        existingPracticeAgreementsMessage: "This student already has active internship contracts.",
     },
     visuallyImpaired: {
         fontSize: "Font size",

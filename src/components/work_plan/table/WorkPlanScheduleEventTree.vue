@@ -8,8 +8,10 @@
     >
       <DocSignaturesInfo
           :docIdParam=studentDocUUID
+          :docIdInt=studentDocID
           :isInsideSidebar="true"
-      ></DocSignaturesInfo>
+          :showStudents="true"
+      />
     </Sidebar>
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel :header="$t('common.tasks')">
@@ -114,7 +116,7 @@
             </Column>
             <Column field="content" :header="$t('contracts.contract')">
               <template #body="slotProps">
-                <a href="#" @click.prevent="viewContract(slotProps.data.doc_uuid, slotProps.data.user.fullName)">
+                <a href="#" @click.prevent="viewContract(slotProps.data.doc_uuid, slotProps.data.doc_id, slotProps.data.user.fullName)">
                   {{ slotProps.data[$i18n.locale === 'kz' ? 'contract_name_kz' : 'contract_name_ru']}}
                 </a>
               </template>
@@ -177,9 +179,11 @@ const tabChanged = () => {
   emits('updateActive', active.value)
 }
 const studentDocUUID = ref("")
+const studentDocID = ref(0)
 const studentFullName = ref("")
-const viewContract = (docUUID, fullName) => {
+const viewContract = (docUUID, docId, fullName) => {
   studentDocUUID.value = docUUID
+  studentDocID.value = docId
   studentFullName.value = fullName
   visibleRight.value = true
 }
