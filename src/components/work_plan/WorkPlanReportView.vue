@@ -5,7 +5,7 @@
     <div class="col-12" v-if="report && plan">
       <div class="card" v-if="report && report?.doc_info">
         <div>
-          <TitleBlock :title="report.report_name" :show-back-button="true"/>
+          <TitleBlock :title="report.report_type === 5 ? $t(report.report_name) : report.report_name" :show-back-button="true"/>
           <span v-if="report" :class="'ml-3 customer-badge status-' + report?.doc_info.docHistory.stateEn">
             {{ $t('common.states.' + report?.doc_info.docHistory.stateEn) }}
           </span>
@@ -16,6 +16,7 @@
         <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')"
                 @click="openDoc"></Button>
       </div>
+      {{contrConcModel}}
       <div class="card" v-if="visibleSendToApprove">
         <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')"
                 @click="openModal"></Button>
@@ -24,7 +25,14 @@
                                :report="report" :plan="plan" @sent-to-approve="getReport" @closed="closeApproveModal"/>
 
       </div>
-      <div class="card" v-if="blobSource">
+      <div v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4) && report.report_type === 5">
+        <vue-element-loading :active="contrConcLoading" color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
+        <div class="field">
+          <TinyEditor v-model="contrConcModel"  :height="300" :style="{ height: '100%', width: '100%' }"/>
+          <Button :label="$t('common.save')" icon="pi pi-save" class="p-button-rounded p-button-success mr-2" @click="saveContr"/>
+        </div>
+      </div>
+      <div class="card" v-else-if="blobSource">
         <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf"/>
       </div>
     </div>
@@ -57,7 +65,7 @@ import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove"
 import {WorkPlanService} from "@/service/work.plan.service";
 import Enum from "@/enum/workplan";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
-import {log} from "qrcode/lib/core/galois-field";
+import {findRole} from "../../config/config";
 
 export default {
   name: "WorkPlanReportView",
@@ -66,6 +74,8 @@ export default {
   data() {
     const loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
     return {
+      contrConcModel: null,
+      contrConcLoading: false,
       loginedUser: loginedUser,
       source: null,
       showModal: false,
@@ -143,6 +153,25 @@ export default {
   },
 
   methods: {
+    findRole,
+    //заключение контрагента тек докты курган адам гана жаза алады
+    // saveContrConc() {
+    //   this.contrConcLoading.value = true;
+    //   this.contrConcDoc.value.params?.forEach((param) => {
+    //     if(param.name === "content") {
+    //       if (!param.value) param.value = "";
+    //       param.value = contrConcModel.value;
+    //     }
+    //   })
+    //   docService.saveDocumentV2(contrConcDoc.value).then(res => {
+    //     contrConcDoc.value = res.data
+    //     toast.add({severity: "success", summary: t('common.success'), life: 3000});
+    //     contrConcLoading.value = false;
+    //   }).catch(error => {
+    //     toast.add({ severity: 'error', summary: error.message, life: 3000 });
+    //     contrConcLoading.value = false;
+    //   });
+    // }
     closeSideModal() {
       this.showReportDocInfo = false;
       this.$emit('closed', true)
@@ -167,6 +196,8 @@ export default {
     getReport() {
       this.planService.getPlanReportById(this.report_id).then(res => {
         this.report = res.data;
+
+        this.calcCC(); //для заключения контрагента
         this.getPlan();
         this.getFile();
         // this.getReportApprovalUsers();
@@ -275,6 +306,23 @@ export default {
     closeModal() {
       this.showRejectPlan = false;
     },
+    saveContr() {
+      this.contrConcLoading.value = true;
+      this.report.doc_info.forEach((param) => {
+        if(param.name === "content") {
+          if (!param.value) param.value = "";
+          param.value = this.contrConcModel.value;
+        }
+      })
+      this.docService.saveDocumentV2(contrConcDoc.value).then(res => {
+        contrConcDoc.value = res.data
+        toast.add({severity: "success", summary: t('common.success'), life: 3000});
+        contrConcLoading.value = false;
+      }).catch(error => {
+        toast.add({ severity: 'error', summary: error.message, life: 3000 });
+        contrConcLoading.value = false;
+      });
+    },
     openModal() {
       console.log(this.plan.plan_type.id)
       this.showModal = true;
@@ -376,6 +424,14 @@ export default {
     },
     closeApproveModal() {
       this.showModal = false
+    },
+    calcCC() {
+      if (this.report && this.report.doc_info && this.report.doc_info.params) {
+        const temp = this.report.doc_info.params.filter(item => item.name.includes("content"));
+        if (temp.length <= 1) {
+          this.contrConcModel = temp[0].value;
+        }
+      }
     }
   }
 }
