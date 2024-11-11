@@ -67,10 +67,10 @@ deploy_stage:
   image: node:lts
   script:
     - if [ "$CI_COMMIT_BRANCH" == "master" ]; then
-      ssh $SSH_AUTH_URL "sudo rm -rf /local/prohtml/*";
+      ssh $SSH_AUTH_URL "rm -rf /local/prohtml/*";
       scp -r dist_prod/* $SSH_AUTH_URL:/local/prohtml;
       elif [ "$CI_COMMIT_BRANCH" == "test" ]; then
-      ssh $SSH_AUTH_URL "sudo rm -rf /local/testhtml/*";
+      ssh $SSH_AUTH_URL "rm -rf /local/testhtml/*";
       scp -r dist_test/* $SSH_AUTH_URL:/local/testhtml;
       fi
   dependencies:
