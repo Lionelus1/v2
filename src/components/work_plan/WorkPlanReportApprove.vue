@@ -1,8 +1,9 @@
 <template>
   <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{ width: '50vw' }" class="p-fluid" @closed="closeModal"
     @hide="closeModal" :closeOnEscape="true">
+    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em" />
     <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em" />
-    <BlockUI :blocked="approving">
+    <BlockUI :blocked="loading || approving">
       <div class="field">
         <ApprovalUsers :approving="approving" v-model="approval_users" @closed="closeModal" @approve="approve($event)" :stages="stages" :mode="'standard'">
         </ApprovalUsers>
@@ -28,7 +29,7 @@ export default {
       showModal: this.visible,
       selectedUsers: null,
       step: 1,
-      approval_users: [
+      approval_users: this.approvalStages ? this.approvalStages : [
         {
           stage: 1,
           users: [],
@@ -55,7 +56,8 @@ export default {
       approving: false,
       stages: this.approvalStages ? this.approvalStages : null,
       Enum: Enum,
-      file: null
+      file: null,
+      loading: true,
     }
   },
   created() {
@@ -90,6 +92,7 @@ export default {
 
     },
     getWorkPlanReportData() {
+      this.loading = true;
       let data = {
         work_plan_id: parseInt(this.plan.work_plan_id),
         quarter: this.report.report_type === 2 ? this.report.quarter : null,
@@ -100,6 +103,7 @@ export default {
       };
       this.planService.getWorkPlanData(data).then(res => {
         this.file = this.b64toBlob(res.data);
+        this.loading = false;
       }).catch(error => {
         this.loading = false;
         if (error.response && error.response.status === 401) {
