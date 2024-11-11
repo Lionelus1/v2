@@ -190,6 +190,7 @@
       :visible="dialog.info.state"
       @hide="hideDialog(dialog.info)"
       :plan="plan"
+      :info="additionalInfo"
   />
   <work-plan-event-add
       v-if="dialog.add.state"
@@ -402,6 +403,8 @@ export default {
       DocState: DocState,
       filtered: false,
       stages: [],
+      additionalInfo: null,
+      additinalInfoFilled: true,
     };
   },
   created() {
@@ -555,6 +558,25 @@ export default {
     },
     onResize() {
       this.windowHeight = window.innerHeight - 270;
+    },
+    getAdditionalInfo(){
+      this.docService.getAdditionalInfo(this.work_plan_id).then(res => {
+        if (res.data?.description !== null) {
+          this.additionalInfo = JSON.parse(res.data?.description)
+          this.additinalInfoFilled = true
+          this.additionalInfo.forEach(item => {
+            if (item.value === null || item.value === "" || item.value.length === 0) {
+              this.additinalInfoFilled = false
+            }
+          })
+        }}).catch((error) => {
+        this.additionalInfo = null
+        this.$toast.add({
+          severity: 'info',
+          summary: "Please enter additional information",
+          life: 3000,
+        });
+      });
     },
     getWorkPlanApprovalUsers() {
       this.planService
@@ -715,6 +737,9 @@ export default {
                   value: 'internal',
                 },
               },)
+            }
+            if(this.isMastersPlan || this.isDoctorsPlan){
+              this.getAdditionalInfo()
             }
           })
           .catch((error) => {
@@ -1142,6 +1167,9 @@ export default {
       this.showReportModal = false;
       this.getPlan();
       this.getEventsTree(this.parentNode);
+      if(this.isMastersPlan || this.isDoctorsPlan){
+        this.getAdditionalInfo()
+      }
     },
     canExecuteEvent() {
       const isStatusValid = [1, 4, 5, 6, 8].includes(
@@ -1389,7 +1417,7 @@ export default {
         {
           label: this.$t('common.complete'),
           icon: 'pi pi-check',
-          disabled: !this.data || this.data.length === 0,
+          disabled: (!this.data || this.data.length === 0) || !this.additinalInfoFilled,
           visible: this.plan && this.isPlanCreator && !this.isFinish,
           color: 'yellow',
           command: () => {
