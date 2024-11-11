@@ -22,7 +22,7 @@ before_script:
   - touch ~/.ssh/config
   - touch ~/.ssh/known_hosts
   - chmod -R 400 ~/.ssh
-  - ssh-keyscan -H smart.enu.kz >> ~/.ssh/known_hosts
+  - ssh-keyscan -H $SMARTENU_IP >> ~/.ssh/known_hosts
   - '[[ -f /.dockerinit ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
 
 install_stage:
@@ -67,11 +67,11 @@ deploy_stage:
   image: node:lts
   script:
     - if [ "$CI_COMMIT_BRANCH" == "master" ]; then
-      ssh root@smart.enu.kz "sudo rm -rf /local/prohtml/*";
-      scp -r dist_prod/* root@smart.enu.kz:/local/prohtml;
+      ssh $SSH_AUTH_URL "sudo rm -rf /local/prohtml/*";
+      scp -r dist_prod/* $SSH_AUTH_URL:/local/prohtml;
       elif [ "$CI_COMMIT_BRANCH" == "test" ]; then
-      ssh root@smart.enu.kz "sudo rm -rf /local/testhtml/*";
-      scp -r dist_test/* root@smart.enu.kz:/local/testhtml;
+      ssh $SSH_AUTH_URL "sudo rm -rf /local/testhtml/*";
+      scp -r dist_test/* $SSH_AUTH_URL:/local/testhtml;
       fi
   dependencies:
     - build_stage
