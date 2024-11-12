@@ -1,5 +1,5 @@
 <template>
-  <Dialog :header="$t('workPlan.mastersThesisInfo')" v-model:visible="showModal" :style="{width: '600px'}"
+  <Dialog :header="$t(plan.plan_type.id === 6 ? 'workPlan.doctorsThesisInfo' : 'workPlan.mastersThesisInfo')" v-model:visible="showModal" :style="{width: '600px'}"
           :close-on-escape="true" @hide="$emit('hide')">
     <div v-if="loading" class="flex justify-center">
       <ProgressSpinner style="width: 50px; height: 50px" class="progress-spinner" strokeWidth="5"/>

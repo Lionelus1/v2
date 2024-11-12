@@ -328,7 +328,6 @@ export default {
       this.showRejectPlan = false;
     },
     openModal() {
-      console.log(this.plan.plan_type.id)
       this.showModal = true;
       if (this.plan.plan_type.id === 2 && !this.isPlanCreator) {
         this.approval_users = [
@@ -359,7 +358,7 @@ export default {
             }
           }
         ]
-      } else if (this.plan.plan_type.id === 5) {
+      } else if (this.plan.plan_type.id === 5 || this.plan.plan_type.id === 6) {
         this.approval_users = [
           {
             stage: 1,
@@ -418,7 +417,21 @@ export default {
           }
         ]
       }
-
+      if (this.plan.plan_type.id === 6) {
+        this.approval_users.push({
+          stage: 4,
+          users: null,
+          titleRu: 'Декан факультета',
+          titleKz: 'Факультет деканы',
+          titleEn: 'Dean of the Faculty',
+          certificate: {
+            namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
+            nameru: 'Для внутреннего документооборота (ГОСТ)',
+            nameen: 'For internal document management (GOST)',
+            value: 'internal',
+          },
+        },)
+      }
     },
     openDoc() {
       this.showReportDocInfo = true;
