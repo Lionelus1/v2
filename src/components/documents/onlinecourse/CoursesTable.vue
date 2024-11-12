@@ -349,7 +349,7 @@ export default {
       this.tableLoading = true
       this.service.getOod().then(_ => {
 
-      }).catch(_ => {})
+      })
         .finally(() => {
           this.getCourses()
           this.tableLoading = false
@@ -404,7 +404,6 @@ export default {
         this.loading = false
       }).catch(_=> {
         this.loading = false;
-        this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
       }).finally(() => {
         this.closeCourse()
       })
@@ -444,7 +443,6 @@ export default {
       this.service.getCertificateTemplateJournal(this.lazyParams).then(response =>{
         this.journal = response.data.templates;
         this.count = response.data.count;
-      }).catch(_=> {
       }).finally(() => {
         this.loading = false;
       })

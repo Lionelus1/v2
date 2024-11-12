@@ -282,15 +282,6 @@ const initPositionRels = () => {
       loading.value = false;
     })
     .catch((err) => {
-      if (err.response.status == 401) {
-        this.$store.dispatch("logLout");
-      }
-
-      toast.add({
-        severity: "error",
-        detail: this.$t("roleControl.noResult"),
-        life: 3000,
-      });
       loading.value = false;
     });
 
@@ -303,17 +294,6 @@ const initPositions = () => {
     })
     .then((res) => {
       positions.value = res.data;
-    })
-    .catch((err) => {
-      if (err.response.status == 401) {
-        this.$store.dispatch("logLout");
-      }
-
-      this.$toast.add({
-        severity: "error",
-        detail: this.$t("roleControl.failedToLoad"),
-        life: 3000,
-      });
     });
 };
 
@@ -344,16 +324,6 @@ const getOrganizations = () => {
     .getOrganizations(orgParams)
     .then((response) => {
       organizations.value = response.data;
-    })
-    .catch((error) => {
-      if (error.response.status == 401) {
-        this.$store.dispatch("logLout");
-      }
-      this.$toast.add({
-        severity: "error",
-        summary: error,
-        life: 3000,
-      });
     });
 };
 
@@ -436,17 +406,6 @@ const savePositionRel = () => {
     .then((res) => {
       closeSidebar();
     })
-    .catch((err) => {
-      if (err.response.status == 401) {
-        this.$store.dispatch("logLout");
-      }
-
-      this.$toast.add({
-        severity: "error",
-        detail: this.$t("common.message.saveError"),
-        life: 3000,
-      });
-    });
   closeSidebar();
   loading.value = false;
 };
@@ -489,17 +448,7 @@ const deletePositionRelation = () => {
     .then((_) => {
       initPositionRels();
     })
-    .catch((err) => {
-      if (err.response.status == 401) {
-        this.$store.dispatch("logLout");
-      }
-
-      this.$toast.add({
-        severity: "error",
-        detail: this.$t("roleControl.failedToDelete"),
-        life: 3000,
-      });
-
+    .catch((_) => {
       deleteView.value = false;
       loading.value = false;
     })

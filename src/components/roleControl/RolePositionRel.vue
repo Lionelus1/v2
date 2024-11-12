@@ -221,17 +221,7 @@ export default {
           this.count = res.data.total;
           this.loading = false;
         })
-        .catch((err) => {
-          if (err.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-
-          this.$toast.add({
-            severity: "error",
-            detail: this.$t("roleControl.noResult"),
-            life: 3000,
-          });
-
+        .catch((_) => {
           this.loading = false;
         });
       this.getParams.searchText = null;
@@ -287,16 +277,6 @@ export default {
           this.initRolePositionRels();
         })
         .catch((err) => {
-          if (err.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-
-          this.$toast.add({
-            severity: "error",
-            detail: this.$t("common.message.saveError"),
-            life: 3000,
-          });
-
           this.loading = false;
         });
     },
@@ -321,17 +301,7 @@ export default {
           this.close("delete");
           this.initRolePositionRels();
         })
-        .catch((err) => {
-          if (err.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-
-          this.$toast.add({
-            severity: "error",
-            detail: this.$t("roleControl.failedToDelete"),
-            life: 3000,
-          });
-
+        .catch((_) => {
           this.close("delete");
           this.loading = false;
         });
@@ -343,17 +313,6 @@ export default {
         })
         .then((res) => {
           this.positions = res.data;
-        })
-        .catch((err) => {
-          if (err.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-
-          this.$toast.add({
-            severity: "error",
-            detail: this.$t("roleControl.failedToLoad"),
-            life: 3000,
-          });
         });
     },
     initRoles() {
@@ -364,15 +323,6 @@ export default {
           this.roles = res.data;
         })
         .catch((err) => {
-          if (err.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
-
-          this.$toast.add({
-            severity: "error",
-            detail: this.$t("roleControl.failedToLoad"),
-            life: 3000,
-          });
         });
     },
     positionLabel(item) {

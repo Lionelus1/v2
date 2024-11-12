@@ -821,7 +821,6 @@ export default {
       if (this.validationForm()) {
         this.vacancyService.createOrUpdateVacancy(this.value, path).then(result => {
           this.emitter.emit("vacancyAdded", true);
-        }).catch(_ => {
         });
       }
     },

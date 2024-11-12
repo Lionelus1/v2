@@ -106,8 +106,6 @@ const getModuleByCourseID = async () => {
   try {
     const response = await service.getModulesByCourseID(course_id.value);
     modules.value = response.data;
-  } catch (error) {
-    showMessage('error', t('common.error'), '', 3000);
   } finally {
     loading.value = false;
   }
@@ -200,9 +198,7 @@ const deleteModule = (id) => {
           .then(() => {
             getModuleByCourseID();
             showMessage('success', t('common.success'), '', 3000);
-          }).catch((error) => {
-            showMessage('error', t('common.message.saveError'), '', 3000);
-          });
+          })
     },
   });
 };

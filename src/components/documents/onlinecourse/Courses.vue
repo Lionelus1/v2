@@ -248,7 +248,6 @@ export default {
           e.filePath = smartEnuApi + fileRoute + e.logo
         });
 
-      }).catch(_ => {
       });
     },
     onPage(event) {

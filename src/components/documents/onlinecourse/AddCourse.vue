@@ -149,6 +149,7 @@ import {useRoute, useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {fileRoute, findRole, smartEnuApi} from "@/config/config";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import interaction from "@fullcalendar/interaction";
 
 const {t, locale} = useI18n()
 const route = useRoute()
@@ -294,8 +295,7 @@ const getRequisites = () => {
   }
   service.getCourses(req).then(response => {
     dataRequisites.value = response.data.courses
-  }).catch(_ => {
-  });
+  })
 }
 getRequisites()
 const getFieldEducation = () => {
@@ -337,9 +337,7 @@ const save = () => {
     });
     imagePreviewUrl.value = URL.revokeObjectURL
     formData.value = null
-  }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
-  });
+  })
 }
 
 const isValid = () => {
@@ -376,8 +374,6 @@ const getJournal = () => {
   lazyParams.docType = 7
   service.getCertificateTemplateJournal(lazyParams).then(response =>{
     journal.value = response.data.templates;
-  }).catch(_=> {
-  }).finally(() => {
   })
 }
 getJournal()
