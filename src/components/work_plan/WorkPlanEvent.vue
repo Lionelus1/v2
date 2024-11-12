@@ -192,6 +192,7 @@
       :plan="plan"
       :info="additionalInfo"
   />
+
   <work-plan-event-add
       v-if="dialog.add.state"
       :visible="dialog.add.state"
@@ -404,6 +405,7 @@ export default {
       filtered: false,
       stages: [],
       additionalInfo: null,
+
       additinalInfoFilled: true,
     };
   },
