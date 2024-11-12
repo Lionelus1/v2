@@ -571,7 +571,10 @@ export default {
               this.additinalInfoFilled = false
             }
           })
+        }else{
+          this.additinalInfoFilled = false
         }}).catch((error) => {
+        this.additinalInfoFilled = false
         this.additionalInfo = null
         this.$toast.add({
           severity: 'info',
