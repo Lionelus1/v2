@@ -44,7 +44,7 @@ const data = ref(null);
 
 onMounted(() => {
   if (props.info !== null) {
-    fields.info = props.info
+    fields.info =  JSON.parse(props.info?.description)
     fields.id = props.info?.id
   } else {
     data.value = [

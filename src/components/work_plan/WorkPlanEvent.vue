@@ -562,9 +562,9 @@ export default {
     getAdditionalInfo(){
       this.docService.getAdditionalInfo(this.work_plan_id).then(res => {
         if (res.data?.description !== null) {
-          this.additionalInfo = JSON.parse(res.data?.description)
+          this.additionalInfo = res.data
           this.additinalInfoFilled = true
-          this.additionalInfo.forEach(item => {
+          JSON.parse(this.additionalInfo?.description).forEach(item => {
             if (item.value === null || item.value === "" || item.value.length === 0) {
               this.additinalInfoFilled = false
             }
