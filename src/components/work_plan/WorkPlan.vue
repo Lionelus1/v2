@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
     <h3>{{ $t('workPlan.plans') }}</h3>
-    <ToolbarMenu v-model:search-model="filter.searchText" :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin"
+    <ToolbarMenu v-model:search-model="filter.searchText" :data="initMenu" @search="initSearch" @filter="toggle('global-filter', $event)" :filter="isAdmin"
                  :filtered="filter.filtered"/>
     <div class="card">
       <DataTable :lazy="true" :rowsPerPageOptions="[10, 25, 50]" :value="data" dataKey="id" :rowHover="true"
@@ -71,14 +71,23 @@
         </div>
       </Dialog>
     <OverlayPanel ref="global-filter">
-      <div v-for="(item, index) in types" :key="index" class="flex align-items-center">
-        <div class="field-radiobutton">
-          <RadioButton v-model="filter.plan_type" :value="item.id"/>
-          <label :for="item" class="ml-2">{{ item['name_' + $i18n.locale] }}</label>
-        </div>
-      </div>
+<!--      <div v-for="(item, index) in types" :key="index" class="flex align-items-center">-->
+<!--        <div class="field-radiobutton">-->
+<!--          <RadioButton v-model="filter.plan_type" :value="item.id"/>-->
+<!--          <label :for="item" class="ml-2">{{ item['name_' + $i18n.locale] }}</label>-->
+
+<!--        </div>-->
+<!--      </div>-->
       <div class="p-fluid">
         <div class="field">
+          <Dropdown class="lang p-link mb-2" v-model="filter.plan_type" :options="types" optionLabel="name" placeholder="Select plan type"/>
+            <InputText type="search"
+                       class="search_toolbar mb-2"
+                       @keyup.enter="searchClick()"
+                       @search="searchClick()"
+                       v-model="searchModel"
+                       :placeholder="$t('common.search')"/>
+          <FindUser v-model="alue" :max="1" :user-type="2" :editMode="false" class="mb-2" placeholder="Поиск по имени пользователя"/>
           <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
           <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter()" :label="$t('common.clear')"/>
         </div>
