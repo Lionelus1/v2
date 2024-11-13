@@ -1422,7 +1422,7 @@ export default {
         {
           label: this.$t('common.complete'),
           icon: 'pi pi-check',
-          disabled: (!this.data || this.data.length === 0) || !this.additinalInfoFilled,
+          disabled: !this.data || this.data.length === 0 || !this.additinalInfoFilled,
           visible: this.plan && this.isPlanCreator && !this.isFinish,
           color: 'yellow',
           command: () => {
@@ -1433,6 +1433,7 @@ export default {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
           color: this.isFinish ? '' : 'green',
+          disabled: (this.isMastersPlan || this.isDoctorsPlan) && (!this.data || this.data.length === 0 || !this.additinalInfoFilled),
           visible:
               ((this.isMastersPlan || this.isDoctorsPlan) &&
                   (!this.isFinish || this.isApproval)) ||
