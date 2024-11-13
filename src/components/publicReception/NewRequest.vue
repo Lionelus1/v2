@@ -152,11 +152,6 @@ export default {
         });
       }).catch((error) => {
         this.uploading = false;
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("common.message.saveError"),
-          life: 3000,
-        });
       });
     },
     sendQuestion() {
@@ -185,10 +180,6 @@ export default {
             this.uploading = false;
             this.isCaptchaSuccess = false;
             this.$refs.captcha.reset()
-            this.$toast.add({severity: 'error', summary: 'Error', detail: error.message, life: 3000});
-            if (error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            }
           });
     }
   },

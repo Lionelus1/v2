@@ -98,9 +98,6 @@ export default {
             this.journal = response.data.templates;
             this.count = response.data.count;
           })
-          .catch((e)=> {
-            this.$toast.add({severity: "error", summary: this.$t('common.getDataError'), life: 3000});
-          })
           .finally(() => {
             this.loading = false;
           })

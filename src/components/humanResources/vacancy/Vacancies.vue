@@ -210,7 +210,6 @@ export default {
         this.view.delete = false
         this.vacancy = null
         this.getVacancies()
-      }).catch(_ => {
       });
     },
     clearData() {

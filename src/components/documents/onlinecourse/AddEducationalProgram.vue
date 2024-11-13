@@ -686,8 +686,7 @@ const arrow = ref(false)
 const getCourses = () => {
   service.getCourses(lazyParams).then(response => {
     courses.value = response.data.courses
-  }).catch(_ => {
-  });
+  })
 }
 getCourses()
 const handleFilter = (event) => {

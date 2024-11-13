@@ -197,15 +197,6 @@ export default {
           this.role = null
           this.isDeleting = false
           this.getRoleRelations()
-        }).catch(error => {
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout")
-          }
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          })
         })
       } else {
         this.$toast.add({
@@ -228,15 +219,6 @@ export default {
             this.handleSelectionChange()
           }
         }
-      }).catch(error => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout")
-        }
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        })
       })
     },
     getRoleRelations() {
@@ -245,12 +227,6 @@ export default {
         this.roles = response.data.roles
         this.count = response.data.total
         this.loading = false;
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        })
       })
     },
     onPage(event) {

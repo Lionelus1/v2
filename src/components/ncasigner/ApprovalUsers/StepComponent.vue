@@ -249,16 +249,6 @@ export default {
         headers: getHeader(),
       }).then(response => {
         this.approvalList = response.data
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       })
     },
     isEnuWorker() {

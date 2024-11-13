@@ -216,7 +216,6 @@
         loading.value = false
       }).catch(_=> {
         loading.value = false;
-        showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'), 3000)
       }).finally(() => {
         props.closeSideBar()
       })
@@ -262,7 +261,6 @@
       onlineCourseService.getCertificateTemplateJournal(certificateLazyParams.value).then(response =>{
         certificates.value = response.data.templates;
         total.value = response.data.count;
-      }).catch(_=> {
       }).finally(() => {
         loading.value = false;
       })

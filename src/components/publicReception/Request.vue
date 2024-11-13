@@ -219,10 +219,6 @@ Please double-check the entered data before submission.
                 this.uploading = false;
                 this.isCaptchaSuccess = false;
                 this.$refs.captcha.reset()
-                this.$toast.add({severity: 'error', summary: 'Error', detail: error.message, life: 3000});
-                if (error.response.status == 401) {
-                    this.$store.dispatch("logLout");
-                }
             });
         }
     },

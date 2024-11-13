@@ -104,13 +104,6 @@ export default {
           link.download = fileName;
           link.click();
           URL.revokeObjectURL(link.href);
-        })
-        .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: "downloadFileError:\n" + error,
-            life: 3000,
-          });
         });
     },
     formatDate(value) {

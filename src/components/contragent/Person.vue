@@ -586,13 +586,7 @@ export default {
           summary:  this.$t('common.successDone'),
           life: 3000,
         });
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: "Individual entrepreneur create error\n" + error,
-          life: 3000,
-        });
-      })
+      });
     },
     validateAddForm() {
       this.validationErrors.firstName =

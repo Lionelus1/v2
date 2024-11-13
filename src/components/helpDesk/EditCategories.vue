@@ -246,12 +246,6 @@ const getRoles = async () => {
   await roleControlService.getRoles(2).then(response => {
     roles.value = response.data
     role.value = roles.value.find(item => item.id === categoryLineRole.value);
-  }).catch(error => {
-    toast.add({
-      severity: "error",
-      summary: error,
-      life: 3000,
-    })
   })
 }
 
@@ -268,12 +262,6 @@ const getOrganizations = () => {
         handleSelectionChange()
       }
     }
-  }).catch(error => {
-    toast.add({
-      severity: "error",
-      summary: error,
-      life: 3000,
-    })
   })
 }
 
