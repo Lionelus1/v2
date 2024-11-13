@@ -547,7 +547,7 @@ const routes = [
                         beforeEnter: ifAuthenticated,
                     },
                     {
-                        path: 'reports/:id/:userId',
+                        path: 'reports/:id/:userId/:uuId/:doc',
                         name: 'WorkPlanJournalReport',
                         component: load('work_plan/WorkPlanJournalReport'),
                         beforeEnter: ifAuthenticated,

@@ -11,12 +11,9 @@
           </span>
         </div>
       </div>
-      <div class="card"
-           v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4)">
-        <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')"
-                @click="openDoc"></Button>
+      <div class="card" v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4)">
+        <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc"/>
       </div>
-      {{contrConcModel}}
       <div class="card" v-if="visibleSendToApprove">
         <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')"
                 @click="openModal"></Button>
@@ -27,9 +24,19 @@
       </div>
       <div v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4) && report.report_type === 5">
         <vue-element-loading :active="contrConcLoading" color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
+        <span :class="'ml-3'">
+          <br/>
+          {{ report?.doc_info.owner.fullName }}
+          <br/>
+          {{ report?.doc_info.owner.mainPosition.name}}
+          <br/>
+          {{ report?.doc_info.owner.mainPosition.department.name }} {{ report?.doc_info.owner.mainPosition.department.cafedra.name}}
+        </span>
+        <div style="height: 10px;"/>
         <div class="field">
           <TinyEditor v-model="contrConcModel"  :height="300" :style="{ height: '100%', width: '100%' }"/>
-          <Button :label="$t('common.save')" icon="pi pi-save" class="p-button-rounded p-button-success mr-2" @click="saveContr"/>
+          <div style="height: 10px;"/>
+          <Button :label="$t('common.save')" icon="pi pi-save" class="p-button-success mr-2" @click="saveContr"/>
         </div>
       </div>
       <div class="card" v-else-if="blobSource">
@@ -52,10 +59,8 @@
     </Dialog>
   </div>
 
-  <Sidebar v-model:visible="showReportDocInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll"
-           @hide="closeSideModal">
-    <DocSignaturesInfo :docIdParam="report.doc_id" :isInsideSidebar="true"
-                       @sentToRevision="rejectPlanReport($event)"></DocSignaturesInfo>
+  <Sidebar v-model:visible="showReportDocInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal">
+    <DocSignaturesInfo :docIdParam="report.doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event)"/>
   </Sidebar>
 </template>
 
@@ -66,6 +71,7 @@ import {WorkPlanService} from "@/service/work.plan.service";
 import Enum from "@/enum/workplan";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
 import {findRole} from "../../config/config";
+import {DocService} from "../../service/doc.service";
 
 export default {
   name: "WorkPlanReportView",
@@ -131,6 +137,7 @@ export default {
       fd: new FormData(),
       isSciencePlan: false,
       reportPath: null,
+      docService: new DocService(),
     }
   },
   mounted() {
@@ -154,24 +161,6 @@ export default {
 
   methods: {
     findRole,
-    //заключение контрагента тек докты курган адам гана жаза алады
-    // saveContrConc() {
-    //   this.contrConcLoading.value = true;
-    //   this.contrConcDoc.value.params?.forEach((param) => {
-    //     if(param.name === "content") {
-    //       if (!param.value) param.value = "";
-    //       param.value = contrConcModel.value;
-    //     }
-    //   })
-    //   docService.saveDocumentV2(contrConcDoc.value).then(res => {
-    //     contrConcDoc.value = res.data
-    //     toast.add({severity: "success", summary: t('common.success'), life: 3000});
-    //     contrConcLoading.value = false;
-    //   }).catch(error => {
-    //     toast.add({ severity: 'error', summary: error.message, life: 3000 });
-    //     contrConcLoading.value = false;
-    //   });
-    // }
     closeSideModal() {
       this.showReportDocInfo = false;
       this.$emit('closed', true)
@@ -196,8 +185,8 @@ export default {
     getReport() {
       this.planService.getPlanReportById(this.report_id).then(res => {
         this.report = res.data;
-
-        this.calcCC(); //для заключения контрагента
+        if(this.report.report_type && this.report.report_type === 5)
+          this.calcCC(); //для заключения контрагента
         this.getPlan();
         this.getFile();
         // this.getReportApprovalUsers();
@@ -307,20 +296,20 @@ export default {
       this.showRejectPlan = false;
     },
     saveContr() {
-      this.contrConcLoading.value = true;
-      this.report.doc_info.forEach((param) => {
+      this.contrConcLoading = true;
+      this.report.doc_info.params?.forEach((param) => {
         if(param.name === "content") {
           if (!param.value) param.value = "";
-          param.value = this.contrConcModel.value;
+          param.value = this.contrConcModel;
         }
       })
-      this.docService.saveDocumentV2(contrConcDoc.value).then(res => {
-        contrConcDoc.value = res.data
-        toast.add({severity: "success", summary: t('common.success'), life: 3000});
-        contrConcLoading.value = false;
+      this.docService.saveDocumentV2(this.report.doc_info).then(res => {
+        this.report.doc_info = res.data
+        this.$toast.add({severity: "success", summary: this.$t('common.success'), life: 3000});
+        this.contrConcLoading = false;
       }).catch(error => {
-        toast.add({ severity: 'error', summary: error.message, life: 3000 });
-        contrConcLoading.value = false;
+        this.$toast.add({ severity: 'error', summary: error.message, life: 3000 });
+        this.contrConcLoading = false;
       });
     },
     openModal() {

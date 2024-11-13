@@ -1,9 +1,8 @@
 <template>
   <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
     <div v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters && plan?.plan_type?.code !==  Enum.WorkPlanTypes.Doctors">
-        <div class="field">
-        <!-- --- -->
-      <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
+      <div class="field">
+        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
             isShedulePlan ? $t('workPlan.worksByWeek') :
           $t('workPlan.eventName') }} </label>
         <InputText v-model="editData.event_name" :disabled="isEditResponsiveUsers" />
@@ -87,7 +86,7 @@
         <Textarea v-model="editData.result" rows="3" style="resize: vertical" />
       </div>
     </div>
-    <div v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || Enum.WorkPlanTypes.Doctors">
+    <div v-if="(plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || plan?.plan_type?.code ===Enum.WorkPlanTypes.Doctors) && plan?.plan_type?.code !== Enum.WorkPlanTypes.WorkSchedule">
       <div class="field">
         <label>{{$t("educationalPrograms.semester")}}</label>
         <Dropdown v-model="editData.semester" :options="semesters" optionLabel="name" optionValue="id" :placeholder="$t('educationalPrograms.semester')" />
@@ -653,7 +652,7 @@ export default {
     notValid() {
       let validation = this.formValid;
       let errors = [];
-      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters || Enum.WorkPlanTypes.Doctors) {
+      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
         this.formValid.users = this.resp_person.length === 0;
         Object.keys(this.formValid).forEach(function (k) {
           if (validation[k] === true) errors.push(validation[k])

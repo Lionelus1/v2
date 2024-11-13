@@ -124,7 +124,7 @@
             <Column field="id" :header="$t('workPlan.journalReports')" style="text-align: center;">
               <template #body="slotProps">
                 <div style="text-align: left;">
-                  <button @click="navigateToJournalReports(slotProps.data.id)" style="background: none; border: none; cursor: pointer;">
+                  <button :disabled="!slotProps.data.contract_name_kz" @click="navigateToJournalReports(slotProps.data)" style="background: none; border: none; cursor: pointer;">
                     <i class="fas fa-eye"></i> <!-- Иконка глаза -->
                   </button>
                 </div>
@@ -137,8 +137,6 @@
         </div>
       </TabPanel>
     </TabView>
-
-
 </template>
 
 <script setup>
@@ -244,8 +242,9 @@ const filterData = () => {
   });
 }
 
-const navigateToJournalReports = studentId => {
-  router.push({name: 'WorkPlanJournalReport', params: {id: workPlanId, userId: studentId}});
+const navigateToJournalReports = student => {
+  router.push({name: 'WorkPlanJournalReport', params: {id: workPlanId, userId: student.id, uuId: student.doc_uuid, doc: student.contract_name_ru}
+  });
 }
 
 const formatDateMoment = (date) => {

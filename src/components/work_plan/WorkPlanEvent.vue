@@ -39,6 +39,7 @@
         </div>
       </div>
     </div>
+
     <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
     <div class="card" v-if="plan && planDoc">
       <TreeTable v-if="(!isMastersPlan && !isDoctorsPlan && !isWorkSchedule)" ref="workplantreetable" class="p-treetable-sm" :rowsPerPageOptions="[10, 25, 50]" v-model:selectionKeys="selectedWorkPlanEvent" selectionMode="single" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
@@ -348,7 +349,15 @@
   :isAddMember="isAddMem" />
   <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null"
                        :isMain="!!selectedEvent" :plan-data="plan" @hide="hideDialog(dialog.add)"/>
-  <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :isEditResponsiveUsers="editRespUser" :event="selectedEvent" :copiedEvent="selectedEvent" @hide="hideDialog(dialog.edit)"/>
+  <work-plan-event-edit-modal
+      v-if="dialog.edit.state"
+      :visible="dialog.edit.state"
+      :planData="plan"
+      :isEditResponsiveUsers="editRespUser"
+      :event="selectedEvent"
+      :copiedEvent="selectedEvent"
+      @hide="hideDialog(dialog.edit)"
+  />
   <WorkPlanReportApprove v-if="showReportModal && scienceReport && plan" :approval-stages="approval_users" :visible="showReportModal && scienceReport"
                          :doc-id="scienceReport.doc_id" :report="scienceReport" :plan="plan" @sentToApprove="hideDialog(dialog.reportApprove)"/>
   <work-plan-approve v-if="dialog.planApprove.state" :visible="dialog.planApprove.state" :approval-stages="planApprovalStage" :plan="plan" :events="data"
@@ -566,7 +575,9 @@ export default {
       inputSets: null,
       submitted: false,
       selectedUsers: [],
-      editRespUser:false
+      editRespUser:false,
+      loginedStudentData: null,
+
     };
   },
   created() {
@@ -901,6 +912,11 @@ export default {
       this.planService.getWorkPlanApprovalUsers(data).then(res => {
         if (res.data && res.data.work_plan_users) {
           this.members = res.data.work_plan_users;
+
+          if (findRole(null, 'student')){
+            this.loginedStudentData = this.members.filter(user => user.id === this.loginedUserId);
+          }
+
           this.filteredMembers = res.data.work_plan_users;
           this.totalMembers = res.data.total;
           res?.data?.work_plan_users?.forEach(e => {
@@ -1052,6 +1068,14 @@ export default {
             rows: 10,
             is_contract: true
           };
+          if (findRole(null, 'student')){
+            data = {
+              work_plan_id: parseInt(this.work_plan_id),
+              page: 0,
+              rows: 0,
+              is_contract: true
+            };
+          }
           this.getWorkPlanApprovalUsersFunc(data)
         }
         if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
@@ -1229,7 +1253,7 @@ export default {
       });
     },
     navigateToJournalReports() {
-      this.$router.push({name: 'WorkPlanJournalReport', params: {id: this.work_plan_id, userId: this.loginedUserId}});
+      this.$router.push({name: 'WorkPlanJournalReport', params: {id: this.work_plan_id, userId: this.loginedUserId, uuId: this.loginedStudentData[0].doc_uuid, doc: this.loginedStudentData[0].contract_name_ru}});
     },
     isUserApproval(data) {
       let userApproval = false;
@@ -1671,7 +1695,7 @@ export default {
             this.isCreator ||
             (this.isUserResp(this.selectedEvent?.user) && !this.isFinish)
           ),
-          visible: !this.isFinish && !this.isMastersPlan && !this.isDoctorsPlan,
+          visible: !this.isFinish && !this.isMastersPlan && !this.isDoctorsPlan && !this.isWorkSchedule,
           command: () => {
             this.showDialog(this.dialog.add);
           },
@@ -1689,7 +1713,7 @@ export default {
           label: this.$t('common.edit'),
           icon: 'fa-solid fa-pen',
           disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
-          visible: !this.isFinish,
+          visible: !this.isFinish && !findRole(null, 'student'),
           command: () => {
             this.showDialog(this.dialog.edit, false)
           }
@@ -1698,7 +1722,7 @@ export default {
           label: this.$t('workPlan.editRespUser'),
           icon: 'fa-solid fa-pen',
           disabled: !((this.isPlanCreator || this.isAdmin) && this.isPlanApproved),
-          visible: this.isPlanApproved && (this.isPlanCreator || this.isAdmin),
+          visible: this.isPlanApproved && (this.isPlanCreator || this.isAdmin) && !this.isWorkSchedule,
           command: () => {
             this.showDialog(this.dialog.edit, true)
           }
@@ -1707,7 +1731,7 @@ export default {
           label: this.$t('common.delete'),
           icon: 'fa-solid fa-trash',
           disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
-          visible: !this.isFinish,
+          visible: !this.isFinish && !findRole(null, 'student'),
           command: () => {
             this.remove_event();
           },
@@ -1785,7 +1809,7 @@ export default {
         {
           label: this.$t('common.add'),
           icon: 'pi pi-plus',
-          visible: ((this.isPlanCreator || this.isEventsNull) && !this.isFinish) && (this.active === 0 && this.isWorkSchedule),
+          visible: ((this.isPlanCreator || this.isEventsNull) && !this.isFinish) && (this.active === 0 && this.isWorkSchedule) && !findRole(null, 'student'),
           color: 'blue',
           command: () => {
             this.showDialog(this.dialog.add);
@@ -1799,7 +1823,7 @@ export default {
             this.planDoc &&
             (this.isCreatedPlan || this.isPlanUnderRevision) &&
             this.isPlanCreator &&
-            this.isFinish,
+            this.isFinish && !findRole(null, 'student'),
           command: () => {
             this.showDialog(this.dialog.planApprove);
           },
@@ -1808,7 +1832,7 @@ export default {
           label: this.$t('common.complete'),
           icon: 'pi pi-check',
           disabled: !this.data || this.data.length === 0,
-          visible: (this.plan && this.isPlanCreator && !this.isFinish) && (this.active === 0 && this.isWorkSchedule),
+          visible: (this.plan && this.isPlanCreator && !this.isFinish) && (this.active === 0 && this.isWorkSchedule) && !findRole(null, 'student'),
           color: 'yellow',
           command: () => {
             this.confirmFinish();
@@ -1823,7 +1847,7 @@ export default {
               (!this.isFinish || this.isApproval)) ||
             (this.isFinish &&
               this.planDoc &&
-              !(this.isCreatedPlan || this.isPlanUnderRevision)),
+              !(this.isCreatedPlan || this.isPlanUnderRevision)) && !findRole(null, 'student'),
           command: () => {
             if (this.isFinish) {
               this.showDialog(this.dialog.planView);
@@ -1871,7 +1895,21 @@ export default {
           // icon: 'pi pi-plus',
           visible: this.isFinish && this.isWorkSchedule && this.isPlanApproved && findRole(null, 'student'),
           command: () => {
-            this.navigateToJournalReports()
+            if(this.loginedStudentData){
+              this.navigateToJournalReports()
+              this.$toast.add({
+                severity: 'success',
+                summary: this.$t('common.success'),
+                life: 3000,
+              });
+            }else{
+              this.$toast.add({
+                severity: 'warning',
+                summary: this.$t('common.success'),
+                life: 3000,
+              });
+            }
+
           }
         },
         {

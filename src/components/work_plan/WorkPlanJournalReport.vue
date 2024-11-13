@@ -1,6 +1,6 @@
 <template>
   <div class="col-12">
-    <TitleBlock :title="$t('workPlan.journalReports')" :show-back-button="true" />
+    <TitleBlock v-if="dReports && dReports[active].doc_info" :title="$t('workPlan.journalReports') + ' - ' + dReports[active].doc_info.owner.fullName" :show-back-button="true" />
     <div class="card" v-if="dReports && dReports[active].doc_info && dReports[active].doc_info.docHistory.stateEn === DocState.REVISION.Value">
       <div class="p-fluid">
         <div class="field">
@@ -108,10 +108,10 @@
         <Sidebar v-model:visible="showReportDocInfo2" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal2">
           <DocSignaturesInfo :docIdParam="dReports[2].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 2)"></DocSignaturesInfo>
         </Sidebar>
-        <div class="field" v-if="findRole(null, 'student')">
-          <TinyEditor v-model="contrConcModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
-          <ToolbarMenu :data="toolbarMenus"/>
-        </div>
+<!--        <div class="field" v-if="findRole(null, 'student')">-->
+<!--          <TinyEditor v-model="contrConcModel" :height="300" :style="{ height: '100%', width: '100%' }"/>-->
+<!--          <ToolbarMenu :data="toolbarMenus"/>-->
+<!--        </div>-->
 
       </TabPanel>
       <!--Заключение руководителя-->
@@ -197,6 +197,7 @@ import moment from "moment/moment";
 import JSZip, {forEach} from "jszip";
 import { saveAs } from 'file-saver';
 import {findRole} from "../../config/config";
+import {AgreementService} from "../../service/agreement.service";
 
 const {t, locale} = useI18n()
 
@@ -313,10 +314,12 @@ const student_id = ref(parseInt(route.params.userId));
 const planService = new WorkPlanService()
 const contragentService = new ContragentService()
 const docService = new DocService()
+const agreeService = new AgreementService()
 
 const loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
 const loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
 
+const contrData = ref(null);
 const plan = ref(null);
 const planDoc = ref(null);
 const report = ref(null);
@@ -407,6 +410,31 @@ const createTechSec = () => {
     tbLoading.value = false;
   });
   closeDialog();
+}
+
+const getContrData = () => {
+  let data = {
+    doc_uuid: route.params.uuId
+  }
+  agreeService.getSignInfo(data).then(res => {
+    if(res.data){
+      if(route.params.doc && route.params.doc === "Трехсторонний договор"){
+        if(res.data && res.data.newParams && res.data.newParams.contragent && res.data.newParams.contragent.value && res.data.newParams.contragent.value && res.data.newParams.contragent.value.data){
+          contrData.value = res.data.newParams.contragent.value.data
+        }
+      } else if(route.params.doc && route.params.doc === "Двухсторонний договор"){
+        if(res.data && res.data.newParams && res.data.newParams.contragent && res.data.newParams.contragent.value && res.data.newParams.contragent.value && res.data.newParams.contragent.value.data
+            && res.data.newParams.contragent.value.data.chief){
+          contrData.value = res.data.newParams.contragent.value.data.chief
+        }
+      }
+      toast.add({severity: "success", summary: t('common.success'), life: 3000});
+    }else{
+      toast.add({ severity: 'error', summary: 'getSignInfo - NO RES DATA', life: 3000 });
+    }
+  }).catch(error => {
+    toast.add({ severity: 'error', summary: error.message, life: 3000 });
+  });
 }
 
 //заключение контрагента тек докты курган адам гана жаза алады
@@ -771,6 +799,9 @@ const openModal = async () => {
       }
     }
   ]
+  if(contrData.value){
+    approval_users.value[0].users.push(contrData.value);
+  }
 
   if(active.value === 0) {
     showModal0.value = true;
@@ -871,6 +902,7 @@ const getSt = async () => {
 onMounted(() => {
   getPlan();
   getDiaryReports();
+  getContrData()
   // getSt();
 })
 

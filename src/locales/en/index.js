@@ -1451,7 +1451,7 @@ export default {
         viewPlan: "View plan",
         viewDoc: "View document",
         reports: "Reports",
-        journalReports: "Journal - report",
+        journalReports: "Journal report",
         events: "Events",
         performEvent: "Perform an event",
         reportName: "Report name",

@@ -1464,7 +1464,7 @@ export default {
         viewPlan: "Посмотреть план",
         viewDoc: "Посмотреть документ",
         reports: "Отчеты",
-        journalReports: "Дневник - отчет",
+        journalReports: "Дневник отчет",
         safetyPrecautions: "Техника безопасности",
         conclusionCounterparty: "Заключение контрагента",
         conclusionHeadDepartment: "Заключение руководителя на кафедре",

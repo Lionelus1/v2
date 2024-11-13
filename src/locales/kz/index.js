@@ -1472,7 +1472,7 @@ export default {
         viewPlan: "Жоспарды қарау",
         viewDoc: "Құжатты қарау",
         reports: "Есептер",
-        journalReports: "Күнделік - есеп",
+        journalReports: "Күнделік есеп",
         safetyPrecautions: "Қауіпсіздік ережесі",
         conclusionCounterparty: "Контрагенттің қорытындысы",
         conclusionHeadDepartment: "Кафедра меңгерушісінің қорытындысы",
