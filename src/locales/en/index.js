@@ -189,6 +189,7 @@ export default {
         voted: "Voted",
         voting: "Voting",
         search: "Search",
+        searchByUsername: "Search by username",
         showingRecordsCount: "Showing {first} to {last} of {totalRecords} entries",
         showingRecordsCountShort: "{first} to {last} of {totalRecords}",
         votedFor: "Voted for: {result}",

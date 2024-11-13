@@ -176,6 +176,7 @@ export default {
         votedFor: "{result} үшін дауыс берілді",
         reserve: "Резервтеу",
         search: "Іздеу",
+        searchByUsername: "Пайдаланушы аты бойынша іздеу",
         send: "Жіберу",
         sendToResponsible: "Жауапты адамға жіберу",
         showingRecordsCount: "{totalRecords} жазбаның {first} - {last} аралығындағы жазбалар көрсетулі",

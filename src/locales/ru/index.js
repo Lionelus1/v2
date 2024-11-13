@@ -176,6 +176,7 @@ export default {
         voting: "Голосование",
         votedFor: "Проголосовали за: {result}",
         search: "Поиск",
+        searchByUsername: "Поиск по имени пользователя",
         send: "Отправить",
         sendToResponsible: "Отправить ответственному",
         showingRecordsCount: ' Показаны записи с {first} по {last} из  {totalRecords}',

@@ -2,7 +2,7 @@
   <div class="col-12">
     <h3>{{ $t('workPlan.plans') }}</h3>
     <ToolbarMenu v-model:search-model="filter.searchText" :data="initMenu" @search="initSearch"
-                 @filter="toggle('global-filter', $event)" :filter="isAdmin"
+                 @filter="toggle('global-filter', $event)" :filter="true"
                  :filtered="filter.filtered"/>
     <div class="card">
       <DataTable :lazy="true" :rowsPerPageOptions="[10, 25, 50]" :value="data" dataKey="id" :rowHover="true"
@@ -41,7 +41,7 @@
             {{ data.user.fullName }}
           </template>
         </Column>
-        <Column field="status" :header="$t('workPlan.planType')" v-if="isAdmin">
+        <Column field="status" :header="$t('workPlan.planType')">
           <template #body="{ data }">
             <span :class="'customer-badge ' + data?.plan_type?.code">
               {{ data.plan_type['name_' + $i18n.locale] }}
@@ -92,7 +92,7 @@
                      v-model="filter.searchText"
                      :placeholder="$t('common.search')"/>
           <FindUser v-model="userNameSearch" :max="1" :user-type="3" :editMode="false" class="mb-2"
-                    placeholder="Поиск по имени пользователя"/>
+                    :placeholder="$t('common.searchByUsername')"/>
           <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
           <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter()"
                   :label="$t('common.clear')"/>
