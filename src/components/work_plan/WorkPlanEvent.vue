@@ -1713,7 +1713,7 @@ export default {
           label: this.$t('common.edit'),
           icon: 'fa-solid fa-pen',
           disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
-          visible: !this.isFinish && !findRole(null, 'student'),
+          visible: !this.isFinish && (!findRole(null, 'student') && this.isWorkSchedule),
           command: () => {
             this.showDialog(this.dialog.edit, false)
           }
@@ -1731,7 +1731,7 @@ export default {
           label: this.$t('common.delete'),
           icon: 'fa-solid fa-trash',
           disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
-          visible: !this.isFinish && !findRole(null, 'student'),
+          visible: !this.isFinish && (!findRole(null, 'student') && this.isWorkSchedule),
           command: () => {
             this.remove_event();
           },
@@ -1809,7 +1809,7 @@ export default {
         {
           label: this.$t('common.add'),
           icon: 'pi pi-plus',
-          visible: ((this.isPlanCreator || this.isEventsNull) && !this.isFinish) && (this.active === 0 && this.isWorkSchedule) && !findRole(null, 'student'),
+          visible: ((this.isPlanCreator || this.isEventsNull) && !this.isFinish) && (this.active === 0 && this.isWorkSchedule && !findRole(null, 'student')) ,
           color: 'blue',
           command: () => {
             this.showDialog(this.dialog.add);
@@ -1823,7 +1823,7 @@ export default {
             this.planDoc &&
             (this.isCreatedPlan || this.isPlanUnderRevision) &&
             this.isPlanCreator &&
-            this.isFinish && !findRole(null, 'student'),
+            this.isFinish && (!findRole(null, 'student') && this.isWorkSchedule),
           command: () => {
             this.showDialog(this.dialog.planApprove);
           },
@@ -1832,7 +1832,7 @@ export default {
           label: this.$t('common.complete'),
           icon: 'pi pi-check',
           disabled: !this.data || this.data.length === 0,
-          visible: (this.plan && this.isPlanCreator && !this.isFinish) && (this.active === 0 && this.isWorkSchedule) && !findRole(null, 'student'),
+          visible: (this.plan && this.isPlanCreator && !this.isFinish) && (this.active === 0 && this.isWorkSchedule && !findRole(null, 'student')) ,
           color: 'yellow',
           command: () => {
             this.confirmFinish();
@@ -1847,7 +1847,7 @@ export default {
               (!this.isFinish || this.isApproval)) ||
             (this.isFinish &&
               this.planDoc &&
-              !(this.isCreatedPlan || this.isPlanUnderRevision)) && !findRole(null, 'student'),
+              !(this.isCreatedPlan || this.isPlanUnderRevision)) && (!findRole(null, 'student') && this.isWorkSchedule),
           command: () => {
             if (this.isFinish) {
               this.showDialog(this.dialog.planView);
