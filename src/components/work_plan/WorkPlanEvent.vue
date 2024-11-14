@@ -1713,7 +1713,7 @@ export default {
           label: this.$t('common.edit'),
           icon: 'fa-solid fa-pen',
           disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
-          visible: !this.isFinish && (!findRole(null, 'student') && this.isWorkSchedule),
+          visible: this.isWorkSchedule ? !this.isFinish && (!findRole(null, 'student') && this.isWorkSchedule) :  !this.isFinish,
           command: () => {
             this.showDialog(this.dialog.edit, false)
           }
@@ -1731,7 +1731,7 @@ export default {
           label: this.$t('common.delete'),
           icon: 'fa-solid fa-trash',
           disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
-          visible: !this.isFinish && (!findRole(null, 'student') && this.isWorkSchedule),
+          visible: this.isWorkSchedule ? !this.isFinish && (!findRole(null, 'student') && this.isWorkSchedule) :  !this.isFinish,
           command: () => {
             this.remove_event();
           },
@@ -1809,7 +1809,9 @@ export default {
         {
           label: this.$t('common.add'),
           icon: 'pi pi-plus',
-          visible: ((this.isPlanCreator || this.isEventsNull) && !this.isFinish) && (this.active === 0 && this.isWorkSchedule && !findRole(null, 'student')) ,
+          visible: this.isWorkSchedule ?
+              ((this.isPlanCreator || this.isEventsNull) && !this.isFinish) && (this.active === 0 && this.isWorkSchedule && !findRole(null, 'student')) :
+              ((this.isPlanCreator || this.isEventsNull) && !this.isFinish),
           color: 'blue',
           command: () => {
             this.showDialog(this.dialog.add);
@@ -1818,12 +1820,10 @@ export default {
         {
           label: this.$t('common.action.sendToApprove'),
           icon: 'pi pi-send',
-          visible:
-            this.plan &&
-            this.planDoc &&
-            (this.isCreatedPlan || this.isPlanUnderRevision) &&
-            this.isPlanCreator &&
-            this.isFinish && (!findRole(null, 'student') && this.isWorkSchedule),
+          visible: this.isWorkSchedule ?
+            this.plan && this.planDoc && (this.isCreatedPlan || this.isPlanUnderRevision) && this.isPlanCreator && this.isFinish &&
+              (!findRole(null, 'student') && this.isWorkSchedule) :
+              this.plan && this.planDoc && (this.isCreatedPlan || this.isPlanUnderRevision) && this.isPlanCreator && this.isFinish,
           command: () => {
             this.showDialog(this.dialog.planApprove);
           },
@@ -1832,7 +1832,9 @@ export default {
           label: this.$t('common.complete'),
           icon: 'pi pi-check',
           disabled: !this.data || this.data.length === 0,
-          visible: (this.plan && this.isPlanCreator && !this.isFinish) && (this.active === 0 && this.isWorkSchedule && !findRole(null, 'student')) ,
+          visible: this.isWorkSchedule ?
+              (this.plan && this.isPlanCreator && !this.isFinish) && (this.isWorkSchedule && this.active === 0 && !findRole(null, 'student'))
+              :this.plan && this.isPlanCreator && !this.isFinish,
           color: 'yellow',
           command: () => {
             this.confirmFinish();
@@ -1842,12 +1844,11 @@ export default {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
           color: this.isFinish ? '' : 'green',
-          visible:
-            ((this.isMastersPlan || this.isDoctorsPlan) &&
-              (!this.isFinish || this.isApproval)) ||
-            (this.isFinish &&
-              this.planDoc &&
-              !(this.isCreatedPlan || this.isPlanUnderRevision)) && (!findRole(null, 'student') && this.isWorkSchedule),
+          visible: this.isWorkSchedule ?
+              ((this.isMastersPlan || this.isDoctorsPlan) && (!this.isFinish || this.isApproval)) || (this.isFinish && this.planDoc &&
+                  !(this.isCreatedPlan || this.isPlanUnderRevision)) && (!findRole(null, 'student') && this.isWorkSchedule) :
+              ((this.isMastersPlan || this.isDoctorsPlan) && (!this.isFinish || this.isApproval)) || (this.isFinish && this.planDoc &&
+                  !(this.isCreatedPlan || this.isPlanUnderRevision)),
           command: () => {
             if (this.isFinish) {
               this.showDialog(this.dialog.planView);
