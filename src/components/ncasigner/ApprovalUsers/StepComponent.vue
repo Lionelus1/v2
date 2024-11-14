@@ -92,6 +92,8 @@ export default {
         {namekz: "Кадр бөлімі қызметкерінің сертификаты", nameru: "Сертификат сотрудника отела кадров", nameen: "Certificate of the HR worker", value: "hr_worker"},
         {namekz: "Қол қою құқығы бар қызметкер сертификаты", nameru: "Сертификат сотрудника с правом подписи", nameen: "Certificate of the employee with the right to sign", value: "sign_right"},
         {namekz: "Қаржы құжаттарына қол қою құқығы бар қызметкер сертификаты", nameru: "Сертификат сотрудника с правом подписи финансовых документов", nameen: "Certificate of the employee with the right to sign financial docs", value: "financial_sign_right"},
+
+        {namekz: "Қол қою қажет емес", nameru: "Подпись не требуется", nameen: "No signature required", value: "no_signature"},
       ],
       certificate: null,
       stage: this.modelValue != null ? this.modelValue.length + 1 : 1,
