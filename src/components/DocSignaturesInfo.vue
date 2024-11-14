@@ -31,17 +31,12 @@
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && (docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
-      && docInfo.docType === Enum.DocType.Contract)" :header="$t('ncasigner.sign')">
+      && docInfo.docType === Enum.DocType.Contract) || checkingNoSignature()" :header="$t('ncasigner.sign')">
         <div class="flex justify-content-center">
           <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve" :label="$t('common.action.approve')" :loading="loading" :disabled="hideDocApprove" />
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && checkingNoSignature" :header="$t('ncasigner.sign')">
-        <div class="flex justify-content-center">
-          <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve" :label="$t('common.action.approve')" :loading="loading" :disabled="hideDocApprove" />
-        </div>
-      </TabPanel>
-      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && !checkingNoSignature &&  !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && !checkingNoSignature() &&  !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
       && docInfo.docType === Enum.DocType.Contract) || docInfo && docInfo.docHistory.stateId == 6" :disabled="hideDocSign" :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel v-if="!$isMobile">
