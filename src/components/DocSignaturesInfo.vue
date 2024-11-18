@@ -861,6 +861,10 @@ export default {
     checkingNoSignature() {
       const userId = this.loginedUserId;
 
+      if (!this.approvalStages || this.approvalStages.length === 0) {
+        return false;
+      }
+
       return this.approvalStages.some(stage => {
         const users = Array.from(stage.users || []);
         const usersApproved = Array.from(stage.usersApproved || []);
