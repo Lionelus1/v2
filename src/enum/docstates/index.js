@@ -67,7 +67,13 @@ export default {
     ActCompletedWorks: 14,
     RequestList: 15,
     DT_Request:16,
-    StateAttestationCommission:19
+    StateAttestationCommission:19,
+    WorkPlanProtocol: 24,
+    WorkPlanProtocolExtract: 28
+  },
+
+  ProtocolType: {
+    WorkPlanProtocol: "directors_protocol"
   },
 
   ContragentType: {

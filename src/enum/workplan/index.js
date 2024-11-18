@@ -5,6 +5,7 @@ export default {
         Science: "science",
         WorkSchedule: "work",
         Masters: "masters",
-        Doctors: "doctors"
+        Doctors: "doctors",
+        Directors: "directors"
     }
 }

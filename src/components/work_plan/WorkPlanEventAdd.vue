@@ -3,8 +3,8 @@
       :header="isShedulePlan ? $t('workPlan.addTask') : $t('workPlan.addEvent')"
       v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
-      <DoctorsMastersAddEvent :plan="plan" v-if="!isShedulePlan" @update-data="updateData" />
-      <div class="field" v-if="!isMastersPlan && !isDoctorsPlan">
+      <DoctorsMastersAddEvent :plan="plan" v-if="!isShedulePlan  && !isDirectorsPlan" @update-data="updateData" />
+      <div class="field" v-if="!isMastersPlan && !isDoctorsPlan && !isDirectorsPlan">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
             isShedulePlan ? $t('workPlan.worksByWeek') : $t('workPlan.eventName') }} </label>
         <InputText v-model="event_name" />
@@ -12,11 +12,11 @@
           $t('workPlan.errors.eventNameError')
         }}</small>
       </div>
-      <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan && !isShedulePlan)">
+      <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan && !isShedulePlan  && !isDirectorsPlan)">
         <label>{{ $t('common.startDate') }}</label>
         <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan && !isShedulePlan)">
+      <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan && !isShedulePlan  && !isDirectorsPlan)">
         <label>{{ $t('common.endDate') }}</label>
         <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
@@ -54,7 +54,15 @@
           $t('workPlan.errors.approvalUserError')
         }}</small>
       </div>
-
+      <!-- directors plan -->
+      <div class="field" v-if="isDirectorsPlan">
+        <label>{{ $t('workPlan.issueTitle') }}</label>
+        <InputText v-model="event_name" />
+      </div>
+      <div class="field" v-if="isDirectorsPlan">
+        <label>{{ $t('workPlan.implementationDate') }}</label>
+        <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true" showTime hourFormat="24"></PrimeCalendar>
+      </div>
       <div class="field" v-if="!isSciencePlan && !isMastersPlan && !isDoctorsPlan && !isShedulePlan">
         <label>{{
           plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper
@@ -90,7 +98,7 @@
       <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5"
         @click="addNewUser" />
     </div>
-    <div class="p-fluid" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan">
+    <div class="p-fluid" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan  && !isDirectorsPlan">
       <div class="field" v-if="
         (plan &&
           plan.plan_type.code !== Enum.WorkPlanTypes.Science &&
@@ -108,7 +116,7 @@
         <label>{{ $t('common.suppDocs') }}</label>
         <Textarea v-model="supporting_docs" rows="3" style="resize: vertical" />
       </div>
-      <div class="field" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan">
+      <div class="field" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan  && !isDirectorsPlan">
         <label>{{
           isOperPlan ? $t('common.additionalInfo') : $t('common.result')
           }}</label>
@@ -258,6 +266,9 @@ export default {
     isDoctorsPlan() {
       return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors;
     },
+    isDirectorsPlan(){
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Directors;
+    }
   },
   methods: {
     getFullname(user) {
@@ -342,6 +353,10 @@ export default {
         data.start_date = this.start_date
         data.end_date = this.end_date
       }
+      if (this.plan && this.plan.plan_type && (this.plan.plan_type.code === this.Enum.WorkPlanTypes.Directors)) {
+        data.start_date = this.start_date
+      }
+
       if (
         this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters ||
         this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Doctors

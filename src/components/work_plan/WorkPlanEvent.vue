@@ -49,7 +49,7 @@
     <div class="flex justify-center">
       <ProgressSpinner v-if="!plan" style="width: 50px;" strokeWidth="5" fill="transparent" />
     </div>
-    <div class="card" v-if="plan && planDoc && !isWorkSchedule && !isMastersPlan && !isDoctorsPlan">
+    <div class="card" v-if="plan && planDoc && !isWorkSchedule && !isMastersPlan && !isDoctorsPlan && !isDirectorsPlan">
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
                  @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines
@@ -57,6 +57,7 @@
                  @page="onPage($event)">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
+        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
         <Column field="event_name" :header="$t('workPlan.eventName')" :expander="true" style="min-width:300px;width: 30%;">
           <template #body="{ node }">
             <span><i class="fa-solid fa-folder"></i>&nbsp;{{ node.event_name }}</span>
@@ -163,6 +164,23 @@
     <WorkPlanScheduleEventTree v-if="plan && planDoc && isWorkSchedule && members" :data="data" :loading="loading" :members="members"
                                :menus="initItems" :total="total" :isPlanCreator="isPlanCreator"
                                @expand="onExpand" @onToggle="actionsToggle" @onPage="onPage" @updateActive="handleActive"/>
+
+  <DirectorsTable
+        v-if="plan && planDoc && isDirectorsPlan"
+        :data="data"
+        :items="initItems"
+        @onPage="onPage"
+        @onExpand="onExpand"
+        @onToggle="actionsToggle"
+        :total="total"
+        :loading="loading"
+        :planStatus="planDoc?.docHistory?.stateEn"
+        :checkBoxVisiblity="checkBoxVisible"
+         @SelectedEventParamsLength="handleSelectedEventParamsLength"
+         :protocolModalVisible="protocalModal"
+         @hide="closeProtocalModal"
+         :planData="plan"
+    />
   </div>
 
   <Sidebar
@@ -354,10 +372,12 @@ import DocState from "@/enum/docstates/index";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import WorkPlanScheduleEventTree from "@/components/work_plan/table/WorkPlanScheduleEventTree.vue";
 import DoctorsMastersTable from './table/DoctorsMastersTable.vue';
+import DirectorsTable from "@/components/work_plan/table/DirectorsTable.vue"
 import FindUser from "../../helpers/FindUser.vue";
 
 export default {
   name: "WorkPlanEvent",
+  props: ['planStatus', 'checkBoxVisiblity', 'protocolModalVisible', 'planData'],
   components: {
     FindUser,
     WorkPlanScheduleEventTree,
@@ -371,7 +391,8 @@ export default {
     DocSignaturesInfo,
     DoctorsMastersTable,
     ActionButton,
-    WorkPlanEventAddMember
+    WorkPlanEventAddMember,
+    DirectorsTable
   },
   data() {
     return {
@@ -530,7 +551,10 @@ export default {
       isFactVisible: true,
       isFactInputVisible:false,
       factValue: null,
-      selectedWorkPlanEvent:null
+      selectedWorkPlanEvent:null,
+      checkBoxVisible: false,
+      SelectedEventParamsLength: 0,
+      protocalModal:false
     };
   },
   created() {
@@ -601,6 +625,20 @@ export default {
 
   },
   methods: {
+    createProtocal(){
+      this.protocalModal = true;
+    },
+    closeProtocalModal(){
+      this.protocalModal = false;
+      this.SelectedEventParamsLength = 0;
+      this.checkBoxVisible = false;
+    },
+    handleSelectedEventParamsLength(length) {
+      this.SelectedEventParamsLength = length;
+    },
+    eventSelection(){
+      this.checkBoxVisible = !this.checkBoxVisible;
+    },
     handleActive(event){
       this.active = event
     },
@@ -954,6 +992,36 @@ export default {
                   nameru: 'Для внутреннего документооборота (ГОСТ)',
                   nameen: 'For internal document management (GOST)',
                   value: 'internal',
+                },
+              },
+            ];
+          }
+          if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Directors) {
+            this.planApprovalStage = [
+              {
+                stage: 1,
+                users: null,
+                certificate: {
+                  namekz: 'Жеке тұлғаның сертификаты',
+                  nameru: 'Сертификат физического лица',
+                  nameen: 'Certificate of an individual',
+                  value: 'individual',
+                },
+                titleRu: 'Члены Правления',
+                titleKz: 'Басқарма мүшелері',
+                titleEn: 'Board members',
+              },
+              {
+                stage: 2,
+                users: null,
+                titleRu: 'Председатель',
+                titleKz: 'Төраға',
+                titleEn: 'Chairman',
+                certificate: {
+                  namekz: 'Жеке тұлғаның сертификаты',
+                  nameru: 'Сертификат физического лица',
+                  nameen: 'Certificate of an individual',
+                  value: 'individual',
                 },
               },
             ];
@@ -1598,6 +1666,13 @@ export default {
         this.plan.plan_type.code === Enum.WorkPlanTypes.Doctors
       );
     },
+    isDirectorsPlan() {
+      return (
+        this.plan &&
+        this.plan.plan_type &&
+        this.plan.plan_type.code === Enum.WorkPlanTypes.Directors
+      );
+    },
     toolbarMenus() {
       return [
         {
@@ -1646,7 +1721,7 @@ export default {
           icon: 'pi pi-eye',
           color: this.isFinish ? '' : 'green',
           visible:
-            ((this.isMastersPlan || this.isDoctorsPlan) &&
+            ((this.isMastersPlan || this.isDoctorsPlan || this.isDirectorsPlan) &&
               (!this.isFinish || this.isApproval)) ||
             (this.isFinish &&
               this.planDoc &&
@@ -1670,11 +1745,40 @@ export default {
           },
         },
         {
+          // Protocol Quru
+          label: this.$t('workPlan.protocol.createProtocols'),
+          disabled: this.SelectedEventParamsLength <= 0 && this.isPlanApproved,
+          visible: this.isDirectorsPlan,
+          command: () => {
+            this.createProtocal();
+          },
+        },
+        {
+          // Qattama registeri
+          label: this.$t('contracts.menu.registerProtocols'),
+          visible: this.isDirectorsPlan,
+          command: () => {
+            this.$router.push({ 
+              name: "Protocols", 
+              params: { docType: this.docEnum.DocType.WorkPlanProtocol}
+            });
+          },
+        },
+        {
+          // Tandau
+          label: this.$t('common.choose'),
+          disabled: !this.isPlanApproved,
+          visible: this.isDirectorsPlan,
+          command: () => {
+            this.eventSelection();
+          },
+        },
+        {
           label: this.$t('workPlan.reports'),
           visible:
             this.isFinish &&
               !this.isWorkSchedule &&
-              !this.isSciencePlan &&
+              !this.isSciencePlan && !this.isDirectorsPlan &&
               (this.isApproval || this.isPlanCreator || this.isAdmin) &&
               (!(this.isMastersPlan || this.isDoctorsPlan) ||
               this.isPlanApproved),

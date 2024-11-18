@@ -99,7 +99,10 @@ export class DocService {
     addAdditionalInfo(data){
         return api.post(`/doc/info`, data, {headers: getHeader()});
     }
-    getAdditionalInfo(id){
-        return api.get(`/doc/info/${id}`, {headers: getHeader()});
+    getAdditionalInfo(id, name){
+        return api.get(`/doc/info/${id}`, {params: { name: name }, headers: getHeader()});
     }
+    // getDocParamInfo(data){
+    //     return api.post(`/doc/docParamInfo`, data, {headers: getHeader()});
+    // }
 }

@@ -145,6 +145,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/catalog/protocols',
+                name: 'ProtocolRegister',
+                component: load('documents/catalog/Protocols'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/documents/catalog/acts/status',
                 name: '/documents/catalog/acts/status',
                 component: load('documents/catalog/StatusActsGPC'),
@@ -498,6 +504,24 @@ const routes = [
                         component: load('work_plan/WorkPlanView'),
                         beforeEnter: ifAuthenticated
                     },
+                    {
+                        path: '/work-plan/directors/protocol/:workPlanId/:protocolId',
+                        name: 'addWorkPlanProtocol',
+                        component: load('work_plan/protocol/Protocol'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/documents/catalog/protocols/:docType',
+                        name: 'Protocols',
+                        component: load('documents/catalog/Protocols'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/documents/catalog/protocols/:docType/:workPlanID',
+                        name: 'ProtocolExtracts',
+                        component: load('documents/catalog/Protocols'),
+                        beforeEnter: ifAuthenticated,
+                    }
                 ]
             },
             {

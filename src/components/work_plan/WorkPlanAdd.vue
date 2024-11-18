@@ -141,6 +141,10 @@ onMounted(() => {
 })
 
 watch(() => formData.plan_type, () => {
+  if (!formData.plan_type || !types.value || types.value.length < formData.plan_type) {
+    params.value = null;
+    return;
+  }
   const id = types.value[formData.plan_type - 1].dic_document_types
   if (id == null) {
     params.value = null

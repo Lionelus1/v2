@@ -24,9 +24,9 @@
         <InputText v-model="editData.comment" />
       </div>
 
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science">
+      <div class="field" v-if="plan && (plan.plan_type.code === Enum.WorkPlanTypes.Science || plan.plan_type.code === Enum.WorkPlanTypes.Directors)">
         <label>{{ $t('common.startDate') }}</label>
-        <PrimeCalendar v-model="editData.start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+        <PrimeCalendar v-model="editData.start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true" showTime hourFormat="24"></PrimeCalendar>
       </div>
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science">
         <label>{{ $t('common.endDate') }}</label>
@@ -73,7 +73,7 @@
         <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser" />
       </div>
       <div class="field"
-        v-if="(plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science && !isShedulePlan) && ((editData && parentData && parentData.quarter === 5) || !parentData)">
+        v-if="(plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science && !isShedulePlan && !isDirectorsPlan) && ((editData && parentData && parentData.quarter === 5) || !parentData)">
         <label>{{ $t('workPlan.quarter') }}</label>
         <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
         <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
@@ -82,7 +82,7 @@
         <label>{{ $t('common.suppDocs') }}</label>
         <Textarea v-model="editData.supporting_docs" rows="3" style="resize: vertical" />
       </div>
-      <div class="field" v-if="!isShedulePlan">
+      <div class="field" v-if="!isShedulePlan && !isDirectorsPlan">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
         <Textarea v-model="editData.result" rows="3" style="resize: vertical" />
       </div>
@@ -243,6 +243,9 @@ export default {
           this.plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule
       );
     },
+    isDirectorsPlan(){
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Directors;
+    }
   },
   unmounted() {
     this.showWorkPlanEventEditModal = false
@@ -296,6 +299,7 @@ export default {
           });
           this.closeBasic();
           this.submitted = false;
+          this.event;
         }
       }).catch(error => {
         this.submitted = false;

@@ -198,4 +198,19 @@ export class WorkPlanService {
         return api.post('/workPlan/updateWorkPlanEventFact', data, {headers: getHeader()});
     }
 
+    createProtocol(data) {
+        return api.post(`/workPlan/createProtocol`, data, {headers: getHeader()});
+    }
+
+    getWorkPlanProtocolTypes() {
+        return api.get('/workPlan/protocolTypes', {headers: getHeader()});
+    }
+
+    sendProtocolToApprove(data) {
+        return api.post(`/workPlan/sendProtocolToApprove`, data, {headers: getHeader()});
+    }
+    getProtocolType(data) {
+        return api.post(`/workPlan/protocolType`, data, {headers: getHeader()});
+    }
+
 }
