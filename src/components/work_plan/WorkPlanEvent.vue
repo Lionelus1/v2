@@ -405,7 +405,6 @@ export default {
       filtered: false,
       stages: [],
       additionalInfo: null,
-
       additinalInfoFilled: true,
     };
   },
@@ -743,7 +742,7 @@ export default {
                 },
               },)
             }
-            if(this.isMastersPlan || this.isDoctorsPlan){
+            if((this.isMastersPlan || this.isDoctorsPlan) && !this.isFinish && !this.isApproval){
               this.getAdditionalInfo()
             }
           })
@@ -1433,7 +1432,7 @@ export default {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
           color: this.isFinish ? '' : 'green',
-          disabled:   (this.isMastersPlan || this.isDoctorsPlan) && (!this.isFinish && this.isApproval) && (!this.data || this.data.length === 0 || !this.additinalInfoFilled),
+          disabled: (this.isMastersPlan || this.isDoctorsPlan) && (!this.data || this.data.length === 0 || !this.additinalInfoFilled),
           visible:
               ((this.isMastersPlan || this.isDoctorsPlan) &&
                   (!this.isFinish || this.isApproval)) ||
