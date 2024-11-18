@@ -279,7 +279,7 @@ export default {
     const storageFilter = JSON.parse(localStorage.getItem("workPlanFilter"))
 
     this.filter = storageFilter || this.filter
-
+    this.filter.user_id = null
     this.getPlans();
     this.getWorkPlanTypes()
   },
@@ -436,7 +436,7 @@ export default {
       this.types = []
       this.planService.getWorkPlanTypes().then(res => {
         this.types = res.data
-        this.types.push({id: 4, code: 'mine', name_kz: 'Менің жоспарларым', name_ru: 'Мои планы', name_en: 'My Plans'})
+        this.types.push({id: -1, code: 'mine', name_kz: 'Менің жоспарларым', name_ru: 'Мои планы', name_en: 'My Plans'})
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
       })
