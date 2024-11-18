@@ -615,6 +615,7 @@ const revisionSetterFullName = ref(null)
 const responsivePerson = ref([])
 const boardDecisionSpeaker = ref([])
 
+
 const votingResults = ref({
   vote_aye: null,
   vote_con: null,
@@ -644,7 +645,16 @@ const selectedAgenda = ref({
     }
   ]
 })
-
+const docLang = computed(() => {
+  switch (locale.value) {
+    case 'kz':
+      return 1;
+    case 'ru':
+      return 2;
+    default:
+      return 1; 
+  }
+});
 const parsedAgendaVotingResults = computed(() => ({
   vote_aye: parseInt(agendaVotingResults.value.vote_aye, 10) || null,
   vote_con: parseInt(agendaVotingResults.value.vote_con, 10) || null,
@@ -673,12 +683,12 @@ const data = ref([{
   protocol_issues: [],
   voting_results: parsedVotingResults.value,
   session_closed_time: null,
-  lang: null
+  lang: docLang.value
 }]);
 
-watch(locale, (newLocale) => {
-  data.value[0].lang = (newLocale === "ru") ? 1 : 0;
-});
+// watch(locale, (newLocale) => {
+//   data.value[0].lang = (newLocale === "ru") ? 1 : 2;
+// });
 
 const addDecision = ref({
   board_decision: null,
@@ -1186,6 +1196,8 @@ const generatePdf = async () => {
       }
     }
   }
+
+  data.value[0].lang = docLang.value
 
   const protocolData = data.value[0];
   saveLoading.value = true;
