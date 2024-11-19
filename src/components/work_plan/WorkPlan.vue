@@ -452,6 +452,8 @@ export default {
       this.filter.filtered = true;
       if (this.userNameSearch?.length > 0) {
         this.filter.user_id = this.userNameSearch[0].userID
+      }else{
+        this.filter.user_id = null
       }
       localStorage.setItem("workPlanFilter", JSON.stringify(this.filter));
       this.lazyParams.first = 0
