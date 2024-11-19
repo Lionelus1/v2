@@ -146,10 +146,13 @@ watch(() => formData.plan_type, () => {
     return;
   }
   const id = types.value[formData.plan_type - 1].dic_document_types
-  if (id == null) {
+  console.log("id:", id);
+  
+  if (id == null || id == 25) {
     params.value = null
     return
   }
+ 
   docService.getDocParams(id).then(res => {
     params.value = JSON.parse(res.data)
   }).catch(error => {
