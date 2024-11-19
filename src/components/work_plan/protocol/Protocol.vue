@@ -1654,18 +1654,18 @@ const showSendToApproveDialog = () => {
   showSendToApproveModal.value = true;
 }
 
-watch(() => data.value[0].meeting_date, (newVal) => {
-  validation.value.meeting_date = !newVal;
-});
-watch(() => data.value[0].meeting_place, (newVal) => {
-  validation.value.meeting_venue = !newVal;
-});
-watch(() => data.value[0].participated_board_members, (newVal) => {
-  validation.value.participated_members = !newVal;
-});
-watch(() => data.value[0].invited_persons, (newVal) => {
-  validation.value.invited_persons = !newVal;
-});
+watch(
+  () => data.value[0],
+  (newData) => {
+    validation.value.meeting_date = !newData.meeting_date;
+    validation.value.meeting_venue = !newData.meeting_venue;
+    validation.value.participated_members = 
+      !newData.participated_board_members || newData.participated_board_members.length <= 0;
+    validation.value.invited_persons = 
+      !newData.invited_persons || newData.invited_persons.length <= 0;
+  },
+  { deep: true }
+);
 
 const onToggleAbsent = (event) => {
   isCollapsedAbsent.value = event.value;
