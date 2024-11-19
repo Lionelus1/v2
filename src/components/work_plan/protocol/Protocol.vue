@@ -56,11 +56,13 @@
               <label for="meetingTime" class="block mb-1">{{ $t('workPlan.protocol.meetingTime') }}</label>
               <PrimeCalendar v-model="data[0].meeting_date" showIcon :showOnFocus="false" inputId="buttondisplay"
                              showTime hourFormat="24" :disabled="isInApprove || isApproved"/>
+                             <small class="p-error" v-if="validation.meeting_date">{{ $t("common.requiredField") }}</small>
             </div>
             <div class="p-fluid mt-3">
               <label for="meetingPlace" class="block mb-1">{{ $t('workPlan.protocol.meetingPlace') }}{{ "*" }}</label>
               <Textarea id="meetingPlace" v-model="data[0].meeting_place" class="mt-2" rows="3"
                         :disabled="isInApprove || isApproved"/>
+                        <small class="p-error" v-if="validation.meeting_venue">{{ $t("common.requiredField") }}</small>
 
             </div>
             <div class="p-fluid mt-3">
@@ -69,6 +71,7 @@
                 }}{{ "*" }}</label>
               <FindUser class="mt-2" v-model="participatedBoardMembers" :editMode="true" :user-type="3"
                         :disabled="isInApprove || isApproved"/>
+                        <small class="p-error" v-if="validation.participated_members">{{ $t("common.requiredField") }}</small>
 
             </div>
             <div class="p-fluid mt-3">
@@ -132,6 +135,7 @@
                 }}</label>
               <FindUser class="mt-2" v-model="invitedBoardMembers" :editMode="true" :user-type="3"
                         :disabled="isInApprove || isApproved"/>
+                        <small class="p-error" v-if="validation.invited_persons">{{ $t("common.requiredField") }}</small>
             </div>
             <div class="p-fluid mt-3" v-if="!isInApprove">
               <Panel :header="$t('workPlan.protocol.agendas')" toggleable :collapsed="isCollapsed" @toggle="onToggle">
@@ -615,6 +619,13 @@ const revisionSetterFullName = ref(null)
 const responsivePerson = ref([])
 const boardDecisionSpeaker = ref([])
 
+const validation = ref({
+  meeting_date: false,
+  meeting_venue: false,
+  participated_members: false,
+  invited_persons: false
+})
+
 
 const votingResults = ref({
   vote_aye: null,
@@ -744,6 +755,21 @@ const agendaData = ref({
     }
   ]
 });
+
+const validateForm = () => {
+        validation.value.meeting_date = !data.value[0].meeting_date || data.value[0].meeting_date == "";
+        validation.value.meeting_venue = !data.value[0].meeting_place || data.value[0].meeting_place == "";
+        validation.value.participated_members = !data.value[0].participated_board_members || data.value[0].participated_board_members == "" || data.value[0].participated_board_members.length <= 0;
+        validation.value.invited_persons = !data.value[0].invited_persons || data.value[0].invited_persons == "" || data.value[0].invited_persons.length <= 0;
+        
+
+        return (
+            !validation.value.meeting_date  &&
+            !validation.value.meeting_venue  &&
+            !validation.value.participated_members  &&
+            !validation.value.invited_persons 
+        )
+}
 
 const updateBoardDecision = (index, value) => {
   selectedAgenda.value.board_decisions[index].board_decision = value;
@@ -1622,8 +1648,24 @@ const onToggle = (event) => {
 };
 
 const showSendToApproveDialog = () => {
+  if (!validateForm()) {
+            return
+  }
   showSendToApproveModal.value = true;
 }
+
+watch(() => data.value[0].meeting_date, (newVal) => {
+  validation.value.meeting_date = !newVal;
+});
+watch(() => data.value[0].meeting_place, (newVal) => {
+  validation.value.meeting_venue = !newVal;
+});
+watch(() => data.value[0].participated_board_members, (newVal) => {
+  validation.value.participated_members = !newVal;
+});
+watch(() => data.value[0].invited_persons, (newVal) => {
+  validation.value.invited_persons = !newVal;
+});
 
 const onToggleAbsent = (event) => {
   isCollapsedAbsent.value = event.value;
