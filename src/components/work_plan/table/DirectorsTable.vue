@@ -207,7 +207,6 @@ function emitHide() {
 }
 
 
-
 function sumWorkPlanEventIds() {
   return SelectedEventParams.value.reduce((sum, item) => sum + item.event_id, 0);
 }

@@ -56,13 +56,13 @@
               <label for="meetingTime" class="block mb-1">{{ $t('workPlan.protocol.meetingTime') }}</label>
               <PrimeCalendar v-model="data[0].meeting_date" showIcon :showOnFocus="false" inputId="buttondisplay"
                              showTime hourFormat="24" :disabled="isInApprove || isApproved"/>
-                             <small class="p-error" v-if="validation.meeting_date">{{ $t("common.requiredField") }}</small>
+              <small class="p-error" v-if="validation.meeting_date">{{ $t("common.requiredField") }}</small>
             </div>
             <div class="p-fluid mt-3">
               <label for="meetingPlace" class="block mb-1">{{ $t('workPlan.protocol.meetingPlace') }}{{ "*" }}</label>
               <Textarea id="meetingPlace" v-model="data[0].meeting_place" class="mt-2" rows="3"
                         :disabled="isInApprove || isApproved"/>
-                        <small class="p-error" v-if="validation.meeting_venue">{{ $t("common.requiredField") }}</small>
+              <small class="p-error" v-if="validation.meeting_venue">{{ $t("common.requiredField") }}</small>
 
             </div>
             <div class="p-fluid mt-3">
@@ -71,7 +71,7 @@
                 }}{{ "*" }}</label>
               <FindUser class="mt-2" v-model="participatedBoardMembers" :editMode="true" :user-type="3"
                         :disabled="isInApprove || isApproved"/>
-                        <small class="p-error" v-if="validation.participated_members">{{ $t("common.requiredField") }}</small>
+              <small class="p-error" v-if="validation.participated_members">{{ $t("common.requiredField") }}</small>
 
             </div>
             <div class="p-fluid mt-3">
@@ -135,7 +135,7 @@
                 }}</label>
               <FindUser class="mt-2" v-model="invitedBoardMembers" :editMode="true" :user-type="3"
                         :disabled="isInApprove || isApproved"/>
-                        <small class="p-error" v-if="validation.invited_persons">{{ $t("common.requiredField") }}</small>
+              <small class="p-error" v-if="validation.invited_persons">{{ $t("common.requiredField") }}</small>
             </div>
             <div class="p-fluid mt-3" v-if="!isInApprove">
               <Panel :header="$t('workPlan.protocol.agendas')" toggleable :collapsed="isCollapsed" @toggle="onToggle">
@@ -182,8 +182,9 @@
                         </div>
                         <div class="col-4">
                           <div class="">
-                            <InputText id="aye" type="number" v-model="votingResults.vote_aye" class="w-9"
-                                       :disabled="isInApprove || isApproved"/>
+                            <InputNumber id="aye" :min="1" v-model="votingResults.vote_aye" class="w-9"
+                                         :disabled="isInApprove || isApproved" showButtons/>
+                            <small class="p-error" v-if="validation.vote_aye">{{ $t("common.requiredField") }}</small>
                           </div>
                         </div>
                       </div>
@@ -197,8 +198,12 @@
                         </div>
                         <div class="col-4">
                           <div class="">
-                            <InputText id="abstained" type="number" v-model="votingResults.vote_abstained" class="w-9"
-                                       :disabled="isInApprove || isApproved"/>
+                            <InputNumber id="abstained" :min="1" type="number" v-model="votingResults.vote_abstained"
+                                         class="w-9"
+                                         :disabled="isInApprove || isApproved" showButtons/>
+                            <small class="p-error" v-if="validation.vote_abstained">{{
+                                $t("common.requiredField")
+                              }}</small>
                           </div>
                         </div>
                       </div>
@@ -214,8 +219,9 @@
                         </div>
                         <div class="col-4">
                           <div class="">
-                            <InputText id="con" type="number" v-model="votingResults.vote_con" class="w-9"
-                                       :disabled="isInApprove || isApproved"/>
+                            <InputNumber id="con" :min="1" type="number" v-model="votingResults.vote_con" class="w-9"
+                                         :disabled="isInApprove || isApproved" showButtons/>
+                            <small class="p-error" v-if="validation.vote_con">{{ $t("common.requiredField") }}</small>
                           </div>
                         </div>
                       </div>
@@ -231,8 +237,12 @@
                         </div>
                         <div class="col-4">
                           <div class="">
-                            <InputText id="decisionAccepted" type="number" v-model="votingResults.vote_total_decisions"
-                                       class="w-9" :disabled="isInApprove || isApproved"/>
+                            <InputNumber id="decisionAccepted" :min="1" type="number"
+                                         v-model="votingResults.vote_total_decisions"
+                                         class="w-9" :disabled="isInApprove || isApproved" showButtons/>
+                            <small class="p-error" v-if="validation.vote_total_decisions">{{
+                                $t("common.requiredField")
+                              }}</small>
                           </div>
                         </div>
                       </div>
@@ -369,6 +379,7 @@
         <div class="p-fluid mt-3">
           <label for="agendas" class="block mb-1">{{ $t('workPlan.protocol.agendas') }}{{ "*" }}</label>
           <Textarea id="agendas" v-model="agendaData.agenda" class="mt-2" rows="5" :disabled="isInApprove"/>
+          <small class="p-error" v-if="validation.agenda">{{ $t("common.requiredField") }}</small>
         </div>
         <div class="p-fluid mt-3">
           <label for="speaker" class="block mb-1">{{ $t('workPlan.protocol.speaker') }}{{ "*" }}</label>
@@ -384,7 +395,8 @@
                 </div>
                 <div class="col-4">
                   <div class="">
-                    <InputText id="aye" v-model="agendaVotingResults.vote_aye" class="w-7" :disabled="isInApprove"/>
+                    <InputNumber id="aye" :min="1" v-model="agendaVotingResults.vote_aye" class="w-9"
+                                 :disabled="isInApprove" showButtons/>
                   </div>
                 </div>
               </div>
@@ -397,8 +409,8 @@
                 </div>
                 <div class="col-4">
                   <div class="">
-                    <InputText id="aye" v-model="agendaVotingResults.vote_abstained" class="w-7"
-                               :disabled="isInApprove"/>
+                    <InputNumber id="abstained" :min="1" v-model="agendaVotingResults.vote_abstained" class="w-9"
+                                 :disabled="isInApprove" showButtons/>
                   </div>
                 </div>
               </div>
@@ -412,7 +424,8 @@
                 </div>
                 <div class="col-4">
                   <div class="">
-                    <InputText id="aye" v-model="agendaVotingResults.vote_con" class="w-7" :disabled="isInApprove"/>
+                    <InputNumber id="votecon" :min="1" v-model="agendaVotingResults.vote_con" class="w-9"
+                                 :disabled="isInApprove" showButtons/>
                   </div>
                 </div>
               </div>
@@ -426,8 +439,9 @@
                 </div>
                 <div class="col-4">
                   <div class="">
-                    <InputText id="aye" v-model="agendaVotingResults.vote_total_decisions" class="w-7"
-                               :disabled="isInApprove"/>
+                    <InputNumber id="totalDecision" :min="1" v-model="agendaVotingResults.vote_total_decisions"
+                                 class="w-9"
+                                 :disabled="isInApprove" showButtons/>
                   </div>
                 </div>
               </div>
@@ -521,7 +535,7 @@
       <p v-else>
         {{ $t('common.noData') }}
       </p>
-  
+
     </Dialog>
     <Dialog :header="t('common.action.sendToApprove')" v-model:visible="showSendToApproveModal"
             :style="{ width: '50vw' }">
@@ -623,7 +637,20 @@ const validation = ref({
   meeting_date: false,
   meeting_venue: false,
   participated_members: false,
-  invited_persons: false
+  invited_persons: false,
+  vote_aye: false,
+  vote_con: false,
+  vote_abstained: false,
+  vote_total_decisions: false,
+  agenda: false,
+  speaker: false,
+  agenda_vote_aye: false,
+  agenda_vote_con: false,
+  agenda_vote_abstained: false,
+  agenda_vote_total_decisions: false,
+  reporter: false,
+  inner_rule: false,
+
 })
 
 
@@ -656,6 +683,7 @@ const selectedAgenda = ref({
     }
   ]
 })
+
 const docLang = computed(() => {
   switch (locale.value) {
     case 'kz':
@@ -663,7 +691,7 @@ const docLang = computed(() => {
     case 'ru':
       return 2;
     default:
-      return 1; 
+      return 1;
   }
 });
 const parsedAgendaVotingResults = computed(() => ({
@@ -697,9 +725,31 @@ const data = ref([{
   lang: docLang.value
 }]);
 
-// watch(locale, (newLocale) => {
-//   data.value[0].lang = (newLocale === "ru") ? 1 : 2;
-// });
+const validateAgendas = () => {
+  let isValid = true;
+  const eventsList = data.value[0].protocol_issues || [];
+
+  eventsList.forEach((event) => {
+    const item = event.protocol_agenda;
+
+    if (item !== null) {
+      if (
+          item.agenda === null ||
+          item.board_decisions === null ||
+          item.inner_rule === null ||
+          item.speaker === null ||
+          item.voting_result === null
+      ) {
+        isValid = false;
+      }
+    } else {
+      isValid = false;
+    }
+  });
+
+  return isValid;
+};
+
 
 const addDecision = ref({
   board_decision: null,
@@ -757,18 +807,26 @@ const agendaData = ref({
 });
 
 const validateForm = () => {
-        validation.value.meeting_date = !data.value[0].meeting_date || data.value[0].meeting_date == "";
-        validation.value.meeting_venue = !data.value[0].meeting_place || data.value[0].meeting_place == "";
-        validation.value.participated_members = !data.value[0].participated_board_members || data.value[0].participated_board_members == "" || data.value[0].participated_board_members.length <= 0;
-        validation.value.invited_persons = !data.value[0].invited_persons || data.value[0].invited_persons == "" || data.value[0].invited_persons.length <= 0;
-        
+  validation.value.meeting_date = !data.value[0].meeting_date || data.value[0].meeting_date == "";
+  validation.value.meeting_venue = !data.value[0].meeting_place || data.value[0].meeting_place == "";
+  validation.value.participated_members = !data.value[0].participated_board_members || data.value[0].participated_board_members == "" || data.value[0].participated_board_members.length <= 0;
+  validation.value.invited_persons = !data.value[0].invited_persons || data.value[0].invited_persons == "" || data.value[0].invited_persons.length <= 0;
+  validation.value.vote_aye = !data.value[0].voting_results.vote_aye || Number(data.value[0].voting_results.vote_aye) <= 0;
+  validation.value.vote_con = !data.value[0].voting_results.vote_con || Number(data.value[0].voting_results.vote_con) <= 0;
+  validation.value.vote_abstained = !data.value[0].voting_results.vote_abstained || Number(data.value[0].voting_results.vote_abstained) <= 0;
+  validation.value.vote_total_decisions = !data.value[0].voting_results.vote_total_decisions || Number(data.value[0].voting_results.vote_total_decisions) <= 0;
 
-        return (
-            !validation.value.meeting_date  &&
-            !validation.value.meeting_venue  &&
-            !validation.value.participated_members  &&
-            !validation.value.invited_persons 
-        )
+
+  return (
+      !validation.value.meeting_date &&
+      !validation.value.meeting_venue &&
+      !validation.value.participated_members &&
+      !validation.value.invited_persons &&
+      !validation.value.vote_aye &&
+      !validation.value.vote_con &&
+      !validation.value.vote_abstained &&
+      !validation.value.vote_total_decisions
+  )
 }
 
 const updateBoardDecision = (index, value) => {
@@ -1649,22 +1707,32 @@ const onToggle = (event) => {
 
 const showSendToApproveDialog = () => {
   if (!validateForm()) {
-            return
+    return
+  }
+  if (!validateAgendas()) {
+    toast.add({
+      severity: 'warn',
+      summary: t('common.message.fillError'),
+      life: 3000,
+    });
+    return
   }
   showSendToApproveModal.value = true;
 }
 
 watch(
-  () => data.value[0],
-  (newData) => {
-    validation.value.meeting_date = !newData.meeting_date;
-    validation.value.meeting_venue = !newData.meeting_venue;
-    validation.value.participated_members = 
-      !newData.participated_board_members || newData.participated_board_members.length <= 0;
-    validation.value.invited_persons = 
-      !newData.invited_persons || newData.invited_persons.length <= 0;
-  },
-  { deep: true }
+    () => data.value[0],
+    (newData) => {
+      validation.value.meeting_date = !newData.meeting_date;
+      validation.value.meeting_venue = !newData.meeting_place;
+      validation.value.participated_members = !newData.participated_board_members || newData.participated_board_members.length <= 0;
+      validation.value.invited_persons = !newData.invited_persons || newData.invited_persons.length <= 0;
+      validation.value.vote_aye = !newData.voting_results.vote_aye;
+      validation.value.vote_con = !newData.voting_results.vote_con;
+      validation.value.vote_abstained = !newData.voting_results.vote_abstained;
+      validation.value.vote_total_decisions = !newData.voting_results.vote_total_decisions;
+    },
+    {deep: true}
 );
 
 const onToggleAbsent = (event) => {
