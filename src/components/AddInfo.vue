@@ -43,8 +43,7 @@ const loading = ref(true);
 const data = ref(null);
 
 onMounted(() => {
-  const defaultName = "info";
-  docService.getAdditionalInfo(props.plan?.work_plan_id, defaultName).then(res => {
+  docService.getAdditionalInfo(props.plan?.work_plan_id).then(res => {
     if (res.data?.description !== null) {
       fields.info = JSON.parse(res.data?.description)
       fields.id = res.data?.id
