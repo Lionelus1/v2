@@ -1747,7 +1747,7 @@ export default {
         {
           // Protocol Quru
           label: this.$t('workPlan.protocol.createProtocols'),
-          disabled: this.SelectedEventParamsLength <= 0 && this.isPlanApproved,
+          disabled: this.SelectedEventParamsLength <= 0 || !this.isPlanApproved,
           visible: this.isDirectorsPlan,
           command: () => {
             this.createProtocal();
