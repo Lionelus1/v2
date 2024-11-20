@@ -406,12 +406,9 @@ export default {
       }
 
       // Выполняем проверку если студент и согласованный ли план
-      if (this.isStudent() && code !== "approved" &&
-        (
-            data.plan &&
-            data.plan.plan_type &&
-            data.plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule
-        )) {
+      if (this.isStudent() &&
+          code !== "approved" &&
+          (data && data.plan_type && data.plan_type.code === "work")) {
         // Обработка ошибки planCheckApprove
         this.$toast.add({
           severity: "error",
@@ -439,7 +436,7 @@ export default {
       }
     },
     isStudent(){
-      return findRole(null, 'student');
+      return this.findRole(null, 'student');
     },
     getDocStatus(code) {
       const foundStatus = this.docStatus.find(status => status.code === code);

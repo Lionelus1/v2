@@ -155,6 +155,10 @@ export class WorkPlanService {
         return api.get(`/workPlan/getReportApprovalUsers/${id}`, {headers: getHeader()});
     }
 
+    practicemanager() {
+        return api.get(`/workPlan/check/practicemanager`, {headers: getHeader()});
+    }
+
     // getSignatures(data) {
     //     return api.post(`/workPlan/getSignatures`, data, {headers: getHeader()});
     // }

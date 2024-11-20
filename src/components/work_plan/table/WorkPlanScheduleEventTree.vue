@@ -13,6 +13,7 @@
           :showStudents="true"
       />
     </Sidebar>
+
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel :header="$t('common.tasks')">
         <div>
@@ -63,7 +64,7 @@
           </TreeTable>
         </div>
       </TabPanel>
-      <TabPanel :header="$t('common.members')" v-if="isPlanCreator && !findRole(null, 'student')">
+      <TabPanel :header="$t('common.members')" v-if="isPlanCreator && isPracticeManager && !findRole(null, 'student')">
         <div v-if="members && filterData">
 
           <div class="flex justify-end">
@@ -142,12 +143,13 @@
 <script setup>
 import moment from "moment";
 import ActionButton from "@/components/ActionButton.vue";
-import {computed, ref, watch} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {useRoute, useRouter} from "vue-router";
 import {findRole} from "../../../config/config";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
 import DocSignaturesInfo from "../../DocSignaturesInfo.vue";
+import {WorkPlanService} from "@/service/work.plan.service";
 
 const {t, locale} = useI18n()
 const toast = useToast()
@@ -162,6 +164,7 @@ const loadMem = computed(() => props.loadingMembers)
 
 // Следим за изменениями filteredMembers и обнуляем selectedMembers
 watch(filteredMembers, () => {
+  getPracticeManager();
   selectedMembers.value = [];
   allChecked.value = false;
   loadMem.value = !loadMem.value;
@@ -254,6 +257,19 @@ const formatDateMoment = (date) => {
 const onPage = (event) => {
   first.value = event.first;
   emits('onPageMembers', event)
+}
+
+//  тексеру, логин жасаған адам практика жетекшісі ме?
+//  true/false
+const planService = new WorkPlanService()
+const isPracticeManager = ref(false);
+
+const getPracticeManager = () => {
+  planService.practicemanager().then(res => {
+    isPracticeManager.value = res.data;
+  }).catch(error => {
+    toast.add({severity: "error", summary: error, life: 3000});
+  })
 }
 
 </script>
