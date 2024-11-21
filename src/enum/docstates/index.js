@@ -68,7 +68,7 @@ export default {
     RequestList: 15,
     DT_Request:16,
     StateAttestationCommission:19,
-    WorkPlanProtocol: 24,
+    WorkPlanProtocol: 29,
     WorkPlanProtocolExtract: 28
   },
 
