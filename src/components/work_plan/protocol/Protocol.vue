@@ -727,10 +727,19 @@ const data = ref([{
 
 const validateAgendas = () => {
   const eventsList = data.value[0].protocol_issues || [];
+  const isInvalid = (value) => value === null || value === '' || (Array.isArray(value) && value.length === 0);
   eventsList.forEach((event) => {
-      if (event.protocol_agenda.agenda === null || event.protocol_agenda.agenda.length === 0 || event.protocol_agenda.agenda === "" || event.protocol_agenda.board_decisions === null || event.protocol_agenda.board_decisions.length === 0 || event.protocol_agenda.inner_rule === null || event.protocol_agenda.inner_rule.length === 0 || event.protocol_agenda.inner_rule === "" || event.protocol_agenda.speaker === null || event.protocol_agenda.speaker.length === 0 || event.protocol_agenda.speaker === '' || event.protocol_agenda.voting_result === null || event.protocol_agenda.voting_result.length === 0 || event.protocol_agenda.voting_result === "") {
-        validatedAgendaFields.value = false
-      }
+    const { protocol_agenda } = event;
+    const invalidFields = [
+      protocol_agenda.agenda,
+      protocol_agenda.board_decisions,
+      protocol_agenda.inner_rule,
+      protocol_agenda.speaker,
+      protocol_agenda.voting_result,
+    ];
+    if (invalidFields.some(isInvalid)) {
+      validatedAgendaFields.value = false;
+    }
   });
 
 };

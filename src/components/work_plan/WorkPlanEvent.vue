@@ -1722,6 +1722,7 @@ export default {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
           color: this.isFinish ? '' : 'green',
+          disabled: (this.isMastersPlan || this.isDoctorsPlan || this.isDirectorsPlan) && (!this.data || this.data.length === 0 || !this.additinalInfoFilled),
           visible:
             ((this.isMastersPlan || this.isDoctorsPlan || this.isDirectorsPlan) &&
               (!this.isFinish || this.isApproval)) ||
