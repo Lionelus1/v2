@@ -61,6 +61,7 @@
 <script>
 import {runNCaLayer} from "../../helpers/SignDocFunctions";
 import {WorkPlanService} from "@/service/work.plan.service";
+import Enum from "@/enum/workplan/index"
 
 export default {
   name: "WorkPlanView",
@@ -130,14 +131,26 @@ export default {
       }
     },
     getFile() {
+      let isProtocolEvent = false;
+      if(this.plan?.plan_type?.code === Enum.WorkPlanTypes.Directors){
+        isProtocolEvent = true;
+      }
       let data = {
         work_plan_id: this.plan.work_plan_id,
+        is_protocol_event: isProtocolEvent
       };
       this.planService.getWorkPlanData(data).then(res => {
         if (res.data) {
-          this.source = `data:application/pdf;base64,${res.data}`;
-          this.sourceb64 = this.b64toBlob(res.data);
-          this.document = res.data;
+          
+          if(this.plan?.plan_type?.code === Enum.WorkPlanTypes.Directors){
+            this.source = `data:application/pdf;base64,${res.data.generate_byte}`;
+            this.sourceb64 = this.b64toBlob(res.data.generate_byte);
+            this.document = res.data.generate_byte;
+          }else{
+            this.source = `data:application/pdf;base64,${res.data}`;
+            this.sourceb64 = this.b64toBlob(res.data);
+            this.document = res.data;
+          }
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {

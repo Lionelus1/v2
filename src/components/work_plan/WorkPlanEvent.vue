@@ -725,6 +725,7 @@ export default {
                 return a.semester - b.semester;
               });
             }
+            
             this.data = res.data.items;
             this.total = res.data.total;
             if (this.data) {
@@ -1025,6 +1026,7 @@ export default {
                 },
               },
             ];
+            this.getWorkPlanApprovalUsers(this.work_plan_id)
           }
 
       }).catch(error => {

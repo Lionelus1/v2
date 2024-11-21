@@ -72,6 +72,7 @@ export default {
       fd.append("work_plan_id", workPlanId)
       fd.append("doc_id", this.plan.doc_id)
       fd.append("approval_users", JSON.stringify(this.approval_users))
+      
       this.planService.savePlanFile(fd).then(res => {
         if (res.data && res.data.is_success) {
           this.$toast.add({
@@ -125,12 +126,22 @@ export default {
       }
     },
     getWorkPlanContentData() {
+      let isProtocolEvent = false;
+      if(this.plan?.plan_type?.code === Enum.WorkPlanTypes.Directors){
+        isProtocolEvent = true;
+      }
       let data = {
         work_plan_id: parseInt(this.data.work_plan_id),
-        is_report: false
+        is_report: false,
+        is_protocol_event: isProtocolEvent
       };
       this.planService.getWorkPlanData(data).then(res => {
-        this.file = this.b64toBlob(res.data);
+        if(this.plan?.plan_type?.code === Enum.WorkPlanTypes.Directors){
+          
+          this.file = this.b64toBlob(res.data.generate_byte);
+        }else{
+          this.file = this.b64toBlob(res.data);
+        }
       }).catch(error => {
         this.loading = false;
         if (error.response && error.response.status === 401) {

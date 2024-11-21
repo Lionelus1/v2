@@ -137,7 +137,6 @@ watch(SelectedEventParams, (newValue) => {
 
 function onCheckedChange(event) {
   selectAll.value = true
-  console.log('Checkbox checked state:', selectAll.value);
 }
 
 function handleCheckboxChange(event, node) {
