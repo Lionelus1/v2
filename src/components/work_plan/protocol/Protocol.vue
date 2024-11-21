@@ -632,6 +632,7 @@ const extractEditDisabled = ref(true)
 const revisionSetterFullName = ref(null)
 const responsivePerson = ref([])
 const boardDecisionSpeaker = ref([])
+const validatedAgendaFields = ref(true)
 
 const validation = ref({
   meeting_date: false,
@@ -652,7 +653,6 @@ const validation = ref({
   inner_rule: false,
 
 })
-
 
 const votingResults = ref({
   vote_aye: null,
@@ -726,30 +726,14 @@ const data = ref([{
 }]);
 
 const validateAgendas = () => {
-  let isValid = true;
   const eventsList = data.value[0].protocol_issues || [];
-
   eventsList.forEach((event) => {
-    const item = event.protocol_agenda;
-
-    if (item !== null) {
-      if (
-          item.agenda === null ||
-          item.board_decisions === null ||
-          item.inner_rule === null ||
-          item.speaker === null ||
-          item.voting_result === null
-      ) {
-        isValid = false;
+      if (event.protocol_agenda.agenda === null || event.protocol_agenda.agenda.length === 0 || event.protocol_agenda.agenda === "" || event.protocol_agenda.board_decisions === null || event.protocol_agenda.board_decisions.length === 0 || event.protocol_agenda.inner_rule === null || event.protocol_agenda.inner_rule.length === 0 || event.protocol_agenda.inner_rule === "" || event.protocol_agenda.speaker === null || event.protocol_agenda.speaker.length === 0 || event.protocol_agenda.speaker === '' || event.protocol_agenda.voting_result === null || event.protocol_agenda.voting_result.length === 0 || event.protocol_agenda.voting_result === "") {
+        validatedAgendaFields.value = false
       }
-    } else {
-      isValid = false;
-    }
   });
 
-  return isValid;
 };
-
 
 const addDecision = ref({
   board_decision: null,
@@ -815,7 +799,6 @@ const validateForm = () => {
   validation.value.vote_con = !data.value[0].voting_results.vote_con || Number(data.value[0].voting_results.vote_con) <= 0;
   validation.value.vote_abstained = !data.value[0].voting_results.vote_abstained || Number(data.value[0].voting_results.vote_abstained) <= 0;
   validation.value.vote_total_decisions = !data.value[0].voting_results.vote_total_decisions || Number(data.value[0].voting_results.vote_total_decisions) <= 0;
-
 
   return (
       !validation.value.meeting_date &&
@@ -1199,7 +1182,6 @@ const SendProtocolToApprove = async () => {
   if (protocolDocInfo?.value?.docType === Enum.DocType.WorkPlanProtocolExtract) {
     data.append("approval_user_secretary", JSON.stringify(approval_user_secretary.value));
   }
-  //data.append("approval_users", JSON.stringify(approval_users.value));
   try {
     const protocolFileBlob = b64toBlobPdf(pdfDocument.value, "application/pdf");
     if (protocolFileBlob instanceof Blob) {
@@ -1677,8 +1659,18 @@ const open = (name) => {
   visibility.value[name] = true;
 };
 
-const saveProtocolData = () => {
-  generatePdf();
+const saveProtocolData = async () => {
+  try {
+    generatePdf();
+  } catch (error) {
+    console.error('Error during protocol data save process:', error);
+    toast.add({
+      severity: 'warn',
+      summary: t('common.message.fillError'),
+      life: 3000,
+    });
+    return
+  }
 }
 
 const ExtractEditable = () => {
@@ -1705,19 +1697,28 @@ const onToggle = (event) => {
   isCollapsed.value = event.value;
 };
 
-const showSendToApproveDialog = () => {
-  if (!validateForm()) {
-    return
+const showSendToApproveDialog = async () => {
+  try {
+    await saveProtocolData()
+    validatedAgendaFields.value = true
+    if (!validateForm()) {
+      return
+    }
+    validateAgendas()
+    if (!validatedAgendaFields.value) {
+      toast.add({
+        severity: 'warn',
+        summary: t('common.message.fillError'),
+        life: 3000,
+      });
+      return
+    }
+    showSendToApproveModal.value = true;
+
+  }catch (error){
+    console.error('Failed to show send-to-approve dialog:', error);
   }
-  if (!validateAgendas()) {
-    toast.add({
-      severity: 'warn',
-      summary: t('common.message.fillError'),
-      life: 3000,
-    });
-    return
-  }
-  showSendToApproveModal.value = true;
+  
 }
 
 watch(
