@@ -668,6 +668,13 @@ const agendaVotingResults = ref({
   vote_total_decisions: null,
 });
 
+const parsedAgendaVotingResults = computed(() => ({
+  vote_aye: parseInt(agendaVotingResults.value.vote_aye, 10) || null,
+  vote_con: parseInt(agendaVotingResults.value.vote_con, 10) || null,
+  vote_abstained: parseInt(agendaVotingResults.value.vote_abstained, 10) || null,
+  vote_total_decisions: parseInt(agendaVotingResults.value.vote_total_decisions, 10) || null,
+}));
+
 const selectedAgenda = ref({
   agenda: null,
   speaker: [],
@@ -694,12 +701,6 @@ const docLang = computed(() => {
       return 1;
   }
 });
-const parsedAgendaVotingResults = computed(() => ({
-  vote_aye: parseInt(agendaVotingResults.value.vote_aye, 10) || null,
-  vote_con: parseInt(agendaVotingResults.value.vote_con, 10) || null,
-  vote_abstained: parseInt(agendaVotingResults.value.vote_abstained, 10) || null,
-  vote_total_decisions: parseInt(agendaVotingResults.value.vote_total_decisions, 10) || null,
-}));
 
 const parsedVotingResults = computed(() => ({
   vote_aye: parseInt(votingResults.value.vote_aye, 10) || null,
