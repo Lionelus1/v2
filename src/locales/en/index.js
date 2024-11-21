@@ -223,6 +223,8 @@ export default {
         paymentForm: 'Payment Form',
         downloadResume: 'Download resume',
         share:'Share',
+        myFinances: 'My finances',
+        finance:'Finance',
         states: {
             submitted: "Submitted",
             approved: "Approved",

@@ -223,6 +223,8 @@ export default {
         paymentForm: 'Форма оплаты',
         downloadResume: 'Скачать резюме',
         share:'Поделиться',
+        myFinances: 'Мои финансы',
+        finance:'Финансы',
         states: {
             submitted: "Подана",
             created: "создан",
@@ -383,7 +385,9 @@ export default {
         viewOnlyCheckbox: 'Показать в режиме просмотра',
         specialNeedsJobs: 'Вакансии для людей с особыми потребностями',
         availabilityForSpecialNeeds: 'Доступно для людей с особыми потребностями',
-        getDataError: "Ошибка при получении данных"
+        getDataError: "Ошибка при получении данных",
+        services: "Услуги",
+        amount: "Сумма"
     },
     positions: {
         menuTitle: 'Поменять позицию',

@@ -958,6 +958,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/myFinances',
+                name: 'MyFinances',
+                component: () => import('./components/MyFinances'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/integrations',
                 name: 'IntegrationList',
                 component: load('integration/IntegrationList'),

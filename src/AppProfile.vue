@@ -46,6 +46,11 @@
             <i :class="{active: activeItem === 'qr'}" class="pi pi-fw pi-qrcode"></i><span :class="{active: activeItem === 'qr'}" >{{ $t("common.qrGenerator") }}</span>
           </button>
         </li>
+        <li v-if="!this.findRole(null, 'student')">
+          <button @click="myFinances" class="p-link">
+            <i :class="{active: activeItem === 'myFinances'}" class="pi pi-wallet"></i><span :class="{active: activeItem === 'myFinances'}" >{{ $t("common.myFinances") }}</span>
+          </button>
+        </li>
         <li>
           <button @click="logOutFromSystem" class="p-link">
             <i class="pi pi-fw pi-power-off"></i><span>{{ $t("common.logout") }}</span>
@@ -124,6 +129,11 @@ export default {
       this.updateParentVariable('qr');
       localStorage.setItem('activeItem', 'qr');
       this.$router.push({path: "/qr"})
+    },
+    myFinances(){
+      this.updateParentVariable('myFinances');
+      localStorage.setItem('activeItem', 'myFinances');
+      this.$router.push({path: "/myFinances"})
     },
     changeRole() {
       this.$refs.positionChangeDialog.show();

@@ -224,6 +224,8 @@ export default {
         paymentForm: 'Төлем нысаны',
         downloadResume: 'Түйіндемені жүктеп алу',
         share:'Бөлісу',
+        myFinances: 'Менің қаржым',
+        finance:'Финансы',
         states: {
             submitted: "Берілген",
             created: "Құрылды",
