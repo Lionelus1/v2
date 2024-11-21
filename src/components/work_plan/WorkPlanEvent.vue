@@ -1026,7 +1026,7 @@ export default {
                 },
               },
             ];
-            this.getWorkPlanApprovalUsers(this.work_plan_id)
+            this.getWorkPlanApprovalUsersFunc(data)
           }
 
       }).catch(error => {
