@@ -619,7 +619,7 @@ export default {
         this.visible.apply = true
         this.candidate = res.data
       }).catch(err => {
-        if (err.status === 404) {
+        if (err.response.status === 404) {
           this.redirectToResume()
         }
       });
