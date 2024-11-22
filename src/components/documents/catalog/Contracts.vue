@@ -81,6 +81,9 @@
                   class="customer-badge status-status_revision" style="width: min-content">
               {{ $t('contracts.expired') }}
             </span>
+            <span v-if="havePracticeLeaderRequest(slotProps.data)" class="ml-1 customer-badge status-status_inapproval" style="width: min-content">
+              {{$t('contracts.practiceLeaderRequest')}}
+            </span>
           </div>
         </template>
       </Column>
