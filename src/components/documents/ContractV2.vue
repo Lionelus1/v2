@@ -235,6 +235,8 @@ import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import FindUser from "@/helpers/FindUser";
 import StepComponent from "@/components/ncasigner/ApprovalUsers/StepComponent";
 import Share from "@/components/Share.vue";
+import {DicService} from "@/service/dic.service";
+
 
 export default {
   name: 'ContractV2',
@@ -244,6 +246,7 @@ export default {
     return {
       apiDomain: apiDomain,
       service: new DocService(),
+      dicService: new DicService(),
       DocEnum: DocEnum,
       RolesEnum: RolesEnum,
       findRole: findRole,
@@ -453,6 +456,14 @@ export default {
               this.practiceLeaderRequest = true;
             }
           }
+        }
+
+        if (this.practiceLeaderRequest) {
+          this.dicService.checkStudentByManager({student_id: this.contract.creatorID}).subscribe(res => {
+            if (res.data !== true) {
+              this.practiceLeaderRequest = false;
+            }
+          })
         }
 
         this.getParams();
