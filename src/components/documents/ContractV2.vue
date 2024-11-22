@@ -310,7 +310,7 @@ export default {
         {
           label: this.$t("contracts.practiceLeader"),
           icon: "fa-solid fa-user-check",
-          visible: () => this.contract && this.practiceLeaderRequest && this.findRole(null, 'practice_responsible'),
+          visible: () => this.contract && this.practiceLeaderRequest,
           items: [
             {
               label: this.$t("common.action.accept"),
@@ -458,13 +458,7 @@ export default {
           }
         }
 
-        if (this.practiceLeaderRequest) {
-          this.dicService.checkStudentByManager({student_id: this.contract.creatorID}).subscribe(res => {
-            if (res.data !== true) {
-              this.practiceLeaderRequest = false;
-            }
-          })
-        }
+
 
         this.getParams();
 
@@ -504,6 +498,15 @@ export default {
               }
             }
           });
+        }
+
+        if (this.practiceLeaderRequest) {
+          this.dicService.checkStudentByManager({student_id: this.contract.creatorID}).then(res => {
+            if (res.data !== true) {
+              this.practiceLeaderRequest = false;
+            }
+          }).catch(_ => {
+          })
         }
 
         this.loading = false;
