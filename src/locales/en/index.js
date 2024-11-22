@@ -649,6 +649,7 @@ export default {
         contragentRequest: "In approval by counterparty",
         practiceLeaderRequest: "Upon approval from the practice manager",
         practiceLeader: "Practice manager",
+        practiceManagerCanceld: "Practice manager canceled",
         contragentMessage: "Use the link for counterparty consent",
         contragentWarning: "No counterparty consent has been requested for this contract or you do not have permission to view this document!",
         contragentAsEnt: "You accept this contract as an individual entrepreneur!",
