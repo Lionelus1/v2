@@ -543,7 +543,7 @@ const visibleSendToApprove = () => {
 }
 
 const visibleSendToApproveTB = () => {
-  return findRole(null, 'student') && !loading.value && loginedUser && (dReports.value && dReports.value[1].doc_info && (dReports.value[1].doc_info.docHistory.stateId === 1 ||
+  return !findRole(null, 'student') && !loading.value && loginedUser && (dReports.value && dReports.value[1].doc_info && (dReports.value[1].doc_info.docHistory.stateId === 1 ||
       dReports.value[1].doc_info.docHistory.stateId === 4));
 }
 
@@ -799,9 +799,7 @@ const openModal = async () => {
       }
     }
   ]
-  if(contrData.value){
-    approval_users.value[0].users.push(contrData.value);
-  }
+
 
   if(active.value === 0) {
     showModal0.value = true;
@@ -810,6 +808,9 @@ const openModal = async () => {
     showModal1.value = true;
   }
   else if(active.value === 2) {
+    if(contrData.value){
+      approval_users.value[0].users.push(contrData.value);
+    }
     showModal2.value = true;
   }
   else if(active.value === 3){

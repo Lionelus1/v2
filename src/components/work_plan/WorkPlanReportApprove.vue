@@ -2,7 +2,6 @@
   <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{ width: '50vw' }"
           class="p-fluid" @closed="closeModal"
           @hide="closeModal" :closeOnEscape="true">
-    {{stages}}
     <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
     <BlockUI :blocked="approving">
       <div class="field">
