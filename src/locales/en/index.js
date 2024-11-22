@@ -1403,6 +1403,8 @@ export default {
         report: {
             title: "Report",
             success: "Successfully generated!",
+            ReportDesigner: "Report Designer",
+            TypeReport: "Type of report",
         },
         doc: {
             upInOne: "(upload in one file)",
@@ -1427,6 +1429,13 @@ export default {
             paper: "On paper",
             financial: "Requires approval from the finance department",
         },
+    },
+    report: {
+        title: "Report",
+        success: "Successfully generated!",
+        ReportDesigner: "Report Designer",
+        TypeReport: "Type of report",
+        period: "Period",
     },
     workPlan: {
         plans: "Plans",
@@ -1497,9 +1506,6 @@ export default {
         modifiedPerson: "Modified",
         changeCreatedPerson: "Change creator",
         requiredCreatedPerson: "The creator field must be filled"
-    },
-    ReportDesigner: {
-        ReportDesigner: "Report Designer"
     },
     queue: {
         title: "Queue",

@@ -1,99 +1,108 @@
 <template>
   <div class="report-component">
-    <h3 class="title">{{ $t('reports.title') }}</h3>
+    <h3 class="title">{{ $t('report.ReportDesigner') }}</h3>
 
-    <!-- Фильтры -->
-    <div class="filters">
-      <!-- Категория -->
-      <div class="filter-item">
-        <Checkbox v-model="filters.category.enabled" />
-        <Dropdown
-            v-if="filters.category.enabled"
-            v-model="filters.category.value"
-            :options="reportCategories"
-            optionLabel="label"
-            placeholder="Выберите категорию"
-            class="dropdown"
-        />
-        <label>{{ $t('reports.category') }}</label>
+    <!-- Основные фильтры и дополнительные фильтры -->
+    <div class="filters-container">
+      <!-- Левая часть -->
+      <div class="filters-left">
+        <!-- Категория -->
+        <div class="filter-item">
+          <label>{{ $t('report.TypeReport') }}</label>
+          <Dropdown
+              v-if="true"
+              v-model="filters.category.value"
+              :options="reportCategories"
+              optionLabel="label"
+              placeholder="Выберите категорию"
+              class="dropdown"
+          />
+        </div>
+
+        <!-- Период -->
+        <div class="filter-item">
+          <label>{{ $t('report.period') }}</label>
+          <Calendar
+              v-model="filters.dateRange.from"
+              placeholder="Дата начала"
+              :showIcon="true"
+              :dateFormat="'dd.mm.yy'"
+              class="calendar"
+          />
+          <Calendar
+              v-model="filters.dateRange.to"
+              placeholder="Дата окончания"
+              :showIcon="true"
+              :dateFormat="'dd.mm.yy'"
+              class="calendar"
+          />
+        </div>
       </div>
 
-      <!-- Период -->
-      <div class="filter-item period">
-        <Calendar
-            v-model="filters.dateRange.from"
-            placeholder="Дата начала"
-            :showIcon="true"
-            :dateFormat="'dd.mm.yy'"
-            class="calendar"
-        />
-        <Calendar
-            v-model="filters.dateRange.to"
-            placeholder="Дата окончания"
-            :showIcon="true"
-            :dateFormat="'dd.mm.yy'"
-            class="calendar"
-        />
-      </div>
+      <!-- Правая часть -->
+      <div class="filters-right">
+        <div class="additional-filters">
+          <!-- Департамент/Группа -->
+          <div class="filter-item">
+            <label>{{ $t('reports.department') }}</label>
+            <div class="filter-controls">
+              <Checkbox v-model="filters.department.enabled" />
+              <Dropdown
+                  v-if="filters.department.enabled"
+                  v-model="filters.department.value"
+                  :options="departments"
+                  optionLabel="label"
+                  placeholder="Выберите департамент/группу"
+                  class="dropdown"
+              />
+            </div>
+          </div>
 
-      <!-- Кнопки -->
-      <div class="buttons">
-        <Button
-            :label="$t('reports.generate')"
-            icon="pi pi-file"
-            class="p-button-success generate-btn"
-            @click="generateReport"
-        />
-        <Button
-            :label="$t('reports.reset')"
-            icon="pi pi-refresh"
-            class="p-button-warning reset-btn"
-            @click="resetFilters"
-        />
+          <div class="filter-item">
+            <label>{{ $t('reports.status') }}</label>
+            <div class="filter-controls">
+              <Checkbox v-model="filters.status.enabled" />
+              <Dropdown
+                  v-if="filters.status.enabled"
+                  v-model="filters.status.value"
+                  :options="statuses"
+                  optionLabel="label"
+                  placeholder="Выберите статус"
+                  class="dropdown"
+              />
+            </div>
+          </div>
+
+          <div class="filter-item">
+            <label>{{ $t('reports.author') }}</label>
+            <div class="filter-controls">
+              <Checkbox v-model="filters.author.enabled" />
+              <InputText
+                  v-if="filters.author.enabled"
+                  v-model="filters.author.value"
+                  placeholder="Введите имя автора"
+                  class="input"
+              />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Дополнительные фильтры -->
-    <div class="additional-filters">
-      <!-- Департамент/Группа -->
-      <div class="filter-item">
-        <Checkbox v-model="filters.department.enabled" />
-        <Dropdown
-            v-if="filters.department.enabled"
-            v-model="filters.department.value"
-            :options="departments"
-            optionLabel="label"
-            placeholder="Выберите департамент/группу"
-            class="dropdown"
-        />
-        <label>{{ $t('reports.department') }}</label>
-      </div>
-
-      <!-- Статус -->
-      <div class="filter-item">
-        <Checkbox v-model="filters.status.enabled" />
-        <Dropdown
-            v-if="filters.status.enabled"
-            v-model="filters.status.value"
-            :options="statuses"
-            optionLabel="label"
-            placeholder="Выберите статус"
-            class="dropdown"
-        />
-        <label>{{ $t('reports.status') }}</label>
-      </div>
-
-      <!-- Автор -->
-      <div class="filter-item">
-        <Checkbox v-model="filters.author.enabled" />
-        <InputText
-            v-if="filters.author.enabled"
-            v-model="filters.author.value"
-            placeholder="Введите имя автора"
-            class="input"
-        />
-        <label>{{ $t('reports.author') }}</label>
-      </div>
+    <!-- Кнопки -->
+    <div class="buttons">
+      <Button
+          :label="$t('reports.generate')"
+          icon="pi pi-file"
+          class="p-button-success generate-btn"
+          @click="generateReport"
+      />
+      <Button
+          :label="$t('reports.reset')"
+          icon="pi pi-refresh"
+          class="p-button-warning reset-btn"
+          @click="resetFilters"
+      />
     </div>
 
     <!-- Таблица с результатами -->
@@ -127,6 +136,7 @@
     </div>
   </div>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from 'vue';
@@ -250,32 +260,50 @@ onMounted(() => {
   color: #333;
 }
 
-.filters {
+.filters-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.filters-left,
+.filters-right {
+  flex: 1;
 }
 
 .filter-item {
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.filter-controls {
+  display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 10px; /* Расстояние между Checkbox и Dropdown */
 }
 
 .filter-item label {
   font-size: 14px;
+  font-weight: bold;
   color: #555;
 }
 
 .buttons {
-  display: flex;
-  gap: 10px;
+  margin-top: 20px;
+  text-align: right;
+}
+
+.buttons .p-button {
+  margin-left: 10px;
 }
 
 .dropdown {
-  width: 200px;
+  width: 100px;
+  flex: 1;
+}
+
+.input {
+  flex: 1;
 }
 
 .calendar {
@@ -283,7 +311,6 @@ onMounted(() => {
 }
 
 .additional-filters {
-  margin-top: 20px;
   padding: 15px;
   background-color: #fff;
   border-radius: 8px;
@@ -305,17 +332,7 @@ onMounted(() => {
 
 .generate-btn:hover,
 .reset-btn:hover {
-  background-color: #0056b3;
   transform: translateY(-2px);
 }
-
-.p-button-success {
-  background-color: #28a745;
-  border-color: #28a745;
-}
-
-.p-button-warning {
-  background-color: #ffc107;
-  border-color: #ffc107;
-}
 </style>
+

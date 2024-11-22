@@ -1420,7 +1420,9 @@ export default {
         },
         report: {
             title: 'Есеп алу',
-            success: 'Сәтті құрылды!'
+            success: 'Сәтті құрылды!',
+            ReportDesigner: "Есеп Құрастырушы",
+            TypeReport: "Есеп түрі",
         },
         doc: {
             upInOne: '(бір файлда жүктеу)',
@@ -1445,6 +1447,13 @@ export default {
             paper: 'Қағаз бетінде',
             financial: "Қаржы департаментінің келісімін қажет етеді",
         }
+    },
+    report: {
+        title: 'Есеп алу',
+        success: 'Сәтті құрылды!',
+        ReportDesigner: "Есеп Құрастырушы",
+        TypeReport: "Есеп түрі",
+        period: "Период",
     },
     workPlan: {
         plans: "Жоспарлар",
@@ -2124,9 +2133,6 @@ export default {
             applicationObjectives: 'Өтінімнің мақсаттары',
             enteredIncorrectly: 'Қате енгіздіңіз'
         }
-    },
-    ReportDesigner: {
-        ReportDesigner: "Есеп Құрастырушы"
     },
     hikvision: {
         reportDeleted: 'Есеп сәтті жойылды',

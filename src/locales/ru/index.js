@@ -1413,7 +1413,9 @@ export default {
         },
         report: {
             title: 'Отчет',
-            success: 'Успешно сформирован!'
+            success: 'Успешно сформирован!',
+            ReportDesigner: "Конструктор отчетов",
+            TypeReport: "Тип отчета",
         },
         doc: {
             upInOne: '(загрузить в одном файле)',
@@ -1438,6 +1440,13 @@ export default {
             paper: 'На бумаге',
             financial: "Требует согласования департамента финансов",
         }
+    },
+    report: {
+        title: 'Отчет',
+        success: 'Успешно сформирован!',
+        ReportDesigner: "Конструктор отчетов",
+        TypeReport: "Тип отчета",
+        period: "Период",
     },
     workPlan: {
         plans: "Планы",
@@ -1508,9 +1517,6 @@ export default {
         modifiedPerson: "Изменить",
         changeCreatedPerson: "Изменить созданное лицо",
         requiredCreatedPerson: "Поле созданное лицо должно быть заполнено"
-    },
-    ReportDesigner: {
-        ReportDesigner: "Конструктор отчетов"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
