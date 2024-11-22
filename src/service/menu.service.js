@@ -342,6 +342,11 @@ export class MenuService {
                         icon: 'fa-solid fa-file-signature',
                         to: '/hikvision',
 
+                    },
+                    {
+                        label: $t('ReportDesigner.ReportDesigner'),
+                        icon: '',
+                        to: '/reports',
                     }
                 ]
             },

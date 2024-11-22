@@ -1498,6 +1498,9 @@ export default {
         changeCreatedPerson: "Change creator",
         requiredCreatedPerson: "The creator field must be filled"
     },
+    ReportDesigner: {
+        ReportDesigner: "Report Designer"
+    },
     queue: {
         title: "Queue",
         secretary: "Maintenance",

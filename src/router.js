@@ -704,7 +704,13 @@ const routes = [
                 meta: { roles: ['personal'] },
                 beforeEnter: ifUserRoles,
             },
-
+            {
+                path: '/reports',
+                name: 'ReportsTemplate',
+                component: load('reports/Reports'),
+                meta: { roles: ['personal'] },
+                beforeEnter: ifUserRoles,
+            },
             {
                 path: '/helpdesk/v2',
                 name: 'HelpDeskComponent',

@@ -1509,6 +1509,9 @@ export default {
         changeCreatedPerson: "Изменить созданное лицо",
         requiredCreatedPerson: "Поле созданное лицо должно быть заполнено"
     },
+    ReportDesigner: {
+        ReportDesigner: "Конструктор отчетов"
+    },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
         forme: "Относительно меня",

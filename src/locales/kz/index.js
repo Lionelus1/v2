@@ -2125,6 +2125,9 @@ export default {
             enteredIncorrectly: 'Қате енгіздіңіз'
         }
     },
+    ReportDesigner: {
+        ReportDesigner: "Есеп Құрастырушы"
+    },
     hikvision: {
         reportDeleted: 'Есеп сәтті жойылды',
         employeeName: 'Қызметкер',
