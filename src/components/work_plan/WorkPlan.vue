@@ -133,6 +133,7 @@ export default {
       currentWorkPlanId: 0,
       loading: false,
       isAdmin: false,
+      isPlanCreator: false,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       planService: new WorkPlanService(),
       lazyParams: {
@@ -242,8 +243,8 @@ export default {
           {
             label: this.$t('workPlan.changeCreatedPerson'),
             icon: 'fa-solid fa-pen',
-            disabled: !(this.isAdmin && this.isPlanApproved),
-            visible: this.isAdmin && !this.isSciencePlan(data),
+            disabled: !((this.loginedUserId === data?.doc_info?.creatorID) && this.isPlanApproved),
+            visible: (this.loginedUserId === data?.doc_info?.creatorID) && !this.isSciencePlan(data),
             command: () => {
               this.changeCreator = true
             }
@@ -287,7 +288,7 @@ export default {
     findRole: findRole,
     formatDate: formatDate,
     isSciencePlan(data) {
-      return data && data.plan_type && data.plan_type.code === WPEnum.WorkPlanTypes.Science
+      return data?.plan_type?.code === WPEnum.WorkPlanTypes.Science
     },
     closeCreatorChangeDialog() {
       this.planCreator = [];
