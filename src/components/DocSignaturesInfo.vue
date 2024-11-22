@@ -123,13 +123,14 @@
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.protocol')" v-if="showProtocol">
-        <Files class="mb-3" v-if="canUploadProtocol && this.docInfo?.docHistory?.stateId !== Enum.APPROVED.ID" folder="workplan" :fileID="docInfo?.id"
+        <Files class="mb-3" v-if="canUploadProtocol && this.docInfo?.docHistory?.stateId !== Enum.APPROVED.ID"
+               folder="workplan" :fileID="docInfo?.id"
                fileType="image/*, .pdf, .doc, .docx, .txt" @uploaded="fileUploaded" simple-upload="true"></Files>
         <div v-for="item in relatedFile" :key="item.id" class="mb-3">
           <p class="mb-1">{{ item.name }}</p>
           <Button
               :label="$t('workPlan.downloadProtocol')" icon="pi pi-download"
-              @click="downloadProtocol(item.filePath)" class="p-button"/>
+              @click="downloadProtocol(item.filePath, item.name)" class="p-button"/>
         </div>
       </TabPanel>
     </TabView>
@@ -285,25 +286,29 @@ export default {
             this.uploading = false;
           });
     },
-    downloadProtocol(filePath) {
-      if (!filePath) {
-        this.$toast.add({
-          severity: 'info',
-          summary: this.$t('common.noData'),
-          life: 3000,
-        });
-        return;
-      }
-
-      filePath = smartEnuApi + fileRoute + filePath;
-
-      const link = document.createElement('a');
-      link.href = filePath;
-      link.setAttribute('download', filePath);
-      link.setAttribute('target', '_blank');
-      link.download = filePath;
-      link.click();
-      URL.revokeObjectURL(link.href);
+    downloadProtocol(file, filename) {
+      let url = `${smartEnuApi}/serve?path=${file}`
+      this.service.downloadFile(url).then(response => {
+        const blob = response.data;
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename
+        document.body.appendChild(a)
+        a.click();
+        a.remove();
+        this.isBlockUI = false;
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
     },
 
     findRole: findRole,

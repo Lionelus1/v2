@@ -105,4 +105,7 @@ export class DocService {
     getAdditionalInfo(id){
         return api.get(`/doc/info/${id}`, {headers: getHeader()});
     }
+    downloadFile(url){
+        return api.get(url, {headers: getHeader(), responseType: 'blob'});
+    }
 }
