@@ -84,18 +84,25 @@
     <OverlayPanel ref="global-filter">
       <div class="p-fluid">
         <div class="field" style="width: 320px">
-          <Dropdown class="lang p-link mb-2" v-model="filter.plan_type" :options="types"
-                    :optionLabel="['name_' + $i18n.locale]" optionValue="id" :placeholder="$t('workPlan.planType')"
-                    />
-          <InputText type="search"
-                     class="search_toolbar mb-2"
-                     v-model="filter.searchText"
-                     :placeholder="$t('common.search')"/>
-          <FindUser v-model="userNameSearch" :max="1" :user-type="3" :editMode="false" class="mb-2"
-                    :placeholder="$t('common.searchByUsername')"/>
-          <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
-          <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter()"
-                  :label="$t('common.clear')"/>
+         <div class="field">
+           <label>{{ $t('workPlan.planType') }}</label>
+           <Dropdown class="lang p-link mb-2" v-model="filter.plan_type" :options="types"
+                     :optionLabel="['name_' + $i18n.locale]" optionValue="id" :placeholder="$t('workPlan.planType')"
+           />
+         </div>
+          <div class="field">
+            <label>{{ $t('common.search') }}</label>
+            <InputText type="search" class="search_toolbar mb-2" v-model="filter.searchText" :placeholder="$t('common.search')"/>
+          </div>
+          <div class="field">
+            <label>{{ $t('hikvision.author') }}</label>
+            <FindUser v-model="userNameSearch" :max="1" :user-type="3" :editMode="false" class="mb-2" :placeholder="$t('hikvision.author')"/>
+          </div>
+          <div class="field">
+            <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
+            <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter()"
+                    :label="$t('common.clear')"/>
+          </div>
         </div>
       </div>
     </OverlayPanel>
