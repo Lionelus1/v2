@@ -960,6 +960,7 @@ export default {
           {
             label: this.$t('common.show'),
             icon: "fa-solid fa-eye",
+            visible: data.filePath?true: false,
             command: () => {this.currentDocument=data;this.open('documentInfoSidebar')},
           },
           {

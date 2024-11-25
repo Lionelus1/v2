@@ -1,4 +1,5 @@
 <template>
+  <template v-if="visibleCount > 0">
   <template v-if="!visible && actionList.length > 1">
     <Button class="p-button-outlined p-button-sm" type="button" v-tooltip.bottom="showTooltip ? $t('web.actionID'): ''"
             :label="showLabel ? $t('web.actionID') : ''"
@@ -12,6 +13,7 @@
           <i :class="[i.icon, 'fa-xl']"></i>
         </Button>
       </template>
+    </template>
     </template>
 </template>
 
