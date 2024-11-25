@@ -30,13 +30,13 @@
           <embed :src="item" style="width: 100%; height: 1000px" v-if="files.length > 0" type="application/pdf" />
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
-      && docInfo.docType === Enum.DocType.Contract" :header="$t('ncasigner.sign')">
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && (docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
+      && docInfo.docType === Enum.DocType.Contract) || checkingNoSignature()" :header="$t('ncasigner.sign')">
         <div class="flex justify-content-center">
           <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve" :label="$t('common.action.approve')" :loading="loading" :disabled="hideDocApprove" />
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && !checkingNoSignature() &&  !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
       && docInfo.docType === Enum.DocType.Contract) || docInfo && docInfo.docHistory.stateId == 6" :disabled="hideDocSign" :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel v-if="!$isMobile">
@@ -858,38 +858,22 @@ export default {
       }
       return false
     },
-    changeApprovals() {
-      if (this.currentApprovalUsers.length < 1) {
-        return
+    checkingNoSignature() {
+      const userId = this.loginedUserId;
+
+      if (!this.approvalStages || this.approvalStages.length === 0) {
+        return false;
       }
 
-      let users = [];
-      for (let i = 0; i < this.currentApprovalUsers.length; i++) {
-        users.push(this.currentApprovalUsers[i].userID)
-      }
+      return this.approvalStages.some(stage => {
+        const users = Array.from(stage.users || []);
+        const usersApproved = Array.from(stage.usersApproved || []);
 
-      this.loading = true;
-
-      this.service.changeCurrentStageApprovals({
-        uuid: this.docInfo.uuid,
-        stage: this.currentApprovalStage,
-        users: users,
-      }).then(res => {
-        this.loading = false;
-
-        location.reload();
-      }).catch(err => {
-        this.loading = false;
-
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath));
-        } else {
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-        }
+        return users.some(user => user.userID === userId) &&
+            stage.certificate?.value === "no_signature" &&
+            usersApproved.includes(0);
       });
-    },
+    }
   }
 }
 </script>
