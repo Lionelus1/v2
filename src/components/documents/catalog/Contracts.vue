@@ -93,7 +93,7 @@
       <Column style="min-width: 50px;">
         <template #body="slotProps">
           <div class="flex flex-wrap">
-            <ActionButton :show-label="true" :items="actions" @toggle="toggleActions(slotProps.data)" />
+            <ActionButton :show-label="true" :items="actions(slotProps.data)" @toggle="toggleActions(slotProps.data)" />
           </div>
         </template>
       </Column>
@@ -955,19 +955,20 @@ export default {
     },
 
     actions () {
-      return [
-        {
-          label: this.$t('common.show'),
-          icon: "fa-solid fa-eye",
-          command: () => {this.currentDocument=this.actionsNode;this.open('documentInfoSidebar')},
-        },
-        {
-          label: this.$t('common.delete'),
-          icon: "fa-solid fa-trash",
-          visible: (this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.CREATED.ID ||this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === this.actionsNode.creatorID,
-          command: () => {this.currentDocument=this.actionsNode;this.deleteFile()},
-        }
-      ]
+      return (data) => {
+        return [
+          {
+            label: this.$t('common.show'),
+            icon: "fa-solid fa-eye",
+            command: () => {this.currentDocument=data;this.open('documentInfoSidebar')},
+          },
+          {
+            label: this.$t('common.delete'),
+            icon: "fa-solid fa-trash",
+            visible: (data.docHistory && data.docHistory.stateId === Enum.CREATED.ID ||data.docHistory && data.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === data.creatorID,
+            command: () => {this.currentDocument=data;this.deleteFile()},
+          }
+        ]}
     },
   }
 }
