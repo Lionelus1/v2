@@ -81,6 +81,12 @@
                   class="customer-badge status-status_revision" style="width: min-content">
               {{ $t('contracts.expired') }}
             </span>
+            <span v-if="havePracticeLeaderRequest(slotProps.data)" class="ml-1 customer-badge status-status_inapproval" style="width: min-content">
+              {{$t('contracts.practiceLeaderRequest')}}
+            </span>
+            <span v-if="havePracticeLeaderRequestCancel(slotProps.data)" class="customer-badge status-status_revision" style="width: min-content">
+              {{$t('contracts.practiceManagerCanceld')}}
+            </span>
           </div>
         </template>
       </Column>
@@ -631,6 +637,18 @@ export default {
         for (let i = 0; i < contract.requests.length; i++) {
           if (contract.requests[i].type === this.Enum.DocumentRequestType.PracticeLeaderRequest &&
               contract.requests[i].status === 0) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
+    havePracticeLeaderRequestCancel(contract) {
+      if (contract.requests) {
+        for (let i = 0; i < contract.requests.length; i++) {
+          if (contract.requests[i].type === this.Enum.DocumentRequestType.PracticeLeaderRequest &&
+              contract.requests[i].status === 2) {
             return true;
           }
         }

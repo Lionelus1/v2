@@ -176,6 +176,7 @@ export default {
         voting: "Голосование",
         votedFor: "Проголосовали за: {result}",
         search: "Поиск",
+        searchByUsername: "Поиск по имени пользователя",
         send: "Отправить",
         sendToResponsible: "Отправить ответственному",
         showingRecordsCount: ' Показаны записи с {first} по {last} из  {totalRecords}',
@@ -640,6 +641,7 @@ export default {
         contragentRequest: "На согласовании у контрагента",
         practiceLeaderRequest: "На согласовании у руководителя практики",
         practiceLeader: "Руководитель практики",
+        practiceManagerCanceld: "Руководитель стажировки отменен",
         contragentMessage: "Используйте ссылку для получения согласия контрагента",
         contragentWarning: "Для этого контракта не запрашивалось согласие контрагента или у вас нет разрешения на просмотр этого документа!",
         contragentAsEnt: "Вы принимаете данный договор как индивидуальный предприниматель!",
@@ -2107,6 +2109,7 @@ export default {
         },
     },
     hikvision: {
+        reportDeleted: 'Отчет успешно удален',
         employeeName: 'Имя сотрудника',
         employeeEntryExitReport: 'Отчет по входу и выходу сотрудников в корпус',
         generateReport: 'Сформировать отчет',

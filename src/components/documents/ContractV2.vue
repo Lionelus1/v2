@@ -235,6 +235,8 @@ import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import FindUser from "@/helpers/FindUser";
 import StepComponent from "@/components/ncasigner/ApprovalUsers/StepComponent";
 import Share from "@/components/Share.vue";
+import {DicService} from "@/service/dic.service";
+
 
 export default {
   name: 'ContractV2',
@@ -244,6 +246,7 @@ export default {
     return {
       apiDomain: apiDomain,
       service: new DocService(),
+      dicService: new DicService(),
       DocEnum: DocEnum,
       RolesEnum: RolesEnum,
       findRole: findRole,
@@ -307,7 +310,7 @@ export default {
         {
           label: this.$t("contracts.practiceLeader"),
           icon: "fa-solid fa-user-check",
-          visible: () => this.contract && this.practiceLeaderRequest && this.findRole(null, 'practice_responsible'),
+          visible: () => this.contract && this.practiceLeaderRequest,
           items: [
             {
               label: this.$t("common.action.accept"),
@@ -455,6 +458,8 @@ export default {
           }
         }
 
+
+
         this.getParams();
 
         if (this.contract.sourceType === this.DocEnum.DocSourceType.FilledDoc && (!this.contract.approvalStages ||
@@ -493,6 +498,15 @@ export default {
               }
             }
           });
+        }
+
+        if (this.practiceLeaderRequest) {
+          this.dicService.checkStudentByManager({student_id: this.contract.creatorID}).then(res => {
+            if (res.data !== true) {
+              this.practiceLeaderRequest = false;
+            }
+          }).catch(_ => {
+          })
         }
 
         this.loading = false;

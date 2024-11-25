@@ -207,7 +207,6 @@ export class MenuService {
                 label: $t('workPlan.plans'),
                 icon: 'fa-solid fa-list-check',
                 to: '/work-plan',
-                visible: !this.findRole("student")
             },
             {
                 label: $t('common.forStudentsAndGraduates'),

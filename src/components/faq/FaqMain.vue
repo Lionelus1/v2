@@ -633,17 +633,6 @@ export default {
                 this.forwardDepartmentList.push(res)
               }
             })
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-            }
           });
     },
     createFaq() {
@@ -670,17 +659,6 @@ export default {
             this.hideDialog();
             this.getData();
           })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-            }
-          });
     },
     getUserType() {
       api
@@ -718,13 +696,6 @@ export default {
             link.download = fileName;
             link.click();
             URL.revokeObjectURL(link.href);
-          })
-          .catch((error) => {
-            this.$toast.add({
-              severity: "error",
-              summary: "downloadFileError:\n" + error,
-              life: 3000,
-            });
           });
     },
     addAnswer() {
@@ -740,17 +711,6 @@ export default {
           .then((response) => {
             this.answerDialog = false;
             this.getData();
-          })
-          .catch((error) => {
-            if (error.response.status === 401) {
-              this.$store.dispatch("logLout")
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-            }
           });
     },
     forwardFaq() {

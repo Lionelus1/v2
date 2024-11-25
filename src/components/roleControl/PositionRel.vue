@@ -196,16 +196,6 @@
                 headers: getHeader()
             }).then(res => {
                 positions.value = res.data
-            }).catch(err => {
-                if (err.response.status == 401) {
-                    this.$store.dispatch("logLout")
-                }
-
-                this.$toast.add({
-                    severity: "error",
-                    detail: this.$t("roleControl.failedToLoad"),
-                    life: 3000,
-                })
             })
     }
 
@@ -234,15 +224,6 @@
     const getOrganizations = () => {
       roleControlService.getOrganizations(orgParams).then(response => {
         organizations.value = response.data
-      }).catch(error => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout")
-        }
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        })
       })
     }
 
@@ -306,17 +287,6 @@
             headers: getHeader()
         }).then(res => {
             closeSidebar()
-        }).catch(err => {
-            if (err.response.status == 401) {
-               this.$store.dispatch("logLout")
-            }
-            
-            this.$toast.add({
-                severity: "error",
-                detail: this.$t("common.message.saveError"),
-                life: 3000,
-            })
-  
         })
         closeSidebar()
         loading.value = false
@@ -350,17 +320,7 @@
         }).then(_ => {
             deleteView.value = false
             initPositionRels()
-        }).catch(err => {
-            if (err.response.status == 401) {
-                this.$store.dispatch("logLout")
-            }
-            
-            this.$toast.add({
-                severity: "error",
-                detail: this.$t("roleControl.failedToDelete"),
-                life: 3000,
-            })
-
+        }).catch(_ => {
             deleteView.value = false
             loading.value = false
         })

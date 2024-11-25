@@ -176,6 +176,7 @@ export default {
         votedFor: "{result} үшін дауыс берілді",
         reserve: "Резервтеу",
         search: "Іздеу",
+        searchByUsername: "Пайдаланушы аты бойынша іздеу",
         send: "Жіберу",
         sendToResponsible: "Жауапты адамға жіберу",
         showingRecordsCount: "{totalRecords} жазбаның {first} - {last} аралығындағы жазбалар көрсетулі",
@@ -639,6 +640,7 @@ export default {
         contragentRequest: "Контрагентте келісуде",
         practiceLeaderRequest: "Практика жетекшісінде келісуде",
         practiceLeader: "Практика жетекшісі",
+        practiceManagerCanceld: "Практика жетекшісі қабылдаған жоқ",
         contragentMessage: "Сілтемені контрагент келісім беру үшін пайдаланыңыз",
         contragentWarning: "Бұл келісім-шартқа контрагент келісімі сұратылмаған немесе сіздің бұл құжатты көруге рұқсатыңыз жоқ!",
         contragentAsEnt: "Бұл келісім-шартты Сіз жеке кәсіпкер ретінде қабылдайсыз!",
@@ -2127,6 +2129,7 @@ export default {
         }
     },
     hikvision: {
+        reportDeleted: 'Есеп сәтті жойылды',
         employeeName: 'Қызметкер',
         generate: 'Отчет генерациялау',
         employeeEntryExitReport: 'Қызметкерлердің ғимаратқа кіру және шығуы туралы есеп',
@@ -2178,26 +2181,15 @@ export default {
         title: 'Чат-бот Е-куратор',
 
         question: 'Сұрақтар',
-
         anwers: 'Жауаптар',
-
         author: 'Сұрақтың авторы',
-
         questionkz: 'Cұрақты қазақша еңгізіңіз',
-
         questionen: 'Cұрақты ағылшынша еңгізіңіз',
-
         questionru: 'Cұрақты орысша еңгізіңіз',
-
         anwerskz: 'Жауапты қазақша еңгізіңіз',
-
         anwersen: 'Жауапты ағылшынша еңгізіңіз',
-
         anwersru: 'Жауапты орысша еңгізіңіз',
-
-        crAndUpdEdu: 'Сұрақ-Жауап құру және өзгерту'
-
-
+        crAndUpdEdu: 'Сұрақ-Жауап құру және өзгерту',
     },
     status_resume: "Түйіндемені толтыру статусы",
     people_special_needs: "Ерекше қажеттіліктері бар адамдар"

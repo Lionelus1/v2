@@ -227,8 +227,6 @@
       getCourseHistories();
     }).catch(error => {
       loading.value = false
-      toast.add({severity: "error", summary: error, life: 3000});
-
     });
   }
 

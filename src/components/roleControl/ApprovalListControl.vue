@@ -204,9 +204,6 @@ export default {
         this.approvalList = res.data;
         this.wait = false
       }).catch(err => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        }
         this.wait = false
       });
     },
@@ -268,16 +265,6 @@ export default {
         this.wait = false
         this.close('users')
       }).catch(err => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        }
-        
-        this.$toast.add({
-          severity: "error",
-          detail: this.$t("common.message.saveError"),
-          life: 3000,
-        })
-
         this.wait = false
       });
     },
@@ -304,16 +291,6 @@ export default {
         this.wait = false
         this.close('create')
       }).catch(err => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        }
-        
-        this.$toast.add({
-          severity: "error",
-          detail: this.$t("common.message.saveError"),
-          life: 3000,
-        })
-
         this.wait = false
       });
     },
@@ -344,17 +321,8 @@ export default {
         this.wait = false
         this.close('edit')
       }).catch(err => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout")
-        }
-        
-        this.$toast.add({
-          severity: "error",
-          detail: this.$t("common.message.saveError"),
-          life: 3000,
-        })
 
-        this.wait = false
+        this.wait = fase
       });
     },
     infoChanged() {

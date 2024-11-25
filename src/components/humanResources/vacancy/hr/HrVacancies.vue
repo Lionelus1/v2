@@ -618,7 +618,10 @@ export default {
           {}, {headers: getHeader()}).then(res => {
         this.visible.apply = true
         this.candidate = res.data
-      }).catch(_ => {
+      }).catch(err => {
+        if (err.response.status === 404) {
+          this.redirectToResume()
+        }
       });
     },
 

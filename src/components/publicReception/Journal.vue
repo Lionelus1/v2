@@ -224,16 +224,6 @@ export default {
         this.data = response.data.items;
         this.total = response.data.total;
         this.loading = false;
-      }).catch((error) => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       });
     },
     sendToResponsible() {
@@ -266,15 +256,6 @@ export default {
         });
       }).catch((error) => {
         this.loading = false;
-        if (error.response && error.response.status === 405) {
-          {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("common.message.notAllowed"),
-              life: 3000,
-            });
-          }
-        }
       });
     },
     downloadFile(filePath) {
@@ -322,11 +303,6 @@ export default {
         this.getData()
         this.loading = false
       }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: "downloadFileError:\n" + error,
-          life: 3000,
-        });
         this.loading = false;
       });
       this.deleteVisible = false;

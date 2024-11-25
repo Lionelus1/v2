@@ -536,7 +536,6 @@ export default {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
-      }).catch((_) => {
       });
     },
 

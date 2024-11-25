@@ -273,8 +273,6 @@
                       this.service.deleteModule(id).then(res => {
                           this.getModuleByCourseID();
                           this.$toast.add({severity: "success", summary: this.$t("common.success"), life: 3000});
-                      }).catch(error => {
-                          this.$toast.add({severity: "error", summary: this.$t("common.message.saveError"), life: 3000});
                       })
                   }
               });

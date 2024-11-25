@@ -466,7 +466,6 @@ export default {
           },
           {headers: getHeader()}).then((response) => {
         this.vacancy = response.data;
-      }).catch((_) => {
       });
     },
     getCatalog() {

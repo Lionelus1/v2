@@ -132,7 +132,6 @@
       getStudentCertificates() {
           this.loading = true
           this.service.getStudentCertificates().then(_ => {
-          }).catch(_ =>{
           })
           .finally(()=> {
             this.getJournal()

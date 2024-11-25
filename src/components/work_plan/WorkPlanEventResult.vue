@@ -1,7 +1,4 @@
 <template>
-  <div v-if="!plan || resultData === ''" class="spinner-container">
-    <ProgressSpinner class="progress-spinner" style="width: 50px; height: 50px"/>
-  </div>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <div class="col-12" v-if="plan && event">
@@ -812,7 +809,7 @@ export default {
           this.fact = this.resultData.fact;
           this.resultData.forEach(e => {
             if (e.plan_event_result_history && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))) {
-              this.hasResultToApprove = !this.isPlanCreator && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))
+              this.hasResultToApprove = !this.isPlanCreator && e.plan_event_result_history.some(x => (x.modi_user_id === this.loginedUserId && (x.state_id === 5 || x.state_id === 6)))
             }
           })
         }else if(res.data === null){

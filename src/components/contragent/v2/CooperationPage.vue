@@ -322,10 +322,6 @@ function createNewSubject() {
       subjectDialog.value = false
       getCoopertationSubjects()
     })
-    .catch((error) => {
-      showMessage('error', t('common.message.errorSaving'), null);
-    });
-
 }
 
 function validateSubject() {
@@ -385,9 +381,6 @@ function getCoopertationSubjects() {
       .then((response) => {
         cooperationSubjects.value = response.data.subjects;
       })
-      .catch((error) => {
-        toast.add({severity: "error", summary: t('common.getDataError'), life: 3000});
-      });
 }
 
 function handleClose() {
