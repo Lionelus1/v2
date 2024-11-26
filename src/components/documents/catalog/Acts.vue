@@ -666,17 +666,17 @@ export default {
               this.downloadAttachments()
             },
           },
-          // {
-          //   label: this.$t('common.delete'),
-          //   icon: "fa-solid fa-trash",
-          //   visible: (this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.CREATED.ID ||
-          //       this.actionsNode.docHistory?.stateId === Enum.REVISION.ID || this.actionsNode.docHistory?.stateId === Enum.INAPPROVAL.ID) &&
-          //       this.loginedUser.userID === this.actionsNode.creatorID,
-          //   command: () => {
-          //     this.currentDocument = this.actionsNode;
-          //     this.deleteFile()
-          //   },
-          // }
+          {
+            label: this.$t('common.delete'),
+            icon: "fa-solid fa-trash",
+            visible: (data.docHistory && data.docHistory?.stateId === Enum.CREATED.ID ||
+                data.docHistory?.stateId === Enum.REVISION.ID || data.docHistory?.stateId === Enum.INAPPROVAL.ID) &&
+                this.loginedUser.userID === data.creatorID,
+            command: () => {
+              this.currentDocument = data;
+              this.deleteFile()
+            },
+          }
         ]}
     },
   }
