@@ -44,7 +44,7 @@
             </div>
             <div class="p-fluid mt-4 block mb-2">
               <label for="number" class="block mb-1">{{ $t('common.number') }}</label>
-              <InputText id="number" class="mt-2" v-model="protocolNumber" :disabled="true"
+              <InputText id="number" class="mt-2" v-model="data[0].protocol_number" :disabled="true"
                          :placeholder="$t('workPlan.protocol.autogenerate')"/>
             </div>
             <div class="p-fluid mt-3">
@@ -55,6 +55,7 @@
             <div class="p-fluid mt-3">
               <label for="meetingTime" class="block mb-1">{{ $t('workPlan.protocol.meetingTime') }}</label>
               <PrimeCalendar v-model="data[0].meeting_date" showIcon :showOnFocus="false" inputId="buttondisplay"
+                             dateFormat="mm-dd-yy"
                              showTime hourFormat="24" :disabled="isInApprove || isApproved"/>
               <small class="p-error" v-if="validation.meeting_date">{{ $t("common.requiredField") }}</small>
             </div>
@@ -62,7 +63,9 @@
               <label for="meetingPlace" class="block mb-1">{{ $t('workPlan.protocol.meetingPlace') }}{{ "*" }}</label>
               <Textarea id="meetingPlace" v-model="data[0].meeting_place" class="mt-2" rows="3"
                         :disabled="isInApprove || isApproved"/>
-              <small class="p-error" v-if="validation.meeting_venue">{{ $t("common.requiredField") }}</small>
+              <small class="p-error" v-if="validation.meeting_venue && data[0].meeting_place.length <= 0">{{
+                  $t("common.requiredField")
+                }}</small>
 
             </div>
             <div class="p-fluid mt-3">
@@ -91,7 +94,6 @@
                   <p v-if="data[0]?.absent_members?.length > 0" class="m-0">
                     <DataTable :lazy="true" :value="data[0]?.absent_members" :dataKey="'member.userID'"
                                :loading="loading" responsiveLayout="scroll">
-                      <Column header="#"></Column>
                       <Column :header="$t('common.fullName')">
                         <template #body="{ data }">
                           {{ data?.member && data.member?.full_name }}
@@ -124,9 +126,11 @@
                       @click="addAbsentMember" :disabled="isInApprove || isApproved"></Button>
             </div>
             <div class="p-fluid mt-3">
-              <label for="quorumInfo" class="block mb-1">{{ $t('workPlan.protocol.quorumInfo') }}</label>
-              <Textarea id="quorumInfo" v-model="data[0].quorum_info" class="mt-2" rows="3"
-                        :disabled="isInApprove || isApproved"/>
+              <label for="quorumInfo" class="block mb-1 mt-1">{{ $t('workPlan.protocol.quorumInfo') }}</label>
+              <Dropdown v-model="data[0].quorum_info" :options="localizedQuorumData" optionLabel="label"
+                        optionValue="value" :placeholder="$t('common.select')" class=""/>
+              <!-- <Textarea id="quorumInfo" v-model="data[0].quorum_info" class="mt-2" rows="3"
+                        :disabled="isInApprove || isApproved"/> -->
 
             </div>
             <div class="p-fluid mt-3">
@@ -182,9 +186,11 @@
                         </div>
                         <div class="col-4">
                           <div class="">
-                            <InputNumber id="aye" :min="1" v-model="votingResults.vote_aye" class="w-9"
+                            <InputNumber id="aye" :min="0" v-model="votingResults.vote_aye" class="w-9"
                                          :disabled="isInApprove || isApproved" showButtons/>
-                            <small class="p-error" v-if="validation.vote_aye">{{ $t("common.requiredField") }}</small>
+                            <small class="p-error" v-if="validation.vote_aye && votingResults.vote_aye === null">{{
+                                $t("common.requiredField")
+                              }}</small>
                           </div>
                         </div>
                       </div>
@@ -198,10 +204,11 @@
                         </div>
                         <div class="col-4">
                           <div class="">
-                            <InputNumber id="abstained" :min="1" type="number" v-model="votingResults.vote_abstained"
+                            <InputNumber id="abstained" :min="0" type="number" v-model="votingResults.vote_abstained"
                                          class="w-9"
                                          :disabled="isInApprove || isApproved" showButtons/>
-                            <small class="p-error" v-if="validation.vote_abstained">{{
+                            <small class="p-error"
+                                   v-if="validation.vote_abstained && votingResults.vote_abstained === null">{{
                                 $t("common.requiredField")
                               }}</small>
                           </div>
@@ -219,9 +226,11 @@
                         </div>
                         <div class="col-4">
                           <div class="">
-                            <InputNumber id="con" :min="1" type="number" v-model="votingResults.vote_con" class="w-9"
+                            <InputNumber id="con" :min="0" type="number" v-model="votingResults.vote_con" class="w-9"
                                          :disabled="isInApprove || isApproved" showButtons/>
-                            <small class="p-error" v-if="validation.vote_con">{{ $t("common.requiredField") }}</small>
+                            <small class="p-error" v-if="validation.vote_con && votingResults.vote_con === null">{{
+                                $t("common.requiredField")
+                              }}</small>
                           </div>
                         </div>
                       </div>
@@ -237,10 +246,11 @@
                         </div>
                         <div class="col-4">
                           <div class="">
-                            <InputNumber id="decisionAccepted" :min="1" type="number"
+                            <InputNumber id="decisionAccepted" :min="0" type="number"
                                          v-model="votingResults.vote_total_decisions"
                                          class="w-9" :disabled="isInApprove || isApproved" showButtons/>
-                            <small class="p-error" v-if="validation.vote_total_decisions">{{
+                            <small class="p-error"
+                                   v-if="validation.vote_total_decisions && votingResults.vote_total_decisions === null">{{
                                 $t("common.requiredField")
                               }}</small>
                           </div>
@@ -255,7 +265,7 @@
                       $t('workPlan.protocol.closingTimeMeeting')
                     }}</label>
                   <PrimeCalendar v-model="data[0].session_closed_time" showIcon :showOnFocus="false"
-                                 inputId="buttondisplay" showTime hourFormat="12" :timeOnly="true"
+                                 inputId="buttondisplay" showTime hourFormat="24" :timeOnly="true"
                                  :disabled="isInApprove || isApproved"/>
                 </div>
               </Panel>
@@ -395,7 +405,7 @@
                 </div>
                 <div class="col-4">
                   <div class="">
-                    <InputNumber id="aye" :min="1" v-model="agendaVotingResults.vote_aye" class="w-9"
+                    <InputNumber id="aye" :min="0" v-model="agendaVotingResults.vote_aye" class="w-9"
                                  :disabled="isInApprove" showButtons/>
                   </div>
                 </div>
@@ -404,12 +414,14 @@
             <div class="col-6">
               <div class="grid">
                 <div class="col-6">
-                  <div class=""><label for="aye" class="w-5">{{ $t('workPlan.protocol.abstained') }}{{ " - " }}</label>
+                  <div class=""><label for="abstained" class="w-5">{{ $t('workPlan.protocol.abstained') }}{{
+                      " - "
+                    }}</label>
                   </div>
                 </div>
                 <div class="col-4">
                   <div class="">
-                    <InputNumber id="abstained" :min="1" v-model="agendaVotingResults.vote_abstained" class="w-9"
+                    <InputNumber id="abstained" :min="0" v-model="agendaVotingResults.vote_abstained" class="w-9"
                                  :disabled="isInApprove" showButtons/>
                   </div>
                 </div>
@@ -420,11 +432,12 @@
             <div class="col-6">
               <div class="grid">
                 <div class="col-6">
-                  <div class=""><label for="aye" class="w-5">{{ $t('workPlan.protocol.con') }}{{ " - " }}</label></div>
+                  <div class=""><label for="votecon" class="w-5">{{ $t('workPlan.protocol.con') }}{{ " - " }}</label>
+                  </div>
                 </div>
                 <div class="col-4">
                   <div class="">
-                    <InputNumber id="votecon" :min="1" v-model="agendaVotingResults.vote_con" class="w-9"
+                    <InputNumber id="votecon" :min="0" v-model="agendaVotingResults.vote_con" class="w-9"
                                  :disabled="isInApprove" showButtons/>
                   </div>
                 </div>
@@ -433,13 +446,15 @@
             <div class="col-6">
               <div class="grid">
                 <div class="col-6">
-                  <div class=""><label for="aye" class="w-5">{{ $t('workPlan.protocol.decisionAccepted') }}{{
+                  <div class=""><label for="decisionAccepted" class="w-5">{{
+                      $t('workPlan.protocol.decisionAccepted')
+                    }}{{
                       " - "
                     }}</label></div>
                 </div>
                 <div class="col-4">
                   <div class="">
-                    <InputNumber id="totalDecision" :min="1" v-model="agendaVotingResults.vote_total_decisions"
+                    <InputNumber id="totalDecision" :min="0" v-model="agendaVotingResults.vote_total_decisions"
                                  class="w-9"
                                  :disabled="isInApprove" showButtons/>
                   </div>
@@ -471,6 +486,7 @@
         <div class="p-fluid mt-3">
           <label for="deadline" class="block mb-1">{{ $t('workPlan.protocol.deadline') }}{{ "*" }}</label>
           <PrimeCalendar v-model="agendaData.board_decisions[0].deadline" showIcon :showOnFocus="false"
+                         dateFormat="mm-dd-yy"
                          inputId="buttondisplay" :disabled="isInApprove"/>
         </div>
       </div>
@@ -493,6 +509,7 @@
       <div class="p-fluid mt-3">
         <label for="deadline" class="block mb-1">{{ $t('workPlan.protocol.deadline') }}{{ "*" }}</label>
         <PrimeCalendar v-model="addDecision.deadline" showIcon :showOnFocus="false" inputId="buttondisplay"
+                       dateFormat="mm-dd-yy"
                        :disabled="isInApprove"/>
       </div>
       <template #footer>
@@ -633,6 +650,12 @@ const revisionSetterFullName = ref(null)
 const responsivePerson = ref([])
 const boardDecisionSpeaker = ref([])
 const validatedAgendaFields = ref(true)
+const quorumData = ref([
+  {name_kz: 'Қол жетімді', name_ru: 'Имеется'},
+  {name_kz: 'Жоқ', name_ru: 'Отсутствует'}
+])
+
+const selectedQuorum = ref('');
 
 const validation = ref({
   meeting_date: false,
@@ -668,11 +691,18 @@ const agendaVotingResults = ref({
   vote_total_decisions: null,
 });
 
+// const parsedAgendaVotingResults = computed(() => ({
+//   vote_aye: parseInt(agendaVotingResults.value.vote_aye, 10) || null,
+//   vote_con: parseInt(agendaVotingResults.value.vote_con, 10) || null,
+//   vote_abstained: parseInt(agendaVotingResults.value.vote_abstained, 10) || null,
+//   vote_total_decisions: parseInt(agendaVotingResults.value.vote_total_decisions, 10) || null,
+// }));
+
 const parsedAgendaVotingResults = computed(() => ({
-  vote_aye: parseInt(agendaVotingResults.value.vote_aye, 10) || null,
-  vote_con: parseInt(agendaVotingResults.value.vote_con, 10) || null,
-  vote_abstained: parseInt(agendaVotingResults.value.vote_abstained, 10) || null,
-  vote_total_decisions: parseInt(agendaVotingResults.value.vote_total_decisions, 10) || null,
+  vote_aye: !isNaN(parseInt(agendaVotingResults.value.vote_aye, 10)) ? parseInt(agendaVotingResults.value.vote_aye, 10) : null,
+  vote_con: !isNaN(parseInt(agendaVotingResults.value.vote_con, 10)) ? parseInt(agendaVotingResults.value.vote_con, 10) : null,
+  vote_abstained: !isNaN(parseInt(agendaVotingResults.value.vote_abstained, 10)) ? parseInt(agendaVotingResults.value.vote_abstained, 10) : null,
+  vote_total_decisions: !isNaN(parseInt(agendaVotingResults.value.vote_total_decisions, 10)) ? parseInt(agendaVotingResults.value.vote_total_decisions, 10) : null,
 }));
 
 const selectedAgenda = ref({
@@ -703,11 +733,12 @@ const docLang = computed(() => {
 });
 
 const parsedVotingResults = computed(() => ({
-  vote_aye: parseInt(votingResults.value.vote_aye, 10) || null,
-  vote_con: parseInt(votingResults.value.vote_con, 10) || null,
-  vote_abstained: parseInt(votingResults.value.vote_abstained, 10) || null,
-  vote_total_decisions: parseInt(votingResults.value.vote_total_decisions, 10) || null,
+  vote_aye: !isNaN(parseInt(votingResults.value.vote_aye, 10)) ? parseInt(votingResults.value.vote_aye, 10) : null,
+  vote_con: !isNaN(parseInt(votingResults.value.vote_con, 10)) ? parseInt(votingResults.value.vote_con, 10) : null,
+  vote_abstained: !isNaN(parseInt(votingResults.value.vote_abstained, 10)) ? parseInt(votingResults.value.vote_abstained, 10) : null,
+  vote_total_decisions: !isNaN(parseInt(votingResults.value.vote_total_decisions, 10)) ? parseInt(votingResults.value.vote_total_decisions, 10) : null,
 }));
+
 
 const data = ref([{
   protocol_id: protocolNumber,
@@ -718,7 +749,7 @@ const data = ref([{
   meeting_place: '',
   participated_board_members: [],
   absent_members: [],
-  quorum_info: '',
+  quorum_info: selectedQuorum.value.label,
   invited_persons: [],
   protocol_issues: [],
   voting_results: parsedVotingResults.value,
@@ -726,11 +757,18 @@ const data = ref([{
   lang: docLang.value
 }]);
 
+// watch(
+//   () => data.value[0].quorum_info,
+//   (newValue) => {
+//     selectedQuorum.value = newValue || '';
+//   }
+// );
+
 const validateAgendas = () => {
   const eventsList = data.value[0].protocol_issues || [];
   const isInvalid = (value) => value === null || value === '' || (Array.isArray(value) && value.length === 0);
   eventsList.forEach((event) => {
-    const { protocol_agenda } = event;
+    const {protocol_agenda} = event;
     const invalidFields = [
       protocol_agenda.agenda,
       protocol_agenda.board_decisions,
@@ -756,6 +794,13 @@ const handlePtagClick = (eventID) => {
     agendasModalView(eventID);
   }
 }
+
+const localizedQuorumData = computed(() => {
+  return quorumData.value.map(item => ({
+    label: item[`name_${locale.value}`],
+    value: item[`name_${locale.value}`]
+  }));
+});
 
 const isProtocolDoc = computed(() => docType.value === Enum.DocType.WorkPlanProtocol);
 const isProtocolExtractDoc = computed(() => docType.value === Enum.DocType.WorkPlanProtocolExtract);
@@ -805,10 +850,10 @@ const validateForm = () => {
   validation.value.meeting_venue = !data.value[0].meeting_place || data.value[0].meeting_place == "";
   validation.value.participated_members = !data.value[0].participated_board_members || data.value[0].participated_board_members == "" || data.value[0].participated_board_members.length <= 0;
   validation.value.invited_persons = !data.value[0].invited_persons || data.value[0].invited_persons == "" || data.value[0].invited_persons.length <= 0;
-  validation.value.vote_aye = !data.value[0].voting_results.vote_aye || Number(data.value[0].voting_results.vote_aye) <= 0;
-  validation.value.vote_con = !data.value[0].voting_results.vote_con || Number(data.value[0].voting_results.vote_con) <= 0;
-  validation.value.vote_abstained = !data.value[0].voting_results.vote_abstained || Number(data.value[0].voting_results.vote_abstained) <= 0;
-  validation.value.vote_total_decisions = !data.value[0].voting_results.vote_total_decisions || Number(data.value[0].voting_results.vote_total_decisions) <= 0;
+  validation.value.vote_aye = data.value[0].voting_results.vote_aye === null || data.value[0].voting_results.vote_aye === undefined;
+  validation.value.vote_con = data.value[0].voting_results.vote_con === null || data.value[0].voting_results.vote_con === undefined;
+  validation.value.vote_abstained = data.value[0].voting_results.vote_abstained === null || data.value[0].voting_results.vote_abstained === undefined;
+  validation.value.vote_total_decisions = data.value[0].voting_results.vote_total_decisions === null || data.value[0].voting_results.vote_total_decisions === undefined;
 
   return (
       !validation.value.meeting_date &&
@@ -839,19 +884,19 @@ const selectedAbsentMember = ref([
 
 watch(votingResults, (newValue) => {
   data.value[0].voting_results = {
-    vote_aye: parseInt(newValue.vote_aye, 10) || null,
-    vote_con: parseInt(newValue.vote_con, 10) || null,
-    vote_abstained: parseInt(newValue.vote_abstained, 10) || null,
-    vote_total_decisions: parseInt(newValue.vote_total_decisions, 10) || null,
+    vote_aye: !isNaN(parseInt(newValue.vote_aye, 10)) ? parseInt(newValue.vote_aye, 10) : null,
+    vote_con: !isNaN(parseInt(newValue.vote_con, 10)) ? parseInt(newValue.vote_con, 10) : null,
+    vote_abstained: !isNaN(parseInt(newValue.vote_abstained, 10)) ? parseInt(newValue.vote_abstained, 10) : null,
+    vote_total_decisions: !isNaN(parseInt(newValue.vote_total_decisions, 10)) ? parseInt(newValue.vote_total_decisions, 10) : null,
   };
 }, {deep: true});
 
 watch(agendaVotingResults, (newValue) => {
   agendaData.value.voting_result = {
-    vote_aye: parseInt(newValue.vote_aye, 10) || null,
-    vote_con: parseInt(newValue.vote_con, 10) || null,
-    vote_abstained: parseInt(newValue.vote_abstained, 10) || null,
-    vote_total_decisions: parseInt(newValue.vote_total_decisions, 10) || null,
+    vote_aye: !isNaN(parseInt(newValue.vote_aye, 10)) ? parseInt(newValue.vote_aye, 10) : null,
+    vote_con: !isNaN(parseInt(newValue.vote_con, 10)) ? parseInt(newValue.vote_con, 10) : null,
+    vote_abstained: !isNaN(parseInt(newValue.vote_abstained, 10)) ? parseInt(newValue.vote_abstained, 10) : null,
+    vote_total_decisions: !isNaN(parseInt(newValue.vote_total_decisions, 10)) ? parseInt(newValue.vote_total_decisions, 10) : null,
   };
 }, {deep: true});
 
@@ -984,12 +1029,19 @@ const agendasModalView = (eventId) => {
 
     if (foundEvent.protocol_agenda?.voting_result) {
       agendaVotingResults.value = {
-        vote_aye: foundEvent.protocol_agenda?.voting_result.vote_aye || null,
-        vote_con: foundEvent.protocol_agenda?.voting_result.vote_con || null,
-        vote_abstained: foundEvent.protocol_agenda?.voting_result.vote_abstained || null,
-        vote_total_decisions: foundEvent.protocol_agenda?.voting_result.vote_total_decisions || null,
-      }
-
+        vote_aye: foundEvent.protocol_agenda?.voting_result.vote_aye !== undefined && foundEvent.protocol_agenda?.voting_result.vote_aye !== null
+            ? foundEvent.protocol_agenda?.voting_result.vote_aye
+            : 0,
+        vote_con: foundEvent.protocol_agenda?.voting_result.vote_con !== undefined && foundEvent.protocol_agenda?.voting_result.vote_con !== null
+            ? foundEvent.protocol_agenda?.voting_result.vote_con
+            : 0,
+        vote_abstained: foundEvent.protocol_agenda?.voting_result.vote_abstained !== undefined && foundEvent.protocol_agenda?.voting_result.vote_abstained !== null
+            ? foundEvent.protocol_agenda?.voting_result.vote_abstained
+            : 0,
+        vote_total_decisions: foundEvent.protocol_agenda?.voting_result.vote_total_decisions !== undefined && foundEvent.protocol_agenda?.voting_result.vote_total_decisions !== null
+            ? foundEvent.protocol_agenda?.voting_result.vote_total_decisions
+            : 0,
+      };
     }
     agendaData.value.reporter = foundEvent.protocol_agenda?.reporter || [];
     agendaData.value.inner_rule = foundEvent.protocol_agenda?.inner_rule || null;
@@ -1309,21 +1361,22 @@ const generatePdf = async () => {
       data.value[0].protocol_issues = res?.data?.protocol_doc?.params[0]?.value?.protocol_issues || [];
       data.value[0].session_closed_time = res?.data?.protocol_doc?.params[0]?.value?.session_closed_time || null;
 
-      data.value[0].voting_results.vote_aye = parseInt(res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_aye) || votingResults.value.vote_aye;
-      if (res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_aye) {
-        votingResults.value.vote_aye = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_aye
+      //data.value[0].voting_results.vote_aye = parseInt(res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_aye) || votingResults.value.vote_aye;
+      if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_aye !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_aye !== null) {
+        votingResults.value.vote_aye = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_aye;
       }
-      data.value[0].voting_results.vote_con = parseInt(res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_con) || votingResults.value.vote_con
-      if (res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_con) {
-        votingResults.value.vote_con = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_con
+
+      //data.value[0].voting_results.vote_con = parseInt(res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_con) || votingResults.value.vote_con
+      if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_con !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_con !== null) {
+        votingResults.value.vote_con = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_con;
       }
-      data.value[0].voting_results.vote_abstained = parseInt(res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_abstained) || votingResults.value.vote_abstained
-      if (res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_abstained) {
-        votingResults.value.vote_abstained = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_abstained
+      //data.value[0].voting_results.vote_abstained = parseInt(res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_abstained) || votingResults.value.vote_abstained
+      if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_abstained !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_abstained !== null) {
+        votingResults.value.vote_abstained = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_abstained;
       }
-      data.value[0].voting_results.vote_total_decisions = parseInt(res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_total_decisions) || votingResults.value.vote_total_decisions
-      if (res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_total_decisions) {
-        votingResults.value.vote_total_decisions = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_total_decisions
+      //data.value[0].voting_results.vote_total_decisions = parseInt(res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_total_decisions) || votingResults.value.vote_total_decisions
+      if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_total_decisions !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_total_decisions !== null) {
+        votingResults.value.vote_total_decisions = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_total_decisions;
       }
       let lang = (locale === "ru") ? 1 : 0;
       data.value[0].lang = lang;
@@ -1562,7 +1615,7 @@ const addBoardDecision = () => {
         )
     );
 
-    if (!userExists) {
+    if (userExists) {
       agendaData.value.board_decisions.push(newDecision);
       addDecision.value = {
         board_decision: null,
@@ -1725,26 +1778,26 @@ const showSendToApproveDialog = async () => {
     }
     showSendToApproveModal.value = true;
 
-  }catch (error){
+  } catch (error) {
     console.error('Failed to show send-to-approve dialog:', error);
   }
-  
+
 }
 
-watch(
-    () => data.value[0],
-    (newData) => {
-      validation.value.meeting_date = !newData.meeting_date;
-      validation.value.meeting_venue = !newData.meeting_place;
-      validation.value.participated_members = !newData.participated_board_members || newData.participated_board_members.length <= 0;
-      validation.value.invited_persons = !newData.invited_persons || newData.invited_persons.length <= 0;
-      validation.value.vote_aye = !newData.voting_results.vote_aye;
-      validation.value.vote_con = !newData.voting_results.vote_con;
-      validation.value.vote_abstained = !newData.voting_results.vote_abstained;
-      validation.value.vote_total_decisions = !newData.voting_results.vote_total_decisions;
-    },
-    {deep: true}
-);
+// watch(
+//     () => data.value[0],
+//     (newData) => {
+//       validation.value.meeting_date = !newData.meeting_date;
+//       validation.value.meeting_venue = !newData.meeting_place;
+//       validation.value.participated_members = !newData.participated_board_members || newData.participated_board_members.length <= 0;
+//       validation.value.invited_persons = !newData.invited_persons || newData.invited_persons.length <= 0;
+//       validation.value.vote_aye = !newData.voting_results.vote_aye;
+//       validation.value.vote_con = !newData.voting_results.vote_con;
+//       validation.value.vote_abstained = !newData.voting_results.vote_abstained;
+//       validation.value.vote_total_decisions = !newData.voting_results.vote_total_decisions;
+//     },
+//     {deep: true}
+// );
 
 const onToggleAbsent = (event) => {
   isCollapsedAbsent.value = event.value;

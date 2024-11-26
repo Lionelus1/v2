@@ -893,7 +893,13 @@ export default {
             }
           ];
           this.getRelatedFiles()
-          this.getWorkPlanApprovalUsers(this.work_plan_id)
+          let data = {
+              work_plan_id: parseInt(this.work_plan_id),
+              page: 0,
+              rows: 0,
+              is_contract: false
+            };
+            this.getWorkPlanApprovalUsersFunc(data)
         }
 
           if (this.isWorkSchedule) {
@@ -939,7 +945,13 @@ export default {
               },
             ];
             this.getRelatedFiles()
-            this.getWorkPlanApprovalUsers(this.work_plan_id)
+            let data = {
+              work_plan_id: parseInt(this.work_plan_id),
+              page: 0,
+              rows: 0,
+              is_contract: false
+            };
+            this.getWorkPlanApprovalUsersFunc(data)
           }
           if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters) {
             this.planApprovalStage = [
@@ -1032,10 +1044,45 @@ export default {
               rows: 0,
               is_contract: false
             };
+            
             this.getWorkPlanApprovalUsersFunc(data)
           }
 
       }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+    getWorkPlanApprovalUsersFunc(data) {
+      this.loadingMembers = true;
+      this.planService.getWorkPlanApprovalUsers(data).then(res => {
+        if (res.data && res.data.work_plan_users) {
+          this.members = res.data.work_plan_users;
+
+          if (findRole(null, 'student')){
+            this.loginedStudentData = this.members.filter(user => user.id === this.loginedUserId);
+          }
+
+          this.filteredMembers = res.data.work_plan_users;
+          this.totalMembers = res.data.total;
+          res?.data?.work_plan_users?.forEach(e => {
+            if (this.loginedUserId === e.id) {
+              this.isApproval = true;
+            }
+          });
+        } else {
+          this.isApproval = false;
+        }
+        this.loadingMembers = false;
+      }).catch(error => {
+        this.loadingMembers = false;
         if (error.response && error.response.status === 401) {
           this.$store.dispatch("logLout");
         } else {
@@ -1728,13 +1775,13 @@ export default {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
           color: this.isFinish ? '' : 'green',
-          disabled: (this.isMastersPlan || this.isDoctorsPlan || this.isDirectorsPlan) && (!this.data || this.data.length === 0 || !this.additinalInfoFilled),
-          visible:
-            ((this.isMastersPlan || this.isDoctorsPlan || this.isDirectorsPlan) &&
-              (!this.isFinish || this.isApproval)) ||
-            (this.isFinish &&
-              this.planDoc &&
-              !(this.isCreatedPlan || this.isPlanUnderRevision)),
+          // disabled: (this.isMastersPlan || this.isDoctorsPlan || this.isDirectorsPlan) && (!this.data || this.data.length === 0 || !this.additinalInfoFilled),
+          // visible:
+          //   ((this.isMastersPlan || this.isDoctorsPlan || this.isDirectorsPlan) &&
+          //     (!this.isFinish || this.isApproval)) ||
+          //   (this.isFinish &&
+          //     this.planDoc &&
+          //     !(this.isCreatedPlan || this.isPlanUnderRevision)),
           command: () => {
             if (this.isFinish) {
               this.showDialog(this.dialog.planView);
@@ -1765,7 +1812,7 @@ export default {
         {
           // Qattama registeri
           label: this.$t('contracts.menu.registerProtocols'),
-          visible: this.isDirectorsPlan,
+          visible: this.isDirectorsPlan && this.isPlanApproved,
           command: () => {
             this.$router.push({ 
               name: "Protocols", 

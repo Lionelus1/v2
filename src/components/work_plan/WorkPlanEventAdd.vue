@@ -61,7 +61,7 @@
       </div>
       <div class="field" v-if="isDirectorsPlan">
         <label>{{ $t('workPlan.implementationDate') }}</label>
-        <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true" showTime hourFormat="24"></PrimeCalendar>
+        <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
       <div class="field" v-if="!isSciencePlan && !isMastersPlan && !isDoctorsPlan && !isShedulePlan">
         <label>{{

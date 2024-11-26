@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
-               @nodeExpand="emit('onExpand')" scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true"
+               @nodeExpand="emit('onExpand', $event)" scrollHeight="flex" responsiveLayout="scroll" :resizableColumns="true"
                columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total"
                @page="emit('onPage')">
       <template #empty>{{ $t('common.noData') }}</template>
@@ -23,7 +23,7 @@
         </template>
       </Column>
 
-      <Column field="content" class="max-w-20rem" :header="$t('workPlan.issueTitle')">
+      <Column field="content" :expander="true" class="max-w-20rem" :header="$t('workPlan.issueTitle')">
         <template #body="{ node }">
           {{ node.event_name }}
         </template>
