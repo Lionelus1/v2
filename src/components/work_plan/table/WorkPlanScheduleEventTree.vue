@@ -164,7 +164,7 @@ const loadMem = computed(() => props.loadingMembers)
 
 // Следим за изменениями filteredMembers и обнуляем selectedMembers
 watch(filteredMembers, () => {
-  getPracticeManager();
+  // getPracticeManager();
   selectedMembers.value = [];
   allChecked.value = false;
   loadMem.value = !loadMem.value;
@@ -271,5 +271,7 @@ const getPracticeManager = () => {
     toast.add({severity: "error", summary: error, life: 3000});
   })
 }
+
+getPracticeManager()
 
 </script>
