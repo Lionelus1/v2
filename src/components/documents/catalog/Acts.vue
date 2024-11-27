@@ -669,9 +669,9 @@ export default {
           {
             label: this.$t('common.delete'),
             icon: "fa-solid fa-trash",
-            visible: (data.docHistory && data.docHistory?.stateId === Enum.CREATED.ID ||
-                data.docHistory?.stateId === Enum.REVISION.ID || data.docHistory?.stateId === Enum.INAPPROVAL.ID) &&
-                this.loginedUser.userID === data.creatorID,
+            visible: (data.docHistory&& data.docHistory?.stateId === Enum.CREATED.ID ||
+                    data.docHistory?.stateId === Enum.REVISION.ID || data.docHistory?.stateId === Enum.INAPPROVAL.ID) &&
+                (this.loginedUser.userID === data.creatorID || this.findRole(null, "main_administrator")),
             command: () => {
               this.currentDocument = data;
               this.deleteFile()
