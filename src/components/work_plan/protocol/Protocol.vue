@@ -305,7 +305,7 @@
             </div>
             <div class="p-fluid mt-4 block mb-2">
               <label for="number" class="block mb-1">{{ $t('common.number') }}</label>
-              <InputText id="number" class="mt-2" v-model="protocolNumber" :disabled="extractEditDisabled"
+              <InputText id="number" class="mt-2" v-model="data[0].protocol_number" :disabled="extractEditDisabled"
                          :placeholder="$t('workPlan.protocol.autogenerate')"/>
             </div>
             <div class="p-fluid mt-3">
@@ -606,7 +606,6 @@ const router = useRouter();
 const {t, locale} = useI18n();
 const confirm = useConfirm();
 const docType = ref(null)
-// const participatedMembers = ref([]);
 const addNonParticipateMemberModal = ref(false);
 const agendasModalVisible = ref(false);
 const agendasDecisionModalVisible = ref(false);
@@ -633,11 +632,9 @@ const boardAgendaSpeaker = ref([])
 const boardAgendaReporter = ref([])
 const boardAgendaResponsivePerson = ref([])
 const addBoardAgendaResponsiveMember = ref([])
-
 const workPlanID = route.params.workPlanId;
 const protocolId = route.params.protocolId;
 const selectedEvent = ref(null)
-
 const showSendToApproveModal = ref(false)
 const approving = ref(false)
 const loading = ref(false)
@@ -691,12 +688,6 @@ const agendaVotingResults = ref({
   vote_total_decisions: null,
 });
 
-// const parsedAgendaVotingResults = computed(() => ({
-//   vote_aye: parseInt(agendaVotingResults.value.vote_aye, 10) || null,
-//   vote_con: parseInt(agendaVotingResults.value.vote_con, 10) || null,
-//   vote_abstained: parseInt(agendaVotingResults.value.vote_abstained, 10) || null,
-//   vote_total_decisions: parseInt(agendaVotingResults.value.vote_total_decisions, 10) || null,
-// }));
 
 const parsedAgendaVotingResults = computed(() => ({
   vote_aye: !isNaN(parseInt(agendaVotingResults.value.vote_aye, 10)) ? parseInt(agendaVotingResults.value.vote_aye, 10) : null,
@@ -757,12 +748,6 @@ const data = ref([{
   lang: docLang.value
 }]);
 
-// watch(
-//   () => data.value[0].quorum_info,
-//   (newValue) => {
-//     selectedQuorum.value = newValue || '';
-//   }
-// );
 
 const validateAgendas = () => {
   const eventsList = data.value[0].protocol_issues || [];
@@ -1350,7 +1335,6 @@ const generatePdf = async () => {
       events.value = res.data.protocol_doc?.params[0]?.value;
       currentProtocolUUID.value = res.data.protocol_doc?.uuid;
 
-      //data.value[0] = res.data.protocol_doc?.params[0]?.value 
       data.value[0].protocol_number = protocolDocInfo?.value?.params[0]?.name;
       data.value[0].meeting_place = res.data.protocol_doc?.params[0]?.value?.meeting_place || '';
       data.value[0].meeting_date = res.data.protocol_doc?.params[0]?.value?.meeting_date || null;
@@ -1361,20 +1345,16 @@ const generatePdf = async () => {
       data.value[0].protocol_issues = res?.data?.protocol_doc?.params[0]?.value?.protocol_issues || [];
       data.value[0].session_closed_time = res?.data?.protocol_doc?.params[0]?.value?.session_closed_time || null;
 
-      //data.value[0].voting_results.vote_aye = parseInt(res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_aye) || votingResults.value.vote_aye;
       if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_aye !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_aye !== null) {
         votingResults.value.vote_aye = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_aye;
       }
 
-      //data.value[0].voting_results.vote_con = parseInt(res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_con) || votingResults.value.vote_con
       if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_con !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_con !== null) {
         votingResults.value.vote_con = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_con;
       }
-      //data.value[0].voting_results.vote_abstained = parseInt(res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_abstained) || votingResults.value.vote_abstained
       if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_abstained !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_abstained !== null) {
         votingResults.value.vote_abstained = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_abstained;
       }
-      //data.value[0].voting_results.vote_total_decisions = parseInt(res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_total_decisions) || votingResults.value.vote_total_decisions
       if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_total_decisions !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_total_decisions !== null) {
         votingResults.value.vote_total_decisions = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_total_decisions;
       }
@@ -1582,21 +1562,11 @@ const addBoardDecision = () => {
   if (addBoardAgendaResponsiveMember.value && addBoardAgendaResponsiveMember.value.length > 0) {
     const newDecision = {
       board_decision: addDecision.value.board_decision,
-      responsive_person: [
-        {
-          user_id: addBoardAgendaResponsiveMember.value[0].userID,
-          full_name: addBoardAgendaResponsiveMember.value[0].fullName,
-          main_position: {
-            name_kz: addBoardAgendaResponsiveMember.value[0].mainPosition?.namekz || '',
-            name_ru: addBoardAgendaResponsiveMember.value[0].mainPosition?.nameru || '',
-          }
-        },
-      ],
+      responsive_person: [],
       deadline: addDecision.value.deadline,
     };
 
-
-    addBoardAgendaResponsiveMember.value.slice(1).forEach(member => {
+    addBoardAgendaResponsiveMember.value.forEach(member => {
       newDecision.responsive_person.push({
         user_id: member.userID,
         full_name: member.fullName,
@@ -1607,37 +1577,24 @@ const addBoardDecision = () => {
       });
     });
 
-    const userExists = agendaData.value.board_decisions.some(decision =>
-        decision.responsive_person.some(person =>
-            newDecision.responsive_person.some(newPerson =>
-                person.user_id === newPerson.user_id
-            )
-        )
-    );
+    agendaData.value.board_decisions.push(newDecision);
 
-    if (userExists) {
-      agendaData.value.board_decisions.push(newDecision);
-      addDecision.value = {
-        board_decision: null,
-        responsive_person: [],
-        deadline: null
-      };
-      toast.add({
-        severity: 'success',
-        summary: t('workPlan.protocol.messages.decisionAddedSuccess'),
-        life: 3000,
-      });
-      addDecisionModalVisible.value = false;
-    } else {
-      toast.add({
-        severity: 'warn',
-        summary: t('workPlan.protocol.messages.personAlreadyExists'),
-        life: 3000,
-      });
-    }
+    addDecision.value = {
+      board_decision: null,
+      responsive_person: [],
+      deadline: null
+    };
+
+    toast.add({
+      severity: 'success',
+      summary: t('workPlan.protocol.messages.decisionAddedSuccess'),
+      life: 3000,
+    });
+
+    addDecisionModalVisible.value = false;
   }
-
 }
+
 
 const addAbsentMembers = () => {
   if (absentBoardMembers?.value[0]?.userID && selectedAbsentMember?.value[0]?.reason) {
@@ -1783,21 +1740,6 @@ const showSendToApproveDialog = async () => {
   }
 
 }
-
-// watch(
-//     () => data.value[0],
-//     (newData) => {
-//       validation.value.meeting_date = !newData.meeting_date;
-//       validation.value.meeting_venue = !newData.meeting_place;
-//       validation.value.participated_members = !newData.participated_board_members || newData.participated_board_members.length <= 0;
-//       validation.value.invited_persons = !newData.invited_persons || newData.invited_persons.length <= 0;
-//       validation.value.vote_aye = !newData.voting_results.vote_aye;
-//       validation.value.vote_con = !newData.voting_results.vote_con;
-//       validation.value.vote_abstained = !newData.voting_results.vote_abstained;
-//       validation.value.vote_total_decisions = !newData.voting_results.vote_total_decisions;
-//     },
-//     {deep: true}
-// );
 
 const onToggleAbsent = (event) => {
   isCollapsedAbsent.value = event.value;
