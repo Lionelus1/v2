@@ -172,7 +172,7 @@
         </Column>
         <Column field="path">
           <template #body="slotProps">
-            <ActionButton v-if="slotProps.node.path != null" :show-label="true" :items="actions" @toggle="toggleActions(slotProps.node)" />
+            <ActionButton v-if="slotProps.node.path != null" :show-label="true" :items="actions(slotProps.node)" @toggle="toggleActions(slotProps.node)" />
           </template>
         </Column>
 
@@ -752,33 +752,35 @@ export default {
       ]
     },
     actions () {
-      return [
-        {
-          label: this.$t('common.download'),
-          icon: "fa-solid fa-file-arrow-down",
-          visible: this.actionsNode.path != null,
-          command: () => {this.downloadFile(this.actionsNode.path)},
-        },
-        {
-          label: this.$t('common.show'),
-          icon: "fa-solid fa-eye",
-          visible: this.actionsNode.key != null && this.actionsNode.depType ===3 && this.actionsNode.stateID !==4,
-          command: () => {this.onNodeSelect(this.actionsNode);this.openDialog('signerInfo')},
-        },
-        {
-          label: this.$t('common.show'),
-          icon: "fa-solid fa-eye",
-          visible: this.actionsNode.key != null && this.actionsNode.depType ===3 && this.actionsNode.stateID === 4,
-          command: () => {this.onNodeSelect(this.actionsNode);this.openDialog('docInfo')},
-        },
-        {
-          label: this.$t('common.delete'),
-          icon: "fa-solid fa-trash",
-          visible: this.actionsNode.key != null && this.actionsNode.depType === 3 && this.actionsNode.stateID !==7 && this.loginedUser.userID === this.actionsNode.ownerId,
-          command: () => {this.onNodeSelect(this.actionsNode);this.deleteFile(false)},
-        }
+      return (data) => {
+        return [
+          {
+            label: this.$t('common.download'),
+            icon: "fa-solid fa-file-arrow-down",
+            visible: data?.path != null,
+            command: () => {this.downloadFile(data?.path)},
+          },
+          {
+            label: this.$t('common.show'),
+            icon: "fa-solid fa-eye",
+            visible: data?.key != null && data.depType ===3 && data.stateID !==4,
+            command: () => {this.onNodeSelect(data);this.openDialog('signerInfo')},
+          },
+          {
+            label: this.$t('common.show'),
+            icon: "fa-solid fa-eye",
+            visible: data?.key != null && data.depType ===3 && data.stateID === 4,
+            command: () => {this.onNodeSelect(data);this.openDialog('docInfo')},
+          },
+          {
+            label: this.$t('common.delete'),
+            icon: "fa-solid fa-trash",
+            visible: data?.key != null && data.depType === 3 && data.stateID !==7 && this.loginedUser.userID === data.ownerId,
+            command: () => {this.onNodeSelect(data);this.deleteFile(false)},
+          }
 
-      ]
+        ]
+      }
     },
   }
 }
