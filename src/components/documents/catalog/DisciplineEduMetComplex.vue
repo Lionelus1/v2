@@ -185,7 +185,7 @@
           </Column>
           <Column style="min-width: 50px;">
             <template #body="slotProps">
-                <ActionButton :items="initItems" :showTooltip="true" @toggle="showActions(slotProps.data)" />
+                <ActionButton :items="initItems(slotProps.data)" :showTooltip="true" @toggle="showActions(slotProps.data)" />
             </template>
           </Column>
         </DataTable>
@@ -410,19 +410,20 @@ export default {
       return !approve
     },
       initItems() {
+        return (data) => {
           return [
               {
                   label: this.$t('educomplex.tooltip.download'),
                   icon: 'fa-solid fa-file-arrow-down',
-                  visible: this.actionsNode && this.actionsNode.filePath != null && this.actionsNode.uuid != null,
+                  visible: data && data.filePath != null && data.uuid != null,
                   command: () => {
-                      this.downloadFile(this.actionsNode.uuid, this.actionsNode.filePath)
+                      this.downloadFile(data.uuid, data.filePath)
                   }
               },
               {
                   label: this.$t('educomplex.tooltip.document'),
                   icon: 'fa-solid fa-eye',
-                  visible: this.actionsNode && this.actionsNode.docHistory.stateId !== Enum.REVISION.ID,
+                  visible: data && data.docHistory.stateId !== Enum.REVISION.ID,
                   command: () => {
                       this.currentFile = this.actionsNode;
                       this.open('documentInfoSidebar')
@@ -431,7 +432,7 @@ export default {
               {
                   label: this.$t('educomplex.tooltip.revision'),
                   icon: 'fa-solid fa-file-circle-exclamation',
-                  visible: this.actionsNode && this.actionsNode.docHistory.stateId === Enum.REVISION.ID,
+                  visible: data && data.docHistory.stateId === Enum.REVISION.ID,
                   command: () => {
                       this.currentFile = this.actionsNode;
                       this.open('revisionInfoSidebar')
@@ -441,15 +442,16 @@ export default {
               {
                   label: this.$t('educomplex.tooltip.delete'),
                   icon: 'fa-solid fa-trash',
-                  visible:this.actionsNode && (this.actionsNode.docHistory.stateId === Enum.CREATED.ID ||
-                      this.actionsNode.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === this.actionsNode.creatorID,
+                  visible:data && (data.docHistory.stateId === Enum.CREATED.ID ||
+                      data.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === data.creatorID,
                   command: () => {
-                      this.currentFile = this.actionsNode;
+                      this.currentFile = data;
                       this.deleteFile(false)
                   }
               },
 
           ];
+        }
       },
     statusColumnHeader() {
       if (this.docType === this.eduComplexDocType) {
