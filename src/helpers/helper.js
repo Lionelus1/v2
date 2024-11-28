@@ -8,7 +8,7 @@ export function getShortDateString(date) {
     return moment(new Date(date)).utc(true).format("DD.MM.YYYY")
 }
 
-export function getLongDateString(date, isLocal = false) {
+export function getLongDateString(date, isLocal = true) {
     if (!date) {
         return ""
     }

@@ -16,7 +16,7 @@
       </template>
       <Column :header="$t('contracts.columns.createDate')" style="min-width: 150px;">
         <template #body="slotProps">
-          {{ getLongDateString(slotProps.data.createDate) }}
+          {{ getLongDateString(slotProps.data.createDate, false) }}
         </template>
       </Column>
       <Column :header="$t('contracts.columns.author')" style="min-width: 150px;">
