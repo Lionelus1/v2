@@ -34,7 +34,6 @@ const getFinance = () => {
   loading.value = true
   apiService.getServiceFinance().then(res => {
     data.value = res.data.service
-    console.log(data.value)
     loading.value = false
   }).catch(error => {
     loading.value = false
