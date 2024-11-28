@@ -136,7 +136,7 @@
         </Column>
         <Column field="actions" header="">
           <template #body="{ node }">
-            <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
+            <ActionButton :items="initItems(node)" :show-label="true" @toggle="actionsToggle(node)"/>
           </template>
         </Column>
       </TreeTable>
@@ -1299,53 +1299,55 @@ export default {
  
   computed: {
     initItems() {
-      return [
-        {
-          label: this.$t('common.show'),
-          icon: 'fa-solid fa-eye',
-          disabled: !(this.isPlanApproved && this.canExecuteEvent),
-          visible: this.isFinish,
-          command: () => {
-            this.openPlanExecuteSidebar()
-          }
-        },
-        {
-          label: this.$t('common.add'),
-          icon: 'fa-solid fa-plus',
-          disabled: !(this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent?.user) && !this.isFinish),
-          visible: !this.isFinish,
-          command: () => {
-            this.showDialog(this.dialog.add)
-          }
-        },
-        {
-          label: this.$t('common.edit'),
-          icon: 'fa-solid fa-pen',
-          disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
-          visible: !this.isFinish,
-          command: () => {
-            this.showDialog(this.dialog.edit, false)
-          }
-        },
-        {
-          label: this.$t('workPlan.editRespUser'),
-          icon: 'fa-solid fa-pen',
-          disabled: !((this.isPlanCreator || this.isAdmin) && this.isPlanApproved),
-          visible: this.isPlanApproved && (this.isPlanCreator || this.isAdmin),
-          command: () => {
-            this.showDialog(this.dialog.edit, true)
-          }
-        },
-        {
-          label: this.$t('common.delete'),
-          icon: 'fa-solid fa-trash',
-          disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
-          visible: !this.isFinish,
-          command: () => {
-            this.remove_event()
-          }
-        },
-      ];
+      return (data) => {
+        return [
+          {
+            label: this.$t('common.show'),
+            icon: 'fa-solid fa-eye',
+            disabled: !(this.isPlanApproved && this.canExecuteEvent),
+            visible: this.isFinish && (new Date() >= new Date(data.start_date) && new Date() <= new Date(data.end_date)),
+            command: () => {
+              this.openPlanExecuteSidebar()
+            }
+          },
+          {
+            label: this.$t('common.add'),
+            icon: 'fa-solid fa-plus',
+            disabled: !(this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent?.user) && !this.isFinish),
+            visible: !this.isFinish,
+            command: () => {
+              this.showDialog(this.dialog.add)
+            }
+          },
+          {
+            label: this.$t('common.edit'),
+            icon: 'fa-solid fa-pen',
+            disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
+            visible: !this.isFinish,
+            command: () => {
+              this.showDialog(this.dialog.edit, false)
+            }
+          },
+          {
+            label: this.$t('workPlan.editRespUser'),
+            icon: 'fa-solid fa-pen',
+            disabled: !((this.isPlanCreator || this.isAdmin) && this.isPlanApproved),
+            visible: this.isPlanApproved && (this.isPlanCreator || this.isAdmin),
+            command: () => {
+              this.showDialog(this.dialog.edit, true)
+            }
+          },
+          {
+            label: this.$t('common.delete'),
+            icon: 'fa-solid fa-trash',
+            disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
+            visible: !this.isFinish,
+            command: () => {
+              this.remove_event()
+            }
+          },
+        ];
+      }
     },
     isSciencePlan() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
