@@ -1300,12 +1300,15 @@ export default {
   computed: {
     initItems() {
       return (data) => {
+        let curDate = moment(new Date()).format("DD.MM.YYYY")
+        let sDate = moment(new Date(data.start_date)).format("DD.MM.YYYY")
+        let fDate = moment(new Date(data.end_date)).format("DD.MM.YYYY")
         return [
           {
             label: this.$t('common.show'),
             icon: 'fa-solid fa-eye',
             disabled: !(this.isPlanApproved && this.canExecuteEvent),
-            visible: this.isFinish && (new Date() >= new Date(data.start_date) && new Date() <= new Date(data.end_date)),
+            visible: this.isFinish && (curDate >= sDate && curDate <= fDate),
             command: () => {
               this.openPlanExecuteSidebar()
             }
