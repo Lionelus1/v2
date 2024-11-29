@@ -162,7 +162,6 @@
   import {inject, ref, onMounted, computed} from "vue";
   import {findRole} from "@/config/config";
   import {UserService} from "@/service/user.service"
-  import { format } from 'date-fns';
   import  UserEducationEdit from "../edit/UserEducationEdit"
   import {getHeader} from "@/config/config";
   import api from "@/service/api"

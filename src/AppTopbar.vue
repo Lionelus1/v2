@@ -51,7 +51,7 @@
               <h6 :style="{margin:0,marginBottom:'2px',fontWeight : n.isSeen==0 ? 'bolder' : '400'}">
                 {{ n.senderObject.fullName }}</h6>
               <div :style="{fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="content_notific font-semibold"
-                   v-html="getContentWithLinkHandler(n['description_' + $i18n.locale])" :class="{ 'visible': n.isShow }">
+                   v-html="getContentWithLinkHandler(n['description_' + $i18n.locale])" :class="{ 'visible': n.isShow }"  @click="handleLinkClick">
               </div>
               <div v-if="n.description_kz.length > maxLength" class="read_more" @click="toggleShowMore(n)" :class="{ 'visible': n.isShow }">
                 {{ n.isShow ? $t("educomplex.tooltip.cover")+'^' : $t("common.readMore")+'...' }}
@@ -181,17 +181,16 @@ export default {
     isMobile() {
       return window.innerWidth <= 1024;
     },
+    handleLinkClick(event){
+      if (event.target.tagName === 'A') {
+        event.preventDefault();
+        window.location.href = event.target.href;
+        this.visibleRight = false
+      }
+    },
     getContentWithLinkHandler(content) {
        const div = document.createElement('div');
       div.innerHTML = content;
-      const link = div.querySelector('a');
-
-      if (link) {
-        link.addEventListener('click', (event) => {
-          event.preventDefault();
-          this.visibleRight = false
-        });
-      }
       return div.innerHTML;
     },
     toggleShowMore(item) {
