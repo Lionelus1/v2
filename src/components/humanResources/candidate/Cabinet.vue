@@ -24,7 +24,6 @@
   import { inject, ref, onMounted } from "vue";
   import {findRole} from "@/config/config";
   import {UserService} from "@/service/user.service"
-  import { format } from 'date-fns';
 
   const { t } = useI18n()
   const toast = useToast()
