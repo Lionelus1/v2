@@ -12,7 +12,7 @@
           <br/> {{ item.sign && item.sign.length > 0 ? $t('ncasigner.signed') + ": " + new Date(item.signDate).toLocaleDateString() + ", " + new Date(item.signDate).toLocaleTimeString()  : $t('ncasigner.signingexpected') }}
         </p>
         <div class="field">
-          <Button v-if="item.sign && item.sign.length > 0" :label="$t('common.downloadCms')" icon="pi pi-download" @click="this.emitter.emit('downloadCMS', item.id)"
+          <Button v-if="item.sign && item.sign.length > 0" :label="$t('common.downloadCms')" icon="pi pi-download" @click="$emit('downloadCMS', item.id)"
                   class="p-button-secondary ml-1"/>
         </div>
         <div style="width: 100%;text-align: left;">
@@ -58,6 +58,7 @@ export default {
     approvalStages: null,
     showSign: null,
   },
+  emits: ['downloadCMS'],
   methods: {
     getStageSignaturesDate(signatures, userInd) {
       if (signatures) {

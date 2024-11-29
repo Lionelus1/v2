@@ -15,7 +15,7 @@
           <Button v-if="(signatures && signatures.length > 0) ||
       (approvalStages && showSign())
       " :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures" class="p-button ml-2" />
-          <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages"></SignatureQrPdf>
+          <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages" @downloadCMS="downloadCMSFile"></SignatureQrPdf>
         </div>
         <div class="col-12" v-else>
           <div class="card">
@@ -244,31 +244,6 @@ export default {
   },
   mounted() {
     this.wsconnect();
-    this.emitter.on("downloadCMS", (data) => {
-      if (data !== null) {
-        api
-          .post(
-            smartEnuApi + "/doc/downloadCms",
-            { documentUuid: this.doc_id, signatureId: data },
-            { headers: getHeader() }
-          )
-          .then((res) => {
-            let result = res.data;
-            var link = document.createElement("a");
-            link.innerHTML = "Download file";
-            link.download = result.fileName;
-            link.href = result.data;
-            link.click();
-          })
-          .catch((error) => {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          });
-      }
-    });
   },
   methods: {
     findRole: findRole,
@@ -873,6 +848,18 @@ export default {
             stage.certificate?.value === "no_signature" &&
             usersApproved.includes(0);
       });
+    },
+    downloadCMSFile(signatureId) {
+      this.service.downloadCms({ documentUuid: this.doc_id, signatureId: signatureId }).then((res) => {
+            let result = res.data;
+            var link = document.createElement("a");
+            link.innerHTML = "Download file";
+            link.download = result.fileName;
+            link.href = result.data;
+            link.click();
+          }).catch((error) => {
+            this.$toast.add({severity: "error", summary: error, life: 3000});
+          });
     }
   }
 }

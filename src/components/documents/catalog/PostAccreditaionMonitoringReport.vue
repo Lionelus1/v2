@@ -186,7 +186,7 @@
                 @updated="fileUpdated" accept=".pdf"></PostFile>
     </Dialog>
     <Sidebar v-model:visible="dialogOpenState.signerInfo" position="right" class="p-sidebar-lg"
-             style="overflow-y: scroll" @hide="getFolders(parentNode)">
+             style="overflow-y: scroll" @hide="filtered ? getFoldersByGlobalFilter : getFolders(parentNode)">
       <DocSignaturesInfo :docIdParam="file.key" @signed="signed"></DocSignaturesInfo>
     </Sidebar>
     <Sidebar v-model:visible="dialogOpenState.docInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
