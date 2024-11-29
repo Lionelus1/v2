@@ -257,7 +257,8 @@ const paramData = ref({
   protocol_issues: [],
   voting_results: votingResults.value,
   session_closed_time: null,
-  lang: parseInt(props.planData.lang)
+  lang: parseInt(props.planData.lang),
+  board_members: []
 });
 
 watch(SelectedEventParams, (newVal) => {
