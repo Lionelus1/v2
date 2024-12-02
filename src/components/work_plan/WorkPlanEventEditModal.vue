@@ -288,8 +288,6 @@ export default {
 
       this.editData.resp_person_ids = userIds;
 
-      console.log(this.editData)
-
       this.planService.editEvent(this.editData).then(res => {
         if (res.data.is_success) {
           this.$toast.add({

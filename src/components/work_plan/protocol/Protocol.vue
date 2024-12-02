@@ -1001,9 +1001,7 @@ const agendasModalView = (eventId) => {
               boardAgendaSpeaker.value.push(foundUser);
             }
           }
-        }).catch(err => {
-          console.error("Error fetching user data:", err);
-        });
+        })
       });
 
     }
@@ -1051,9 +1049,7 @@ const agendasModalView = (eventId) => {
               boardAgendaReporter.value.push(foundUser);
             }
           }
-        }).catch(err => {
-          console.error("Error fetching user data:", err);
-        });
+        })
       });
 
     }
@@ -1082,9 +1078,7 @@ const agendasModalView = (eventId) => {
               boardAgendaResponsivePerson.value.push(foundUser);
             }
           }
-        }).catch(err => {
-          console.error("Error fetching user data:", err);
-        });
+        })
       });
 
     }
@@ -1240,7 +1234,7 @@ const SendProtocolToApprove = async () => {
       throw new Error("Failed to create Blob from base64 data.");
     }
   } catch (error) {
-    console.error("Error creating Blob:", error);
+    showMessage('error', t(err.response.data.localizedPath), error)
     return;
   }
 
@@ -1259,12 +1253,12 @@ const SendProtocolToApprove = async () => {
       location.reload()
     } else {
       loading.value = false;
-      console.error("Failed to send protocol for approval:", response.data);
+      showMessage('error', t(common.error), null)
     }
 
 
   } catch (error) {
-    console.error("Error sending file:", error);
+    showMessage('error', t(err.response.data), error)
     loading.value = false;
     if (error.response && error.response.status == 401) {
       store.dispatch("logLout")
@@ -1379,7 +1373,7 @@ const generatePdf = async () => {
 
             }
           }).catch(err => {
-            console.error("Error fetching user data:", err);
+            showMessage('error', t(common.error), err)
           });
         }
 
@@ -1412,7 +1406,7 @@ const generatePdf = async () => {
               }
             }
           }).catch(err => {
-            console.error("Error fetching user data:", err);
+            showMessage('error', t(common.error), err)
           });
         })
       }
@@ -1437,7 +1431,7 @@ const generatePdf = async () => {
               }
             }
           }).catch(err => {
-            console.error("Error fetching user data:", err);
+            showMessage('error', t(common.error), err)
           });
         })
       }
@@ -1487,7 +1481,7 @@ const GetSpeakerUser = () => {
             boardDecisionSpeaker.value = [res.data.foundUsers[0]];
           }
         })
-        .catch(err => console.error("Error fetching user data:", err));
+        .catch(err => showMessage('error', t(common.error), err));
   }
 };
 
@@ -1502,7 +1496,7 @@ const GetUser = () => {
             responsivePerson.value = [res.data.foundUsers[0]];
           }
         })
-        .catch(err => console.error("Error fetching user data:", err));
+        .catch(err => showMessage('error', t(common.error), err));
   }
 };
 
@@ -1545,7 +1539,7 @@ const b64toBlobPdf = (b64Data, contentType = "application/pdf", sliceSize = 512)
 
     return new Blob(byteArrays, {type: contentType});
   } catch (error) {
-    console.error("Invalid base64 data:", error);
+    showMessage('error', t(common.error), error)
     return null;
   }
 };
@@ -1556,7 +1550,7 @@ const loadProtocolData = () => {
       data.value[0] = protocolDocInfo?.value?.params[0]?.value
     }
   } catch (error) {
-    console.error("Error processing protocol data", error);
+    showMessage('error', t(common.error), error)
   }
 };
 
@@ -1684,7 +1678,7 @@ const saveProtocolData = async () => {
   try {
     generatePdf();
   } catch (error) {
-    console.error('Error during protocol data save process:', error);
+    showMessage('error', t(common.error), error);
     toast.add({
       severity: 'warn',
       summary: t('common.message.fillError'),
@@ -1741,7 +1735,7 @@ const showSendToApproveDialog = async () => {
     saveLoading.value = false
 
   } catch (error) {
-    console.error('Failed to show send-to-approve dialog:', error);
+    showMessage('error', t(common.error), error);
     saveLoading.value = false
   }
 
@@ -1923,7 +1917,7 @@ const initStages = async () => {
 
 
   } catch (error) {
-    console.error("error adding stages:", error);
+    showMessage('error', t(common.error), error);
   }
 };
 

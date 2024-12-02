@@ -146,7 +146,6 @@ watch(() => formData.plan_type, () => {
     return;
   }
   const id = types.value[formData.plan_type - 1].dic_document_types
-  console.log("id:", id);
   
   if (id == null || id == 25) {
     params.value = null

@@ -677,7 +677,6 @@ export default {
 
         }
       }).catch(error => {
-        console.log(error)
         this.$toast.add({
           severity: "error",
           summary: error,
@@ -1574,7 +1573,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e);
         return false;
       }
 
@@ -1606,7 +1604,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e);
         return signed;
       }
 

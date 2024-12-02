@@ -135,9 +135,6 @@ watch(SelectedEventParams, (newValue) => {
   selectAll.value = Array.isArray(props.data) && newValue.length === props.data.length;
 });
 
-function onCheckedChange(event) {
-  selectAll.value = true
-}
 
 function handleCheckboxChange(event, node) {
   const {checked} = event.target;
@@ -169,19 +166,6 @@ watch(SelectedEventParams, () => {
   selectAll.value = isAllSelected();
 });
 
-function toggleSelectAll() {
-  if (SelectedEventParams.value.length === props.data.length) {
-    SelectedEventParams.value = [];
-    selectAll.value = false
-  } else {
-    SelectedEventParams.value = props.data.map(node => ({
-      event_id: node.work_plan_event_id,
-      event_name: node.event_name,
-      protocol_agenda: {}
-    }));
-    selectAll.value = true
-  }
-}
 
 function toggleRespPanel(event, node) {
   if (node) {
