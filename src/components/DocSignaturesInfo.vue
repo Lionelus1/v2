@@ -503,6 +503,7 @@ export default {
               if (sign && sign.length > 0) {
                 this.sendRequest(sign[0]);
               }
+              this.signing = false;
             })
             .catch((e) => {
               this.signing = false;
