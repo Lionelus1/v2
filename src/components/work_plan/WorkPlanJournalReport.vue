@@ -108,10 +108,19 @@
         <Sidebar v-model:visible="showReportDocInfo2" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal2">
           <DocSignaturesInfo :docIdParam="dReports[2].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 2)"></DocSignaturesInfo>
         </Sidebar>
-<!--        <div class="field" v-if="findRole(null, 'student')">-->
-<!--          <TinyEditor v-model="contrConcModel" :height="300" :style="{ height: '100%', width: '100%' }"/>-->
-<!--          <ToolbarMenu :data="toolbarMenus"/>-->
-<!--        </div>-->
+        <div class="field">
+          <TinyEditor
+              disabled="true"
+              v-model="contrConcModel"
+              :init="{
+                menubar: false, // Отключить меню
+                toolbar: false  // Убрать панель инструментов
+              }"
+              :height="300"
+              :style="{ height: '80%', width: '100%' }"
+          />
+        <!-- <ToolbarMenu :data="toolbarMenus"/>-->
+        </div>
 
       </TabPanel>
       <!--Заключение руководителя-->
@@ -543,7 +552,8 @@ const visibleSendToApprove = () => {
 }
 
 const visibleSendToApproveTB = () => {
-  return !findRole(null, 'student') && !loading.value && loginedUser && (dReports.value && dReports.value[1].doc_info && (dReports.value[1].doc_info.docHistory.stateId === 1 ||
+  //!findRole(null, 'student') &&
+  return !loading.value && loginedUser && (dReports.value && dReports.value[1].doc_info && (dReports.value[1].doc_info.docHistory.stateId === 1 ||
       dReports.value[1].doc_info.docHistory.stateId === 4));
 }
 

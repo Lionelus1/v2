@@ -165,6 +165,7 @@
           v-if="isWorkSchedule"
           :menus="initItems"
           :isPlanCreator="isPlanCreator"
+          :isApproval="plan.doc_info.docHistory.stateId === 3"
 
           :data="data"
           :total="total"

@@ -13,7 +13,6 @@
           :showStudents="true"
       />
     </Sidebar>
-
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel :header="$t('common.tasks')">
 
@@ -127,7 +126,7 @@
             <Column field="id" :header="$t('workPlan.journalReports')" style="text-align: center;">
               <template #body="slotProps">
                 <div style="text-align: left;">
-                  <button :disabled="!slotProps.data.contract_name_kz" @click="navigateToJournalReports(slotProps.data)" style="background: none; border: none; cursor: pointer;">
+                  <button :disabled="!slotProps.data.contract_name_kz || !isApproval" @click="navigateToJournalReports(slotProps.data)" style="background: none; border: none; cursor: pointer;">
                     <i class="fas fa-eye"></i> <!-- Иконка глаза -->
                   </button>
                 </div>
@@ -157,7 +156,7 @@ const {t, locale} = useI18n()
 const toast = useToast()
 const router = useRouter()
 const route = useRoute()
-const props = defineProps(['data', 'loading', 'loadingMembers', 'total', 'totalMembers', 'menus', 'isPlanCreator', 'members'])
+const props = defineProps(['data', 'loading', 'loadingMembers', 'total', 'totalMembers', 'menus', 'isPlanCreator', 'members', 'isApproval'])
 const emits = defineEmits(['expand', 'onPage', 'onPageMembers', 'onToggle', 'updateActive', 'updateSelect']);
 const visibleRight = ref(false);
 const searchQuery = ref("")
