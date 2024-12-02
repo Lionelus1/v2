@@ -240,15 +240,7 @@
       this.$emit('apply-flex', false);
     },
     methods: {
-      // updateNumberFilter() {
-      //   if (this.docType === this.Enum.DocType.WorkPlanProtocolExtract && this.currentDocument) {
-      //     this.filter.number = this.currentDocument.number;
-      //     console.log("Updated filter:", this.filter);
-      //   } else {
-      //     this.filter.number = null; // Reset if conditions aren't met
-      //   }
-      // },
-        protocolEditLink(node){
+         protocolEditLink(node){
           this.$router.push({
             name: "addWorkPlanProtocol", 
             params: { workPlanId: parseInt(node.number), protocolId: parseInt(node.name)},
@@ -374,7 +366,6 @@
           } else if (err.response && err.response.data && err.response.data.localized) {
             this.showMessage('error', this.$t(err.response.data.localizedPath), null)
           } else {
-            console.log(err)
             this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
           }
   
@@ -406,7 +397,6 @@
           } else if (err.response && err.response.data && err.response.data.localized) {
             this.showMessage('error', this.$t(err.response.data.localizedPath), null)
           } else {
-            console.log(err)
             this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
           }
         })
@@ -438,7 +428,6 @@
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
           })
@@ -524,7 +513,6 @@
           } else if (err.response && err.response.data && err.response.data.localized) {
             this.showMessage('error', this.$t(err.response.data.localizedPath), null)
           } else {
-            console.log(err)
             this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
           }
         })
@@ -559,7 +547,6 @@
           } else if (err.response && err.response.data && err.response.data.localized) {
             this.showMessage('error', this.$t(err.response.data.localizedPath), null)
           } else {
-            console.log(err)
             this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
           }
         })
@@ -589,7 +576,6 @@
               } else if (err.response && err.response.data && err.response.data.localized) {
                 this.showMessage('error', this.$t(err.response.data.localizedPath), null)
               } else {
-                console.log(err)
                 this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
               }
   
@@ -675,7 +661,6 @@
             }
           }
         } catch (e) {
-          console.log(e)
           return false
         }
   
@@ -704,7 +689,6 @@
             }
           }
         } catch (e) {
-          console.log(e)
           return signed
         }
   
