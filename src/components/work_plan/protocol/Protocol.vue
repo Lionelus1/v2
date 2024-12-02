@@ -1457,8 +1457,6 @@ const generatePdf = async () => {
           }
 
         });
-      } else {
-        console.log("undefined or empty");
       }
       saveLoading.value = false;
 
@@ -1887,8 +1885,6 @@ const initStages = async () => {
           stage1.users.push(user); 
         }
       });
-    } else {
-      console.log("stage1 not found");
     }
 
     const stageExtract = approval_user_secretary.value.find(stage => stage.stage === 1);
@@ -1898,8 +1894,6 @@ const initStages = async () => {
           stageExtract.users.push(user); 
         }
       });
-    } else {
-      console.log("secretary stage1 not found");
     }
 
     const allMemberPromises = boardMembersList.map(member =>
@@ -1913,8 +1907,6 @@ const initStages = async () => {
     if (stage2) {
       stage2.users = []
       stage2.users = [...new Set([...stage2.users, ...allBoardMembers])]; 
-    } else {
-      console.log("stage2 not found");
     }
 
     const res_rector = await contragentService.getPersons({ filter: { name: boardRector.name } });
@@ -1927,11 +1919,8 @@ const initStages = async () => {
           stage3.users.push(user);
         }
       });
-    } else {
-      console.log("stage3 not found.");
     }
 
-    console.log(approval_users.value);  
 
   } catch (error) {
     console.error("error adding stages:", error);
@@ -1964,7 +1953,6 @@ const addingBoardMembers = async() => {
       }
       if (items.stage == 2){
         items.users.forEach(sub_user =>{
-          console.log(sub_user);
           if (!users.some(user => user.userID === sub_user.userID)) {
               users.push(sub_user);
           }
