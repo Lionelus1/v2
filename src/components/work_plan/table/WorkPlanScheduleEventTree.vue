@@ -16,6 +16,7 @@
 
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel :header="$t('common.tasks')">
+
         <div>
           <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading"
                      @nodeExpand="emits('expand', $event)" scrollHeight="flex"
@@ -65,6 +66,7 @@
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.members')" v-if="isPlanCreator && isPracticeManager && !findRole(null, 'student')">
+
         <div v-if="members && filterData">
 
           <div class="flex justify-end">
