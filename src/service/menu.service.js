@@ -1,5 +1,5 @@
 import Enum from "../enum/docstates";
-import {useStore} from "vuex";
+import { useStore } from "vuex";
 
 export class MenuService {
     getGlobalMenu($t) {
@@ -142,8 +142,8 @@ export class MenuService {
                         visible: !this.findRole("student")
                     },
                     {
-                        label: $t('smartenu.newsList'), 
-                        icon: 'fa-solid fa-rss', 
+                        label: $t('smartenu.newsList'),
+                        icon: 'fa-solid fa-rss',
                         to: '/news'
                     },
                 ]
@@ -348,64 +348,69 @@ export class MenuService {
         ]
     }
 
-    getLoginedUser() {
-        let user = window.localStorage.getItem("loginedUser");
-        if (user) {
-            return JSON.parse(user);
-        }
-
-        return null;
+  getLoginedUser() {
+    let user = window.localStorage.getItem("loginedUser");
+    if (user) {
+      return JSON.parse(user);
     }
 
-    findRole(roleName) {
-        let loginedUser = this.getLoginedUser();
-        if (!loginedUser || !loginedUser.roles) {
-            return false;
-        }
-        for (let i = 0; i < loginedUser.roles.length; i++) {
-            if (loginedUser.roles[i].name === roleName) {
-                return true;
-            }
-        }
-        return false;
+    return null;
+  }
+
+  findRole(roleName) {
+    let loginedUser = this.getLoginedUser();
+    if (!loginedUser || !loginedUser.roles) {
+      return false;
     }
-
-    isVacancyRightsValidity() {
-        let role = this.findRole('hr_administrator') ||
-            this.findRole('career_administrator') ||
-            this.findRole('hr_moderator') ||
-            this.findRole('career_moderator') ||
-            this.findRole('vacancy_initial_approve') ||
-            this.findRole('vacancy_final_approve');
-        return role;
-    }
-
-    isRoleGroupMember(groupPrefix) {
-        let loginedUser = this.getLoginedUser();
-        if (!loginedUser || !loginedUser.roles) {
-            return false;
-        }
-        for (let i = 0; i < loginedUser.roles.length; i++) {
-            if (loginedUser.roles[i].name.includes(groupPrefix)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    isEnuWorker() {
-        let loginedUser = this.getLoginedUser();
-        if (!loginedUser || !loginedUser.roles || !loginedUser.mainPosition ||
-            loginedUser.mainPosition.organization.id !== 1) {
-            return false;
-        }
-
-        for (let i = 0; i < loginedUser.roles.length; i++) {
-            if (loginedUser.roles[i].name === 'student') {
-                return false;
-            }
-        }
-
+    for (let i = 0; i < loginedUser.roles.length; i++) {
+      if (loginedUser.roles[i].name === roleName) {
         return true;
+      }
     }
+    return false;
+  }
+
+  isVacancyRightsValidity() {
+    let role =
+      this.findRole("hr_administrator") ||
+      this.findRole("career_administrator") ||
+      this.findRole("hr_moderator") ||
+      this.findRole("career_moderator") ||
+      this.findRole("vacancy_initial_approve") ||
+      this.findRole("vacancy_final_approve");
+    return role;
+  }
+
+  isRoleGroupMember(groupPrefix) {
+    let loginedUser = this.getLoginedUser();
+    if (!loginedUser || !loginedUser.roles) {
+      return false;
+    }
+    for (let i = 0; i < loginedUser.roles.length; i++) {
+      if (loginedUser.roles[i].name.includes(groupPrefix)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  isEnuWorker() {
+    let loginedUser = this.getLoginedUser();
+    if (
+      !loginedUser ||
+      !loginedUser.roles ||
+      !loginedUser.mainPosition ||
+      loginedUser.mainPosition.organization.id !== 1
+    ) {
+      return false;
+    }
+
+    for (let i = 0; i < loginedUser.roles.length; i++) {
+      if (loginedUser.roles[i].name === "student") {
+        return false;
+      }
+    }
+
+    return true;
+  }
 }

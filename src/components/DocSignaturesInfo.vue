@@ -1,14 +1,14 @@
 <template>
   <div>
-    <ProgressBar v-if="loading" mode="indeterminate" style="height: 0.5em" />
+    <ProgressBar v-if="loading" mode="indeterminate" style="height: 0.5em"/>
     <BlockUI :blocked="loading" :fullScreen="true"></BlockUI>
   </div>
   <div>
-    <ProgressBar v-if="signing" mode="indeterminate" style="height: 0.5em" />
+    <ProgressBar v-if="signing" mode="indeterminate" style="height: 0.5em"/>
     <BlockUI :blocked="signing" :fullScreen="true"></BlockUI>
   </div>
   <div v-if="!loading">
-    <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id" />
+    <DocInfo :document="docInfo" v-if="!incorrect" :docID="doc_id"/>
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <TabPanel v-bind:header="$t('ncasigner.signatureListTitle')">
         <div class="col-12" v-if="isShow">
@@ -27,17 +27,19 @@
       </TabPanel>
       <TabPanel :header="$t('ncasigner.goToDoc')" :disabled="!isShow">
         <div class="card" v-for="(item, index) of files" :key="index">
-          <embed :src="item" style="width: 100%; height: 1000px" v-if="files.length > 0" type="application/pdf" />
+          <embed :src="item" style="width: 100%; height: 1000px" v-if="files.length > 0" type="application/pdf"/>
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && (docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
       && docInfo.docType === Enum.DocType.Contract) || checkingNoSignature()" :header="$t('ncasigner.sign')">
         <div class="flex justify-content-center">
-          <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve" :label="$t('common.action.approve')" :loading="loading" :disabled="hideDocApprove" />
+          <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve"
+                  :label="$t('common.action.approve')" :loading="loading" :disabled="hideDocApprove"/>
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && !checkingNoSignature() &&  !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
-      && docInfo.docType === Enum.DocType.Contract) || docInfo && docInfo.docHistory.stateId == 6" :disabled="hideDocSign" :header="$t('ncasigner.sign')">
+      && docInfo.docType === Enum.DocType.Contract) || docInfo && docInfo.docHistory.stateId == 6"
+                :disabled="hideDocSign" :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel v-if="!$isMobile">
             <template #header>
@@ -53,7 +55,7 @@
             <Panel>
               <template #header>
                 <div class="d-flex justify-content-center">
-                  <InlineMessage v-if="$isMobile" severity="info" class="mb-1">{{ $t("ncasigner.noteMark") }}</InlineMessage>
+                  <InlineMessage v-if="$isMobile" severity="info" class="mb-1">{{$t("ncasigner.noteMark") }}</InlineMessage>
                   <InlineMessage class="" severity="info">{{
       $t("ncasigner.qrSinging")
     }}</InlineMessage>
@@ -69,13 +71,13 @@
                 <hr />
               </div>
               <div v-if="mgovMobileRedirectUri && isIndivid" class="text-center">
-                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile" />
+                <Button class="p-button-outlined" :label="$t('common.mgovMobile')" @click="redirectToMgovMobile"/>
               </div>
               <div v-if="mgobBusinessRedirectUri && !isIndivid">
                 <hr />
               </div>
               <div v-if="mgobBusinessRedirectUri && !isIndivid" class="text-center">
-                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness" />
+                <Button class="p-button-outlined" :label="$t('common.mgovBusiness')" @click="redirectToMgovBusiness"/>
               </div>
               <div v-if="mgovSignUri && !$isMobile" class="d-flex justify-content-center">
                 <qrcode-vue size="350" render-as="svg" margin="2" :value="mgovSignUri"></qrcode-vue>
@@ -92,7 +94,8 @@
           <label> {{ this.$t("common.comment") }} </label>
           <InputText v-model="revisionComment" style="width: 100%; margin-bottom: 2rem"></InputText>
           <div class="flex justify-content-center">
-            <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="revision" :label="$t('common.revision')" :loading="loading" />
+            <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="revision"
+                    :label="$t('common.revision')" :loading="loading"/>
           </div>
         </div>
       </TabPanel>
@@ -102,7 +105,8 @@
         <label> {{ this.$t('common.comment') }} </label>
         <InputText v-model="denyComment" style="width: 100%; margin-bottom: 2rem;"></InputText>
         <div class="flex justify-content-center">
-          <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="deny" :label="$t('common.deny')" :loading="loading" />
+          <Button icon="fa-regular fa-circle-xmark" class="p-button-danger md:col-3" @click="deny"
+                  :label="$t('common.deny')" :loading="loading"/>
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2
@@ -114,6 +118,17 @@
         <div class="flex justify-content-center">
           <Button icon="fa-solid fa-user-check" class="p-button-success md:col-3" @click="changeApprovals" :label="$t('common.change')" :loading="loading"
             :disabled="currentApprovalUsers.length < 1" />
+        </div>
+      </TabPanel>
+      <TabPanel :header="$t('common.protocol')" v-if="showProtocol">
+        <Files class="mb-3" v-if="canUploadProtocol && this.docInfo?.docHistory?.stateId !== Enum.APPROVED.ID"
+               folder="workplan" :fileID="docInfo?.id"
+               fileType="image/*, .pdf, .doc, .docx, .txt" @uploaded="fileUploaded" simple-upload="true"></Files>
+        <div v-for="item in relatedFile" :key="item.id" class="mb-3">
+          <p class="mb-1">{{ item.name }}</p>
+          <Button
+              :label="$t('workPlan.downloadProtocol')" icon="pi pi-download"
+              @click="downloadProtocol(item.filePath, item.name)" class="p-button"/>
         </div>
       </TabPanel>
     </TabView>
@@ -128,25 +143,19 @@ import {
 } from "@/helpers/SignDocFunctions";
 
 import api from "@/service/api";
-import {
-  getHeader,
-  smartEnuApi,
-  socketApi,
-  b64toBlob,
-  findRole,
-} from "@/config/config";
+import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole, fileRoute} from "@/config/config";
 import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
 import QrcodeVue from "qrcode.vue";
 import Enum from "@/enum/docstates/index";
 import RolesEnum from "@/enum/roleControls/index";
 import QrGuideline from "./QrGuideline.vue";
-import { DocService } from "@/service/doc.service";
-import {isArray} from "chart.js/helpers";
+import {DocService} from "@/service/doc.service";
+import Files from "@/components/documents/Files.vue"
 
 export default {
   name: "DocSignaturesInfo",
-  components: { QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue },
+  components: {QrGuideline, SignatureQrPdf, DocInfo, QrcodeVue, Files},
   props: {
     docIdParam: {
       type: String,
@@ -210,8 +219,13 @@ export default {
       currentApprovalStage: -1,
       currentApprovalUsers: [],
       currentApprovalUsersLoading: true,
+      uploadedFile: null,
+      relatedFile: null,
+      canUploadProtocol: false,
+      showProtocol: false
     }
   },
+
   created() {
     if (this.docIdParam) {
       this.doc_id = this.docIdParam;
@@ -246,15 +260,53 @@ export default {
     this.wsconnect();
   },
   methods: {
+    fileUploaded() {
+      this.getRelatedFiles()
+      this.$toast.add({
+        severity: 'success',
+        summary: this.$t('hdfs.toastMsg'),
+        life: 3000,
+      });
+    },
+    getRelatedFiles() {
+      this.service
+          .getRelatedDocs({fileID: this.docInfo?.id, uuid: null})
+          .then((response) => {
+            this.relatedFile = response.data;
+          })
+          .catch((_) => {
+            this.uploading = false;
+          });
+    },
+    downloadProtocol(file, filename) {
+      let url = `${smartEnuApi}/serve?path=${file}`
+      this.service.downloadFile(url).then(response => {
+        const blob = response.data;
+        var url = window.URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename
+        document.body.appendChild(a)
+        a.click();
+        a.remove();
+        this.isBlockUI = false;
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
+
     findRole: findRole,
     b64toBlob: b64toBlob,
     showMessage(msgtype, message, content) {
-      this.$toast.add({
-        severity: msgtype,
-        summary: message,
-        detail: content,
-        life: 3000,
-      });
+      this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
     },
     redirectToMgovMobile() {
       window.open(this.mgovMobileRedirectUri);
@@ -266,22 +318,19 @@ export default {
       if (this.active == 1 && this.files.length < 1) {
         // showFileTab
         if (this.docInfo.isManifest === true) {
-          api
-            .post(
-              "/downloadManifestFiles",
-              {
-                docId: this.docInfo.id,
-              },
-              {
-                headers: getHeader(),
+          api.post(
+              "/downloadManifestFiles", {
+                docId: this.docInfo.id
+              }, {
+                headers: getHeader()
               }
-            )
-            .then((response) => {
-              let filesBase64Array = response.data;
-              for (let i = 0; i < filesBase64Array.length; i++) {
-                this.files.push(this.b64toBlob(filesBase64Array[i]));
-              }
-            });
+          )
+              .then(response => {
+                let filesBase64Array = response.data
+                for (let i = 0; i < filesBase64Array.length; i++) {
+                  this.files.push(this.b64toBlob(filesBase64Array[i]))
+                }
+              })
         } else {
           api
             .post(
@@ -294,86 +343,63 @@ export default {
               }
             )
             .then((response) => {
-              this.files.push(this.b64toBlob(response.data.file));
-            });
+                this.files.push(this.b64toBlob(response.data.file));
+              });
         }
       } else if (this.active == 2 && this.loginedUserId === null) {
         this.$store.dispatch("solveAttemptedUrl", this.$route);
-        this.$router.push({ path: "/login" });
+        this.$router.push({path: "/login"});
       }
     },
     getData() {
-      this.loading = true;
-      api
-        .post(
-          `/agreement/getSignInfo`,
-          {
-            doc_uuid: this.doc_id,
-          },
-          {
-            headers: getHeader(),
+      this.loading = true
+      api.post(`/agreement/getSignInfo`, {
+        doc_uuid: this.doc_id,
+      }, {
+        headers: getHeader(),
+      }).then(res => {
+        if (res.data) {
+          this.docInfo = res.data;
+          this.getRelatedFiles();
+          this.signatures = res.data.signatures;
+          if (this.docInfo?.docType === 26 || this.docInfo?.docType === 27) {
+            this.showProtocol = true;
           }
-        )
-        .then((res) => {
-          if (res.data) {
-            this.docInfo = res.data;
-            this.signatures = res.data.signatures;
+          if (this.showAllSignsParam) {
+            this.isShow = true;
+          } else {
+            this.isShow = this.findRole(null, RolesEnum.roles.CareerModerator) || this.findRole(null, RolesEnum.roles.UMKAdministrator)
+                || this.findRole(null, RolesEnum.roles.Accountant) || this.findRole(null, RolesEnum.roles.DormitoryAdministration) ||
+                (this.findRole(null, RolesEnum.roles.Teacher) && this.docInfo.docType === Enum.DocType.Contract) ||
+                (this.signatures && this.signatures.some(x => x.userId === this.loginedUserId)) ||
+                (this.findRole(null, RolesEnum.roles.OnlineCourseAdministrator) && this.docInfo.docType === Enum.DocType.DT_Request) ||
+                this.docInfo.docHistory.setterId === this.loginedUserId || this.docInfo.creatorID === this.loginedUserId;
+          }
 
-            if (this.showAllSignsParam) {
-              this.isShow = true;
-            } else {
-              this.isShow =
-                this.findRole(null, RolesEnum.roles.CareerModerator) ||
-                this.findRole(null, RolesEnum.roles.UMKAdministrator) ||
-                this.findRole(null, RolesEnum.roles.Accountant) ||
-                  this.findRole(null, RolesEnum.roles.DormitoryAdministration) ||
-                (this.findRole(null, RolesEnum.roles.Teacher) &&
-                  this.docInfo.docType === Enum.DocType.Contract) ||
-                (this.signatures &&
-                  this.signatures.some(
-                    (x) => x.userId === this.loginedUserId
-                  )) ||
-                (this.findRole(
-                  null,
-                  RolesEnum.roles.OnlineCourseAdministrator
-                ) &&
-                  this.docInfo.docType === Enum.DocType.DT_Request) ||
-                this.docInfo.docHistory.setterId === this.loginedUserId ||
-                this.docInfo.creatorID === this.loginedUserId;
-            }
 
-            if (this.signatures) {
-              this.hideDocSign = !this.signatures.some(
-                (x) =>
-                  x.userId === this.loginedUserId &&
-                  (!x.signature || x.signature === "")
-              );
-              this.hideDocRevision = !this.signatures.some(
-                (x) =>
-                  x.userId === this.loginedUserId &&
-                  (!x.signature || x.signature === "")
-              );
-
-              let usersign = this.signatures.filter(
-                (x) =>
-                  x.userId === this.loginedUserId &&
-                  (!x.signature || x.signature === "") &&
-                  x.signRight &&
-                  x.signRight !== ""
-              );
-              if (usersign.length !== 0) {
-                if (usersign[0].signRight === "individual") {
-                  this.mobileApp = "eGov Mobile";
-                  this.isIndivid = true;
-                } else {
-                  this.mobileApp = "eGov Business";
-                  this.isIndivid = false;
-                }
+          if (this.signatures) {
+            this.hideDocSign = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+            this.hideDocRevision = !this.signatures.some(x => x.userId === this.loginedUserId && (!x.signature || x.signature === ''));
+            this.signatures.forEach(x => {
+              if (x.userId === this.loginedUserId) {
+                this.canUploadProtocol = x.user?.roles?.some(role => role.id === 22 || role.id === 23)
               }
-              this.signatures.map((e) => {
-                e.sign = this.chunkString(e.signature, 1200);
-              });
+            });
+            let usersign = this.signatures.filter(x => x.userId === this.loginedUserId &&
+                (!x.signature || x.signature === '') && (x.signRight && x.signRight !== ''))
+            if (usersign.length !== 0) {
+              if (usersign[0].signRight === "individual") {
+                this.mobileApp = "eGov Mobile";
+                this.isIndivid = true
+              } else {
+                this.mobileApp = "eGov Business";
+                this.isIndivid = false
+              }
             }
+            this.signatures.map(e => {
+              e.sign = this.chunkString(e.signature, 1200)
+            });
+          }
 
             if (
               this.docInfo.needApproval ||
@@ -444,21 +470,20 @@ export default {
             }
           }
 
-          this.loading = false;
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            this.$store.dispatch("logLout");
-          } else if (error.response && error.response.status === 403) {
-            this.$store.dispatch("solveAttemptedUrl", this.$route);
-            this.$router.push({ path: "/login" });
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          }
+        this.loading = false;
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else if (error.response && error.response.status === 403) {
+          this.$store.dispatch("solveAttemptedUrl", this.$route)
+          this.$router.push({path: '/login'});
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
 
           this.loading = false;
         });
@@ -478,6 +503,14 @@ export default {
       return showSign;
     },
     sign() {
+      if (this.canUploadProtocol && this.showProtocol && (this.relatedFile === null || this.relatedFile.length === 0)) {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t('common.message.mustChooseProtocol'),
+          life: 3000,
+        });
+        return
+      }
       this.signing = true;
       api
         .post(
@@ -525,59 +558,46 @@ export default {
       };
       this.signing = true;
 
-      api
-        .post("/doc/sign", req, { headers: getHeader() })
-        .then((response) => {
-          this.signing = false;
-          this.getData();
-          this.showMessage(
-            "success",
-            this.$t("ncasigner.signDocTitle"),
-            this.$t("ncasigner.success.signSuccess")
-          );
-        })
-        .catch((error) => {
-          this.signing = false;
-          if (error.response.status == 405) {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t(error.response.data),
-              life: 3000,
-            });
-          }
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          } else this.signing = false;
-        });
+      api.post("/doc/sign", req, {headers: getHeader()})
+          .then(response => {
+            this.signing = false
+            this.getData()
+            this.showMessage('success', this.$t('ncasigner.signDocTitle'), this.$t('ncasigner.success.signSuccess'));
+          })
+          .catch(error => {
+            this.signing = false
+            if (error.response.status == 405) {
+              this.$toast.add({
+                severity: "error",
+                summary: this.$t(error.response.data),
+                life: 3000,
+              });
+            }
+            if (error.response.status == 401) {
+              this.$store.dispatch("logLout");
+            } else
+              this.signing = false;
+          })
     },
     getSignatures() {
-      api
-        .post(
-          `/workPlan/getSignatures`,
-          { doc_id: this.plan.doc_id },
-          { headers: getHeader() }
-        )
-        .then((res) => {
-          if (res.data) {
-            this.signatures = res.data;
-            const signUser = res.data.find(
-              (x) => x.userId === this.loginedUserId
-            );
-            if (signUser) {
-              this.isApproved = true;
-            }
+      api.post(`/workPlan/getSignatures`, {doc_id: this.plan.doc_id}, {headers: getHeader()}).then(res => {
+        if (res.data) {
+          this.signatures = res.data;
+          const signUser = res.data.find(x => x.userId === this.loginedUserId);
+          if (signUser) {
+            this.isApproved = true;
           }
-        })
-        .catch((error) => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-          if (error.response.status == 401) {
-            this.$store.dispatch("logLout");
-          }
+        }
+      }).catch(error => {
+        this.$toast.add({
+          severity: 'error',
+          summary: error,
+          life: 3000
         });
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+      })
     },
     downloadSignatures() {
       let pdfOptions = {
@@ -586,14 +606,14 @@ export default {
           type: "jpeg",
           quality: 0.95,
         },
-        html2canvas: { scale: 3, letterRendering: true },
+        html2canvas: {scale: 3, letterRendering: true},
         jsPDF: {
           unit: "mm",
           format: "a4",
           orientation: "portrait",
           hotfixes: ["px_scaling"],
         },
-        pagebreak: { avoid: ["#qr"] },
+        pagebreak: {avoid: ["#qr"]},
         filename: this.docInfo.name + ".pdf",
       };
       const pdfContent = this.$refs.qrToPdf.$refs.qrToPdf;

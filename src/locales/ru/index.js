@@ -302,6 +302,7 @@ export default {
             actionError: "Произошла ошибка во время выполнения этого действия",
             actionErrorContactAdmin: "Пожалуйста свяжитесь с администраторами для решения этой проблемы",
             attachFile: "Пожалуйста, прикрепите необходимые файлы",
+            mustChooseProtocol: "Пожалуйста, сначала загрузите протокол!"
         },
         language: {
             kz: "на казахском",
@@ -1465,6 +1466,7 @@ export default {
             approvalUserError: "Выберите ответственных лиц",
             quarterError: "Выберите квартал",
             langError: "Выберите язык",
+            pleaseChoose: "Выберите"
         },
         message: {
             eventCreated: "Мероприятие успешно создано",
@@ -1510,7 +1512,27 @@ export default {
         editRespUser: "Изменить ответственное лицо",
         modifiedPerson: "Изменить",
         changeCreatedPerson: "Изменить созданное лицо",
-        requiredCreatedPerson: "Поле созданное лицо должно быть заполнено"
+        requiredCreatedPerson: "Поле созданное лицо должно быть заполнено",
+        mastersThesisInfo: "Информация о магистерской диссертации",
+        mastersThesisGeneralPlan: "Общий план работы над магистерской диссертацией",
+        content: "Содержание",
+        viewDoc: "Просмотр документа",
+        expectingResults: "Ожидаемые результаты",
+        relevance: "Актуальность",
+        goal: "Цель",
+        mainGoals: "Основные задачи",
+        theoreticalSignificance: "Теоретическая значимость",
+        scientificNovelty: "Научная новизна",
+        practicalSignificance: "Практическая значимость",
+        researchMetodology: "Методика исследования",
+        publications: "Публикации",
+        plannedTesting: "Планируемая апробация",
+        dissertationLanguage: "Язык диссертации",
+        conclusionOfDepartment: "Отметка о выполнении или заключение кафедры",
+        semester: "Семестр",
+        doctorsThesisInfo: "Информация о докторской диссертации",
+        downloadProtocol: "Скачать протокол",
+        uploadProtocol: "Загрузить протокол"
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

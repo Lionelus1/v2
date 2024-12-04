@@ -111,6 +111,8 @@ import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
 import TitleBlock from "./components/TitleBlock";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import AddInfo from "@/components/AddInfo.vue";
+
 import {isMobile} from "@/helpers/HelperUtil";
 import {VueReCaptcha} from "vue-recaptcha-v3";
 import {useToast} from "primevue/usetoast";
@@ -348,6 +350,7 @@ app.component('TinyEditor', TinyEditor)
 app.component('TitleBlock', TitleBlock)
 app.component('ToolbarMenu', ToolbarMenu)
 app.component('ActionButton', ActionButton)
+app.component('AddInfo', AddInfo)
 
 interceptor(store, app);
 app.mount('#app');

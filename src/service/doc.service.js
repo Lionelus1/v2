@@ -6,6 +6,9 @@ export class DocService {
     uploadRelatedDocs(data) {
         return api.post("/doc/uploadRelatedDocs", data, {headers: getFileHeader()});
     }
+    createRelatedDocs(data) {
+        return api.post("/doc/createRelatedDocs", data, {headers: getFileHeader()});
+    }
     getRelatedDocs(data) {
         return api.post("/doc/getRelatedDocs", data, {headers: getHeader()});
     }
@@ -194,5 +197,14 @@ export class DocService {
     }
     showDoc(data) {
         return api.post(`/document/show`, data, {headers: getHeader()});
+    }
+    addAdditionalInfo(data){
+        return api.post(`/doc/info`, data, {headers: getHeader()});
+    }
+    getAdditionalInfo(id){
+        return api.get(`/doc/info/${id}`, {headers: getHeader()});
+    }
+    downloadFile(url){
+        return api.get(url, {headers: getHeader(), responseType: 'blob'});
     }
 }
