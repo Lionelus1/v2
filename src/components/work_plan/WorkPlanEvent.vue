@@ -370,6 +370,7 @@ import DocState from '@/enum/docstates/index';
 import ToolbarMenu from '@/components/ToolbarMenu.vue';
 import DoctorsMastersTable from './table/DoctorsMastersTable.vue';
 import RolesByName from "@/components/smartenu/RolesByName.vue";
+import ActionButton from "@/components/ActionButton.vue";
 
 export default {
   name: 'WorkPlanEvent',
