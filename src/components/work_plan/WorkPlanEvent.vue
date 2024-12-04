@@ -1300,15 +1300,30 @@ export default {
   computed: {
     initItems() {
       return (data) => {
-        let curDate = moment(new Date()).format("DD.MM.YYYY")
-        let sDate = moment(new Date(data.start_date)).format("DD.MM.YYYY")
-        let fDate = moment(new Date(data.end_date)).format("DD.MM.YYYY")
+
+        // Проверка для научного плана
+        let curDate = moment(new Date());
+        let sDate = moment(new Date(data.start_date));
+        let fDate = moment(new Date(data.end_date));
+        let showRes = false;
+
+
+        if (this.isSciencePlan){
+          showRes = this.isFinish && (curDate.isSameOrAfter(sDate) && curDate.isSameOrBefore(fDate));
+
+          if(this.isPlanCreator || this.isCreator || this.isAdmin){
+            showRes = this.isFinish;
+          }
+        } else {
+          showRes = this.isFinish;
+        }
+
         return [
           {
             label: this.$t('common.show'),
             icon: 'fa-solid fa-eye',
             disabled: !(this.isPlanApproved && this.canExecuteEvent),
-            visible: this.isFinish && (curDate >= sDate && curDate <= fDate),
+            visible: showRes,
             command: () => {
               this.openPlanExecuteSidebar()
             }
