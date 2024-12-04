@@ -140,19 +140,20 @@
           </template>
         </Column>
       </TreeTable>
+
+      <DoctorsMastersTable
+          v-if="plan && planDoc && (isMastersPlan || isDoctorsPlan)"
+          :data="data"
+          :items="initItems"
+          @onPage="onPage"
+          @onExpand="onExpand"
+          @onToggle="actionsToggle"
+          :total="total"
+          :loading="loading"
+      />
+
     </div>
   </div>
-
-  <DoctorsMastersTable
-      v-if="plan && planDoc && (isMastersPlan || isDoctorsPlan)"
-      :data="data"
-      :items="initItems"
-      @onPage="onPage"
-      @onExpand="onExpand"
-      @onToggle="actionsToggle"
-      :total="total"
-      :loading="loading"
-  />
 
   <Sidebar v-model:visible="dialog.planView.state" position="right" class="w-6" style="overflow-y: scroll" @hide="hideDialog(dialog.planView)">
     <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
