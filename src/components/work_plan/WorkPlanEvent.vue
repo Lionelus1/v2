@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
+    <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)"  :filter="true" :filtered="filtered" :analyze="true" @analyze="toggle('global-filter-analyzer', $event)"/>
     <div class="card" v-if="plan && planDoc">
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :rowsPerPageOptions="[10, 25, 50]" v-model:selectionKeys="selectedWorkPlanEvent" selectionMode="single" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows" :total-records="total" :rowHover="true" :paginatorTemplate="paginatorTemplate"
@@ -240,6 +240,38 @@
       </div>
     </div>
   </OverlayPanel>
+  <OverlayPanel v-if="isOperPlan" ref="global-filter-analyzer" class="overlay-panel" style="width: 300px;">
+      <div class="p-fluid">
+        <div class="field">
+          <label>{{ $t('hikvision.department') }}</label>
+          <Dropdown v-model="selectedDepartment" :options="departments" optionLabel="department_name" optionValue="department_id" :filter="true" :show-clear="true"
+                :placeholder="$t('common.select')" />
+            <!-- <small class="p-error" v-if="submitted && validationErrors.hei">{{ $t("common.requiredField") }}</small> -->
+        </div>
+      </div>
+      <div class="field p-fluid">
+        <label>{{ $t('dissertation.dissQuarter') }}</label>
+        <Dropdown :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" class="w-full"/>
+      </div>
+      <div class="field p-fluid">
+        <label>{{ $t('workPlan.analyzer.eventStatus') }}</label>
+        <div class="card flex flex-wrap justify-content-left gap-3">
+          <div v-for="status of statuses" :key="status.id" class="flex">
+            <Checkbox v-model="selectedAnalyzeStatuses" inputId="status.id" :value="status.value" />
+            <label for="ingredient1" class="ml-2"> {{ $i18n.locale === 'kz' ? status.nameRu : $i18n.locale === 'ru' ? status.nameKz : status.nameEn }} </label>
+          </div>
+    </div>
+      </div>
+      <div class="p-fluid">
+        <div class="field">
+          <br />
+          <Button icon="pi pi-trash" class="ml-1" @click="clearResultFilter()" :label="$t('common.clear')" outlined />
+        </div>
+        <div class="field">
+          <Button icon="pi pi-search" :label="$t('workPlan.analyzer.createAnalysis')" class="ml-1" @click="getData()" />
+        </div>
+      </div>
+  </OverlayPanel>
   <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null"
                        :isMain="!!selectedEvent" :plan-data="plan" @hide="hideDialog(dialog.add)"/>
   <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :isEditResponsiveUsers="editRespUser" :event="selectedEvent" :copiedEvent="selectedEvent" @hide="hideDialog(dialog.edit)"/>
@@ -348,6 +380,7 @@ export default {
         status: {value: null, matchMode: FilterMatchMode.EQUALS},
         author: {value: null, matchMode: FilterMatchMode.EQUALS}
       },
+      selectedAnalyzeStatuses: [],
       statuses: [
         {
           id: 1,
@@ -436,7 +469,10 @@ export default {
       inputSets: null,
       submitted: false,
       selectedUsers: [],
-      editRespUser:false
+      editRespUser:false,
+      departments: [],
+      loginedUser: JSON.parse(localStorage.getItem("loginedUser")),
+      selectedDepartment: this.loginedUser?.mainPosition?.department?.id || null,
     }
   },
   created() {
@@ -445,6 +481,7 @@ export default {
     this.getPlan();
     this.getEventsTree(null);
     this.getWorkPlanApprovalUsers(this.work_plan_id)
+    this.getDepartments();
 
   },
   mounted() {
@@ -521,6 +558,24 @@ export default {
   },
   methods: {
     findRole: findRole,
+    async getDepartments() {
+      this.departments = [];
+      await this.planService.getDepartments(parseInt(this.work_plan_id)).then(res => {
+        if (res.data) {
+          this.departments = res.data
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
     updateResponsivePersons() {
       this.submitted = true;
 

@@ -1,8 +1,8 @@
 <template>
-  <div class="toolbar_menu card mb-3" ref="containerRef" :class="{ 'scrollable':!search || !filter,'toolbar_border': border }">
-    <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-left']" icon="pi pi-angle-left" @click="scrollLeft"/>
-    <div :class="['justify-content-between', {'flex': search || filter},{'inline-flex': isScrollable && (!search || !filter)}]">
-      <div class="toolbar_bars" v-if="(search || filter)">
+  <div class="toolbar_menu card mb-3" ref="containerRef" :class="{ 'scrollable':!search || !filter || !analyze,'toolbar_border': border }">
+    <Button v-if="isScrollable && (!search || !filter || !analyze)" :class="['scroll-left']" icon="pi pi-angle-left" @click="scrollLeft"/>
+    <div :class="['justify-content-between', {'flex': search || filter || analyze},{'inline-flex': isScrollable && (!search || !filter || !analyze)}]">
+      <div class="toolbar_bars" v-if="(search || filter || analyze)">
         <Button
             class="p-button-text p-button-secondary"
             icon="pi pi-bars"
@@ -11,7 +11,7 @@
             aria-controls="overlay_menu"/>
         <Menu ref="mobilemenu" id="overlay_menu" :model="actionList" :popup="true"/>
       </div>
-      <div :class="{'button_list': (search || filter)}">
+      <div :class="{'button_list': (search || filter || analyze)}">
         <template v-for="(i,index) of data" :key="i">
           <Button
               v-if="i.visible !== false && !i.right && !i.items"
@@ -46,13 +46,21 @@
           <Menu v-if="i?.items" :ref="(el) => (subMenu[index] = el)" :model="i?.items" :popup="true"/>
         </template>
       </div>
-      <div class="flex" v-if="search || filter">
+      <div class="flex" v-if="search || filter || analyze">
         <Button v-if="filter"
                 :label="filterLabel ? $t('common.filter') : ''"
                 :style="{color: filtered ? '#2196f3':'#495057', padding: '4px'}"
                 class="p-button-text p-button-secondary"
                 icon="fa-solid fa-filter"
                 @click="filterClick($event)"/>
+               
+        <template v-if="analyze">
+          <Button 
+              class="p-button-text p-button-primary hover:bg-blue-700 hover:text-white focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 ease-in-out"
+              icon="fa-solid fa-chart-pie"
+              :title="$t('workPlan.analyzer.analyzerButtonTitle')"
+              @click="analyzeClick($event)"/>
+        </template>
         <template v-if="rightBtn">
           <Button
               v-tooltip.bottom="$t('common.specialNeedsJobs')"
@@ -74,18 +82,18 @@
         </template>
       </div>
     </div>
-    <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-right']" icon="pi pi-angle-right" @click="scrollRight"/>
+    <Button v-if="isScrollable && (!search || !filter || !analyze)" :class="['scroll-right']" icon="pi pi-angle-right" @click="scrollRight"/>
   </div>
 </template>
 
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref} from "vue";
 
-const props = defineProps(['data', 'notShowLabel', 'search', 'filter', 'filtered', 'border', 'filterLabel', 'change', 'rightBtn'])
+const props = defineProps(['data', 'notShowLabel', 'search', 'filter', 'filtered', 'border', 'filterLabel', 'change', 'rightBtn', 'analyze'])
 const containerRef = ref(null);
 const scrollStep = 50;
 const isScrollable = ref(false);
-const emit = defineEmits(['search', 'filter'])
+const emit = defineEmits(['search', 'filter', 'analyze'])
 const searchModel = defineModel('searchModel')
 const mobilemenu = ref()
 const subMenu = ref({})
@@ -115,6 +123,10 @@ const searchClick = () => {
 const filterClick = (event) => {
   emit('filter', event)
 }
+const analyzeClick = (event) => {
+  emit('analyze', event)
+}
+
 const rightBtnClick = (event) => {
   emit('rightBtn', event)
 }

@@ -119,6 +119,7 @@ export default {
         contacts: "Контакты",
         code: "Код",
         filter: "фильтр",
+        analysis: "Анализ",
         graduationyear: "Начало обучения",
         admissionyear: "Завершение обучения",
         yes: "Да",
@@ -1510,7 +1511,12 @@ export default {
         editRespUser: "Изменить ответственное лицо",
         modifiedPerson: "Изменить",
         changeCreatedPerson: "Изменить созданное лицо",
-        requiredCreatedPerson: "Поле созданное лицо должно быть заполнено"
+        requiredCreatedPerson: "Поле созданное лицо должно быть заполнено",
+        analyzer: {
+            createAnalysis: "Анализировать",
+            analyzerButtonTitle: "Анализируйте данные по выбранным фильтрам",
+            eventStatus: "По статусу"
+        }
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

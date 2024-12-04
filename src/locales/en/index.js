@@ -119,6 +119,7 @@ export default {
         comment: "Comment",
         contacts: "Contacts",
         filter: "Filter",
+        analysis: "Analysis",
         yes: "Yes",
         no: "No",
         select: "Select",
@@ -1499,7 +1500,12 @@ export default {
         editRespUser: "Edit responsive person",
         modifiedPerson: "Modified",
         changeCreatedPerson: "Change creator",
-        requiredCreatedPerson: "The creator field must be filled"
+        requiredCreatedPerson: "The creator field must be filled",
+        analyzer: {
+            createAnalysis: "Analyze",
+            analyzerButtonTitle: "Analyze data based on selected filters",
+            eventStatus: "By Status"
+        }
     },
     queue: {
         title: "Queue",

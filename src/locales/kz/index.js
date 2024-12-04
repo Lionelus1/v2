@@ -116,6 +116,7 @@ export default {
         comment: "Түсініктеме",
         contacts: "Байланыстар",
         filter: "Сүзгі",
+        analysis: "Талдау",
         graduationyear: "Оқуды бастады",
         admissionyear: "Оқуды аяқтады",
         yes: "Иә",
@@ -1517,7 +1518,12 @@ export default {
         editRespUser: "Жауапты тұлғаны өзгерту",
         modifiedPerson: "Өзгеріс енгізген",
         changeCreatedPerson: "Құрушыны өзгерту",
-        requiredCreatedPerson: "Құрушыны өрісін міндетті түрде толтыру керек"
+        requiredCreatedPerson: "Құрушыны өрісін міндетті түрде толтыру керек",
+        analyzer: {
+            createAnalysis: "Талдау жасау",
+            analyzerButtonTitle: "Таңдалған сүзгілер бойынша деректерді талдау",
+            eventStatus: "Статусы бойынша"
+        }
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
