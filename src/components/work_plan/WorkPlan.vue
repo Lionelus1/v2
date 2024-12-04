@@ -416,13 +416,6 @@ export default {
           life: 3000
         });
       } else {
-        // Если проверка пройдена, показываем тост
-        this.$toast.add({
-          severity: "success",
-          summary: this.$t('common.success'),
-          life: 3000
-        });
-
         // Переход по маршруту
         this.$router.push({
           name: 'WorkPlanEvent',
