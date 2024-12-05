@@ -139,7 +139,7 @@ onMounted(() => {
 })
 
 watch(() => formData.plan_type, () => {
-  const id = types.value[formData.plan_type - 1].dic_document_types
+  const id = types.value.find(type => type.id === formData.plan_type)?.dic_document_types;
   if (id == null) {
     params.value = null
     return
