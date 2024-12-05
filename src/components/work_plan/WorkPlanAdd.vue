@@ -13,7 +13,7 @@
     </div>
     <div class="field">
       <label>{{ $t('workPlan.planType') }}</label>
-      <Dropdown v-model="formData.plan_type" :options="types" :optionLabel="'name_' + $i18n.locale" optionValue="id"
+      <Dropdown :options="types" :optionLabel="'name_' + $i18n.locale" @change="planChange"
                 :placeholder="$t('common.select')"/>
       <small class="p-error" v-if="submitted && !formData.plan_type">{{ $t('common.requiredField') }}</small>
     </div>
@@ -138,8 +138,10 @@ onMounted(() => {
   getWorkPlanTypes();
 })
 
-watch(() => formData.plan_type, () => {
-  const id = types.value.find(type => type.id === formData.plan_type)?.dic_document_types;
+const planChange = (event) => {
+  formData.plan_type = event.value?.id
+
+  const id = event.value?.dic_document_types
   if (id == null) {
     params.value = null
     return
@@ -149,6 +151,6 @@ watch(() => formData.plan_type, () => {
   }).catch(error => {
     params.value = null
   })
+}
 
-})
 </script>
