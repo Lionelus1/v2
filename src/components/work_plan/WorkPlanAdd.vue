@@ -13,7 +13,7 @@
     </div>
     <div class="field">
       <label>{{ $t('workPlan.planType') }}</label>
-      <Dropdown :options="types" :optionLabel="'name_' + $i18n.locale" @change="planChange"
+      <Dropdown v-model="formData.plan_type" :options="types" :optionLabel="'name_' + $i18n.locale" @change="planChange"
                 :placeholder="$t('common.select')"/>
       <small class="p-error" v-if="submitted && !formData.plan_type">{{ $t('common.requiredField') }}</small>
     </div>
@@ -80,6 +80,7 @@ const closeBasic = () => {
 
 const createPlan = () => {
   submitted.value = true;
+  isDisabled.value = true;
   if (!validate()) return
 
   const fd = new FormData()
@@ -139,9 +140,8 @@ onMounted(() => {
 })
 
 const planChange = (event) => {
-  formData.plan_type = event.value?.id
-
   const id = event.value?.dic_document_types
+  console.log(id)
   if (id == null) {
     params.value = null
     return
