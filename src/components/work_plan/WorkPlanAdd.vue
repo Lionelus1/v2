@@ -13,7 +13,7 @@
     </div>
     <div class="field">
       <label>{{ $t('workPlan.planType') }}</label>
-      <Dropdown :options="types" :optionLabel="'name_' + $i18n.locale" @change="planChange"
+      <Dropdown v-model="plan_type" :options="types" :optionLabel="'name_' + $i18n.locale" @change="planChange"
                 :placeholder="$t('common.select')"/>
       <small class="p-error" v-if="submitted && !formData.plan_type">{{ $t('common.requiredField') }}</small>
     </div>
@@ -73,6 +73,7 @@ const planService = new WorkPlanService()
 const docService = new DocService()
 const types = ref([])
 const params = ref(null)
+const plan_type = ref(null)
 
 const closeBasic = () => {
   emit('hide')
