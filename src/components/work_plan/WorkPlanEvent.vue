@@ -268,10 +268,51 @@
           <Button icon="pi pi-trash" class="ml-1" @click="clearResultFilter()" :label="$t('common.clear')" outlined />
         </div>
         <div class="field">
-          <Button icon="pi pi-search" :label="$t('workPlan.analyzer.createAnalysis')" class="ml-1" @click="getData()" />
+          <Button icon="pi pi-chart-bar" :label="$t('workPlan.analyzer.universityAnalysis')" class="ml-1 p-button p-component" severity="success" @click="analyzeClick()" />
+        </div>
+        <div class="field">
+          <Button icon="pi pi-chart-line" :label="$t('workPlan.analyzer.createAnalysis')" class="ml-1" @click="analyzeClick()" />
         </div>
       </div>
   </OverlayPanel>
+  <Dialog :header="$t('workPlan.analyzer.analysisResult')" v-model:visible="analyzerModalView" :style="{ width: '850px' }" class="p-fluid mb-2">
+      <div class="field">
+         <DataTable :value="data" tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;">
+            <Column field="eventName" :header="$t('workPlan.eventName')" headerStyle="background-color: #f4f4f4; color: black; font-weight: bold; border: 1px solid #ddd;">
+              <template #body="{data}">
+                  {{data.event_name}}
+              </template>
+            </Column>
+            <Column field="eventUnit" :header="$t('common.unit')" headerStyle="background-color: #f4f4f4; color: black; font-weight: bold; border: 1px solid #ddd;">
+              <template #body="{data}">
+                  {{data.unit}}
+              </template>
+            </Column>
+            <Column field="eventQuarter" :header="$t('workPlan.quarter')" headerStyle="background-color: #f4f4f4; color: black; font-weight: bold; border: 1px solid #ddd;">
+              <template #body="{data}">
+                {{ initQuarter(data.quarter) }}
+              </template>
+            </Column>
+            <Column field="eventSummaryDepartment" :header="$t('workPlan.summary')" headerStyle="background-color: #f4f4f4; color: black; font-weight: bold; border: 1px solid #ddd;">
+              <template #body="{data}">
+                <div v-if="data.user && data.user.length > 0">
+                  <div v-for="item in data.user" :key="item.id">
+                    <p v-if="item.is_summary_department">
+                      {{ item?.user?.mainPosition?.department?.name }}
+                      
+                    </p>
+                    
+                  </div>
+                </div>
+              </template>
+            </Column>
+        </DataTable>
+      </div>
+      <template #footer>
+        <Button :label="$t('common.close')" icon="pi pi-times" class="p-button-rounded p-button-primary" @click="closeModal" />
+        <!-- <Button :label="$t('common.send')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="rejectPlan" /> -->
+      </template>
+    </Dialog>
   <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent" :items="selectedEvent ? selectedEvent.children : null"
                        :isMain="!!selectedEvent" :plan-data="plan" @hide="hideDialog(dialog.add)"/>
   <work-plan-event-edit-modal v-if="dialog.edit.state" :visible="dialog.edit.state" :planData="plan" :isEditResponsiveUsers="editRespUser" :event="selectedEvent" :copiedEvent="selectedEvent" @hide="hideDialog(dialog.edit)"/>
@@ -301,6 +342,8 @@ import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import DocState from "@/enum/docstates/index";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import RolesByName from "@/components/smartenu/RolesByName.vue";
+import {ContragentService} from "@/service/contragent.service";
+import { log } from "qrcode/lib/core/galois-field";
 
 export default {
   name: "WorkPlanEvent",
@@ -456,6 +499,7 @@ export default {
       oldPlan: false,
       documentFiles: null,
       service: new DocService(),
+      contragentService: new ContragentService(),
       DocState: DocState,
       filtered: false,
       stages: [],
@@ -473,6 +517,7 @@ export default {
       departments: [],
       loginedUser: JSON.parse(localStorage.getItem("loginedUser")),
       selectedDepartment: this.loginedUser?.mainPosition?.department?.id || null,
+      analyzerModalView: false
     }
   },
   created() {
@@ -558,6 +603,32 @@ export default {
   },
   methods: {
     findRole: findRole,
+    // getSummaryDeparmentUser(userID){
+    //   const user = {
+    //     filter: {
+    //         userIDs: [userID]
+    //     }
+    //     };
+
+    //     this.contragentService.getPersons(user).then(
+    //     (resp) => {
+    //         if (resp && resp?.data && resp?.data?.foundUsers.length > 0) {
+    //             let foundUser = resp.data.foundUsers[0]
+    //             console.log("foundUser:", foundUser.mainPosition.name);
+    //             let mainPosition = foundUser.mainPosition.name
+    //             return mainPosition
+
+                
+    //         }
+    //     }
+    //     ).catch((err) => {
+    //       showMessage('error', t(common.error), err)
+    //     }
+    //     );
+    // },
+    analyzeClick(){
+      this.analyzerModalView = true;
+    },
     async getDepartments() {
       this.departments = [];
       await this.planService.getDepartments(parseInt(this.work_plan_id)).then(res => {
@@ -1559,6 +1630,10 @@ export default {
     display: flex;
     align-items: center;
     gap: 10px;
+  }
+
+  .hdrStyle {
+    background-color: #d3d3d3; color: black; font-weight: bold; border: 1px solid #999999;
   }
   
 }

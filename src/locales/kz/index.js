@@ -1522,7 +1522,9 @@ export default {
         analyzer: {
             createAnalysis: "Талдау жасау",
             analyzerButtonTitle: "Таңдалған сүзгілер бойынша деректерді талдау",
-            eventStatus: "Статусы бойынша"
+            eventStatus: "Статусы бойынша",
+            universityAnalysis: "Университет бойынша жалпы талдау",
+            analysisResult: "Талдау нәтижесінің визуализациясы"
         }
     },
     educomplex: {

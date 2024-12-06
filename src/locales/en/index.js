@@ -1504,7 +1504,9 @@ export default {
         analyzer: {
             createAnalysis: "Analyze",
             analyzerButtonTitle: "Analyze data based on selected filters",
-            eventStatus: "By Status"
+            eventStatus: "By Status",
+            universityAnalysis: "General analysis of the university",
+            analysisResult: "Visualization of the analysis result"
         }
     },
     queue: {

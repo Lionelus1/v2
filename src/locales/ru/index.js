@@ -1513,9 +1513,11 @@ export default {
         changeCreatedPerson: "Изменить созданное лицо",
         requiredCreatedPerson: "Поле созданное лицо должно быть заполнено",
         analyzer: {
-            createAnalysis: "Анализировать",
+            createAnalysis: "Запустить анализ",
             analyzerButtonTitle: "Анализируйте данные по выбранным фильтрам",
-            eventStatus: "По статусу"
+            eventStatus: "По статусу",
+            universityAnalysis: "Общий анализ по Вузу",
+            analysisResult: "Результат анализа"
         }
     },
     educomplex: {
