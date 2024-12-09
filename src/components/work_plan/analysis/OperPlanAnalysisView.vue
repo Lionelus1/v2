@@ -35,6 +35,7 @@
 
         </Toolbar>
     </div>
+    <ProgressBar v-if="loading" class="mb-3" mode="indeterminate" style="height: .5em"/>
     
 </div>
 
