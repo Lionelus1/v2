@@ -164,6 +164,39 @@
     </template>
   </Dialog>
 
+  <!--  информация опроекте-->
+  <Dialog
+      v-if="dialog.projectInfo.state"
+      v-model:visible="dialog.projectInfo.state"
+      :style="{ width: '50%' }"
+      :header="$t('common.projectInfo')"
+      :modal="true"
+      class="p-fluid"
+  >
+    <div class="card">
+      <TabView>
+        <TabPanel :header="$t('common.mainInfo')">
+          <p class="m-0">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+          </p>
+        </TabPanel>
+        <TabPanel :header="$t('common.fundInfo')">
+          <p class="m-0">
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim
+            ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.
+          </p>
+        </TabPanel>
+        <TabPanel :header="$t('common.resultInfo')">
+          <p class="m-0">
+            At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui
+            officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.
+          </p>
+        </TabPanel>
+      </TabView>
+    </div>
+  </Dialog>
+
   <Dialog v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" :closable="false" v-model:visible="respPersonDialog" modal :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
     <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
                   <label>{{ $t('workPlan.summaryDepartment') }}</label>
@@ -416,6 +449,9 @@ export default {
           state: false
         },
         uploadAdditionalFile: {
+          state: false
+        },
+        projectInfo: {
           state: false
         }
       },
@@ -1210,6 +1246,9 @@ export default {
       this.getPlan()
       this.getEventsTree(this.parentNode)
     },
+    hideDialogProjectInfo(dialog) {
+      dialog.state = false
+    },
     canExecuteEvent() {
       const isStatusValid = [1, 4, 5, 6, 8].includes(this.selectedEvent.status.work_plan_event_status_id);
       return (this.isPlanCreator || this.isUserApproval(this.selectedEvent)) &&
@@ -1466,6 +1505,14 @@ export default {
           icon: 'fa-solid fa-eye',
           command: () => {
             this.showDialog(this.dialog.uploadAdditionalFile)
+          }
+        },
+        {
+          label: this.$t('common.projectInfo'),
+          visible: true,
+          icon: 'fa-solid fa-info',
+          command: () => {
+            this.showDialog(this.dialog.projectInfo)
           }
         }
       ]
