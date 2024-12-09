@@ -1901,11 +1901,6 @@ export default {
           command: () => {
             if(this.loginedStudentData){
               this.navigateToJournalReports()
-              this.$toast.add({
-                severity: 'success',
-                summary: this.$t('common.success'),
-                life: 3000,
-              });
             }else{
               this.$toast.add({
                 severity: 'warning',

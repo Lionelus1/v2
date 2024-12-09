@@ -140,6 +140,19 @@
         <Sidebar v-model:visible="showReportDocInfo3" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal3">
           <DocSignaturesInfo :docIdParam="dReports[3].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 3)"></DocSignaturesInfo>
         </Sidebar>
+        <div class="field" v-if="findRole(null, 'student')">
+          <TinyEditor
+              disabled="true"
+              v-model="headConcModel"
+              :init="{
+                menubar: false, // Отключить меню
+                toolbar: false  // Убрать панель инструментов
+              }"
+              :height="300"
+              :style="{ height: '80%', width: '100%' }"
+          />
+          <!-- <ToolbarMenu :data="toolbarMenus"/>-->
+        </div>
         <div class="field" v-if="!findRole(null, 'student') && visibleSendToApproveHeadConc()">
           <TinyEditor v-model="headConcModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
           <ToolbarMenu :data="toolbarMenus"/>
@@ -163,6 +176,20 @@
         <Sidebar v-model:visible="showReportDocInfo4" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal4">
           <DocSignaturesInfo :docIdParam="dReports[4].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 4)"></DocSignaturesInfo>
         </Sidebar>
+
+        <div class="field" v-if="findRole(null, 'student')">
+          <TinyEditor
+              disabled="true"
+              v-model="assignModel"
+              :init="{
+                menubar: false, // Отключить меню
+                toolbar: false  // Убрать панель инструментов
+              }"
+              :height="300"
+              :style="{ height: '80%', width: '100%' }"
+          />
+          <!-- <ToolbarMenu :data="toolbarMenus"/>-->
+        </div>
 
         <div class="field" v-if="!findRole(null, 'student') && visibleSendToApproveAssign()">
           <TinyEditor v-model="assignModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
@@ -812,9 +839,15 @@ const openModal = async () => {
 
 
   if(active.value === 0) {
+    if(contrData.value){
+      approval_users.value[0].users.push(contrData.value);
+    }
     showModal0.value = true;
   }
   else if(active.value === 1) {
+    if(contrData.value){
+      approval_users.value[0].users.push(contrData.value);
+    }
     showModal1.value = true;
   }
   else if(active.value === 2) {
