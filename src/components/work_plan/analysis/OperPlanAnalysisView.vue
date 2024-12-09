@@ -1,7 +1,6 @@
 <template>
 <div class="col-12">
     <TitleBlock :title="$t('workPlan.analyzer.analysisResult')" :show-back-button="true" />
-    {{ workPlanID }}
     <div class="card">
         <Toolbar>
             <template #start>
