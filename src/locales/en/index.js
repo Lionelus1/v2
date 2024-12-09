@@ -1506,7 +1506,11 @@ export default {
             analyzerButtonTitle: "Analyze data based on selected filters",
             eventStatus: "By Status",
             universityAnalysis: "General analysis of the university",
-            analysisResult: "Visualization of the analysis result"
+            analysisResult: "Analysis result",
+            executionLevel: "Completion percentage",
+            executionStatus: "Execution status",
+            nonExecutionRisk: "Failure risk",
+            filterTitle: "Apply a filter"
         }
     },
     queue: {

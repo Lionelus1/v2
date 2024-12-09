@@ -552,6 +552,12 @@ const routes = [
                         component: load('work_plan/WorkPlanReportView'),
                         beforeEnter: ifAuthenticated,
                     },
+                    {
+                        path: 'analysis/:id',
+                        name: 'WorkPlanAnalysisView',
+                        component: load('work_plan/analysis/OperPlanAnalysisView'),
+                        beforeEnter: ifAuthenticated,
+                    },
                 ]
             },
             {

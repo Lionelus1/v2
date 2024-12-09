@@ -250,17 +250,26 @@
         </div>
       </div>
       <div class="field p-fluid">
-        <label>{{ $t('dissertation.dissQuarter') }}</label>
-        <Dropdown :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" class="w-full"/>
-      </div>
-      <div class="field p-fluid">
-        <label>{{ $t('workPlan.analyzer.eventStatus') }}</label>
-        <div class="card flex flex-wrap justify-content-left gap-3">
-          <div v-for="status of statuses" :key="status.id" class="flex">
-            <Checkbox v-model="selectedAnalyzeStatuses" inputId="status.id" :value="status.value" />
-            <label for="ingredient1" class="ml-2"> {{ $i18n.locale === 'kz' ? status.nameRu : $i18n.locale === 'ru' ? status.nameKz : status.nameEn }} </label>
-          </div>
-    </div>
+        <label for="status-filter">{{ $t('common.status') }}</label>
+        <Dropdown v-model="filters.status.value" optionValue="" :options="statuses" :placeholder="$t('common.select')" class="p-column-filter"
+                  :showClear="true">
+          <template #value="slotProps">
+                      <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
+                        {{
+                          $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
+                              ? slotProps.value.nameRu : slotProps.value.nameEn
+                        }}
+                      </span>
+          </template>
+          <template #option="slotProps">
+                      <span :class="'customer-badge status-' + slotProps.option.id">
+                        {{
+                          $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
+                              ? slotProps.option.nameRu : slotProps.option.nameEn
+                        }}
+                      </span>
+          </template>
+        </Dropdown>
       </div>
       <div class="p-fluid">
         <div class="field">
@@ -271,28 +280,14 @@
           <Button icon="pi pi-chart-bar" :label="$t('workPlan.analyzer.universityAnalysis')" class="ml-1 p-button p-component" severity="success" @click="analyzeClick()" />
         </div>
         <div class="field">
-          <Button icon="pi pi-chart-line" :label="$t('workPlan.analyzer.createAnalysis')" class="ml-1" @click="analyzeClick()" />
+          <!-- navigateToAnalysis -->
+          <Button icon="pi pi-chart-line" :label="$t('workPlan.analyzer.createAnalysis')" class="ml-1" @click="navigateToAnalysis()" /> 
         </div>
       </div>
   </OverlayPanel>
   <Dialog :header="$t('workPlan.analyzer.analysisResult')" v-model:visible="analyzerModalView" :style="{ width: '850px' }" class="p-fluid mb-2">
       <div class="field">
          <DataTable :value="data" tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;">
-            <Column field="eventName" :header="$t('workPlan.eventName')" headerStyle="background-color: #f4f4f4; color: black; font-weight: bold; border: 1px solid #ddd;">
-              <template #body="{data}">
-                  {{data.event_name}}
-              </template>
-            </Column>
-            <Column field="eventUnit" :header="$t('common.unit')" headerStyle="background-color: #f4f4f4; color: black; font-weight: bold; border: 1px solid #ddd;">
-              <template #body="{data}">
-                  {{data.unit}}
-              </template>
-            </Column>
-            <Column field="eventQuarter" :header="$t('workPlan.quarter')" headerStyle="background-color: #f4f4f4; color: black; font-weight: bold; border: 1px solid #ddd;">
-              <template #body="{data}">
-                {{ initQuarter(data.quarter) }}
-              </template>
-            </Column>
             <Column field="eventSummaryDepartment" :header="$t('workPlan.summary')" headerStyle="background-color: #f4f4f4; color: black; font-weight: bold; border: 1px solid #ddd;">
               <template #body="{data}">
                 <div v-if="data.user && data.user.length > 0">
@@ -306,7 +301,25 @@
                 </div>
               </template>
             </Column>
+            <Column field="eventUnit" :header="$t('workPlan.analyzer.executionLevel')" headerStyle="background-color: #f4f4f4; color: black; font-weight: bold; border: 1px solid #ddd;">
+              <template #body="{}">
+                  {{"100%"}}
+              </template>
+            </Column>
+            <Column field="eventUnit" :header="$t('workPlan.analyzer.executionStatus')" headerStyle="background-color: #f4f4f4; color: black; font-weight: bold; border: 1px solid #ddd;">
+              <template #body="{}">
+                  {{""}}
+              </template>
+            </Column>
+            <Column field="eventUnit" :header="$t('workPlan.analyzer.nonExecutionRisk')" headerStyle="background-color: #f4f4f4; color: black; font-weight: bold; border: 1px solid #ddd;">
+              <template #body="{}">
+                  {{"green"}}
+              </template>
+            </Column>
         </DataTable>
+        <div class="card flex justify-content-center">
+            <Chart type="pie" :data="chartData" :options="chartOptions" class="w-full md:w-30rem" />
+        </div>
       </div>
       <template #footer>
         <Button :label="$t('common.close')" icon="pi pi-times" class="p-button-rounded p-button-primary" @click="closeModal" />
@@ -517,7 +530,9 @@ export default {
       departments: [],
       loginedUser: JSON.parse(localStorage.getItem("loginedUser")),
       selectedDepartment: this.loginedUser?.mainPosition?.department?.id || null,
-      analyzerModalView: false
+      analyzerModalView: false,
+      chartData: null,
+      chartOptions: null
     }
   },
   created() {
@@ -530,6 +545,8 @@ export default {
 
   },
   mounted() {
+    this.chartData = this.setChartData();
+        this.chartOptions = this.setChartOptions();
     this.emitter.on('workPlanEventIsAdded', (data) => {
       if (data.is_success && !data.is_main) {
         this.getEventsTree(this.parentNode);
@@ -603,29 +620,36 @@ export default {
   },
   methods: {
     findRole: findRole,
-    // getSummaryDeparmentUser(userID){
-    //   const user = {
-    //     filter: {
-    //         userIDs: [userID]
-    //     }
-    //     };
+    setChartData() {
+            const documentStyle = getComputedStyle(document.body);
 
-    //     this.contragentService.getPersons(user).then(
-    //     (resp) => {
-    //         if (resp && resp?.data && resp?.data?.foundUsers.length > 0) {
-    //             let foundUser = resp.data.foundUsers[0]
-    //             console.log("foundUser:", foundUser.mainPosition.name);
-    //             let mainPosition = foundUser.mainPosition.name
-    //             return mainPosition
+            return {
+                labels: ['Ректорат', 'Департамент цифрового развития', 'Басқасы'],
+                datasets: [
+                    {
+                        data: [540, 325, 702],
+                        backgroundColor: [documentStyle.getPropertyValue('--cyan-500'), documentStyle.getPropertyValue('--orange-500'), documentStyle.getPropertyValue('--gray-500')],
+                        hoverBackgroundColor: [documentStyle.getPropertyValue('--cyan-400'), documentStyle.getPropertyValue('--orange-400'), documentStyle.getPropertyValue('--gray-400')]
+                    }
+                ]
+            };
+        },
+        setChartOptions() {
+            const documentStyle = getComputedStyle(document.documentElement);
+            const textColor = documentStyle.getPropertyValue('--text-color');
 
-                
-    //         }
-    //     }
-    //     ).catch((err) => {
-    //       showMessage('error', t(common.error), err)
-    //     }
-    //     );
-    // },
+            return {
+                plugins: {
+                    legend: {
+                        labels: {
+                            usePointStyle: true,
+                            color: textColor
+                        }
+                    }
+                }
+            };
+        },
+  
     analyzeClick(){
       this.analyzerModalView = true;
     },
@@ -1056,6 +1080,9 @@ export default {
     },
     navigateToReports() {
       this.$router.push({name: 'WorkPlanReport', params: {id: this.work_plan_id}});
+    },
+    navigateToAnalysis() {
+      this.$router.push({name: 'WorkPlanAnalysisView', params: {id: this.work_plan_id}});
     },
     isUserApproval(data) {
       let userApproval = false;
@@ -1635,6 +1662,13 @@ export default {
   .hdrStyle {
     background-color: #d3d3d3; color: black; font-weight: bold; border: 1px solid #999999;
   }
+
+  .custom-table {
+    border: 1px solid #ddd;
+    padding: 5px;
+  }
+
+  
   
 }
 </style>

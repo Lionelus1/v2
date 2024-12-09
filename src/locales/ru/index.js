@@ -1517,7 +1517,11 @@ export default {
             analyzerButtonTitle: "Анализируйте данные по выбранным фильтрам",
             eventStatus: "По статусу",
             universityAnalysis: "Общий анализ по Вузу",
-            analysisResult: "Результат анализа"
+            analysisResult: "Результата анализа",
+            executionLevel: "Процент завершения",
+            executionStatus: "Статус выполнения",
+            nonExecutionRisk: "Риск недостижения",
+            filterTitle: "Применить фильтр"
         }
     },
     educomplex: {

@@ -1524,7 +1524,12 @@ export default {
             analyzerButtonTitle: "Таңдалған сүзгілер бойынша деректерді талдау",
             eventStatus: "Статусы бойынша",
             universityAnalysis: "Университет бойынша жалпы талдау",
-            analysisResult: "Талдау нәтижесінің визуализациясы"
+            analysisResult: "Талдау нәтижесі",
+            executionLevel: "Орындалу пайызы",
+            executionStatus: "Орындалу мәртебесі",
+            nonExecutionRisk: "Орындамау тәуекелі",
+            filterTitle: "Сүзгіні қолдану"
+
         }
     },
     educomplex: {
