@@ -64,7 +64,9 @@
           </TreeTable>
         </div>
       </TabPanel>
-      <TabPanel :header="$t('common.members')" v-if="isPlanCreator && isPracticeManager && !findRole(null, 'student')">
+      <TabPanel :header="$t('common.members')" v-if="
+      findRole(null, 'career_administrator') ||
+      (isPlanCreator && isPracticeManager && !findRole(null, 'student'))">
 
         <div v-if="members && filterData">
 

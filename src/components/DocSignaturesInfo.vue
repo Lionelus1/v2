@@ -450,7 +450,9 @@ export default {
                     ) &&
                     this.docInfo.docType === Enum.DocType.DT_Request) ||
                 this.docInfo.docHistory.setterId === this.loginedUserId ||
-                this.docInfo.creatorID === this.loginedUserId;
+                this.docInfo.creatorID === this.loginedUserId ||
+                (this.findRole(null, RolesEnum.roles.Student) && this.docInfo.docType === Enum.DocType.WorkPlan)||
+                (this.findRole(null, RolesEnum.roles.Teacher) && this.docInfo.docType === Enum.DocType.RequestList);
           }
 
           if (this.signatures) {

@@ -140,7 +140,7 @@
         <Sidebar v-model:visible="showReportDocInfo3" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal3">
           <DocSignaturesInfo :docIdParam="dReports[3].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 3)"></DocSignaturesInfo>
         </Sidebar>
-        <div class="field" v-if="findRole(null, 'student')">
+        <div class="field" v-if="dReports && dReports[3].doc_info && !(dReports[3].doc_info.docHistory.stateId === 1 || dReports[3].doc_info.docHistory.stateId === 4)">
           <TinyEditor
               disabled="true"
               v-model="headConcModel"
@@ -177,7 +177,7 @@
           <DocSignaturesInfo :docIdParam="dReports[4].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 4)"></DocSignaturesInfo>
         </Sidebar>
 
-        <div class="field" v-if="findRole(null, 'student')">
+        <div class="field" v-if="dReports && dReports[3].doc_info && !(dReports[3].doc_info.docHistory.stateId === 1 || dReports[3].doc_info.docHistory.stateId === 4)">
           <TinyEditor
               disabled="true"
               v-model="assignModel"

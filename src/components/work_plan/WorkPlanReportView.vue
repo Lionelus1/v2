@@ -5,7 +5,7 @@
     <div class="col-12" v-if="report && plan">
       <div class="card" v-if="report && report?.doc_info">
         <div>
-          <TitleBlock :title="report.report_type === 5 ? $t(report.report_name) : report.report_name" :show-back-button="true"/>
+          <TitleBlock :title="report.doc_info.docType === 15 ? $t(report.report_name) : report.report_name" :show-back-button="true"/>
           <span v-if="report" :class="'ml-3 customer-badge status-' + report?.doc_info.docHistory.stateEn">
             {{ $t('common.states.' + report?.doc_info.docHistory.stateEn) }}
           </span>

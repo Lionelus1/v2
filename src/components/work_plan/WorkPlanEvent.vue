@@ -1847,9 +1847,7 @@ export default {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
           color: this.isFinish ? '' : 'green',
-          visible: this.isWorkSchedule ?
-              ((this.isMastersPlan || this.isDoctorsPlan) && (!this.isFinish || this.isApproval)) || (this.isFinish && this.planDoc &&
-                  !(this.isCreatedPlan || this.isPlanUnderRevision)) && (!findRole(null, 'student') && this.isWorkSchedule) :
+          visible:
               ((this.isMastersPlan || this.isDoctorsPlan) && (!this.isFinish || this.isApproval)) || (this.isFinish && this.planDoc &&
                   !(this.isCreatedPlan || this.isPlanUnderRevision)),
           command: () => {
