@@ -1524,7 +1524,7 @@ export default {
             analyzerButtonTitle: "Таңдалған сүзгілер бойынша деректерді талдау",
             eventStatus: "Статусы бойынша",
             universityAnalysis: "Университет бойынша жалпы талдау",
-            analysisResult: "Талдау нәтижесі",
+            analysisResult: "Талдау",
             executionLevel: "Орындалу пайызы",
             executionStatus: "Орындалу мәртебесі",
             nonExecutionRisk: "Орындамау тәуекелі",

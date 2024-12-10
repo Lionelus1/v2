@@ -1517,7 +1517,7 @@ export default {
             analyzerButtonTitle: "Анализируйте данные по выбранным фильтрам",
             eventStatus: "По статусу",
             universityAnalysis: "Общий анализ по Вузу",
-            analysisResult: "Результата анализа",
+            analysisResult: "Анализ",
             executionLevel: "Процент завершения",
             executionStatus: "Статус выполнения",
             nonExecutionRisk: "Риск недостижения",

@@ -1506,7 +1506,7 @@ export default {
             analyzerButtonTitle: "Analyze data based on selected filters",
             eventStatus: "By Status",
             universityAnalysis: "General analysis of the university",
-            analysisResult: "Analysis result",
+            analysisResult: "Analysis",
             executionLevel: "Completion percentage",
             executionStatus: "Execution status",
             nonExecutionRisk: "Failure risk",
