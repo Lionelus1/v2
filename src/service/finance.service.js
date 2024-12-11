@@ -18,5 +18,7 @@ export class FinanceService {
     deleteServiceCatalog(id) {
         return api.delete(`/service-catalog/delete/${id}`, {headers: getHeader()})
     }
-
+    getServiceFinance(){
+        return api.post(`/service-catalog/finance`, {}, {headers: getHeader()})
+    }
 }

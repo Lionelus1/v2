@@ -958,6 +958,18 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/categories-finances',
+                name: 'categoriesFinances',
+                component: () => import('./components/CategoriesFinances'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/catfinances/:categoryID',
+                name: 'financeCat',
+                component: () => import('./components/MyFinances'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/integrations',
                 name: 'IntegrationList',
                 component: load('integration/IntegrationList'),

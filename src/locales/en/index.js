@@ -224,6 +224,9 @@ export default {
         paymentForm: 'Payment Form',
         downloadResume: 'Download resume',
         share:'Share',
+        myFinances: 'My finances',
+        finance:'Finance',
+        categoriesFinance:'Finance Categories',
         states: {
             submitted: "Submitted",
             approved: "Approved",
@@ -391,7 +394,9 @@ export default {
         viewOnlyCheckbox: 'Show in viewing mode',
         specialNeedsJobs: 'Jobs for People with Special Needs',
         availabilityForSpecialNeeds: 'Available for People with Special Needs',
-        getDataError: "Error while receiving data"
+        getDataError: "Error while receiving data",
+        services: "Services",
+        amount: "Amount"
     },
     positions: {
         menuTitle: "Change position",
