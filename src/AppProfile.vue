@@ -48,7 +48,7 @@
         </li>
         <li v-if="!this.findRole(null, 'student')">
           <button @click="myFinances" class="p-link">
-            <i :class="{active: activeItem === 'myFinances'}" class="pi pi-wallet"></i><span :class="{active: activeItem === 'myFinances'}" >{{ $t("common.myFinances") }}</span>
+            <i :class="{active: activeItem === 'categories-finances'}" class="pi pi-wallet"></i><span :class="{active: activeItem === 'categories-finances'}" >{{ $t("common.myFinances") }}</span>
           </button>
         </li>
         <li>
@@ -131,9 +131,9 @@ export default {
       this.$router.push({path: "/qr"})
     },
     myFinances(){
-      this.updateParentVariable('myFinances');
-      localStorage.setItem('activeItem', 'myFinances');
-      this.$router.push({path: "/myFinances"})
+      this.updateParentVariable('categories-finances');
+      localStorage.setItem('activeItem', 'categories-finances');
+      this.$router.push({path: "/categories-finances"})
     },
     changeRole() {
       this.$refs.positionChangeDialog.show();

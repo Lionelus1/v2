@@ -1,6 +1,7 @@
 <template>
   <div class="col-12">
-    <h3>{{ $t('common.finance') }}</h3>
+<!--    <h3>{{ $t('common.finance') }}</h3>-->
+    <TitleBlock :title="$t('common.finance')" :show-back-button="true"/>
     <div class="card">
       <DataTable :lazy="true" :rowsPerPageOptions="[10, 25, 50]" :value="data" dataKey="id" :rowHover="true" :loading="loading">
         <template #empty> {{ $t('common.noData') }}</template>

@@ -225,6 +225,7 @@ export default {
         share:'Share',
         myFinances: 'My finances',
         finance:'Finance',
+        categoriesFinance:'Finance Categories',
         states: {
             submitted: "Submitted",
             approved: "Approved",

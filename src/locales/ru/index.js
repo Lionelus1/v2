@@ -225,6 +225,7 @@ export default {
         share:'Поделиться',
         myFinances: 'Мои финансы',
         finance:'Финансы',
+        categoriesFinance:'Категории Финансы',
         states: {
             submitted: "Подана",
             created: "создан",

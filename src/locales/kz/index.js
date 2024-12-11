@@ -226,6 +226,7 @@ export default {
         share:'Бөлісу',
         myFinances: 'Менің қаржым',
         finance:'Финансы',
+        categoriesFinance:'Қаржы Санаттары',
         states: {
             submitted: "Берілген",
             created: "Құрылды",
