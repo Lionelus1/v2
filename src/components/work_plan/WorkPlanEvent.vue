@@ -1462,7 +1462,7 @@ export default {
           visible:
               this.isFinish &&
               !this.isSciencePlan &&
-              (this.isApproval || this.isPlanCreator || this.isAdmin) &&
+              (this.isApproval || this.isPlanCreator || this.isAdmin || this.isRespUser) &&
               (!(this.isMastersPlan || this.isDoctorsPlan) ||
                   this.isPlanApproved),
           command: () => {
@@ -1541,8 +1541,10 @@ export default {
       return this.data && this.data.length > 0;
     },
     isRespUser() {
-      return this.plan && this.respUserExists(this.loginedUserId);
-    },
+      return this.plan?.doc_info?.approvalStages?.some((stage) =>
+          stage?.users?.some((user) => user?.userID === this.loginedUserId)
+      ) || false;
+    }
   },
 };
 </script>
