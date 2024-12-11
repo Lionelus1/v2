@@ -37,16 +37,16 @@ export default {
           descriptionen: "Financial obligations",
           organizerID: 1,
         },
-        {
-          namekz: "Қаржылық операциялар",
-          nameru: "Финансовые операции",
-          nameen: "Financial transactions",
-          isActive: 0,
-          descriptionkz: "Қаржылық операциялар",
-          descriptionru: "Финансовые операции",
-          descriptionen: "Financial transactions",
-          organizerID: 1,
-        }
+        // {
+        //   namekz: "Қаржылық операциялар",
+        //   nameru: "Финансовые операции",
+        //   nameen: "Financial transactions",
+        //   isActive: 0,
+        //   descriptionkz: "Қаржылық операциялар",
+        //   descriptionru: "Финансовые операции",
+        //   descriptionen: "Financial transactions",
+        //   organizerID: 1,
+        // }
       ],
     }
   },

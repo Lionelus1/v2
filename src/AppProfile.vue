@@ -46,7 +46,7 @@
             <i :class="{active: activeItem === 'qr'}" class="pi pi-fw pi-qrcode"></i><span :class="{active: activeItem === 'qr'}" >{{ $t("common.qrGenerator") }}</span>
           </button>
         </li>
-        <li v-if="!this.findRole(null, 'student')">
+        <li>
           <button @click="myFinances" class="p-link">
             <i :class="{active: activeItem === 'categories-finances'}" class="pi pi-wallet"></i><span :class="{active: activeItem === 'categories-finances'}" >{{ $t("common.myFinances") }}</span>
           </button>

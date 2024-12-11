@@ -386,7 +386,9 @@ export default {
         viewOnlyCheckbox: 'Көру режимінде көрсету',
         specialNeedsJobs: 'Ерекше қажеттіліктері бар адамдарға арналған жұмыс орындары',
         availabilityForSpecialNeeds: 'Ерекше қажеттіліктері бар адамдар үшін қол жетімді',
-        getDataError: "Деректерді алу кезінде қателіктер туындады"
+        getDataError: "Деректерді алу кезінде қателіктер туындады",
+        services: "Қызметтер",
+        amount: "Сомасы"
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
