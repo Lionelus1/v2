@@ -1499,7 +1499,11 @@ export default {
         editRespUser: "Edit responsive person",
         modifiedPerson: "Modified",
         changeCreatedPerson: "Change creator",
-        requiredCreatedPerson: "The creator field must be filled"
+        requiredCreatedPerson: "The creator field must be filled",
+        eventResultMessages:{
+            resultSavedMessageTitle: "Result Saved!",
+            resultSavedMessageBody: "Your result has been successfully saved but has not yet been sent for review. To submit the result for review, click the 'Send' button. Without this action, your work will not be reviewed."
+        }
     },
     queue: {
         title: "Queue",

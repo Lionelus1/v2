@@ -1510,7 +1510,11 @@ export default {
         editRespUser: "Изменить ответственное лицо",
         modifiedPerson: "Изменить",
         changeCreatedPerson: "Изменить созданное лицо",
-        requiredCreatedPerson: "Поле созданное лицо должно быть заполнено"
+        requiredCreatedPerson: "Поле созданное лицо должно быть заполнено",
+        eventResultMessages:{
+            resultSavedMessageTitle: "Результат сохранен!",
+            resultSavedMessageBody: "Ваш результат успешно сохранен, но еще не отправлен на проверку. Чтобы отправить результат на проверку, нажмите кнопку 'Отправить'. Без этого результата работа не будет проверена."
+        }
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",
