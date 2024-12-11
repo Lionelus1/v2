@@ -1517,7 +1517,11 @@ export default {
         editRespUser: "Жауапты тұлғаны өзгерту",
         modifiedPerson: "Өзгеріс енгізген",
         changeCreatedPerson: "Құрушыны өзгерту",
-        requiredCreatedPerson: "Құрушыны өрісін міндетті түрде толтыру керек"
+        requiredCreatedPerson: "Құрушыны өрісін міндетті түрде толтыру керек",
+        eventResultMessages:{
+            resultSavedMessageTitle: "Нәтиже сақталды!",
+            resultSavedMessageBody: "Сіздің нәтижеңіз сәтті сақталды, бірақ әлі тексеруге жіберілген жоқ. Нәтижені тексеруге жіберу үшін 'Жіберу' батырмасын басыңыз. Олай болмаған жағдайда, жұмыс тексерілмейді"
+        }
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",

@@ -985,7 +985,12 @@ export default {
         }
         this.files = [];
         this.submitted = false
-        this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+        this.$toast.add({
+          severity: 'success', 
+          summary: this.$t('workPlan.eventResultMessages.resultSavedMessageTitle'),
+          detail: this.$t('workPlan.eventResultMessages.resultSavedMessageBody'), 
+          life: 20000
+        });
       }).catch(error => {
         this.isBlockUI = false;
         this.submitted = false
