@@ -20,6 +20,7 @@ export default {
         OnlineCourseAdministrator: "online_course_administrator",
         TemplateManager: "template_manager",
         DormitoryAdministration: "dormitory_administration",
-        OrganizationManager: "organization_manager"
+        OrganizationManager: "organization_manager",
+        Practice_responsible: "practice_responsible"
     }
 }
