@@ -1,6 +1,5 @@
 <template>
   <div class="col-12">
-    <!-- {{ authUser }} -->
       {{selectedDepartment}}
     <TitleBlock :title="$t('workPlan.analyzer.analysisResult')" :show-back-button="true"/>
     <ProgressBar v-if="loading" class="mb-3" mode="indeterminate" style="height: .5em"/>
@@ -18,7 +17,7 @@
                 :show-clear="true"
                 :placeholder="`${$t('hikvision.department')} ${$t('common.select').toLowerCase()}`"
             />
-            <Dropdown
+            <!-- <Dropdown
                 class="flex-item"
                 v-model="selectedDepartment"
                 :options="departments"
@@ -27,7 +26,7 @@
                 :filter="true"
                 :show-clear="true"
                 :placeholder="$t('hikvision.department')"
-            />
+            /> -->
           </div>
 
         </template>
@@ -38,7 +37,33 @@
 
       </Toolbar>
     </div>
-    <DataTable :value="data"
+    <DataTable :value="computedAnalysisData"
+               tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;">
+      <Column sortable field="eventSummaryDepartment" :header="$t('workPlan.summary')"
+              headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
+        <template #body="{data}">
+          {{ data?.department?.name }}
+        </template>
+      </Column>
+      <Column sortable field="eventUnit" :header="$t('workPlan.analyzer.executionLevel')"
+              headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
+              <template #body="{ data }">
+                {{ data.executionLevel }}%
+              </template>
+      </Column>
+      <Column sortable field="eventUnit" :header="$t('workPlan.analyzer.executionStatus')"
+              headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
+        <template #body="{data}">
+          <span v-if="data.executionLevel > 0 && data.executionLevel < 50">{{ "Орындалмады" }}</span>
+          <span v-if="data.executionLevel > 49 && data.executionLevel < 90">{{ "Жартылай орындалды" }}</span>
+          <span v-if="data.executionLevel >= 90 && data.executionLevel <= 100">{{ "Орындалды" }}</span>
+        </template>
+      </Column>
+
+    </DataTable>
+    <br/>
+    <br/>
+    <!-- <DataTable :value="data"
                tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;">
       <Column sortable field="eventSummaryDepartment" :header="$t('workPlan.summary')"
               headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
@@ -47,9 +72,7 @@
             <div v-for="item in data.user" :key="item.id">
               <p v-if="item.is_summary_department">
                 {{ item?.user?.mainPosition?.department?.name }}
-
               </p>
-
             </div>
           </div>
         </template>
@@ -66,14 +89,7 @@
           {{ "" }}
         </template>
       </Column>
-      <Column sortable field="eventUnit" :header="$t('workPlan.analyzer.nonExecutionRisk')"
-              headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
-        <template #body="{}">
-          <span style="font-size: 60px !important;color: orange;">{{ "•" }}</span>
-
-        </template>
-      </Column>
-    </DataTable>
+    </DataTable> -->
   </div>
 
 </template>
@@ -97,6 +113,22 @@ const workPlanID = route.params.id;
 const quarter = ref(null);
 
 const data = ref([]);
+const tableAnalysisData = ref([
+  {
+    department:{
+      id:null,
+      name:null,
+      name_kz:null,
+      name_ru:null,
+      name_en:null
+    },
+    result_status:{
+      completed:[],
+      notcompleted:[],
+      partially_completed:[]
+    }
+  }
+])
 const departments = ref([]);
 
 const total = ref(0);
@@ -213,6 +245,141 @@ const getDepartments = async () => {
     }
   }
 };
+
+// watch(data, (newValue) =>{
+//   data.value.forEach(event =>{
+//     console.log("event", event.status.work_plan_event_status_id);
+    
+//     event.user.forEach(item => {
+//       if (item.is_summary_department){
+//         let info = {
+//           department: {
+//             id: item.user.mainPosition.department.id,
+//             name: item.user.mainPosition.department.name,
+//             name_kz: item.user.mainPosition.department.nameKz,
+//             name_ru: item.user.mainPosition.department.nameRu,
+//             name_en: item.user.mainPosition.department.nameEn
+//           },
+//           result_status:event.status.work_plan_event_status_id
+//         };
+//         tableAnalysisData.value.push(info)        
+//       }
+      
+//     })
+    
+    
+    
+//     //tableAnalysisData.value.push
+    
+    
+//   })
+//   console.log("table analysis data: ", tableAnalysisData.value);
+// })
+
+// watch(data, (newValue) => {
+//   tableAnalysisData.value = []
+//   data.value.forEach((event) => {
+//     console.log("event", event.status.work_plan_event_status_id);
+
+//     event.user.forEach((item) => {
+//       if (item.is_summary_department) {
+//         let departmentId = item.user.mainPosition.department.id;
+//         let existingDepartment = tableAnalysisData.value.find(
+//           (entry) => entry.department.id === departmentId
+//         );
+
+//         if (existingDepartment) {
+//           existingDepartment.result_status.push(
+//             event.status.work_plan_event_status_id
+//           );
+//         } else {
+//           tableAnalysisData.value.push({
+//             department: {
+//               id: departmentId,
+//               name: item.user.mainPosition.department.name,
+//               name_kz: item.user.mainPosition.department.nameKz,
+//               name_ru: item.user.mainPosition.department.nameRu,
+//               name_en: item.user.mainPosition.department.nameEn,
+//             },
+//             result_status: [event.status.work_plan_event_status_id],
+//           });
+//         }
+//       }
+//     });
+//   });
+
+//   console.log("table analysis data: ", tableAnalysisData.value);
+// });
+watch(data, (newValue) => {
+  tableAnalysisData.value = []; // Reset the array for fresh data
+  data.value.forEach((event) => {
+    console.log("event", event.status.work_plan_event_status_id);
+
+    event.user.forEach((item) => {
+      if (item.is_summary_department) {
+        let departmentId = item.user.mainPosition.department.id;
+        let existingDepartment = tableAnalysisData.value.find(
+          (entry) => entry.department.id === departmentId
+        );
+
+        let statusCategory = null;
+        if (event.status.work_plan_event_status_id === 2) {
+          statusCategory = "completed";
+        } else if (event.status.work_plan_event_status_id === 3) {
+          statusCategory = "notcompleted";
+        } else if (event.status.work_plan_event_status_id === 4) {
+          statusCategory = "partially_completed";
+        }
+
+        if (statusCategory) {
+          if (existingDepartment) {
+            existingDepartment.result_status[statusCategory].push(
+              event.status.work_plan_event_status_id
+            );
+          } else {
+            let newDepartment = {
+              department: {
+                id: departmentId,
+                name: item.user.mainPosition.department.name,
+                name_kz: item.user.mainPosition.department.nameKz,
+                name_ru: item.user.mainPosition.department.nameRu,
+                name_en: item.user.mainPosition.department.nameEn,
+              },
+              result_status: {
+                completed: [],
+                notcompleted: [],
+                partially_completed: [],
+              },
+            };
+            newDepartment.result_status[statusCategory].push(
+              event.status.work_plan_event_status_id
+            );
+            tableAnalysisData.value.push(newDepartment);
+          }
+        }
+      }
+    });
+  });
+
+  console.log("table analysis data: ", tableAnalysisData.value);
+});
+
+const computedAnalysisData = computed(() =>
+  tableAnalysisData.value.map((entry) => {
+    const totalStatuses =
+      entry.result_status.completed.length +
+      entry.result_status.notcompleted.length +
+      entry.result_status.partially_completed.length;
+
+    return {
+      ...entry,
+      totalItems:totalStatuses,
+      executionLevel: totalStatuses
+        ? (entry.result_status.completed.length / totalStatuses)*100
+        : 0,
+    };
+  })
+);
 
 </script>
 
