@@ -341,9 +341,14 @@ export class MenuService {
                         label: $t('Hikvision'),
                         icon: 'fa-solid fa-file-signature',
                         to: '/hikvision',
-
                     }
                 ]
+            },
+            {
+                label: $t('showcase.title'),
+                icon: 'fa-brands fa-shopify',
+                to: '/showcase',
+                visible: this.findRole('showcase')
             },
         ]
     }

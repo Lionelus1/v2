@@ -698,6 +698,14 @@ const routes = [
                 beforeEnter: ifUserRoles,
             },
             {
+                path: '/showcase',
+                name: 'ShowcaseComponent',
+                component: load('showcase/Showcase'),
+                meta: { roles: ['showcase'] },
+                beforeEnter: ifUserRoles,
+
+            },
+            {
                 path: '/hikvision',
                 name: 'HikvisionTemplate',
                 component: load('hikvision/Hikvision'),
