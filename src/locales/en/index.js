@@ -392,7 +392,10 @@ export default {
         specialNeedsJobs: 'Jobs for People with Special Needs',
         availabilityForSpecialNeeds: 'Available for People with Special Needs',
         getDataError: "Error while receiving data",
-        hide: "Hide"
+        hide: "do not show",
+        unhide: "show",
+        hiddenSuccess: "This product will not be displayed on the Site",
+        unhiddenSuccess: "This product will be displayed on the Site"
     },
     positions: {
         menuTitle: "Change position",

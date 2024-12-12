@@ -385,7 +385,10 @@ export default {
         specialNeedsJobs: 'Вакансии для людей с особыми потребностями',
         availabilityForSpecialNeeds: 'Доступно для людей с особыми потребностями',
         getDataError: "Ошибка при получении данных",
-        hide: "Стрыть"
+        hide: "не показывать",
+        unhide: "показать",
+        hiddenSuccess: "Данный продукт не будет отображатся на Сайте",
+        unhiddenSuccess: "Данный продукт будет отображатся на Сайте"
     },
     positions: {
         menuTitle: 'Поменять позицию',

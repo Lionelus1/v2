@@ -22,6 +22,7 @@
       <Column :header="$t('showcase.name')" style="min-width: 35rem">
           <template #body="{ data }">
             {{ data["title_" + locale] }}
+            <Badge style="margin-left:5px" :value="$t('web.isHidden')" v-if="data.hiden"></Badge>
           </template>
         </Column>
         <Column field="status" header="Status">
@@ -42,7 +43,7 @@
             <span v-if="data.user">&nbsp;{{ data.user.fullName }}</span>
           </template>
         </Column>
-        <Column :header="$t('showcase.publication')" style="min-width: 35rem">
+        <Column :header="$t('showcase.publication')" >
           <template #body="{ data }">
             {{ new Date(data.state.create_date).toLocaleDateString( 'ru-RU', {
             day: '2-digit',
@@ -80,9 +81,8 @@ import { useI18n } from "vue-i18n";
 import { useToast } from "primevue/usetoast";
 import AddShowcase from "./AddShowcase.vue";
 import { ShowcaseService } from "@/service/showcase.service";
-import Button from "primevue/button";
-import axios from "axios";
-import {downloadFile, fileRoute, smartEnuApi} from "@/config/config";
+import { fileRoute, smartEnuApi} from "@/config/config";
+import { useConfirm } from 'primevue/useconfirm';
 
 const lazyParams = {
   page: 0,
@@ -125,8 +125,8 @@ const initItems = (data) => [
     command: () => deleteValue(data),
   },
   {
-    label: t("common.hide"),
-    icon: "fa-solid fa-eye-slash",
+    label: data.hiden ? t("common.unhide") : t("common.hide"),
+    icon: data.hiden ? "fa-solid fa-eye" : "fa-solid fa-eye-slash",
     command: () => hideValue(data),
   },
 ];
@@ -148,41 +148,62 @@ const updateStatus = (data) => {
   showcaseService.updateStatus(requestData)
       .then(response => {
         toast.add({ severity: "success", summary: t("common.success"), life: 3000 });
-        getShowcase();  // Перезагружаем данные
+        getShowcase();
       })
       .catch(error => {
         toast.add({ severity: "error", summary: t("common.error"), life: 3000 });
       });
 };
 
+const confirm = useConfirm();
+
 const deleteValue = (selectedNode) => {
   if (!selectedNode) return;
   const req = { id: selectedNode.id };
-
-  loading.value = true;
-
-  showcaseService.deleteShowcase(req)
-      .then(() => {
+  confirm.require({
+    message: t('common.doYouWantDelete'),
+    header: t('common.confirm'),
+    icon: 'pi pi-exclamation-triangle',
+    acceptClass: 'p-button p-button-success',
+    rejectClass: 'p-button p-button-danger',
+    accept: async () => {
+      try {
+        loading.value = true;
+        await showcaseService.deleteShowcase(req);
         loading.value = false;
-        toast.add({ severity: "success", summary: t("common.success"), life: 3000 });
-        emitter.emit('node', true);
+        toast.add({ severity: "success", summary: t('common.success'), life: 3000 });
         getShowcase();
-      })
-      .catch((error) => {
-        toast.add({ severity: "error", summary: t("common.error"), life: 3000 });
+      } catch (error) {
         loading.value = false;
-      })
+        toast.add({ severity: "error", summary: t('common.error'), life: 3000 });
+      }
+    },
+    reject: () => {
+      toast.add({ severity: "info", summary: t('common.canceled'), life: 3000 });
+    },
+  });
 };
 const hideValue = (selectedNode) => {
   if (!selectedNode) return;
-  const req = { id: selectedNode.id };
+
+  const newHiddenState = !selectedNode.hiden;
+  const req = {
+    id: selectedNode.id,
+    hiden: newHiddenState,
+  };
 
   loading.value = true;
 
   showcaseService.hideShowcase(req)
       .then(() => {
         loading.value = false;
-        toast.add({ severity: "success", summary: t("common.success"), life: 3000 });
+        toast.add({
+          severity: "success",
+          summary: newHiddenState
+              ? t("common.hiddenSuccess")
+              : t("common.unhiddenSuccess"),
+          life: 3000,
+        });
         getShowcase();
       })
       .catch((error) => {
