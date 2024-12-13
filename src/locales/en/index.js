@@ -1510,7 +1510,12 @@ export default {
             executionLevel: "Completion percentage",
             executionStatus: "Execution status",
             nonExecutionRisk: "Failure risk",
-            filterTitle: "Apply a filter"
+            filterTitle: "Apply a filter",
+            strategicDirectionTab:"Strategic direction",
+            structuralDivisionTab:"Structural divisions",
+            totalLevelNumber:"Number of indicators",
+            done:"Done",
+            notDone:"Not done",
         }
     },
     queue: {

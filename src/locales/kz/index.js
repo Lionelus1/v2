@@ -1528,7 +1528,13 @@ export default {
             executionLevel: "Орындалу пайызы",
             executionStatus: "Орындалу мәртебесі",
             nonExecutionRisk: "Орындамау тәуекелі",
-            filterTitle: "Сүзгіні қолдану"
+            filterTitle: "Сүзгіні қолдану",
+            strategicDirectionTab:"Стратегиялық бағыт",
+            structuralDivisionTab:"Құрылымдық бөлімдер",
+            totalLevelNumber:"Көрсеткіш саны",
+            done:"Орындалды",
+            notDone:"Орындалмады",
+            
 
         }
     },

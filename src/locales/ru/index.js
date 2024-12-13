@@ -1521,7 +1521,12 @@ export default {
             executionLevel: "Процент завершения",
             executionStatus: "Статус выполнения",
             nonExecutionRisk: "Риск недостижения",
-            filterTitle: "Применить фильтр"
+            filterTitle: "Применить фильтр",
+            strategicDirectionTab:"Стратегическое направление",
+            structuralDivisionTab:"Структурные подразделений",
+            totalLevelNumber:"Номер индикатора",
+            done:"Выполнено",
+            notDone:"Не выполнено",
         }
     },
     educomplex: {
