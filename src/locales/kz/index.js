@@ -388,7 +388,8 @@ export default {
         hide: "көрсетпеу",
         unhide: "көрсету",
         hiddenSuccess: "Бұл өнім сайтта көрсетілмейді",
-        unhiddenSuccess: "Бұл өнім сайтта көрсетіледі"
+        unhiddenSuccess: "Бұл өнім сайтта көрсетіледі",
+        fillRequiredFields: "Барлық міндетті өрістер толтырылмаған"
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',

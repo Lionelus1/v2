@@ -395,7 +395,8 @@ export default {
         hide: "do not show",
         unhide: "show",
         hiddenSuccess: "This product will not be displayed on the Site",
-        unhiddenSuccess: "This product will be displayed on the Site"
+        unhiddenSuccess: "This product will be displayed on the Site",
+        fillRequiredFields: "Not all required fields are filled in"
     },
     positions: {
         menuTitle: "Change position",

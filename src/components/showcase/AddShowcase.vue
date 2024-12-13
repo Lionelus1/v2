@@ -67,10 +67,10 @@
                           v-bind:chooseLabel="$t('common.choose')"
                           accept="image/*"
                           class="p-button-outlined" />
+              <small class="p-error" v-if="validation.file">{{ $t("common.requiredField") }}</small>
             </div>
           </div>
         </div>
-        <small class="p-error" v-if="validation.file">{{ $t("common.requiredField") }}</small>
       </div>
     </div>
   </div>
@@ -149,7 +149,6 @@ const create = () => {
 
 const upload = (event) => {
   if (!event || !event.files || event.files.length === 0) {
-    console.error("Event or files are undefined");
     toast.add({ severity: "error", summary: "Файлы для загрузки не найдены", life: 3000 });
     return;
   }
@@ -174,13 +173,16 @@ const validationForm = () => {
   validation.value.descriptionkz = !showcase.value.description_kz || showcase.value.description_kz == "";
   validation.value.descriptionen = !showcase.value.description_en || showcase.value.description_en == "";
   validation.value.descriptionru = !showcase.value.description_ru || showcase.value.description_ru == "";
+  validation.value.file = !file.value && (!showcase.value.file_path || showcase.value.file_path.trim() === "");
+
   return (
       !validation.value.titlekz &&
       !validation.value.titleen &&
       !validation.value.titleru &&
       !validation.value.descriptionru &&
       !validation.value.descriptionen &&
-      !validation.value.descriptionkz
+      !validation.value.descriptionkz &&
+      !validation.value.file
   );
 };
 
@@ -197,6 +199,12 @@ const menu2 = ref([
     command: () => {
       if (validationForm()) {
         create();
+      } else {
+        toast.add({
+          summary: t('common.fillRequiredFields'),
+          severity: "error",
+          life: 3000,
+        });
       }
     },
   },

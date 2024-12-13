@@ -388,7 +388,8 @@ export default {
         hide: "не показывать",
         unhide: "показать",
         hiddenSuccess: "Данный продукт не будет отображатся на Сайте",
-        unhiddenSuccess: "Данный продукт будет отображатся на Сайте"
+        unhiddenSuccess: "Данный продукт будет отображатся на Сайте",
+        fillRequiredFields: "Не все обязательные поля заполнены"
     },
     positions: {
         menuTitle: 'Поменять позицию',
