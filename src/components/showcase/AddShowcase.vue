@@ -7,7 +7,6 @@
       </div>
     </div>
     <div class="col-12 md:col-12 p-fluid">
-      <div class="card">
         <div class="grid formgrid">
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('showcase.nameKz') }}<span class="p-error">*</span></label>
@@ -25,10 +24,8 @@
             <small class="p-error" v-if="validation.titleru">{{ $t("common.requiredField") }}</small>
           </div>
         </div>
-      </div>
     </div>
     <div class="col-12 md:col-12 p-fluid">
-      <div class="card">
         <div class="grid formgrid">
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('showcase.descriptionKz') }}<span class="p-error">*</span></label>
@@ -36,17 +33,16 @@
             <small class="p-error" v-if="validation.descriptionkz">{{ $t("common.requiredField") }}</small>
           </div>
           <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
-            <label>{{ $t('showcase.descriptionRu') }}<span class="p-error">*</span></label>
-            <Textarea  rows="5" cols="30" class="mt-2" type="text" :placeholder="$t('common.requiredField')" v-model="showcase.description_ru"></Textarea>
-            <small class="p-error" v-if="validation.descriptionru">{{ $t("common.requiredField") }}</small>
-          </div>
-          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
             <label>{{ $t('showcase.descriptionEn') }}<span class="p-error">*</span></label>
             <Textarea  rows="5" cols="30" class="mt-2" type="text" :placeholder="$t('common.requiredField')" v-model="showcase.description_en"></Textarea>
             <small class="p-error" v-if="validation.descriptionen">{{ $t("common.requiredField") }}</small>
           </div>
+          <div class="col-12 mb-2 pb-2 lg:col-6 mb-lg-0">
+            <label>{{ $t('showcase.descriptionRu') }}<span class="p-error">*</span></label>
+            <Textarea  rows="5" cols="30" class="mt-2" type="text" :placeholder="$t('common.requiredField')" v-model="showcase.description_ru"></Textarea>
+            <small class="p-error" v-if="validation.descriptionru">{{ $t("common.requiredField") }}</small>
+          </div>
         </div>
-      </div>
     </div>
     <div class="col-12 md:col-12 p-fluid">
       <div class="card-title">{{ $t('common.image') }}</div>
@@ -225,6 +221,10 @@ onMounted(() => {
   margin-bottom: 15px;
   border-radius: 2px;
   overflow: hidden;
+  border: 2px dashed #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .image-wrapper {
@@ -255,6 +255,7 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   flex-direction: column;
+  text-align: center;
 }
 
 .btn-select-image svg {

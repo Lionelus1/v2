@@ -2183,8 +2183,8 @@ export default {
         unknown: "Белгісіз қате.",
     },
     showcase: {
-        publication: 'Жарияланган күні',
-        status: 'Мәртебесі',
+        publication: 'Жарияланған күні',
+        status: 'Статус',
         name: 'Атауы',
         title: 'Цифрлық Витрина',
         author: 'Автор',

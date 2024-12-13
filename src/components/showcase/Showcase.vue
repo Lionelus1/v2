@@ -25,7 +25,7 @@
             <Badge style="margin-left:5px" :value="$t('web.isHidden')" v-if="data.hiden"></Badge>
           </template>
         </Column>
-        <Column field="status" header="Status">
+        <Column field="status" :header="$t('showcase.status')">
           <template #body="{ data }">
     <span
         :class="{
