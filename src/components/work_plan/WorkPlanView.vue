@@ -197,13 +197,13 @@ export default {
       });
     },
     getWorkPlanApprovalUsers() {
+
       let data = {
         work_plan_id: parseInt(this.work_plan_id),
         page: 0,
         rows: 0,
         is_contract: false
       };
-
       this.planService.getWorkPlanApprovalUsers(data).then(res => {
         if (res.data?.work_plan_users) {
           this.approvals = [];
