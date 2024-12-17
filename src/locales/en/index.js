@@ -1516,6 +1516,8 @@ export default {
             totalLevelNumber:"Number of indicators",
             done:"Done",
             notDone:"Not done",
+            strategicDirectionExecutionLevel:"Percentage of completion of strategic directions",
+            structuralDivisionExecutionLevel:"Percentage of completion of structural divisions"
         }
     },
     queue: {

@@ -1527,6 +1527,8 @@ export default {
             totalLevelNumber:"Номер индикатора",
             done:"Выполнено",
             notDone:"Не выполнено",
+            strategicDirectionExecutionLevel:"Процент завершения стратегических направлений",
+            structuralDivisionExecutionLevel:"Процент завершения структурные подразделений"
         }
     },
     educomplex: {

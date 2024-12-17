@@ -59,7 +59,7 @@
               class="p-button-text p-button-primary hover:bg-blue-700 hover:text-white focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 ease-in-out"
               icon="fa-solid fa-chart-pie"
               :title="$t('workPlan.analyzer.analyzerButtonTitle')"
-              @click="analyzeClick($event)"/>
+              @click="analyzeClick()"/>
         </template>
         <template v-if="rightBtn">
           <Button
@@ -123,8 +123,8 @@ const searchClick = () => {
 const filterClick = (event) => {
   emit('filter', event)
 }
-const analyzeClick = (event) => {
-  emit('analyze', event)
+const analyzeClick = () => {
+  emit('analyze')
 }
 
 const rightBtnClick = (event) => {

@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)"  :filter="true" :filtered="filtered" :analyze="true" @analyze="toggle('global-filter-analyzer', $event)"/>
+    <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)"  :filter="true" :filtered="filtered" :analyze="isOperPlan" @analyze="analyzeClick"/>
     <div class="card" v-if="plan && planDoc">
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :rowsPerPageOptions="[10, 25, 50]" v-model:selectionKeys="selectedWorkPlanEvent" selectionMode="single" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows" :total-records="total" :rowHover="true" :paginatorTemplate="paginatorTemplate"
@@ -103,7 +103,6 @@
               <p v-for="item in node.user" :key="item.id">{{ item.user.fullName }}</p>
             </div>
             <!-- <Button v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" icon="pi pi-pencil" severity="info" text rounded @click="openRespPersonDialog(node)" /> -->
-
           </template>
         </Column>
         <Column field="supporting_docs" v-if="plan && isOperPlan" :header="$t('common.suppDocs')">
@@ -146,7 +145,6 @@
   <Sidebar v-model:visible="dialog.planView.state" position="right" class="w-6" style="overflow-y: scroll" @hide="hideDialog(dialog.planView)">
     <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
   </Sidebar>
-
   <Sidebar v-model:visible="isShowPlanExecute" position="right" style="overflow-y: scroll; width: 50%;" @hide="closePlanExecuteSidebar">
     <WorkPlanEventResult v-if="isShowPlanExecute && selectedEvent" :result-id="selectedEvent.work_plan_event_id"/>
   </Sidebar>
@@ -200,7 +198,8 @@
                     <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeRespPersonDialog"></Button>
                     <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="updateResponsivePersons"></Button>
                 </div>
-            </Dialog>
+                
+    </Dialog>
 
   <OverlayPanel ref="global-filter">
     <div class="p-fluid">
@@ -239,51 +238,6 @@
         <Button :label="$t('common.search')" @click="initFilter" class="mt-2"/>
       </div>
     </div>
-  </OverlayPanel>
-  <OverlayPanel v-if="isOperPlan" ref="global-filter-analyzer" class="overlay-panel" style="width: 300px;">
-      <div class="p-fluid">
-        <div class="field">
-          <label>{{ $t('hikvision.department') }}</label>
-          <Dropdown v-model="selectedDepartment" :options="departments" optionLabel="department_name" optionValue="department_id" :filter="true" :show-clear="true"
-                :placeholder="$t('common.select')" />
-            <!-- <small class="p-error" v-if="submitted && validationErrors.hei">{{ $t("common.requiredField") }}</small> -->
-        </div>
-      </div>
-      <div class="field p-fluid">
-        <label for="status-filter">{{ $t('common.status') }}</label>
-        <Dropdown v-model="filters.status.value" optionValue="" :options="statuses" :placeholder="$t('common.select')" class="p-column-filter"
-                  :showClear="true">
-          <template #value="slotProps">
-                      <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
-                        {{
-                          $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
-                              ? slotProps.value.nameRu : slotProps.value.nameEn
-                        }}
-                      </span>
-          </template>
-          <template #option="slotProps">
-                      <span :class="'customer-badge status-' + slotProps.option.id">
-                        {{
-                          $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
-                              ? slotProps.option.nameRu : slotProps.option.nameEn
-                        }}
-                      </span>
-          </template>
-        </Dropdown>
-      </div>
-      <div class="p-fluid">
-        <div class="field">
-          <br />
-          <Button icon="pi pi-trash" class="ml-1" @click="clearResultFilter()" :label="$t('common.clear')" outlined />
-        </div>
-        <div class="field">
-          <Button icon="pi pi-chart-bar" :label="$t('workPlan.analyzer.universityAnalysis')" class="ml-1 p-button p-component" severity="success" @click="analyzeClick()" />
-        </div>
-        <div class="field">
-          <!-- navigateToAnalysis -->
-          <Button icon="pi pi-chart-line" :label="$t('workPlan.analyzer.createAnalysis')" class="ml-1" @click="navigateToAnalysis()" /> 
-        </div>
-      </div>
   </OverlayPanel>
   <Dialog :header="$t('workPlan.analyzer.analysisResult')" v-model:visible="analyzerModalView" :style="{ width: '850px' }" class="p-fluid mb-2">
       <div class="field">
@@ -651,7 +605,7 @@ export default {
         },
   
     analyzeClick(){
-      this.analyzerModalView = true;
+      this.$router.push({name: 'WorkPlanAnalysisView', params: {id: this.work_plan_id}});
     },
     async getDepartments() {
       this.departments = [];
@@ -1080,9 +1034,6 @@ export default {
     },
     navigateToReports() {
       this.$router.push({name: 'WorkPlanReport', params: {id: this.work_plan_id}});
-    },
-    navigateToAnalysis() {
-      this.$router.push({name: 'WorkPlanAnalysisView', params: {id: this.work_plan_id}});
     },
     isUserApproval(data) {
       let userApproval = false;

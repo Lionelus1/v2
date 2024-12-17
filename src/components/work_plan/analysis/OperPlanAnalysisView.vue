@@ -1,112 +1,128 @@
 <template>
-    <div class="col-12">
-      <TitleBlock :title="$t('workPlan.analyzer.analysisResult')" :show-back-button="true"/>
-      <ProgressBar v-if="loading" class="mb-3" mode="indeterminate" style="height: .5em"/>
-      <TabView>
-        <TabPanel :header="$t('workPlan.analyzer.strategicDirectionTab')">
-          <DataTable :value="computedStrategicAnalysisData"
-                    tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;">
-            <Column field="eventSummaryDepartment" :header="$t('workPlan.analyzer.strategicDirectionTab')"
-                    headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;max-width: 400px;">
-              <template #body="{data}">
-                {{ data?.direction?.event_name }}
-              </template>
-            </Column>
-            <Column field="eventUnit" :header="$t('workPlan.analyzer.totalLevelNumber')"
-                    headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
-                    <template #body="{ data }">
-                      {{ data.totalItems }}
-                    </template>
-            </Column>
-            <Column field="eventUnit" :header="$t('workPlan.analyzer.done')"
-                    headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
-                    <template #body="{ data }">
-                      {{ data.totalCompletedItems }}
-                    </template>
-            </Column>
-            <Column field="eventUnit" :header="$t('workPlan.analyzer.notDone')"
-                    headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
-                    <template #body="{ data }">
-                      {{ data.totalNotCompletedItems }}
-                    </template>
-            </Column>
-            <Column field="eventUnit" :header="$t('workPlan.analyzer.executionLevel')"
-                    headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
-                    <template #body="{ data }">
-                      {{ Number(data.executionLevel).toFixed(2) }}%
-                    </template>
-            </Column>
-            
+  <div class="col-12">
+    <TitleBlock :title="$t('workPlan.analyzer.analysisResult')" :show-back-button="true"/>
+    <ProgressBar v-if="loading" class="mb-3" mode="indeterminate" style="height: .5em"/>
+    <TabView>
+      <TabPanel :header="$t('workPlan.analyzer.strategicDirectionTab')">
+        <DataTable :value="computedStrategicAnalysisData"
+                   tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;">
+          <Column field="eventSummaryDepartment" :header="$t('workPlan.analyzer.strategicDirectionTab')"
+                  headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
+                  style="border:1px solid #ddd;max-width: 400px;">
+            <template #body="{data}">
+              {{ data?.direction?.event_name }}
+            </template>
+          </Column>
+          <Column field="eventUnit" :header="$t('workPlan.analyzer.totalLevelNumber')"
+                  headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
+                  style="border:1px solid #ddd;">
+            <template #body="{ data }">
+              {{ data.totalItems }}
+            </template>
+          </Column>
+          <Column field="eventUnit" :header="$t('workPlan.analyzer.done')"
+                  headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
+                  style="border:1px solid #ddd;">
+            <template #body="{ data }">
+              {{ data.totalCompletedItems }}
+            </template>
+          </Column>
+          <Column field="eventUnit" :header="$t('workPlan.analyzer.notDone')"
+                  headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
+                  style="border:1px solid #ddd;">
+            <template #body="{ data }">
+              {{ data.totalNotCompletedItems }}
+            </template>
+          </Column>
+          <Column field="eventUnit" :header="$t('workPlan.analyzer.executionLevel')"
+                  headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
+                  style="border:1px solid #ddd;">
+            <template #body="{ data }">
+              {{ Number(data.executionLevel).toFixed(2) }}%
+            </template>
+          </Column>
 
-          </DataTable>
-          <br/>
-          <br/>
-        </TabPanel>
-        <TabPanel :header="$t('workPlan.analyzer.structuralDivisionTab')">
-          <div class="card">
-            <Toolbar>
-              <template #start>
-                <div class="flex-start">
-                  <Dropdown
-                      class="flex-item mr-2"
-                      v-model="selectedDepartment"
-                      :options="departments"
-                      optionLabel="department_name"
-                      optionValue="department_id"
-                      :filter="true"
-                      :show-clear="true"
-                      :placeholder="`${$t('hikvision.department')} ${$t('common.select').toLowerCase()}`"
-                  />
-                </div>
 
-              </template>
-              <template #end>
-                <Button :label="$t('workPlan.analyzer.filterTitle')" class="mr-2" @click="getEventsTree()"></Button>
-                <!-- <Button icon="pi pi-trash"  severity="secondary" @click="getEventsTree(null)"/> -->
-              </template>
+        </DataTable>
+        <br/>
+        <br/>
+        <div class="card">
+          <Chart type="line" :data="chartData" :options="chartOptions" class="h-30rem" />
+        </div>
+      </TabPanel>
+      <TabPanel :header="$t('workPlan.analyzer.structuralDivisionTab')">
+        <div class="card">
+          <Toolbar>
+            <template #start>
+              <div class="flex-start">
+                <Dropdown
+                    class="flex-item mr-2"
+                    v-model="selectedDepartment"
+                    :options="departments"
+                    optionLabel="department_name"
+                    optionValue="department_id"
+                    :filter="true"
+                    :show-clear="true"
+                    :placeholder="`${$t('hikvision.department')} ${$t('common.select').toLowerCase()}`"
+                />
+              </div>
 
-            </Toolbar>
-          </div>
-          <DataTable :value="computedAnalysisData"
-                    tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;">
-            <Column sortable field="eventSummaryDepartment" :header="$t('workPlan.summary')"
-                    headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
-              <template #body="{data}">
-                {{ data?.department?.name }}
-              </template>
-            </Column>
-            <Column field="eventUnit" :header="$t('workPlan.analyzer.totalLevelNumber')"
-                    headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
-                    <template #body="{ data }">
-                      {{ data.totalItems }}
-                    </template>
-            </Column>
-            <Column field="eventUnit" :header="$t('workPlan.analyzer.done')"
-                    headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
-                    <template #body="{ data }">
-                      {{ data.totalCompletedItems }}
-                    </template>
-            </Column>
-            <Column field="eventUnit" :header="$t('workPlan.analyzer.notDone')"
-                    headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
-                    <template #body="{ data }">
-                      {{ data.totalNotCompletedItems }}
-                    </template>
-            </Column>
-            <Column field="eventUnit" :header="$t('workPlan.analyzer.executionLevel')"
-                    headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;" style="border:1px solid #ddd;">
-                    <template #body="{ data }">
-                      {{ Number(data.executionLevel).toFixed(2) }}%
-                    </template>
-            </Column>
+            </template>
+            <template #end>
+              <Button :label="$t('workPlan.analyzer.filterTitle')" class="mr-2" @click="getEventsTree()"></Button>
+              <!-- <Button icon="pi pi-trash"  severity="secondary" @click="getEventsTree(null)"/> -->
+            </template>
 
-          </DataTable>
-          <br/>
-          <br/>
-        </TabPanel>
-      </TabView>
-   
-    </div>
+          </Toolbar>
+        </div>
+        <DataTable :value="computedAnalysisData" removableSort
+                   tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;">
+          <Column sortable field="eventSummaryDepartment" :header="$t('workPlan.summary')"
+                  headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
+                  style="border:1px solid #ddd;">
+            <template #body="{data}">
+              {{ data?.department?.name }}
+            </template>
+          </Column>
+          <Column field="totalLevelNumber" :header="$t('workPlan.analyzer.totalLevelNumber')"
+                  headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
+                  style="border:1px solid #ddd;">
+            <template #body="{ data }">
+              {{ data.totalItems }}
+            </template>
+          </Column>
+          <Column field="done" :header="$t('workPlan.analyzer.done')"
+                  headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
+                  style="border:1px solid #ddd;">
+            <template #body="{ data }">
+              {{ data.totalCompletedItems }}
+            </template>
+          </Column>
+          <Column field="notDone" :header="$t('workPlan.analyzer.notDone')"
+                  headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
+                  style="border:1px solid #ddd;">
+            <template #body="{ data }">
+              {{ data.totalNotCompletedItems }}
+            </template>
+          </Column>
+          <Column sortable field="execution" :header="$t('workPlan.analyzer.executionLevel')"
+                  headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
+                  style="border:1px solid #ddd;">
+            <template #body="{ data }">
+              {{ Number(data.executionLevel).toFixed(2) }}%
+            </template>
+          </Column>
+
+        </DataTable>
+        <br/>
+        <br/>
+        <div class="card">
+          <Chart type="bar" :data="chartDataDepartment" :options="chartOptionsDepartment" class="h-30rem"  />
+        </div>
+      </TabPanel>
+    </TabView>
+
+  </div>
 
 </template>
 
@@ -131,30 +147,32 @@ const quarter = ref(null);
 const data = ref([]);
 const tableAnalysisData = ref([
   {
-    department:{
-      id:null,
-      name:null,
-      name_kz:null,
-      name_ru:null,
-      name_en:null
+    department: {
+      id: null,
+      name: null,
+      name_kz: null,
+      name_ru: null,
+      name_en: null
     },
-    result_status:{
-      completed:[],
-      notcompleted:[],
-      partially_completed:[]
+    result_status: {
+      completed: [],
+      notcompleted: [],
+      partially_completed: [],
+      created: []
     }
   }
 ])
 const strategicDirectionData = ref([
   {
-    direction:{
-      id:null,
-      event_name:null
+    direction: {
+      id: null,
+      event_name: null
     },
-    result_status:{
-      completed:[],
-      notcompleted:[],
-      partially_completed:[]
+    result_status: {
+      completed: [],
+      notcompleted: [],
+      partially_completed: [],
+      created: []
     }
   }
 ])
@@ -170,9 +188,9 @@ const lazyParams = reactive({
   work_plan_id: null,
   quarter: null,
   parent_id: null,
-  department_id:null,
-  filters:null,
-  is_oper_plan_analysis:false
+  department_id: null,
+  filters: null,
+  is_oper_plan_analysis: false
 });
 
 const filters = ref({
@@ -183,24 +201,180 @@ const filters = ref({
 });
 
 
+
+
 const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
 const isAdmin = computed(() => findRole(authUser.value, "administrator"))
 // authUser?.value?.mainPosition?.department?.id
 const selectedDepartment = ref(null);
 
-onMounted(() => {
-  getEventsTree()
-  getDepartments()
+onMounted(async () => {
+  await getEventsTree();
+  getDepartments();
+
+  chartData.value = setChartData();
+  chartOptions.value = setChartOptions();
+
+  chartDataDepartment.value = setChartDataDepartments();
+  chartOptionsDepartment.value = setChartOptionsDepartments();
 })
 
-const getEventDescendants = async (parentId) =>{
+const chartData = ref();
+const chartOptions = ref();
+
+const chartDataDepartment = ref();
+const chartOptionsDepartment = ref();
+
+const setChartDataDepartments = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    if (!computedAnalysisData.value.length) {
+        console.warn("No strategic analysis data available yet.");
+        return {
+            labels: [],
+            datasets: []
+        };
+    }
+
+    const labels = computedAnalysisData.value.map(
+        (entry) => entry.department.name || 'No Name'
+    );
+
+    const data = computedAnalysisData.value.map(
+        (entry) => Number(entry.executionLevel.toFixed(2))
+    );
+
+
+    return {
+        labels: labels,
+        datasets: [
+            {
+                label: t('workPlan.analyzer.structuralDivisionExecutionLevel'),
+                backgroundColor: documentStyle.getPropertyValue('--cyan-500'),
+                borderColor: documentStyle.getPropertyValue('--cyan-500'),
+                data: data
+            }
+        ]
+    };
+};
+const setChartOptionsDepartments = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+    return {
+        maintainAspectRatio: false,
+        aspectRatio: 0.8,
+        plugins: {
+            legend: {
+                labels: {
+                    color: textColor
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: textColorSecondary,
+                    font: {
+                        weight: 500
+                    }
+                },
+                grid: {
+                    display: false,
+                    drawBorder: false
+                }
+            },
+            y: {
+                ticks: {
+                    color: textColorSecondary
+                },
+                grid: {
+                    color: surfaceBorder,
+                    drawBorder: false
+                }
+            }
+        }
+    };
+}
+
+const setChartData = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    if (!computedStrategicAnalysisData.value.length) {
+        console.warn("No strategic analysis data available yet.");
+        return {
+            labels: [],
+            datasets: []
+        };
+    }
+
+    const labels = computedStrategicAnalysisData.value.map(
+        (entry) => entry.direction.event_name || 'No Name'
+    );
+
+    const data = computedStrategicAnalysisData.value.map(
+        (entry) => Number(entry.executionLevel.toFixed(2))
+    );
+
+
+    return {
+        labels: labels,
+        datasets: [
+            {
+                label: t('workPlan.analyzer.strategicDirectionExecutionLevel'),
+                data: data,
+                fill: false,
+                borderColor: documentStyle.getPropertyValue('--cyan-500'),
+                tension: 0.1
+            }
+        ]
+    };
+};
+const setChartOptions = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+    return {
+        maintainAspectRatio: false,
+        aspectRatio: 0.6,
+        plugins: {
+            legend: {
+                labels: {
+                    color: textColor
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: textColorSecondary
+                },
+                grid: {
+                    color: surfaceBorder
+                }
+            },
+            y: {
+                ticks: {
+                    color: textColorSecondary
+                },
+                grid: {
+                    color: surfaceBorder
+                }
+            }
+        }
+    };
+}
+
+const getEventDescendants = async (parentId) => {
   loading.value = true;
   lazyParams.work_plan_id = Number(workPlanID);
   lazyParams.parent_id = parentId
   const resp = await workPlanService.getEventsTree(lazyParams);
-  if(resp){
+  if (resp) {
     return resp.data
-  }else{
+  } else {
     return null
   }
 }
@@ -233,9 +407,9 @@ async function getEventsTree(parent) {
       total.value = res.data.total;
 
       if (data.value) {
+        strategicDirectionData.value = []
         for (const e of data.value) {
-          if (!e.leaf) {
-            strategicDirectionData.value = []
+          if (e.parent_id === null) {
             // strategicDirectionData
             const descendants = await getEventDescendants(e.work_plan_event_id);
 
@@ -248,19 +422,23 @@ async function getEventsTree(parent) {
                 completed: [],
                 notcompleted: [],
                 partially_completed: [],
+                created:[]
               },
             };
             if (descendants && descendants.items) {
               descendants.items.forEach((item) => {
                 console.log("item", item);
-                if(item.status.work_plan_event_status_id === 2){
+                if (item.status.work_plan_event_status_id === 2) {
                   newstrategicDirectionData.result_status.completed.push(item.status.work_plan_event_status_id)
                 }
-                if(item.status.work_plan_event_status_id === 3){
+                if (item.status.work_plan_event_status_id === 3) {
                   newstrategicDirectionData.result_status.notcompleted.push(item.status.work_plan_event_status_id)
                 }
-                if(item.status.work_plan_event_status_id === 4){
+                if (item.status.work_plan_event_status_id === 4) {
                   newstrategicDirectionData.result_status.partially_completed.push(item.status.work_plan_event_status_id)
+                }
+                if (item.status.work_plan_event_status_id === 1) {
+                  newstrategicDirectionData.result_status.created.push(item.status.work_plan_event_status_id)
                 }
               });
             }
@@ -268,7 +446,7 @@ async function getEventsTree(parent) {
             console.log("event name: ", descendants);
             strategicDirectionData.value.push(newstrategicDirectionData);
             console.log("strategic direction data:", strategicDirectionData.value);
-            
+
 
           }
 
@@ -330,18 +508,17 @@ const getDepartments = async () => {
   }
 };
 
-
 watch(data, (newValue) => {
   tableAnalysisData.value = [];
-  if (data.value !== null && data.value.length >0){
+  if (data.value !== null && data.value.length > 0) {
     data.value.forEach((event) => {
-    console.log("event", event.status.work_plan_event_status_id);
+      console.log("event", event.status.work_plan_event_status_id);
 
-    event.user.forEach((item) => {
-      if (item.is_summary_department) {
+      event.user.forEach((item) => {
+        if (item.is_summary_department) {
           let departmentId = item.user.mainPosition.department.id;
           let existingDepartment = tableAnalysisData.value.find(
-            (entry) => entry.department.id === departmentId
+              (entry) => entry.department.id === departmentId
           );
 
           let statusCategory = null;
@@ -351,12 +528,14 @@ watch(data, (newValue) => {
             statusCategory = "notcompleted";
           } else if (event.status.work_plan_event_status_id === 4) {
             statusCategory = "partially_completed";
+          } else if (event.status.work_plan_event_status_id === 1) {
+            statusCategory = "created";
           }
 
           if (statusCategory) {
             if (existingDepartment) {
               existingDepartment.result_status[statusCategory].push(
-                event.status.work_plan_event_status_id
+                  event.status.work_plan_event_status_id
               );
             } else {
               let newDepartment = {
@@ -371,10 +550,11 @@ watch(data, (newValue) => {
                   completed: [],
                   notcompleted: [],
                   partially_completed: [],
+                  created:[]
                 },
               };
               newDepartment.result_status[statusCategory].push(
-                event.status.work_plan_event_status_id
+                  event.status.work_plan_event_status_id
               );
               tableAnalysisData.value.push(newDepartment);
             }
@@ -382,50 +562,52 @@ watch(data, (newValue) => {
         }
       });
     });
-  } 
+  }
   console.log("table analysis data: ", tableAnalysisData.value);
 });
 
 const computedStrategicAnalysisData = computed(() =>
-  strategicDirectionData.value.map((entry) => {
-    const totalStatuses =
-      entry.result_status.completed.length +
-      entry.result_status.notcompleted.length +
-      entry.result_status.partially_completed.length;
-    const totalCompletedStatuses = entry.result_status.completed.length;
-    const totalNotCompletedStatuses = entry.result_status.notcompleted.length;
+    strategicDirectionData.value.map((entry) => {
+      const totalStatuses =
+          entry.result_status.completed.length +
+          entry.result_status.notcompleted.length +
+          entry.result_status.partially_completed.length +
+          entry.result_status.created.length;
+      const totalCompletedStatuses = entry.result_status.completed.length;
+      const totalNotCompletedStatuses = entry.result_status.notcompleted.length;
 
-    return {
-      ...entry,
-      totalItems:totalStatuses,
-      totalCompletedItems:totalCompletedStatuses,
-      totalNotCompletedItems:totalNotCompletedStatuses,
-      executionLevel: totalStatuses
-        ? (entry.result_status.completed.length / totalStatuses)*100
-        : 0,
-    };
-  })
+      return {
+        ...entry,
+        totalItems: totalStatuses,
+        totalCompletedItems: totalCompletedStatuses,
+        totalNotCompletedItems: totalNotCompletedStatuses,
+        executionLevel: totalStatuses
+            ? (entry.result_status.completed.length / totalStatuses) * 100
+            : 0,
+      };
+    })
 );
 
 const computedAnalysisData = computed(() =>
-  tableAnalysisData.value.map((entry) => {
-    const totalStatuses =
-      entry.result_status.completed.length +
-      entry.result_status.notcompleted.length +
-      entry.result_status.partially_completed.length;
-    const totalCompletedStatuses = entry.result_status.completed.length;
-    const totalNotCompletedStatuses = entry.result_status.notcompleted.length;
+    tableAnalysisData.value.map((entry) => {
+      const totalStatuses =
+          entry.result_status.completed.length +
+          entry.result_status.notcompleted.length +
+          entry.result_status.partially_completed.length +
+          entry.result_status.created.length;
+      const totalCompletedStatuses = entry.result_status.completed.length;
+      const totalNotCompletedStatuses = entry.result_status.notcompleted.length;
 
-    return {
-      ...entry,
-      totalItems:totalStatuses,
-      totalCompletedItems:totalCompletedStatuses,
-      totalNotCompletedItems:totalNotCompletedStatuses,
-      executionLevel: totalStatuses
-        ? (entry.result_status.completed.length / totalStatuses)*100
-        : 0,
-    };
-  })
+      return {
+        ...entry,
+        totalItems: totalStatuses,
+        totalCompletedItems: totalCompletedStatuses,
+        totalNotCompletedItems: totalNotCompletedStatuses,
+        executionLevel: totalStatuses
+            ? (entry.result_status.completed.length / totalStatuses) * 100
+            : 0,
+      };
+    })
 );
 
 </script>
