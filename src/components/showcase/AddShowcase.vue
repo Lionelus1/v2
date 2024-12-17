@@ -142,24 +142,39 @@ const create = () => {
     });
   });
 };
-
+const oldFilePath = ref(null);
 const upload = (event) => {
   if (!event || !event.files || event.files.length === 0) {
-    toast.add({ severity: "error", summary: "Файлы для загрузки не найдены", life: 3000 });
+    toast.add({ severity: "error", summary: t("common.noFilesFound"), life: 3000 });
     return;
   }
+
   const fd = new FormData();
   fd.append("files[]", event.files[0]);
 
-  fileService.uploadFile(fd).then(res => {
-    if (res.data) {
-      file.value = event.files[0];
-      filePath.value = smartEnuApi + fileRoute + res.data[0].filepath
-      showcase.value.file_path = res.data.filepath	;
-    }
-  }).catch(error => {
-    toast.add({ severity: "error", summary: error.message || error, life: 3000 });
-  });
+  oldFilePath.value = filePath.value;
+  const oldShowcaseFilePath = showcase.value.file_path;
+
+  fileService.uploadFile(fd)
+      .then(res => {
+        if (res.data) {
+          file.value = event.files[0];
+          const uploadedFilePath = res.data[0].filepath;
+
+          showcase.value.file_path = uploadedFilePath;
+          filePath.value = smartEnuApi + fileRoute + uploadedFilePath;
+
+          toast.add({ severity: "success", summary: t("common.fileUploaded"), life: 3000 });
+        }
+      })
+      .catch(() => {
+        // Восстанавливаем старое изображение при ошибке
+        file.value = null;
+        filePath.value = oldFilePath.value;
+        showcase.value.file_path = oldShowcaseFilePath;
+
+        toast.add({ severity: "error", summary: t("common.uploadFailed"), life: 3000 });
+      });
 };
 
 const validationForm = () => {
@@ -207,8 +222,7 @@ const menu2 = ref([
 ]);
 
 onMounted(() => {
-  filePath.value = showcase.value.file_path;
-  upload;
+  filePath.value = showcase.value.file_path || '';
 });
 </script>
 

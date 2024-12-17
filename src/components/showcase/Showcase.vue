@@ -214,9 +214,9 @@ const hideValue = (selectedNode) => {
 
 const update = (selectedNode) => {
   if (selectedNode != null) {
-    node.value = selectedNode;
-    if (node.value.file_path != "") {
-      node.value.file_path = smartEnuApi + fileRoute + node.value.file_path;
+    node.value = { ...selectedNode };
+    if (node.value.file_path) {
+      node.value.file_path = smartEnuApi + fileRoute + selectedNode.file_path;
     }
 
     isView.value.node = true;
@@ -288,11 +288,6 @@ const menu2 = computed(() => [
     icon: "pi pi-fw pi-plus",
     command: () => createShowcase(),
   },
-  // {
-  //   label: t("common.publish"),
-  //   icon: "pi pi-check",
-  //   command: () => updateStatus(),
-  // },
 ]);
 
 const onPage = (event) => {
