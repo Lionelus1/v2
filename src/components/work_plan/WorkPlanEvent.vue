@@ -910,6 +910,7 @@ export default {
     //осы жерден адамдардын списогын алып алу керек
     getWorkPlanApprovalUsersFunc(data) {
       this.loadingMembers = true;
+
       this.planService.getWorkPlanApprovalUsers(data).then(res => {
         if (res.data && res.data.work_plan_users) {
           this.members = res.data.work_plan_users;
@@ -1012,12 +1013,14 @@ export default {
             }
           ];
           this.getRelatedFiles()
+
           let data = {
             work_plan_id: parseInt(this.work_plan_id),
             page: 0,
             rows: 0,
             is_contract: false
           };
+
           this.getWorkPlanApprovalUsersFunc(data)
         }
         if (this.isWorkSchedule) {
@@ -1069,6 +1072,7 @@ export default {
             rows: 10,
             is_contract: true
           };
+
           if (findRole(null, 'student')){
             data = {
               work_plan_id: parseInt(this.work_plan_id),
@@ -1077,6 +1081,7 @@ export default {
               is_contract: true
             };
           }
+
           this.getWorkPlanApprovalUsersFunc(data)
         }
         if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
@@ -1321,12 +1326,14 @@ export default {
     },
     onPageMembers(event) {
       this.selectedMembers = []
+
       let data = {
         work_plan_id: parseInt(this.work_plan_id),
         page: event.page,
         rows: event.rows,
         is_contract: true
       };
+
       this.getWorkPlanApprovalUsersFunc(data)
     },
     planSentToApprove(data) {
