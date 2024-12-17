@@ -2147,7 +2147,7 @@ export default {
         employee: 'Сотрудник',
         author: 'Автор',
         reportGenerationDate: 'Есеп құрастырылған күн',
-        actions: 'Действия',
+        actions: 'Әрекеттер',
         view: 'Просмотр',
         export: 'Экспорт',
         delete: 'Удалить',
