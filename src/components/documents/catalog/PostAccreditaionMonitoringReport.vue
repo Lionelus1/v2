@@ -334,7 +334,7 @@ export default {
           value: "revision"
         },
         {
-          id: 7,
+          id: 3,
           nameRu: "Подписан",
           nameKz: "Қол қойылды",
           nameEn: "Signed",
