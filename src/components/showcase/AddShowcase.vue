@@ -164,16 +164,13 @@ const upload = (event) => {
           showcase.value.file_path = uploadedFilePath;
           filePath.value = smartEnuApi + fileRoute + uploadedFilePath;
 
-          toast.add({ severity: "success", summary: t("common.fileUploaded"), life: 3000 });
+          toast.add({ severity: "success", summary: t("hdfs.toastMsg"), life: 3000 });
         }
       })
       .catch(() => {
-        // Восстанавливаем старое изображение при ошибке
         file.value = null;
         filePath.value = oldFilePath.value;
         showcase.value.file_path = oldShowcaseFilePath;
-
-        toast.add({ severity: "error", summary: t("common.uploadFailed"), life: 3000 });
       });
 };
 
