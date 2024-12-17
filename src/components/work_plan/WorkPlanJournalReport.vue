@@ -177,7 +177,7 @@
           <DocSignaturesInfo :docIdParam="dReports[4].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 4)"></DocSignaturesInfo>
         </Sidebar>
 
-        <div class="field" v-if="dReports && dReports[3].doc_info && !(dReports[3].doc_info.docHistory.stateId === 1 || dReports[3].doc_info.docHistory.stateId === 4)">
+        <div class="field" v-if="dReports && dReports[4].doc_info && !(dReports[4].doc_info.docHistory.stateId === 1 || dReports[4].doc_info.docHistory.stateId === 4)">
           <TinyEditor
               disabled="true"
               v-model="assignModel"
