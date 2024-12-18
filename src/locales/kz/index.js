@@ -385,8 +385,8 @@ export default {
         specialNeedsJobs: 'Ерекше қажеттіліктері бар адамдарға арналған жұмыс орындары',
         availabilityForSpecialNeeds: 'Ерекше қажеттіліктері бар адамдар үшін қол жетімді',
         getDataError: "Деректерді алу кезінде қателіктер туындады",
-        hide: "көрсетпеу",
-        unhide: "көрсету",
+        hide: "Жасыру",
+        unhide: "Көрсету",
         hiddenSuccess: "Бұл өнім сайтта көрсетілмейді",
         unhiddenSuccess: "Бұл өнім сайтта көрсетіледі",
         fillRequiredFields: "Барлық міндетті өрістер толтырылмаған"

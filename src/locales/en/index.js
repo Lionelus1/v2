@@ -392,8 +392,8 @@ export default {
         specialNeedsJobs: 'Jobs for People with Special Needs',
         availabilityForSpecialNeeds: 'Available for People with Special Needs',
         getDataError: "Error while receiving data",
-        hide: "do not show",
-        unhide: "show",
+        hide: "Hide",
+        unhide: "Show",
         hiddenSuccess: "This product will not be displayed on the Site",
         unhiddenSuccess: "This product will be displayed on the Site",
         fillRequiredFields: "Not all required fields are filled in"

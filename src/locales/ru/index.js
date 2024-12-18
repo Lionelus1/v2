@@ -386,8 +386,8 @@ export default {
         availabilityForSpecialNeeds: 'Доступно для людей с особыми потребностями',
         getDataError: "Ошибка при получении данных",
 
-        hide: "не показывать",
-        unhide: "показать",
+        hide: "Скрыть",
+        unhide: "Показать",
         hiddenSuccess: "Данный продукт не будет отображатся на Сайте",
         unhiddenSuccess: "Данный продукт будет отображатся на Сайте",
         fillRequiredFields: "Не все обязательные поля заполнены"
