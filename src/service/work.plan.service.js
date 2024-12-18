@@ -12,7 +12,7 @@ export class WorkPlanService {
     }
 
     getWorkPlanApprovalUsers(work_plan_id) {
-        return api.get(`/workPlan/getApprovalUsers/${work_plan_id}`);
+        return api.get(`/workPlan/getApprovalUsers/${work_plan_id}`, {headers: getHeader()});
     }
 
     getPlanById(planId) {

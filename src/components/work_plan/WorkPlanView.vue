@@ -207,15 +207,6 @@ export default {
           this.init();
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       });
     },
 
