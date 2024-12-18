@@ -385,6 +385,7 @@ export default {
         specialNeedsJobs: 'Вакансии для людей с особыми потребностями',
         availabilityForSpecialNeeds: 'Доступно для людей с особыми потребностями',
         getDataError: "Ошибка при получении данных",
+
         hide: "не показывать",
         unhide: "показать",
         hiddenSuccess: "Данный продукт не будет отображатся на Сайте",
