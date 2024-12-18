@@ -133,7 +133,7 @@ export default {
       let data = {
         work_plan_id: parseInt(this.data.work_plan_id),
         is_report: false,
-        is_protocol_event: isProtocolEvent
+        is_protocol_event: isProtocolEvent,
       };
       this.planService.getWorkPlanData(data).then(res => {
         if(this.plan?.plan_type?.code === Enum.WorkPlanTypes.Directors){

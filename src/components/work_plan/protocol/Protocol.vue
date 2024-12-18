@@ -480,13 +480,13 @@
           <label for="responsivePerson" class="block mb-1">{{ $t('workPlan.protocol.responsivePerson') }}{{
               "*"
             }}</label>
-          <FindUser class="mt-2" v-model="boardAgendaResponsivePerson" :editMode="true" :max="1" :user-type="3"
+          <FindUser class="mt-2" v-model="boardAgendaResponsivePerson" :editMode="true" :user-type="3"
                     :disabled="isInApprove"/>
         </div>
         <div class="p-fluid mt-3">
           <label for="deadline" class="block mb-1">{{ $t('workPlan.protocol.deadline') }}{{ "*" }}</label>
           <PrimeCalendar v-model="agendaData.board_decisions[0].deadline" showIcon :showOnFocus="false"
-                         dateFormat="mm-dd-yy"
+                         dateFormat="dd-mm-yy"
                          inputId="buttondisplay" :disabled="isInApprove"/>
         </div>
       </div>
@@ -750,6 +750,25 @@ const data = ref([{
   board_members: []
 }]);
 
+function formatToCustomDateTime(inputDate) {
+  if (!inputDate) return null;
+
+  // Parse input into a Date object
+  const date = typeof inputDate === "string" ? new Date(inputDate) : inputDate;
+
+  if (isNaN(date)) return null; // Handle invalid date
+
+  // Format date components
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const year = date.getFullYear();
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+
+  // Return formatted string
+  return `${month}-${day}-${year} ${hours}:${minutes}`;
+}
+
 
 const validateAgendas = () => {
   const eventsList = data.value[0].protocol_issues || [];
@@ -980,7 +999,7 @@ const agendasModalView = (eventId) => {
   const foundEvent = data.value[0].protocol_issues.find(issue => issue.event_id === eventId);
   if (foundEvent) {
     selectedEvent.value = foundEvent;
-    agendaData.value.agenda = foundEvent.protocol_agenda?.agenda || '';
+    agendaData.value.agenda = foundEvent.event_name || '';
     agendaData.value.speaker = foundEvent.protocol_agenda?.speaker || [];
     if (agendaData.value.speaker && agendaData.value.speaker.length > 0) {
       boardAgendaSpeaker.value = []
@@ -1307,7 +1326,6 @@ const generatePdf = async () => {
   
     }
   }
-
   data.value[0].lang = docLang.value
 
   const protocolData = data.value[0];

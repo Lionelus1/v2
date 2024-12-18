@@ -1827,6 +1827,15 @@ export default {
           },
         },
         {
+          // Suraq qosu
+          label: this.$t('workPlan.protocol.addQuestion'),
+          disabled: !this.isPlanApproved,
+          visible: this.isDirectorsPlan,
+          command: () => {
+            this.showDialog(this.dialog.add);
+          },
+        },
+        {
           label: this.$t('workPlan.reports'),
           visible:
             this.isFinish &&

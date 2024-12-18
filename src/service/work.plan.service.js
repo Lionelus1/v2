@@ -28,6 +28,9 @@ export class WorkPlanService {
     }
 
     getWorkPlanData(data) {
+        // if ((data.is_protocol_event === undefined || data.is_protocol_event === null) && data.is_protocol_event === false) {
+        //     data.is_protocol_event = true;
+        // }
         return api.post(`/workPlan/getWorkPlanReportData`, data, {headers: getHeader()});
     }
 

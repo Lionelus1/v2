@@ -1540,7 +1540,8 @@ export default {
                 eventNotFound: "Оқиға атауы табылмады",
                 eventNotSelected: "Оқиға таңдалмаған"
 
-            }
+            },
+            addQuestion: "Сұрақ қосу"
         }
     },
     educomplex: {

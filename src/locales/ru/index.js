@@ -1530,7 +1530,8 @@ export default {
                 decisionNotFound: "Решение не найдено",
                 eventNotFound: "Название события не найдено",
                 eventNotSelected: "Событие не выбрано"
-            }
+            },
+            addQuestion: "Добавить вопрос"
         }
         
     },

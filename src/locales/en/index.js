@@ -1515,7 +1515,8 @@ export default {
                 eventNotFound: "Event title not found",
                 eventNotSelected: "Event not selected"
 
-            }
+            },
+            addQuestion: "Add a question"
         }
         
     },

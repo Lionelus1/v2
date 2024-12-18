@@ -62,7 +62,7 @@
 
       <Column field="actions" header="">
         <template #body="{ node }">
-          <ActionButton :items="items(node)" :show-label="true" @toggle="emit('onToggle', node)"/>
+          <ActionButton :items="items" :show-label="true" @toggle="emit('onToggle', node)"/>
         </template>
       </Column>
     </TreeTable>
