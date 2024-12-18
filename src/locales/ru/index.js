@@ -330,6 +330,7 @@ export default {
         fundInfo: "Источник финансирования",
         resultInfo: "Результаты проекта",
         zhtn: "РНП",
+        sciProject: "Научный проект",
         projectNameKZ: "Казахское название проекта",
         projectNameRU: "Русское название проекта",
         projectNameEN: "Английское название проекта",

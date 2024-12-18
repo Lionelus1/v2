@@ -164,37 +164,86 @@
     </template>
   </Dialog>
 
-  <!--  информация опроекте-->
+  <!--  информация о проекте-->
   <Dialog
       v-if="dialog.projectInfo.state"
       v-model:visible="dialog.projectInfo.state"
       :style="{ width: '50%' }"
-      :header="$t('common.projectInfo')"
+      :header="$t('common.sciProject')"
       :modal="true"
       class="p-fluid"
   >
-    <div class="card">
-      <TabView>
-        <TabPanel :header="$t('common.mainInfo')">
-          <p class="m-0">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-          </p>
-        </TabPanel>
-        <TabPanel :header="$t('common.fundInfo')">
-          <p class="m-0">
-            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim
-            ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.
-          </p>
-        </TabPanel>
-        <TabPanel :header="$t('common.resultInfo')">
-          <p class="m-0">
-            At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui
-            officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.
-          </p>
-        </TabPanel>
-      </TabView>
-    </div>
+    <TabView>
+      <TabPanel :header="$t('common.mainInfo')">
+        <div v-if="planDoc && planDoc.params" class="flex flex-column p-4">
+          <DataTable :rows="10"
+                     class="table_no_header mt-4"
+                     :value="filteredParamsMainInfo"
+          >
+            <Column>
+              <template #body="s">
+                {{ $t(s.data.description) }}
+              </template>
+            </Column>
+            <Column>
+              <template #body="s">
+                <template v-if="s.data.name === 'projectContract'">
+                  <Button icon="fa-solid fa-download" @click="downloadContract('contract')" :label="$t('contracts.contract')" />
+                </template>
+                <template v-else-if="s.data.name === 'projectPlan'">
+                  <Button icon="fa-solid fa-download" @click="downloadContract('additional')" :label="$t('common.additionalInfo')" />
+                </template>
+                <template v-else>
+                  <InputText v-model="s.data.value" />
+                </template>
+              </template>
+            </Column>
+          </DataTable>
+        </div>
+      </TabPanel>
+      <TabPanel :header="$t('common.fundInfo')">
+        <div v-if="planDoc && planDoc.params" class="flex flex-column">
+          <DataTable :rows="10"
+                     class="table_no_header mt-4"
+                     :value="filteredParamsFundingInfo"
+          >
+            <Column>
+              <template #body="s">
+                {{ $t(s.data.description) }}
+              </template>
+            </Column>
+            <Column>
+              <template #body="s">
+                <InputText v-model="s.data.value" />
+              </template>
+            </Column>
+          </DataTable>
+        </div>
+      </TabPanel>
+      <TabPanel :header="$t('common.resultInfo')">
+        <p class="m-0">
+          At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui
+          officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.
+        </p>
+      </TabPanel>
+    </TabView>
+    <template #footer>
+      <div class="dialog-footer">
+        <Button
+            :label="$t('common.close')"
+            icon="pi pi-times"
+            class="p-button-text"
+            @click="dialog.projectInfo.state = false"
+        />
+        <Button
+            :label="$t('common.save')"
+            icon="pi pi-check"
+            class="p-button-primary"
+            :loading="loadingProject"
+            @click="saveParams"
+        />
+      </div>
+    </template>
   </Dialog>
 
   <Dialog v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" :closable="false" v-model:visible="respPersonDialog" modal :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
@@ -352,11 +401,13 @@ export default {
       total: 0,
       quarter: null,
       loading: false,
+      loadingProject: false,
       showReportModal: false,
       parent: null,
       parentNode: null,
       plan: null,
       planDoc: null,
+      filterCriteria0: ["zhtn"], // Массив для фильтров
       approval_users: null,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       windowHeight: window.innerHeight - 270,
@@ -556,6 +607,10 @@ export default {
     },
   },
   methods: {
+    updateValue(row) {
+      // Здесь вы можете реализовать сохранение изменений или другие действия
+      console.log('Updated value:', row.data.value);
+    },
     findRole: findRole,
     updateResponsivePersons() {
       this.submitted = true;
@@ -811,6 +866,7 @@ export default {
         this.isPlanCreator = !!(this.plan && this.plan.user.id === this.loginedUserId);
 
         if (this.isSciencePlan) {
+          this.checkProjectInfo()
           this.planApprovalStage = [
             {
               stage: 1,
@@ -1334,9 +1390,118 @@ export default {
 
       return signed
     },
+    checkProjectInfo() {
+      if (this.planDoc.params) {
+        const requiredParams = [
+          { name: "zhtn", description: "common.zhtn" },
+          { name: "projectNameKZ", description: "common.projectNameKZ" },
+          { name: "projectNameRU", description: "common.projectNameRU" },
+          { name: "projectNameEN", description: "common.projectNameEN" },
+          { name: "projectSupervisor", description: "common.projectSupervisor" },
+          { name: "projectYears", description: "common.projectYears" },
+          { name: "projectContract", description: "common.projectContract" },
+          { name: "projectPlan", description: "common.projectPlan" },
+
+          { name: "projectContractNum", description: "common.projectContractNum" },
+          { name: "projectContractDate", description: "common.projectContractDate" },
+          { name: "projectClient", description: "common.projectClient" },
+          { name: "projectFundingType", description: "common.projectFundingType" }
+        ];
+
+        requiredParams.forEach(param => {
+          if (!this.planDoc.params.some(p => p.name === param.name)) {
+            this.planDoc.params.push({
+              id: null,
+              docID: null,
+              name: param.name,
+              value: "",
+              description: param.description,
+              isDeleted: false
+            });
+          }
+        });
+      }
+    },
+    showSciDoc(param){
+
+    },
+    saveParams() {
+      this.planDoc.newParams = {};
+      for (let i = 0; i < this.planDoc.params.length; i++) {
+        this.planDoc.newParams[this.planDoc.params[i].description] = this.planDoc.params[i];
+      }
+
+      this.loadingProject = true;
+      this.service.saveDocumentV2(this.planDoc).then(res => {
+        this.planDoc = res.data;
+        this.getPlan();
+        this.loadingProject = false;
+      }).catch(err => {
+        this.loadingProject = false;
+        if (err.response && err.response.status === 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+        } else {
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      })
+    },
+    showMessage(msgtype, message, content) {
+      this.$toast.add({
+        severity: msgtype,
+        summary: message,
+        detail: content,
+        life: 3000
+      });
+    },
   },
  
   computed: {
+    filteredParamsMainInfo() {
+      const allowedNames = [
+        'zhtn',
+        'projectNameKZ',
+        'projectNameRU',
+        'projectNameEN',
+        'projectSupervisor',
+        'projectYears',
+        'projectContract',
+        'projectPlan'
+      ];
+
+      // Проверяем, что `this.planDoc?.params` существует и является массивом
+      const params = this.planDoc?.params || [];
+
+      // Фильтрация и сортировка в одном вызове
+      return params
+          .filter(param => allowedNames.includes(param.name)) // Оставляем только нужные элементы
+          .sort((a, b) => {
+            const indexA = allowedNames.indexOf(a.name);
+            const indexB = allowedNames.indexOf(b.name);
+            return indexA - indexB; // Сортируем по индексу в allowedNames
+          });
+    },
+    filteredParamsFundingInfo() {
+      const allowedNames = [
+        'projectContractNum',
+        'projectContractDate',
+        'projectClient',
+        'projectFundingType'
+      ];
+
+      // Проверяем, что `this.planDoc?.params` существует и является массивом
+      const params = this.planDoc?.params || [];
+
+      // Фильтрация и сортировка в одном вызове
+      return params
+          .filter(param => allowedNames.includes(param.name)) // Оставляем только нужные элементы
+          .sort((a, b) => {
+            const indexA = allowedNames.indexOf(a.name);
+            const indexB = allowedNames.indexOf(b.name);
+            return indexA - indexB; // Сортируем по индексу в allowedNames
+          });
+    },
     initItems() {
       return (data) => {
 
@@ -1485,7 +1650,8 @@ export default {
         },
         {
           label: this.$t('contracts.contract'),
-          visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.Contract),
+          visible: false,
+          // visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.Contract),
           icon: 'fa-solid fa-download',
           command: () => {
             this.downloadContract('contract')
@@ -1493,7 +1659,8 @@ export default {
         },
         {
           label: this.$t('common.additionalInfo'),
-          visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.RelatedDoc),
+          visible: false,
+          // visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.RelatedDoc),
           icon: 'fa-solid fa-download',
           command: () => {
             this.downloadContract('additional')
@@ -1528,6 +1695,17 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem; /* Расстояние между кнопками */
+}
+
+/* Скрывает заголовок только для таблицы с классом table_no_header */
+.table_no_header .p-datatable-thead {
+  display: none;
+}
+
 .customer-badge {
   border-radius: 2px;
   padding: .25em .5rem;

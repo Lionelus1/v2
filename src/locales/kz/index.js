@@ -330,6 +330,7 @@ export default {
         fundingInfo: "Қаржыландыру көзі",
         resultInfo: "Жоба нәтижелері",
         zhtn: "ЖТН",
+        sciProject: "Ғылыми жоба",
         projectNameKZ: "Жобаның қазақша атауы",
         projectNameRU: "Жобаның орысша атауы",
         projectNameEN: "Жобаның ағылшынша атауы",
