@@ -752,15 +752,6 @@ export default {
           this.isApproval = false;
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       });
     },
     getPlan() {
