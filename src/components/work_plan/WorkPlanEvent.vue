@@ -407,7 +407,6 @@ export default {
       parentNode: null,
       plan: null,
       planDoc: null,
-      filterCriteria0: ["zhtn"], // Массив для фильтров
       approval_users: null,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       windowHeight: window.innerHeight - 270,
@@ -1393,19 +1392,24 @@ export default {
     checkProjectInfo() {
       if (this.planDoc.params) {
         const requiredParams = [
+          { name: "projectSupervisor", description: "common.projectSupervisor" },
           { name: "zhtn", description: "common.zhtn" },
           { name: "projectNameKZ", description: "common.projectNameKZ" },
           { name: "projectNameRU", description: "common.projectNameRU" },
           { name: "projectNameEN", description: "common.projectNameEN" },
-          { name: "projectSupervisor", description: "common.projectSupervisor" },
-          { name: "projectYears", description: "common.projectYears" },
-          { name: "projectContract", description: "common.projectContract" },
-          { name: "projectPlan", description: "common.projectPlan" },
+          { name: "projectPriority", description: "common.projectPriority" },
+          { name: "projectRelevance", description: "common.projectRelevance" },
+          { name: "projectGoal", description: "common.projectGoal" },
+          { name: "projectTypeOfResearch", description: "common.projectTypeOfResearch" },
+          { name: "nameOfPriorityArea", description: "common.nameOfPriorityArea" },
+          { name: "projectObjectives", description: "common.projectObjectives" },
+          { name: "projectAppAreas", description: "common.projectGoal" },
+          { name: "projectGoal", description: "common.projectAppAreas" },
 
           { name: "projectContractNum", description: "common.projectContractNum" },
           { name: "projectContractDate", description: "common.projectContractDate" },
-          { name: "projectClient", description: "common.projectClient" },
-          { name: "projectFundingType", description: "common.projectFundingType" }
+          { name: "projectFundingType", description: "common.projectFundingType" },
+          { name: "projectYears", description: "common.projectYears" },
         ];
 
         requiredParams.forEach(param => {
@@ -1460,14 +1464,18 @@ export default {
   computed: {
     filteredParamsMainInfo() {
       const allowedNames = [
+        'projectSupervisor',
         'zhtn',
         'projectNameKZ',
         'projectNameRU',
         'projectNameEN',
-        'projectSupervisor',
-        'projectYears',
-        'projectContract',
-        'projectPlan'
+        'projectPriority',
+        'projectRelevance',
+        'projectGoal',
+        'projectTypeOfResearch',
+        'nameOfPriorityArea',
+        'projectObjectives',
+        'projectAppAreas',
       ];
 
       // Проверяем, что `this.planDoc?.params` существует и является массивом
@@ -1486,8 +1494,27 @@ export default {
       const allowedNames = [
         'projectContractNum',
         'projectContractDate',
-        'projectClient',
-        'projectFundingType'
+        'projectFundingType',
+        'projectYears',
+      ];
+
+      // Проверяем, что `this.planDoc?.params` существует и является массивом
+      const params = this.planDoc?.params || [];
+
+      // Фильтрация и сортировка в одном вызове
+      return params
+          .filter(param => allowedNames.includes(param.name)) // Оставляем только нужные элементы
+          .sort((a, b) => {
+            const indexA = allowedNames.indexOf(a.name);
+            const indexB = allowedNames.indexOf(b.name);
+            return indexA - indexB; // Сортируем по индексу в allowedNames
+          });
+    },
+    filteredParamsResultInfo() {
+      const allowedNames = [
+        'projectYear',
+        'projectRes',
+        'projectPulish',
       ];
 
       // Проверяем, что `this.planDoc?.params` существует и является массивом
@@ -1504,14 +1531,11 @@ export default {
     },
     initItems() {
       return (data) => {
-
         // Проверка для научного плана
         let curDate = moment(new Date());
         let sDate = moment(new Date(data.start_date));
         let fDate = moment(new Date(data.end_date));
         let showRes = false;
-
-
         if (this.isSciencePlan){
           showRes = this.isFinish && (curDate.isSameOrAfter(sDate) && curDate.isSameOrBefore(fDate));
 
@@ -1521,13 +1545,13 @@ export default {
         } else {
           showRes = this.isFinish;
         }
-
         return [
           {
             label: this.$t('common.show'),
             icon: 'fa-solid fa-eye',
             disabled: !(this.isPlanApproved && this.canExecuteEvent),
             visible: showRes,
+
             command: () => {
               this.openPlanExecuteSidebar()
             }
@@ -1650,8 +1674,7 @@ export default {
         },
         {
           label: this.$t('contracts.contract'),
-          visible: false,
-          // visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.Contract),
+          visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.Contract),
           icon: 'fa-solid fa-download',
           command: () => {
             this.downloadContract('contract')
@@ -1659,8 +1682,7 @@ export default {
         },
         {
           label: this.$t('common.additionalInfo'),
-          visible: false,
-          // visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.RelatedDoc),
+          visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.RelatedDoc),
           icon: 'fa-solid fa-download',
           command: () => {
             this.downloadContract('additional')
