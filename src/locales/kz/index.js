@@ -389,7 +389,12 @@ export default {
         availabilityForSpecialNeeds: 'Ерекше қажеттіліктері бар адамдар үшін қол жетімді',
         getDataError: "Деректерді алу кезінде қателіктер туындады",
         services: "Қызметтер",
-        amount: "Сомасы"
+        amount: "Сомасы",
+        hide: "Жасыру",
+        unhide: "Көрсету",
+        hiddenSuccess: "Бұл өнім сайтта көрсетілмейді",
+        unhiddenSuccess: "Бұл өнім сайтта көрсетіледі",
+        fillRequiredFields: "Барлық міндетті өрістер толтырылмаған"
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -2151,7 +2156,7 @@ export default {
         employee: 'Сотрудник',
         author: 'Автор',
         reportGenerationDate: 'Есеп құрастырылған күн',
-        actions: 'Действия',
+        actions: 'Әрекеттер',
         view: 'Просмотр',
         export: 'Экспорт',
         delete: 'Удалить',
@@ -2186,9 +2191,22 @@ export default {
         network: "Серверден жауап келмеді. Интернет қосылымын тексеріңіз.",
         unknown: "Белгісіз қате.",
     },
+    showcase: {
+        publication: 'Жарияланған күні',
+        status: 'Статус',
+        name: 'Атауы',
+        title: 'Цифрлық Витрина',
+        author: 'Автор',
+        nameKz: 'Өнімнің қазақ тілінде атауы',
+        nameEn: 'Өнімнің ағылшын тілінде атауы',
+        nameRu: 'Өнімнің орыс тілінде атауы',
+        descriptionKz: "Қазақ тіліндегі сипаттама",
+        descriptionEn: "Ағылшын тіліндегі сипаттама",
+        descriptionRu: "Орыс тіліндегі сипаттама",
+        crAndUpdEdu: "Өнім қосу"
+    },
     telegram: {
         title: 'Чат-бот Е-куратор',
-
         question: 'Сұрақтар',
         anwers: 'Жауаптар',
         author: 'Сұрақтың авторы',

@@ -396,7 +396,12 @@ export default {
         availabilityForSpecialNeeds: 'Available for People with Special Needs',
         getDataError: "Error while receiving data",
         services: "Services",
-        amount: "Amount"
+        amount: "Amount",
+        hide: "Hide",
+        unhide: "Show",
+        hiddenSuccess: "This product will not be displayed on the Site",
+        unhiddenSuccess: "This product will be displayed on the Site",
+        fillRequiredFields: "Not all required fields are filled in"
     },
     positions: {
         menuTitle: "Change position",
@@ -2208,6 +2213,20 @@ export default {
         anwersen: 'Enter a answer in English',
         anwersru: 'Enter a answer in Russian',
         crAndUpdEdu: 'Creating and editing a question and answer'
+    },
+    showcase: {
+        publication:'Publication date',
+        status:'Status',
+        name:'Name',
+        title:'Digital Showcase',
+        author:'Author',
+        nameKz:'Product name in Kazakh',
+        nameEn:'Product name in English',
+        nameRu:'Product name in Russian',
+        descriptionKz: "Description in Kazakh",
+        descriptionEn: "Description  in English",
+        descriptionRu: "Description in Russian",
+        crAndUpdEdu: "Add product"
     },
     hikvision: {
         reportDeleted: 'Report successfully deleted',
