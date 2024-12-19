@@ -271,7 +271,6 @@ const getShowcase = () => {
 
   showcaseService.getShowcase(req)
       .then((res) => {
-        console.log(res.data);
         nodes.value = res.data.showcases;
         total.value = res.data.total;
         loading.value = false;
