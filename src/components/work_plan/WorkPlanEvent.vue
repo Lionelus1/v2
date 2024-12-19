@@ -1799,6 +1799,7 @@ export default {
         },
         {
           // Protocol Quru
+          //Enter
           label: this.$t('workPlan.protocol.createProtocols'),
           disabled: this.SelectedEventParamsLength <= 0 || !this.isPlanApproved,
           visible: this.isDirectorsPlan,
@@ -1808,6 +1809,7 @@ export default {
         },
         {
           // Qattama registeri
+          //Enter
           label: this.$t('contracts.menu.registerProtocols'),
           visible: this.isDirectorsPlan && this.isPlanApproved,
           command: () => {
@@ -1819,6 +1821,7 @@ export default {
         },
         {
           // Tandau
+          //Enter
           label: this.$t('common.choose'),
           disabled: !this.isPlanApproved,
           visible: this.isDirectorsPlan,
@@ -1828,6 +1831,7 @@ export default {
         },
         {
           // Suraq qosu
+          //Enter
           label: this.$t('workPlan.protocol.addQuestion'),
           disabled: !this.isPlanApproved,
           visible: this.isDirectorsPlan,
