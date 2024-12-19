@@ -1436,6 +1436,18 @@ export default {
         ReportDesigner: "Report Designer",
         TypeReport: "Type of report",
         period: "Period",
+        department: "Department",
+        status: "Status",
+        author: "Author",
+        createdDate: "Created Date",
+        generate: "Generate",
+        reset: "reset",
+        contragents: "Contragents",
+        organizations: "Organizations",
+        individuals: "Individuals",
+        noAuth: "",
+        TypeContract: "Contract",
+        signers: "Signers"
     },
     workPlan: {
         plans: "Plans",

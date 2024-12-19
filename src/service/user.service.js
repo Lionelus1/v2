@@ -24,9 +24,10 @@ export class UserService {
         return api.post('/auth/getDictionary',data, {headers: getHeader()});
     }
 
-    getUser(data, token) {
-        return api.post('/getUser',data, {headers: getHeader(), cancelToken: token});
+    getUser(data) {
+        return api.post('/getUser',data, {headers: getHeader()});
     }
+
     addDepartment(data) {
         return api.post('/add-department',data, {headers: getHeader()});
     }

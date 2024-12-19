@@ -11,31 +11,63 @@
           <label>{{ $t('report.TypeReport') }}</label>
           <Dropdown
               v-if="true"
+              v-model="typeReport"
+              :options="typeReports"
+              optionLabel="label"
+              placeholder="Выберите категорию"
+              class="dropdown full-width"
+          />
+        </div>
+
+        <div v-if="typeReport && typeReport.value === 1" class="filter-item">
+          <label>{{ $t('report.TypeContract') }}</label>
+          <Dropdown
+              v-if="typeReport.value === 1"
               v-model="filters.category.value"
               :options="reportCategories"
               optionLabel="label"
               placeholder="Выберите категорию"
-              class="dropdown"
+              class="dropdown full-width"
           />
         </div>
+
 
         <!-- Период -->
         <div class="filter-item">
           <label>{{ $t('report.period') }}</label>
           <Calendar
-              v-model="filters.dateRange.from"
+              v-model="filters.period_start"
               placeholder="Дата начала"
               :showIcon="true"
               :dateFormat="'dd.mm.yy'"
               class="calendar"
           />
           <Calendar
-              v-model="filters.dateRange.to"
+              v-model="filters.period_end"
               placeholder="Дата окончания"
               :showIcon="true"
               :dateFormat="'dd.mm.yy'"
               class="calendar"
           />
+        </div>
+
+
+        <div>
+          <h6>Язык:</h6>
+          <div class="flex flex-wrap gap-4">
+            <div class="flex items-center gap-2">
+              <RadioButton v-model="filters.lang" inputId="kz" name="language" value="kz"/>
+              <label for="ingredient1">Қазақша</label>
+            </div>
+            <div class="flex items-center gap-2">
+              <RadioButton v-model="filters.lang" inputId="ru" name="language" value="ru"/>
+              <label for="ingredient2">Орысша</label>
+            </div>
+            <div class="flex items-center gap-2">
+              <RadioButton v-model="filters.lang" inputId="en" name="language" value="en"/>
+              <label for="ingredient3">English</label>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -44,45 +76,74 @@
         <div class="additional-filters">
           <!-- Департамент/Группа -->
           <div class="filter-item">
-            <label>{{ $t('reports.department') }}</label>
+            <!--            <label>{{ $t('report.department') }}</label>-->
             <div class="filter-controls">
-              <Checkbox v-model="filters.department.enabled" />
-              <Dropdown
-                  v-if="filters.department.enabled"
-                  v-model="filters.department.value"
-                  :options="departments"
-                  optionLabel="label"
-                  placeholder="Выберите департамент/группу"
-                  class="dropdown"
-              />
+              <input type="checkbox" id="department" value="filters.department.enabled"
+                     v-model="filters.department.enabled" @change="onDepartmentChange"/>
+              <label for="department">{{ $t('report.department') }}</label>
+              <!--              <Checkbox v-model="filters.department.enabled" />-->
+              <!--              v-if="filters.department.enabled"-->
+              <MultiSelect v-model="filters.department.value" :options="departments" optionLabel="label" filter
+                           placeholder="Выберите департаменты"
+                           :maxSelectedLabels="3" class="w-full md:w-80" :disabled="!filters.department.enabled"/>
             </div>
           </div>
 
           <div class="filter-item">
-            <label>{{ $t('reports.status') }}</label>
+            <!--            <label>{{ $t('report.status') }}</label>-->
             <div class="filter-controls">
-              <Checkbox v-model="filters.status.enabled" />
-              <Dropdown
-                  v-if="filters.status.enabled"
-                  v-model="filters.status.value"
-                  :options="statuses"
-                  optionLabel="label"
-                  placeholder="Выберите статус"
-                  class="dropdown"
-              />
+              <input type="checkbox" id="status" value="filters.status.enabled" v-model="filters.status.enabled"/>
+              <label for="status">{{ $t('report.status') }}</label>
+              <!--              <Checkbox v-model="filters.status.enabled" />-->
+              <MultiSelect v-model="filters.status.value" :options="statuses" optionLabel="label" filter
+                           placeholder="Выберите статусы"
+                           :maxSelectedLabels="3" class="w-full md:w-80" :disabled="!filters.status.enabled"/>
             </div>
           </div>
 
+
           <div class="filter-item">
-            <label>{{ $t('reports.author') }}</label>
             <div class="filter-controls">
-              <Checkbox v-model="filters.author.enabled" />
-              <InputText
-                  v-if="filters.author.enabled"
+              <input type="checkbox" id="author" value="filters.author.enabled" v-model="filters.author.enabled" @change="onAuthorChange"/>
+              <label for="author">{{ $t('report.author') }}</label>
+              <!--            <label>{{ $t('report.author') }}</label>-->
+              <!--            <Checkbox v-model="filters.author.enabled" />-->
+              <FindUser
+                  :placeholder="$t('common.fullName')"
+                  :searchMode="searchMode"
                   v-model="filters.author.value"
-                  placeholder="Введите имя автора"
-                  class="input"
+                  :user-type="3"
+                  :max="4"
+                  :editMode="true"
+                  :disabled="!filters.author.enabled"
+                  @add="addAuthor"
               />
+            </div>
+          </div>
+          <div class="filter-item">
+            <div class="filter-controls">
+              <input type="checkbox" id="signers" value="filters.signers.enabled" v-model="filters.signers.enabled"  @change="onSignersChange"/>
+              <label for="signers">{{ $t('report.signers') }}</label>
+              <FindUser
+                  :placeholder="$t('common.fullName')"
+                  :searchMode="searchMode"
+                  v-model="filters.signers.value"
+                  :user-type="3"
+                  :max="4"
+                  :editMode="true"
+                  :disabled="!filters.signers.enabled"
+                  @add="addSigners"
+              />
+            </div>
+          </div>
+          <div class="filter-item">
+            <div class="filter-controls">
+              <input type="checkbox" id="contragent" value="filters.contragent.enabled"
+                     v-model="filters.contragent.enabled" @change="onContragentChange"/>
+              <label for="contragent">{{ $t('report.contragents') }}</label>
+              <MultiSelect v-model="filters.contragent.value" :options="contragents" optionLabel="label" filter
+                           placeholder="Выберите контрагенты"
+                           :maxSelectedLabels="3" class="w-full md:w-80" :disabled="!filters.contragent.enabled"/>
             </div>
           </div>
         </div>
@@ -92,13 +153,13 @@
     <!-- Кнопки -->
     <div class="buttons">
       <Button
-          :label="$t('reports.generate')"
+          :label="$t('report.generate')"
           icon="pi pi-file"
           class="p-button-success generate-btn"
           @click="generateReport"
       />
       <Button
-          :label="$t('reports.reset')"
+          :label="$t('report.reset')"
           icon="pi pi-refresh"
           class="p-button-warning reset-btn"
           @click="resetFilters"
@@ -116,19 +177,17 @@
             :rows="10"
             :totalRecords="totalRecords"
             class="p-datatable-sm"
+            :first="first"
+            @page="onPage"
         >
-          <Column :field="'category'" :header="$t('reports.category')" />
-          <Column :field="'department'" :header="$t('reports.department')" />
-          <Column :field="'status'" :header="$t('reports.status')" />
-          <Column :field="'author'" :header="$t('reports.author')" />
-          <Column :header="$t('reports.actions')">
-            <template #body="slotProps">
-              <Button
-                  label="Excel"
-                  icon="pi pi-download"
-                  class="p-button-success"
-                  @click="exportToExcel(slotProps.data.id)"
-              />
+          <Column :field="'typeReport'" :header="$t('report.TypeReport')"/>
+          <Column :field="'period'" :header="$t('report.period')"/>
+          <Column :field="'author'" :header="$t('report.author')"/>
+          <Column :field="'createdDate'" :header="$t('report.createdDate')"/>
+          <Column v-if="false" :field="'doc'" disabled="true" ></Column>
+          <Column>
+            <template #body="{data}">
+              <ActionButton :show-label="true" :items="actions" @toggle="toggle(data)" />
             </template>
           </Column>
         </DataTable>
@@ -137,95 +196,452 @@
   </div>
 </template>
 
-
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useToast } from 'primevue/usetoast';
-import { useI18n } from 'vue-i18n';
-import Checkbox from 'primevue/checkbox';
+import {useRouter} from "vue-router";
+import {ref, onMounted, computed} from 'vue';
+import {useToast} from 'primevue/usetoast';
+import {useI18n} from 'vue-i18n';
 import Dropdown from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
-import InputText from 'primevue/inputtext';
+import MultiSelect from 'primevue/multiselect';
 import Button from 'primevue/button';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import BlockUI from 'primevue/blockui';
-import { ReportService } from '@/service/report.service';
+import {ReportService} from '@/service/report.service';
+import {UserService} from "@/service/user.service";
+import {DocService} from "@/service/doc.service";
+import ActionButton from "@/components/ActionButton.vue";
+import {ContragentService} from "@/service/contragent.service";
 
 const toast = useToast();
-const { t } = useI18n();
+const {t, locale} = useI18n();
 const reportService = new ReportService();
+const userService = new UserService();
+const docService = new DocService()
+const contragentService = new ContragentService();
 
 const reportCategories = ref([]);
+const typeReports = ref([]);
 const departments = ref([]);
 const statuses = ref([]);
+const organizations = ref([]);
+const contragents = ref([]);
+const selectedOrganizations = ref([]);
+const selectedOrganizationContragents = ref([]);
+const typeReport = ref(null)
+
+const searchMode = {
+  type: String,
+  default: 'ldap'
+};
 
 const filters = ref({
-  category: { enabled: false, value: null },
-  department: { enabled: false, value: null },
-  status: { enabled: false, value: null },
-  dateRange: { from: null, to: null },
-  author: { enabled: false, value: '' },
+  category: {enabled: false, value: null},
+  department: {enabled: false, value: []}, // Массив для множественного выбора
+  contragent: {enabled: false, value: []},
+  signers: {enabled: false, value: []},
+  individuals: {enabled: false, value: []},
+  noAuth: {enabled: false, value: []},
+  organizations: {enabled: false, value: []},
+  status: {enabled: false, value: []}, // Массив для множественного выбора
+  period_start: null,
+  period_end: null,
+  lang: null,
+  author: {enabled: false, value: []},
+  reportType: {value: null},
 });
+
+const ListCategories = [
+  {
+    nameKz: "Үш жақты келісім-шарт",
+    nameRu: "Трехсторонний договор",
+    nameEn: "Report Category 1",
+    code: 5,
+    id: 1,
+  },
+  {
+    nameKz: "Екі жақты келісім-шарт",
+    nameRu: "Двухсторонний договор",
+    nameEn: "Report Category 2",
+    code: 5,
+    id: 2,
+  },
+  {
+    nameKz: "Студенттік үйде төсек-орын беру шарты",
+    nameRu: "Договор на предоставление койко-места в Студенческом доме",
+    nameEn: "Agreement for the Provision of a Bed Space in the Student Dormitory",
+    code: 5,
+    id: 3,
+  },
+];
+
+const ListTypeReports = [
+  {
+    nameKz: "Келісім-шарт",
+    nameRu: "Договор",
+    nameEn: "Contract",
+    id:  1,
+  },
+];
+
+const dataTypeReports = ListTypeReports.map((typeReport) => {
+  const label = locale.value === "kz"
+      ? typeReport.nameKz
+      : locale.value === "ru"
+          ? typeReport.nameRu
+          : typeReport.nameEn;
+
+  return {
+    label,
+    value: typeReport.id,
+  };
+});
+// const categories = ref([]);
+const categories = ListCategories.map((cat) => {
+  console.log("locale.value: ", locale.value)
+  const label = locale.value === "kz"
+      ? cat.nameKz
+      : locale.value === "ru"
+          ? cat.nameRu
+          : cat.nameEn;
+
+  return {
+    label,
+    value: cat.id,
+    id: cat.id,
+  };
+});
+
+const onSignersChange = () => {
+  if (filters.value.signers.enabled) {
+    filters.value.department.enabled = false;
+    filters.value.author.enabled = false;
+    filters.value.contragent.enabled = false;
+  }
+};
+
+const onContragentChange = () => {
+  if (filters.value.contragent.enabled) {
+    filters.value.department.enabled = false;
+    filters.value.author.enabled = false;
+    filters.value.signers.enabled = false;
+  }
+};
+
+const onAuthorChange = () => {
+  if (filters.value.author.enabled) {
+    filters.value.contragent.enabled = false;
+    filters.value.signers.enabled = false;
+  }
+};
+
+const onDepartmentChange = () => {
+  if (filters.value.department.enabled) {
+    filters.value.contragent.enabled = false;
+    filters.value.signers.enabled = false;
+  }
+};
 
 const reports = ref([]);
 const totalRecords = ref(0);
 const loading = ref(false);
+const first = ref(0);
+const rows = 10; // Количество записей на странице
+const categoryID = 7; // Категория всегда 7
+const router = useRouter()
 
-const fetchCategories = async () => {
+const actionsNode = ref(null)
+const toggle = (node) => {
+  console.log("node: ", node)
+  actionsNode.value = node
+}
+
+const actions = computed(() => {
+  return [
+    {
+      label: t('common.show'),
+      icon: "fa-solid fa-eye",
+      command: () => {
+      },
+    },
+    {
+      label: t('common.delete'),
+      icon: "fa-solid fa-trash-can",
+      command: () => {
+        reportService.deleteReport({id: actionsNode.value.id})
+      },
+    },
+    {
+      label: t("common.download"),
+      icon: "pi pi-fw pi-download",
+      command: () => {},
+    },
+  ]
+})
+
+const loadReports = async (page = 0) => {
+  loading.value = true;
   try {
-    const response = await reportService.getCategories();
-    reportCategories.value = response.data.map((cat) => ({
-      label: cat.name,
-      value: cat.id,
+    const response = await reportService.getReportsByCatID({
+      category_id: categoryID,
+      page,
+      rows,
+    });
+
+    // Преобразуем данные для таблицы
+    const {reports: fetchedReports, totalRecords: total} = response.data;
+
+    reports.value = fetchedReports.map((report) => ({
+      id: report.id,
+      typeReport: report.type?.[`name_${getCurrentLang()}`] || "-",
+      period: `${formatDate(report.start_date)} - ${formatDate(report.end_date)}`,
+      author: report.author?.fullName || "-",
+      createdDate: formatDate(report.creation_date),
     }));
+
+    totalRecords.value = total;
   } catch (error) {
-    toast.add({ severity: 'error', detail: t('reports.errorFetchingCategories'), life: 3000 });
+    console.error("Ошибка загрузки отчетов:", error);
+  } finally {
+    loading.value = false;
   }
 };
 
+const onPage = (event) => {
+  first.value = event.first;
+  const page = Math.floor(event.first / rows);
+  loadReports(page);
+};
+
+// Форматирование даты
+const formatDate = (dateString) => {
+  if (!dateString) return "-";
+  return new Date(dateString).toLocaleDateString(getCurrentLang());
+};
+
+// Получение текущего языка интерфейса
+const getCurrentLang = () => {
+  // Получаем текущий язык (например, из Vue i18n)
+  return "kz"; // Или "ru", "en" в зависимости от локали
+};
+
+const fetchCategories = async () => {
+  try {
+    const response = await docService.getStates();
+    reportCategories.value = categories;
+  } catch (error) {
+    toast.add({severity: 'error', detail: t('reports.errorFetchingCategories'), life: 3000});
+  }
+};
+
+const fetchReportTypes = async () => {
+  try {
+    const response = await docService.getStates();
+    typeReports.value = dataTypeReports;
+  } catch (error) {
+    toast.add({severity: 'error', detail: t('reports.errorFetchingCategories'), life: 3000});
+  }
+};
+
+const addAuthor = (selectedUser) => {
+  if (!filters.value.author.value.some(author => author.id === selectedUser.id)) {
+    filters.value.author.value.push({id: selectedUser.id, label: selectedUser.label});
+    }
+};
+
+const addSigners = (selectedUser) => {
+  if (!filters.value.signers.value.some(signers => signers.id === selectedUser.id)) {
+    filters.value.signers.value.push({id: selectedUser.id, label: selectedUser.label});
+  }
+}
+
+
 const fetchDepartments = async () => {
   try {
-    const response = await reportService.getDepartments();
+    const filters = {
+      orgType: null,
+      parentID: 1,
+      search_text: null
+    }
+    const response = await userService.getDepartments(filters);
     departments.value = response.data.map((dept) => ({
       label: dept.name,
       value: dept.id,
     }));
   } catch (error) {
-    toast.add({ severity: 'error', detail: t('reports.errorFetchingDepartments'), life: 3000 });
+    toast.add({severity: 'error', detail: t('reports.errorFetchingDepartments'), life: 3000});
+  }
+};
+
+const fetchContragents = async () => {
+  try {
+    const filter = {
+      filter: {
+        hasSpecialNeeds: false,
+        name: "",
+        orgId: null,
+        signers: false,
+      },
+      ldap: false,
+      searchMode: 'individual_entrepreneur'
+    };
+
+    const response = await userService.getUser(filter);
+    contragents.value = response.data.foundUsers.map((contragent) => ({
+      label: contragent.fullName,
+      value: contragent.userID,
+    }));
+  } catch (error) {
+    toast.add({severity: 'error', detail: t('reports.errorFetchingStatuses'), life: 3000});
+  }
+
+}
+
+const onOrganizationsChange = async () => {
+  const currentOrganizationIds = selectedOrganizations.value.map((org) => org.value);
+
+  // Оставляем контрагентов только для текущих организаций
+  selectedOrganizationContragents.value = selectedOrganizationContragents.value.filter((contragent) =>
+      currentOrganizationIds.includes(contragent.orgId)
+  );
+
+  // Загружаем контрагентов для новых организаций
+  for (const organizationId of currentOrganizationIds) {
+    if (!selectedOrganizationContragents.value.some((contragent) => contragent.orgId === organizationId)) {
+      const filter = {
+        filter: {
+          hasSpecialNeeds: false,
+          name: "",
+          orgId: organizationId, // Устанавливаем текущий ID организации
+          signers: true,
+        },
+        ldap: false,
+      };
+
+      try {
+        const response = await userService.getUser(filter);
+        const newContragents = response.data.foundUsers.map((foundUser) => ({
+          label: foundUser.fullName,
+          value: foundUser.userID,
+          orgId: organizationId, // Связываем контрагента с ID организации
+        }));
+
+        selectedOrganizationContragents.value = [
+          ...selectedOrganizationContragents.value,
+          ...newContragents,
+        ];
+      } catch (error) {
+        console.error(`Ошибка загрузки контрагентов для организации ${organizationId}:`, error);
+      }
+    }
+  }
+};
+
+const fetchOrganizations = async () => {
+  try {
+    const activeFilters = {
+      filter: {
+        address: null,
+        country_id: null,
+        form_id: null,
+        name: "",
+        organization_industry_id: null,
+        other_parameters_id: null,
+        resident: 1,
+      }
+    }
+    const response = await contragentService.getOrganizations(activeFilters);
+    organizations.value = response.data.organizations.map((organization) => ({
+      label: locale.value === "kz" ? organization.name : locale.value === "ru"
+          ? organization.nameru : organization.nameen,
+      value: organization.id,
+    }));
+  } catch (error) {
+    toast.add({severity: 'error', detail: t('reports.errorFetchingStatuses'), life: 3000});
   }
 };
 
 const fetchStatuses = async () => {
   try {
-    const response = await reportService.getStatuses();
+    const response = await docService.getStates();
     statuses.value = response.data.map((status) => ({
-      label: status.name,
-      value: status.id,
+      label: locale.value === "kz" ? status.nameKz : locale.value === "ru"
+          ? status.nameRu : status.nameEn,
+      value: status.code,
     }));
   } catch (error) {
-    toast.add({ severity: 'error', detail: t('reports.errorFetchingStatuses'), life: 3000 });
+    toast.add({severity: 'error', detail: t('reports.errorFetchingStatuses'), life: 3000});
   }
 };
 
 const generateReport = async () => {
-  const activeFilters = {};
 
-  for (const key in filters.value) {
-    const filter = filters.value[key];
-    if (filter.enabled || (key === 'dateRange' && (filter.from || filter.to))) {
-      activeFilters[key] = filter.value || filter;
+  const activeFilters = {
+    filters: {
+      authors: filters.value.author.value.map(author => author.userID),
+      // authors: [180433, 180434, 156581, 142675],
+      // authors: [],
+      departments: filters.value.department.value.map(department => department.value),
+      statuses: filters.value.status.value.map(status => status.value),
+      period_start: filters.value.period_start,
+      period_end: filters.value.period_end,
+      lang: filters.value.lang,
+      // report_type: 1,
+      // departments: [18594, 18595],
+      // departments: [],
+      // signers: [156581],
+      // signers: [],
+      signers: filters.value.signers.value.map(signer => signer.value),
+      contragents: filters.value.contragent.value.map(contr => contr.value),
+      // contragents: [170572],
+      // organizations: [13723],
+      // contragents: [],
+      // statuses: ['status_created', 'status_approved', 'status_signing'],
+      // statuses: [],
+      // period_start: '2022-11-07T20:00:00.000Z',
+      // period_end: '2024-11-27T20:00:00.000Z',
+      // lang: 'kz',
+      report_type: filters.value.category.value.value,
+      file_path: '',
+    },
+    vertical_filters: [],
+    horizontal_filters: [],
+    // vertical_filters: ['period', 'status'],
+    // horizontal_filters: ['author', 'department'],
+  };
+
+  if (activeFilters.filters.statuses?.length) {
+    activeFilters.vertical_filters.push('status');
+  }
+  activeFilters.vertical_filters.push('period');
+
+  if (activeFilters.filters.authors?.length || activeFilters.filters.departments?.length) {
+    if (activeFilters.filters.authors?.length) {
+      activeFilters.horizontal_filters.push('author');
+    }
+    if (activeFilters.filters.departments?.length) {
+      activeFilters.horizontal_filters.push('department');
     }
   }
+  console.log("activeFilters: ", activeFilters)
 
   try {
     loading.value = true;
-    const response = await reportService.getReports(activeFilters);
-    reports.value = response.data.reports || [];
-    totalRecords.value = response.data.total || 0;
-    toast.add({ severity: 'success', detail: t('reports.generatedSuccess'), life: 3000 });
+    const response = await reportService.getReportData(activeFilters);
+    console.log("response: ", response.data.filePath)
+    activeFilters.file_path = response.data.filePath
+
+    localStorage.setItem('docReports', JSON.stringify(response.data));
+
+    router.push({
+      name: "ReportPreview",
+      query: {filters: JSON.stringify(activeFilters)}
+    });
+
   } catch (error) {
-    toast.add({ severity: 'error', detail: t('reports.errorGeneratingReport'), life: 3000 });
+    console.error("Error generating report: ", error);
+    toast.add({severity: 'error', detail: t('reports.errorGeneratingReport'), life: 3000});
   } finally {
     loading.value = false;
   }
@@ -233,16 +649,25 @@ const generateReport = async () => {
 
 const resetFilters = () => {
   for (const key in filters.value) {
-    filters.value[key].enabled = false;
-    filters.value[key].value = null;
+    const filter = filters.value[key];
+    if (filter && typeof filter === 'object' && 'enabled' in filter && 'value' in filter) {
+      filter.enabled = false;
+      filter.value = Array.isArray(filter.value) ? [] : null;
+    } else {
+      filters.value[key] = null; // Для полей вроде period_start и period_end
+    }
   }
-  fetchReports();
 };
+
 
 onMounted(() => {
   fetchCategories();
   fetchDepartments();
   fetchStatuses();
+  loadReports();
+  fetchOrganizations();
+  fetchContragents();
+  fetchReportTypes();
 });
 </script>
 
@@ -276,10 +701,11 @@ onMounted(() => {
   gap: 8px;
   margin-bottom: 16px;
 }
+
 .filter-controls {
   display: flex;
   align-items: center;
-  gap: 10px; /* Расстояние между Checkbox и Dropdown */
+  gap: 10px;
 }
 
 .filter-item label {
@@ -334,5 +760,45 @@ onMounted(() => {
 .reset-btn:hover {
   transform: translateY(-2px);
 }
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown.full-width {
+  width: 60%; /* Растягивает Dropdown на всю ширину родительского контейнера */
+  box-sizing: border-box; /* Учитывает padding и border в ширине */
+}
+
+.filter-contragent .contr {
+  display: flex;
+  gap: 32px; /* Расстояние между колонками */
+  align-items: flex-start;
+  margin-bottom: -7px
+}
+
+.filter-contragent .contr > div {
+  display: flex;
+  flex-direction: column; /* Чекбокс сверху, MultiSelect снизу */
+  gap: 12px; /* Расстояние между чекбоксом и MultiSelect */
+}
+
+.filter-contragent .contr label {
+  font-weight: bold;
+}
+
+.filter-contragent .contr input[type="checkbox"] {
+  margin-right: 8px;
+}
+
+.contr {
+  margin-top: 2%;
+}
+
+.text-contr {
+  margin-left: 1.5%;
+}
+
 </style>
 

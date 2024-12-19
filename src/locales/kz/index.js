@@ -1454,6 +1454,18 @@ export default {
         ReportDesigner: "Есеп Құрастырушы",
         TypeReport: "Есеп түрі",
         period: "Период",
+        department: "Департамент",
+        status: "Статус",
+        author: "Автор",
+        createdDate: "Құрылған күні",
+        generate: "Қалыптастыру",
+        reset: "Қалпына келтіру",
+        contragents: "Контрагенттер",
+        organizations: "Ұйымдар",
+        individuals: "Частные лица",
+        noAuth: "Тіркелмегендер",
+        TypeContract: "Шарт түрі",
+        signers: "Қол қоюшылар"
     },
     workPlan: {
         plans: "Жоспарлар",
