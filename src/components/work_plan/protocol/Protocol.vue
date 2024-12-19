@@ -324,7 +324,7 @@
             </div>
             <div class="p-fluid mt-3">
               <label for="listened" class="block mb-1">{{ $t('workPlan.protocol.listened') }}{{ "*" }}</label>
-              <FindUser class="mt-2" v-model="boardDecisionSpeaker" :max="1" :editMode="true" :user-type="3"
+              <FindUser class="mt-2" v-model="boardDecisionSpeaker" :editMode="true" :user-type="3"
                         :disabled="isInApprove || isApproved || extractEditDisabled"/>
               <Textarea id="agendas" v-model="selectedAgenda.agenda" class="mt-2" rows="5"
                         :disabled="isInApprove || isApproved || extractEditDisabled"/>
@@ -1307,24 +1307,31 @@ const generatePdf = async () => {
 
       }
     }
+
     if (boardDecisionSpeaker.value !== null && boardDecisionSpeaker.value.length > 0) {
-      const user = boardDecisionSpeaker.value
-      let userData = {
-        user_id: user[0]?.userID,
-        full_name: user[0]?.fullName,
-        main_position: {
-          name_kz: user[0]?.mainPosition?.namekz || '',
-          name_ru: user[0]?.mainPosition?.nameru || '',
+      const users = boardDecisionSpeaker.value;
+      if (users.length > 0) {
+        const speakers = users.map(user => ({
+          user_id: user.userID,
+          full_name: user.fullName,
+          main_position: {
+            name_kz: user.mainPosition?.namekz || '',
+            name_ru: user.mainPosition?.nameru || '',
+          },
+        }));
+
+        const index = data.value[0].protocol_issues.findIndex(
+          issue => issue.event_id === parseInt(data?.value[0]?.protocol_number)
+        );
+
+        if (index !== -1) {
+          data.value[0].protocol_issues[index].protocol_agenda.speaker = speakers;
         }
       }
-      if (userData !== null) {
-        const foundEvent = data.value[0].protocol_issues.find(issue => issue.event_id === parseInt(data?.value[0]?.protocol_number));
-        foundEvent.protocol_agenda.speaker[0] = userData
-        data.value[0].protocol_issues[0] = foundEvent
-
-      }
-  
     }
+
+
+
   }
   data.value[0].lang = docLang.value
 
@@ -1489,17 +1496,17 @@ const generatePdf = async () => {
 }
 
 const GetSpeakerUser = () => {
-  const selectedSpeakerUserId = parseInt(selectedAgenda?.value?.speaker[0]?.user_id);
-  if (selectedSpeakerUserId) {
+  const speakerUserIds = selectedAgenda?.value?.speaker?.map(speaker => parseInt(speaker?.user_id)).filter(Boolean);
+  if (speakerUserIds?.length > 0) {
     contragentService.getPersons({
-      filter: {userIDs: [selectedSpeakerUserId]},
+      filter: { userIDs: speakerUserIds },
     })
-        .then((res) => {
-          if (res.data.foundUsers?.length > 0) {
-            boardDecisionSpeaker.value = [res.data.foundUsers[0]];
-          }
-        })
-        .catch(err => showMessage('error', t(common.error), err));
+      .then((res) => {
+        if (res.data.foundUsers?.length > 0) {
+          boardDecisionSpeaker.value = res.data.foundUsers;
+        }
+      })
+      .catch(err => showMessage('error', t(common.error), err));
   }
 };
 
