@@ -1,6 +1,7 @@
 export default {
     common: {
         accessDenied: "Access Denied",
+        agreement: "By logging in to the website, you confirm your consent to the collection and processing of your personal data, and you also accept responsibility for all actions performed by you on the website",
         attention: "Attention",
         welcome: "Welcome",
         loginWelcome: "Welcome to smart.enu system.",
