@@ -2,6 +2,7 @@
   <div class="col-12">
     <TitleBlock :title="$t('workPlan.analyzer.analysisResult')" :show-back-button="true"/>
     <ProgressBar v-if="loading" class="mb-3" mode="indeterminate" style="height: .5em"/>
+<!-- {{ resultData }} -->
     <TabView>
       <TabPanel :header="$t('workPlan.analyzer.strategicDirectionTab')">
         <DataTable :value="computedStrategicAnalysisData"
@@ -46,7 +47,7 @@
         </DataTable>
         <br/>
         <br/>
-        <div class="card">
+        <div class="card" v-if="strategicDirectionData?.length > 0">
           <Chart type="line" :data="chartData" :options="chartOptions" class="h-30rem" />
         </div>
       </TabPanel>
@@ -69,8 +70,8 @@
 
             </template>
             <template #end>
-              <Button :label="$t('workPlan.analyzer.filterTitle')" class="mr-2" @click="getEventsTree()"></Button>
-              <!-- <Button icon="pi pi-trash"  severity="secondary" @click="getEventsTree(null)"/> -->
+              <Button :label="$t('workPlan.analyzer.filterTitle')" class="mr-2"  @click="getEventsTree(null, true)"></Button>
+              <!-- <Button icon="pi pi-trash"  severity="secondary" @click="getEventsTree(null)"/> :disabled="selectedDepartment === null"-->
             </template>
 
           </Toolbar>
@@ -116,8 +117,11 @@
         </DataTable>
         <br/>
         <br/>
-        <div class="card">
+        <div class="card" v-if="isGeneralStructuralDivisionChart && tableAnalysisData?.length > 0">
           <Chart type="bar" :data="chartDataDepartment" :options="chartOptionsDepartment" class="h-30rem"  />
+        </div>
+        <div class="card flex justify-content-center" v-if="isFilteredStructuralDivisionChart && tableAnalysisData?.length > 0">
+          <Chart type="doughnut" :data="chartDataFilteredDepartment" :options="chartOptionsFilteredDepartment" class="w-full md:w-30rem" />
         </div>
       </TabPanel>
     </TabView>
@@ -177,10 +181,12 @@ const strategicDirectionData = ref([
   }
 ])
 const departments = ref([]);
-
+const resultData = ref(null)
 const total = ref(0);
 const loading = ref(false);
 const isCreator = ref(false);
+const isGeneralStructuralDivisionChart = ref(true)
+const isFilteredStructuralDivisionChart = ref(false)
 
 const lazyParams = reactive({
   page: 0,
@@ -217,6 +223,8 @@ onMounted(async () => {
 
   chartDataDepartment.value = setChartDataDepartments();
   chartOptionsDepartment.value = setChartOptionsDepartments();
+
+  //getEventResultData(8583)
 })
 
 const chartData = ref();
@@ -224,6 +232,69 @@ const chartOptions = ref();
 
 const chartDataDepartment = ref();
 const chartOptionsDepartment = ref();
+
+const chartDataFilteredDepartment = ref();
+const chartOptionsFilteredDepartment = ref(null);
+
+const setChartDataFilteredDepartment = () => {
+    const documentStyle = getComputedStyle(document.body);
+    console.log("data::::", computedAnalysisFilteredData.value);
+    
+    if (!computedAnalysisFilteredData.value.length) {
+        console.warn("No strategic analysis data available yet.");
+        return {
+            labels: [],
+            datasets: []
+        };
+    }
+
+    const labels = computedAnalysisFilteredData.value.map(
+        (entry) => entry.department.name || 'No Name'
+    );
+    const chartData = []
+
+    const chartLabels = []
+
+    const completed = computedAnalysisFilteredData.value.map(
+        (entry) => Number(entry.executionLevel.toFixed(2))
+    );
+    chartData.push(completed)
+    chartLabels.push('Орындалған жұмыстар: '+completed+'%')
+    const notCompleted = computedAnalysisFilteredData.value.map(
+        (entry) => 100 - Number(entry.executionLevel.toFixed(2))
+    );
+
+    chartData.push(notCompleted)
+    chartLabels.push('Орындалмаған жұмыстар: '+notCompleted+'%')
+
+
+    return {
+        labels: chartLabels,
+        datasets: [
+            {
+                data: chartData,
+                backgroundColor: ['#0275d8', '#C7C7C7', documentStyle.getPropertyValue('--gray-500')],
+                hoverBackgroundColor: ['#4394E5', '#E0E0E0', documentStyle.getPropertyValue('--gray-400')]
+            }
+        ]
+    };
+};
+
+const setChartOptionsFilteredDepartment = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+
+    return {
+        plugins: {
+            legend: {
+                labels: {
+                    cutout: '60%',
+                    color: textColor
+                }
+            }
+        }
+    };
+};
 
 const setChartDataDepartments = () => {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -249,7 +320,7 @@ const setChartDataDepartments = () => {
         datasets: [
             {
                 label: t('workPlan.analyzer.structuralDivisionExecutionLevel'),
-                backgroundColor: documentStyle.getPropertyValue('--cyan-500'),
+                backgroundColor: '#0275d8',
                 borderColor: documentStyle.getPropertyValue('--cyan-500'),
                 data: data
             }
@@ -324,7 +395,7 @@ const setChartData = () => {
                 label: t('workPlan.analyzer.strategicDirectionExecutionLevel'),
                 data: data,
                 fill: false,
-                borderColor: documentStyle.getPropertyValue('--cyan-500'),
+                borderColor: '#0275d8',
                 tension: 0.1
             }
         ]
@@ -379,9 +450,49 @@ const getEventDescendants = async (parentId) => {
   }
 }
 
-async function getEventsTree(parent) {
+const getEventResultData = async (eventID) => {
+  loading.value = true;
+  const data = {
+    event_id: eventID,
+    result_filter: {
+      quarter: null,
+      responsiveUser: null
+    },
+  };
+
+  try {
+    const res = await workPlanService.getEventResult(data);
+
+    if (res.data) {
+      resultData.value = res.data;
+      loading.value = false;
+    } else if (res.data === null) {
+      loading.value = false;
+      resultData.value = res.data;
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      loading.value = false;
+      store.dispatch('logOut');
+    } else {
+      toast.add({
+        severity: 'error',
+        summary: error.message || 'An error occurred',
+        life: 3000,
+      });
+      loading.value = false;
+    }
+  }
+};
+
+async function getEventsTree(parent, isClickEvent) {
   try {
     loading.value = true;
+    if(isClickEvent){
+      const hasSelectedDepartment = selectedDepartment.value !== null;
+      isGeneralStructuralDivisionChart.value = !hasSelectedDepartment;
+      isFilteredStructuralDivisionChart.value = hasSelectedDepartment;
+    }
     lazyParams.work_plan_id = Number(workPlanID);
     lazyParams.quarter = quarter.value;
     lazyParams.parent_id = parent == null ? null : parent.id; //8558
@@ -399,6 +510,8 @@ async function getEventsTree(parent) {
         lazyParams.is_oper_plan_analysis = true;
       }
     }
+
+    
 
     const res = await workPlanService.getEventsTree(lazyParams);
 
@@ -442,12 +555,7 @@ async function getEventsTree(parent) {
                 }
               });
             }
-            console.log("new event : ", newstrategicDirectionData);
-            console.log("event name: ", descendants);
             strategicDirectionData.value.push(newstrategicDirectionData);
-            console.log("strategic direction data:", strategicDirectionData.value);
-
-
           }
 
           if (e.creator_id === authUser.value.loginedUserId && e.parent_id == null) {
@@ -473,6 +581,7 @@ async function getEventsTree(parent) {
       }
       total.value = 0;
     }
+
     loading.value = false;
   } catch (error) {
     if (error.response && error.response.status === 401) {
@@ -512,8 +621,6 @@ watch(data, (newValue) => {
   tableAnalysisData.value = [];
   if (data.value !== null && data.value.length > 0) {
     data.value.forEach((event) => {
-      console.log("event", event.status.work_plan_event_status_id);
-
       event.user.forEach((item) => {
         if (item.is_summary_department) {
           let departmentId = item.user.mainPosition.department.id;
@@ -562,8 +669,10 @@ watch(data, (newValue) => {
         }
       });
     });
+    chartDataFilteredDepartment.value = setChartDataFilteredDepartment();
+    chartOptionsFilteredDepartment.value = setChartOptionsFilteredDepartment();
   }
-  console.log("table analysis data: ", tableAnalysisData.value);
+ 
 });
 
 const computedStrategicAnalysisData = computed(() =>
@@ -589,6 +698,28 @@ const computedStrategicAnalysisData = computed(() =>
 );
 
 const computedAnalysisData = computed(() =>
+    tableAnalysisData.value.map((entry) => {
+      const totalStatuses =
+          entry.result_status.completed.length +
+          entry.result_status.notcompleted.length +
+          entry.result_status.partially_completed.length +
+          entry.result_status.created.length;
+      const totalCompletedStatuses = entry.result_status.completed.length;
+      const totalNotCompletedStatuses = entry.result_status.notcompleted.length;
+
+      return {
+        ...entry,
+        totalItems: totalStatuses,
+        totalCompletedItems: totalCompletedStatuses,
+        totalNotCompletedItems: totalNotCompletedStatuses,
+        executionLevel: totalStatuses
+            ? (entry.result_status.completed.length / totalStatuses) * 100
+            : 0,
+      };
+    })
+);
+
+const computedAnalysisFilteredData = computed(() =>
     tableAnalysisData.value.map((entry) => {
       const totalStatuses =
           entry.result_status.completed.length +
