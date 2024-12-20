@@ -1636,7 +1636,6 @@ export default {
           },
         ];
       }
-      }
     },
     isSciencePlan() {
       return (
