@@ -1812,7 +1812,7 @@ export default {
         },
         {
           label: this.$t('common.projectInfo'),
-          visible: true,
+          visible: this.isSciencePlan,
           icon: 'fa-solid fa-info',
           command: () => {
             this.showDialog(this.dialog.projectInfo)
