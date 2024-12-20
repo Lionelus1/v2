@@ -168,18 +168,19 @@
   <Dialog
       v-if="dialog.projectInfo.state"
       v-model:visible="dialog.projectInfo.state"
-      :style="{ width: '50%' }"
+      :style="{ width: '80%' }"
       :header="$t('common.sciProject')"
       :modal="true"
       class="p-fluid"
   >
+
     <TabView>
       <TabPanel :header="$t('common.mainInfo')">
         <div v-if="planDoc && planDoc.params" class="flex flex-column p-4">
-          <DataTable :rows="10"
+
+          <DataTable :rows="20"
                      class="table_no_header mt-4"
-                     :value="filteredParamsMainInfo"
-          >
+                     :value="filteredParamsMainInfo">
             <Column>
               <template #body="s">
                 {{ $t(s.data.description) }}
@@ -187,15 +188,29 @@
             </Column>
             <Column>
               <template #body="s">
-                <template v-if="s.data.name === 'projectContract'">
+                <div v-if="isMultiLanguage(s.data.value)" class="horizontal-fields full-width">
+                  <div class="field-group">
+                    <label for="kz">{{ $t('common.language.kz') }}</label>
+                    <textarea id="kz" v-model="s.data.value.kz" class="resizable-textarea"></textarea>
+                  </div>
+                  <div class="field-group">
+                    <label for="ru">{{ $t('common.language.ru') }}</label>
+                    <textarea id="ru" v-model="s.data.value.ru" class="resizable-textarea"></textarea>
+                  </div>
+                  <div class="field-group">
+                    <label for="en">{{ $t('common.language.en') }}</label>
+                    <textarea id="en" v-model="s.data.value.en" class="resizable-textarea"></textarea>
+                  </div>
+                </div>
+                <div v-else-if="s.data.name === 'projectContract'">
                   <Button icon="fa-solid fa-download" @click="downloadContract('contract')" :label="$t('contracts.contract')" />
-                </template>
-                <template v-else-if="s.data.name === 'projectPlan'">
+                </div>
+                <div v-else-if="s.data.name === 'projectPlan'">
                   <Button icon="fa-solid fa-download" @click="downloadContract('additional')" :label="$t('common.additionalInfo')" />
-                </template>
-                <template v-else>
+                </div>
+                <div v-else>
                   <InputText v-model="s.data.value" />
-                </template>
+                </div>
               </template>
             </Column>
           </DataTable>
@@ -214,18 +229,88 @@
             </Column>
             <Column>
               <template #body="s">
-                <InputText v-model="s.data.value" />
+                <div v-if="isMultiLanguage(s.data.value)" class="horizontal-fields full-width">
+                  <div class="field-group">
+                    <label for="kz">{{ $t('common.language.kz') }}</label>
+                    <textarea id="kz" v-model="s.data.value.kz" class="resizable-textarea"></textarea>
+                  </div>
+                  <div class="field-group">
+                    <label for="ru">{{ $t('common.language.ru') }}</label>
+                    <textarea id="ru" v-model="s.data.value.ru" class="resizable-textarea"></textarea>
+                  </div>
+                  <div class="field-group">
+                    <label for="en">{{ $t('common.language.en') }}</label>
+                    <textarea id="en" v-model="s.data.value.en" class="resizable-textarea"></textarea>
+                  </div>
+                </div>
+                <div v-else>
+                  <InputText v-model="s.data.value" />
+                </div>
               </template>
             </Column>
           </DataTable>
         </div>
       </TabPanel>
       <TabPanel :header="$t('common.resultInfo')">
-        <p class="m-0">
-          At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui
-          officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.
-        </p>
+        <div v-if="planDoc && planDoc.params" class="flex flex-column position-relative">
+          <div class="button-container">
+            <Button
+                :label="$t('common.add')"
+                icon="pi pi-plus"
+                @click="addToProjectRes"
+            />
+          </div>
+          <DataTable :rows="10"
+                     class="table_no_header mt-4"
+                     :value="filteredParamsResultInfo">
+            <Column>
+              <template #body="s">
+                <div v-if="s.data.name === 'projectRes'" class="horizontal-fields full-width">
+                  <table class="multi-data-table">
+                    <thead>
+                    <tr>
+                      <th>{{ $t('common.projectYear') }}</th>
+                      <th>{{ $t('common.projectRes') }} {{ $t('common.language.kz') }}</th>
+                      <th>{{ $t('common.projectRes') }} {{ $t('common.language.ru') }}</th>
+                      <th>{{ $t('common.projectRes') }} {{ $t('common.language.en') }}</th>
+                      <th>{{ $t('common.projectPulish') }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="(item, index) in s.data.value" :key="index">
+                      <td>
+                        <InputText v-model="item.year" />
+                      </td>
+                      <td>
+                        <textarea id="kz" v-model="item.publish" class="resizable-textarea"></textarea>
+                      </td>
+                      <td>
+                        <textarea id="kz" v-model="item.resKz" class="resizable-textarea"></textarea>
+                      </td>
+                      <td>
+                        <textarea id="kz" v-model="item.resRu" class="resizable-textarea"></textarea>
+                      </td>
+                      <td>
+                        <textarea id="kz" v-model="item.resEn" class="resizable-textarea"></textarea>
+                      </td>
+                      <td>
+                        <!-- Кнопка удаления -->
+                        <Button
+                            icon="pi pi-trash"
+                            class="p-button-danger p-button-sm"
+                            @click="removeFromProjectRes(index, s.data.value)"
+                        />
+                      </td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </template>
+            </Column>
+          </DataTable>
+        </div>
       </TabPanel>
+
     </TabView>
     <template #footer>
       <div class="dialog-footer">
@@ -606,9 +691,32 @@ export default {
     },
   },
   methods: {
-    updateValue(row) {
-      // Здесь вы можете реализовать сохранение изменений или другие действия
-      console.log('Updated value:', row.data.value);
+    addToProjectRes() {
+      // Новый объект для добавления
+      const newObject = {
+        publish: "",
+        resEn: "",
+        resKz: "",
+        resRu: "",
+        year: "",
+      };
+
+      // Находим элемент projectRes
+      const projectRes = this.filteredParamsResultInfo.find(
+          (item) => item.name === "projectRes"
+      );
+
+      // Добавляем новый объект в value
+      if (projectRes && Array.isArray(projectRes.value)) {
+        projectRes.value.push(newObject);
+      }
+    },
+    removeFromProjectRes(index, array) {
+      array.splice(index, 1); // Удаляем элемент по индексу
+    },
+    isMultiLanguage(value) {
+      // Проверяем, содержит ли value языковые ключи
+      return typeof value === 'object' && value !== null && ('kz' in value || 'ru' in value || 'en' in value);
     },
     findRole: findRole,
     updateResponsivePersons() {
@@ -1394,22 +1502,27 @@ export default {
         const requiredParams = [
           { name: "projectSupervisor", description: "common.projectSupervisor" },
           { name: "zhtn", description: "common.zhtn" },
-          { name: "projectNameKZ", description: "common.projectNameKZ" },
-          { name: "projectNameRU", description: "common.projectNameRU" },
-          { name: "projectNameEN", description: "common.projectNameEN" },
-          { name: "projectPriority", description: "common.projectPriority" },
-          { name: "projectRelevance", description: "common.projectRelevance" },
-          { name: "projectGoal", description: "common.projectGoal" },
+          { name: "projectName", description: "common.projectName", multi: {"kz": "", "ru": "", "en": ""} },
+          { name: "projectPriority", description: "common.projectPriority", multi: {"kz": "", "ru": "", "en": ""} },
+          { name: "projectRelevance", description: "common.projectRelevance", multi: {"kz": "", "ru": "", "en": ""} },
+          { name: "projectGoal", description: "common.projectGoal", multi: {"kz": "", "ru": "", "en": ""} },
           { name: "projectTypeOfResearch", description: "common.projectTypeOfResearch" },
           { name: "nameOfPriorityArea", description: "common.nameOfPriorityArea" },
-          { name: "projectObjectives", description: "common.projectObjectives" },
-          { name: "projectAppAreas", description: "common.projectGoal" },
-          { name: "projectGoal", description: "common.projectAppAreas" },
+          { name: "projectObjectives", description: "common.projectObjectives", multi: {"kz": "", "ru": "", "en": ""} },
+          { name: "projectAppAreas", description: "common.projectAppAreas", multi: {"kz": "", "ru": "", "en": ""} },
+          { name: "projectContract", description: "common.projectContract" },
+          { name: "projectPlan", description: "common.projectPlan" },
 
           { name: "projectContractNum", description: "common.projectContractNum" },
           { name: "projectContractDate", description: "common.projectContractDate" },
+          { name: "projectClient", description: "common.projectClient", multi: {"kz": "", "ru": "", "en": ""} },
           { name: "projectFundingType", description: "common.projectFundingType" },
           { name: "projectYears", description: "common.projectYears" },
+          { name: "projectRes", description: "common.projectRes", multi:
+                [
+                    {"year": "", "publish": "", "resKz": "", "resRu": "", "resEn": ""},
+                ]
+          },
         ];
 
         requiredParams.forEach(param => {
@@ -1418,7 +1531,7 @@ export default {
               id: null,
               docID: null,
               name: param.name,
-              value: "",
+              value: param.multi,
               description: param.description,
               isDeleted: false
             });
@@ -1466,9 +1579,7 @@ export default {
       const allowedNames = [
         'projectSupervisor',
         'zhtn',
-        'projectNameKZ',
-        'projectNameRU',
-        'projectNameEN',
+        'projectName',
         'projectPriority',
         'projectRelevance',
         'projectGoal',
@@ -1476,8 +1587,9 @@ export default {
         'nameOfPriorityArea',
         'projectObjectives',
         'projectAppAreas',
+        'projectContract',
+        'projectPlan'
       ];
-
       // Проверяем, что `this.planDoc?.params` существует и является массивом
       const params = this.planDoc?.params || [];
 
@@ -1490,10 +1602,12 @@ export default {
             return indexA - indexB; // Сортируем по индексу в allowedNames
           });
     },
+
     filteredParamsFundingInfo() {
       const allowedNames = [
         'projectContractNum',
         'projectContractDate',
+        'projectClient',
         'projectFundingType',
         'projectYears',
       ];
@@ -1512,9 +1626,7 @@ export default {
     },
     filteredParamsResultInfo() {
       const allowedNames = [
-        'projectYear',
         'projectRes',
-        'projectPulish',
       ];
 
       // Проверяем, что `this.planDoc?.params` существует и является массивом
@@ -1674,7 +1786,8 @@ export default {
         },
         {
           label: this.$t('contracts.contract'),
-          visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.Contract),
+          visible: false,
+          // visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.Contract),
           icon: 'fa-solid fa-download',
           command: () => {
             this.downloadContract('contract')
@@ -1682,7 +1795,8 @@ export default {
         },
         {
           label: this.$t('common.additionalInfo'),
-          visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.RelatedDoc),
+          visible: false,
+          // visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.RelatedDoc),
           icon: 'fa-solid fa-download',
           command: () => {
             this.downloadContract('additional')
@@ -1723,9 +1837,60 @@ export default {
   gap: 1rem; /* Расстояние между кнопками */
 }
 
-/* Скрывает заголовок только для таблицы с классом table_no_header */
-.table_no_header .p-datatable-thead {
-  display: none;
+.full-width {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px; /* Расстояние между полями */
+  width: 100%; /* Растягивает контейнер по всей ширине */
+}
+
+.field-group {
+  flex: 1; /* Устанавливает равную ширину для всех полей */
+  display: flex;
+  flex-direction: column;
+}
+
+.field-group label {
+  margin-bottom: 4px; /* Отступ между меткой и полем */
+}
+
+InputText {
+  width: 100%; /* Поля ввода заполняют доступное пространство */
+}
+.resizable-textarea {
+  width: 100%; /* Растягиваем поле по ширине родительского контейнера */
+  min-height: 50px; /* Минимальная высота (примерно 2 строки текста) */
+  resize: vertical; /* Разрешаем изменение размера по вертикали */
+  padding: 8px; /* Отступ внутри текстового поля */
+  font-size: 14px; /* Размер текста */
+  border: 1px solid #ccc; /* Стандартная рамка */
+  border-radius: 4px; /* Скругленные углы */
+  box-sizing: border-box; /* Включаем отступы и границы в общую ширину */
+}
+.resizable-textarea:focus {
+  border-color: #007bff; /* Цвет рамки при фокусе */
+  outline: none; /* Убираем стандартный фокус браузера */
+}
+
+.button-container {
+  position: absolute;
+  top: 10px; /* Отступ сверху */
+  left: 10px; /* Отступ слева */
+  z-index: 10; /* Поверх остальных элементов */
+}
+
+.position-relative {
+  position: relative; /* Для корректного позиционирования дочерних элементов */
+}
+
+.multi-data-table {
+  margin-top: 40px; /* Учитывает место для кнопки */
+}
+
+.p-button-text {
+  background: transparent;
+  border: none;
+  font-size: 14px;
 }
 
 .customer-badge {
