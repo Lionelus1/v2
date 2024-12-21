@@ -15,7 +15,7 @@
           <Button v-if="(signatures && signatures.length > 0) ||
       (approvalStages && showSign())
       " :label="$t('common.downloadSignaturesPdf')" icon="pi pi-download" @click="downloadSignatures" class="p-button ml-2" />
-          <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages"></SignatureQrPdf>
+          <SignatureQrPdf ref="qrToPdf" :showSign="showSign()" :signatures="signatures" :title="docInfo.name" :approvalStages="approvalStages" @downloadCMS="downloadCMSFile"></SignatureQrPdf>
         </div>
         <div class="col-12" v-else>
           <div class="card">
@@ -30,13 +30,13 @@
           <embed :src="item" style="width: 100%; height: 1000px" v-if="files.length > 0" type="application/pdf" />
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
-      && docInfo.docType === Enum.DocType.Contract" :header="$t('ncasigner.sign')">
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && (docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
+      && docInfo.docType === Enum.DocType.Contract) || checkingNoSignature()" :header="$t('ncasigner.sign')">
         <div class="flex justify-content-center">
           <Button icon="fa-solid fa-check" class="p-button-success md:col-3" @click="approve" :label="$t('common.action.approve')" :loading="loading" :disabled="hideDocApprove" />
         </div>
       </TabPanel>
-      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
+      <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && !checkingNoSignature() &&  !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
       && docInfo.docType === Enum.DocType.Contract) || docInfo && docInfo.docHistory.stateId == 6" :disabled="hideDocSign" :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel v-if="!$isMobile">
@@ -244,31 +244,6 @@ export default {
   },
   mounted() {
     this.wsconnect();
-    this.emitter.on("downloadCMS", (data) => {
-      if (data !== null) {
-        api
-          .post(
-            smartEnuApi + "/doc/downloadCms",
-            { documentUuid: this.doc_id, signatureId: data },
-            { headers: getHeader() }
-          )
-          .then((res) => {
-            let result = res.data;
-            var link = document.createElement("a");
-            link.innerHTML = "Download file";
-            link.download = result.fileName;
-            link.href = result.data;
-            link.click();
-          })
-          .catch((error) => {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          });
-      }
-    });
   },
   methods: {
     findRole: findRole,
@@ -352,6 +327,7 @@ export default {
                 this.findRole(null, RolesEnum.roles.UMKAdministrator) ||
                 this.findRole(null, RolesEnum.roles.Accountant) ||
                   this.findRole(null, RolesEnum.roles.DormitoryAdministration) ||
+                  this.findRole(null, RolesEnum.roles.Practice_responsible) ||
                 (this.findRole(null, RolesEnum.roles.Teacher) &&
                   this.docInfo.docType === Enum.DocType.Contract) ||
                 (this.signatures &&
@@ -528,6 +504,7 @@ export default {
               if (sign && sign.length > 0) {
                 this.sendRequest(sign[0]);
               }
+              this.signing = false;
             })
             .catch((e) => {
               this.signing = false;
@@ -858,38 +835,34 @@ export default {
       }
       return false
     },
-    changeApprovals() {
-      if (this.currentApprovalUsers.length < 1) {
-        return
+    checkingNoSignature() {
+      const userId = this.loginedUserId;
+
+      if (!this.approvalStages || this.approvalStages.length === 0) {
+        return false;
       }
 
-      let users = [];
-      for (let i = 0; i < this.currentApprovalUsers.length; i++) {
-        users.push(this.currentApprovalUsers[i].userID)
-      }
+      return this.approvalStages.some(stage => {
+        const users = Array.from(stage.users || []);
+        const usersApproved = Array.from(stage.usersApproved || []);
 
-      this.loading = true;
-
-      this.service.changeCurrentStageApprovals({
-        uuid: this.docInfo.uuid,
-        stage: this.currentApprovalStage,
-        users: users,
-      }).then(res => {
-        this.loading = false;
-
-        location.reload();
-      }).catch(err => {
-        this.loading = false;
-
-        if (err.response && err.response.status == 401) {
-          this.$store.dispatch("logLout");
-        } else if (err.response && err.response.data && err.response.data.localized) {
-          this.showMessage('error', this.$t(err.response.data.localizedPath));
-        } else {
-          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-        }
+        return users.some(user => user.userID === userId) &&
+            stage.certificate?.value === "no_signature" &&
+            usersApproved.includes(0);
       });
     },
+    downloadCMSFile(signatureId) {
+      this.service.downloadCms({ documentUuid: this.doc_id, signatureId: signatureId }).then((res) => {
+            let result = res.data;
+            var link = document.createElement("a");
+            link.innerHTML = "Download file";
+            link.download = result.fileName;
+            link.href = result.data;
+            link.click();
+          }).catch((error) => {
+            this.$toast.add({severity: "error", summary: error, life: 3000});
+          });
+    }
   }
 }
 </script>

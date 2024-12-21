@@ -1,7 +1,4 @@
 <template>
-  <div v-if="!plan || resultData === ''" class="spinner-container">
-    <ProgressSpinner class="progress-spinner" style="width: 50px; height: 50px"/>
-  </div>
   <ConfirmPopup group="deleteResult"></ConfirmPopup>
   <vue-element-loading :active="isBlockUI" is-full-screen color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
   <div class="col-12" v-if="plan && event">
@@ -706,18 +703,19 @@ export default {
 
       return firstMonthOfQuarter;
     },
-    getSecondMonthOfQuarter() {
-      const firstMonthOfQuarter = this.getFirstMonthOfQuarter();
-      const secondMonthOfQuarter = firstMonthOfQuarter + 1;
+    // getSecondMonthOfQuarter() {
+    //   const firstMonthOfQuarter = this.getFirstMonthOfQuarter();
+    //   const secondMonthOfQuarter = firstMonthOfQuarter + 1;
 
-      return secondMonthOfQuarter;
-    },
+    //   return secondMonthOfQuarter;
+    // },
     filterQuarters() {
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentQuarter = Math.ceil(currentMonth / 3);
       const currentDay = currentDate.getDate();
-      if (currentDay <= 7 && (currentMonth === this.getFirstMonthOfQuarter() || currentMonth === this.getSecondMonthOfQuarter())) {
+      //currentDay <= 7 && (currentMonth === this.getFirstMonthOfQuarter() || currentMonth === this.getSecondMonthOfQuarter())
+      if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter()) {
         // Agymdagy ai agymdagy toqsannyng birinshi aiy bolsa aldyngy toqsanga natije toltyra alady
         return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
       } else {
@@ -812,7 +810,7 @@ export default {
           this.fact = this.resultData.fact;
           this.resultData.forEach(e => {
             if (e.plan_event_result_history && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))) {
-              this.hasResultToApprove = !this.isPlanCreator && e.plan_event_result_history.some(x => (x.state_id === 5 || x.state_id === 6))
+              this.hasResultToApprove = !this.isPlanCreator && e.plan_event_result_history.some(x => (x.modi_user_id === this.loginedUserId && (x.state_id === 5 || x.state_id === 6)))
             }
           })
         }else if(res.data === null){
@@ -987,7 +985,12 @@ export default {
         }
         this.files = [];
         this.submitted = false
-        this.$toast.add({severity: 'success', detail: this.$t('common.done'), life: 3000});
+        this.$toast.add({
+          severity: 'success', 
+          summary: this.$t('workPlan.eventResultMessages.resultSavedMessageTitle'),
+          detail: this.$t('workPlan.eventResultMessages.resultSavedMessageBody'), 
+          life: 20000
+        });
       }).catch(error => {
         this.isBlockUI = false;
         this.submitted = false

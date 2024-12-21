@@ -84,18 +84,25 @@
     <OverlayPanel ref="global-filter">
       <div class="p-fluid">
         <div class="field" style="width: 320px">
-          <Dropdown class="lang p-link mb-2" v-model="filter.plan_type" :options="types"
-                    :optionLabel="['name_' + $i18n.locale]" optionValue="id" :placeholder="$t('workPlan.planType')"
-                    />
-          <InputText type="search"
-                     class="search_toolbar mb-2"
-                     v-model="filter.searchText"
-                     :placeholder="$t('common.search')"/>
-          <FindUser v-model="userNameSearch" :max="1" :user-type="3" :editMode="false" class="mb-2"
-                    :placeholder="$t('common.searchByUsername')"/>
-          <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
-          <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter()"
-                  :label="$t('common.clear')"/>
+         <div class="field">
+           <label>{{ $t('workPlan.planType') }}</label>
+           <Dropdown class="lang p-link mb-2" v-model="filter.plan_type" :options="types"
+                     :optionLabel="['name_' + $i18n.locale]" optionValue="id" :placeholder="$t('workPlan.planType')"
+           />
+         </div>
+          <div class="field">
+            <label>{{ $t('common.search') }}</label>
+            <InputText type="search" class="search_toolbar mb-2" v-model="filter.searchText" :placeholder="$t('common.search')"/>
+          </div>
+          <div class="field">
+            <label>{{ $t('hikvision.author') }}</label>
+            <FindUser v-model="userNameSearch" :max="1" :user-type="3" :editMode="false" class="mb-2" :placeholder="$t('hikvision.author')"/>
+          </div>
+          <div class="field">
+            <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
+            <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter()"
+                    :label="$t('common.clear')"/>
+          </div>
         </div>
       </div>
     </OverlayPanel>
@@ -133,6 +140,7 @@ export default {
       currentWorkPlanId: 0,
       loading: false,
       isAdmin: false,
+      isPlanCreator: false,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       planService: new WorkPlanService(),
       lazyParams: {
@@ -242,8 +250,8 @@ export default {
           {
             label: this.$t('workPlan.changeCreatedPerson'),
             icon: 'fa-solid fa-pen',
-            disabled: !(this.isAdmin && this.isPlanApproved),
-            visible: this.isAdmin && !this.isSciencePlan(data),
+            disabled: !((this.loginedUserId === data?.doc_info?.creatorID) && this.isPlanApproved),
+            visible: (this.loginedUserId === data?.doc_info?.creatorID) && !this.isSciencePlan(data),
             command: () => {
               this.changeCreator = true
             }
@@ -287,7 +295,7 @@ export default {
     findRole: findRole,
     formatDate: formatDate,
     isSciencePlan(data) {
-      return data && data.plan_type && data.plan_type.code === WPEnum.WorkPlanTypes.Science
+      return data?.plan_type?.code === WPEnum.WorkPlanTypes.Science
     },
     closeCreatorChangeDialog() {
       this.planCreator = [];

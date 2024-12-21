@@ -74,7 +74,7 @@
               <i class="fa-solid fa-eye fa-xl"></i>
             </Button>
             <Button v-if="(data.docHistory.stateId === Enum.CREATED.ID || data.docHistory.stateId === Enum.REVISION.ID)
-                    && loginedUser.userID === data.creatorID && !isFromPlatonus(data)" @click="currentDocument=data;deleteFile()"
+                    && loginedUser.userID === data.creatorID && isFromPlatonus(data)" @click="currentDocument=data;deleteFile()"
                     class="p-button-text p-button-danger p-1">
               <i class="fa-solid fa-trash fa-xl"></i>
             </Button>

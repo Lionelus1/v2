@@ -1,6 +1,7 @@
 export default {
     common: {
         accessDenied: "Рұқсат Жоқ",
+        agreement: "Сайтқа кіру арқылы Сіз жеке деректеріңізді жинауға және өңдеуге келісіміңізді растайсыз, сондай-ақ сайтта жасаған барлық әрекеттеріңіз үшін жауапкершілікті мойныңызға аласыз",
         attention: "Назар аударыңыз",
         welcome: "Қош келдіңіз",
         loginWelcome: "Smart.enu жүйесіне қош келдіңіз.",
@@ -225,6 +226,9 @@ export default {
         paymentForm: 'Төлем нысаны',
         downloadResume: 'Түйіндемені жүктеп алу',
         share:'Бөлісу',
+        myFinances: 'Менің қаржым',
+        finance:'Финансы',
+        categoriesFinance:'Қаржы Санаттары',
         states: {
             submitted: "Берілген",
             created: "Құрылды",
@@ -384,7 +388,14 @@ export default {
         viewOnlyCheckbox: 'Көру режимінде көрсету',
         specialNeedsJobs: 'Ерекше қажеттіліктері бар адамдарға арналған жұмыс орындары',
         availabilityForSpecialNeeds: 'Ерекше қажеттіліктері бар адамдар үшін қол жетімді',
-        getDataError: "Деректерді алу кезінде қателіктер туындады"
+        getDataError: "Деректерді алу кезінде қателіктер туындады",
+        services: "Қызметтер",
+        amount: "Сомасы",
+        hide: "Жасыру",
+        unhide: "Көрсету",
+        hiddenSuccess: "Бұл өнім сайтта көрсетілмейді",
+        unhiddenSuccess: "Бұл өнім сайтта көрсетіледі",
+        fillRequiredFields: "Барлық міндетті өрістер толтырылмаған"
     },
     positions: {
         menuTitle: 'Позицияны өзгерту',
@@ -640,6 +651,7 @@ export default {
         contragentRequest: "Контрагентте келісуде",
         practiceLeaderRequest: "Практика жетекшісінде келісуде",
         practiceLeader: "Практика жетекшісі",
+        practiceManagerCanceld: "Практика жетекшісі қабылдаған жоқ",
         contragentMessage: "Сілтемені контрагент келісім беру үшін пайдаланыңыз",
         contragentWarning: "Бұл келісім-шартқа контрагент келісімі сұратылмаған немесе сіздің бұл құжатты көруге рұқсатыңыз жоқ!",
         contragentAsEnt: "Бұл келісім-шартты Сіз жеке кәсіпкер ретінде қабылдайсыз!",
@@ -766,8 +778,10 @@ export default {
         IncorrectFileContent: "Бұл файл өзгертілді немесе басқа файл берілді. Файлды тексеріңіз.",
         signed: "осы құжатқа қол қойды",
         approved: "осы құжатқа келісім берді",
+        confirmed: "осы құжатты растады",
         signingexpected: "қол қоюы тиіс",
         approvingExpected: "келісім беруі тиіс",
+        approvingСonfirmation: "растауы тиіс",
         certTemplate: "Сертификат үлгісі: ",
         IIN: "ЖСН",
         certType: "Қолтаңба түрі:",
@@ -1535,7 +1549,11 @@ export default {
         editRespUser: "Жауапты тұлғаны өзгерту",
         modifiedPerson: "Өзгеріс енгізген",
         changeCreatedPerson: "Құрушыны өзгерту",
-        requiredCreatedPerson: "Құрушыны өрісін міндетті түрде толтыру керек"
+        requiredCreatedPerson: "Құрушыны өрісін міндетті түрде толтыру керек",
+        eventResultMessages:{
+            resultSavedMessageTitle: "Нәтиже сақталды!",
+            resultSavedMessageBody: "Сіздің нәтижеңіз сәтті сақталды, бірақ әлі тексеруге жіберілген жоқ. Нәтижені тексеруге жіберу үшін 'Жіберу' батырмасын басыңыз. Олай болмаған жағдайда, жұмыс тексерілмейді"
+        }
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
@@ -2160,7 +2178,7 @@ export default {
         employee: 'Сотрудник',
         author: 'Автор',
         reportGenerationDate: 'Есеп құрастырылған күн',
-        actions: 'Действия',
+        actions: 'Әрекеттер',
         view: 'Просмотр',
         export: 'Экспорт',
         delete: 'Удалить',
@@ -2195,9 +2213,22 @@ export default {
         network: "Серверден жауап келмеді. Интернет қосылымын тексеріңіз.",
         unknown: "Белгісіз қате.",
     },
+    showcase: {
+        publication: 'Жарияланған күні',
+        status: 'Статус',
+        name: 'Атауы',
+        title: 'Цифрлық Витрина',
+        author: 'Автор',
+        nameKz: 'Өнімнің қазақ тілінде атауы',
+        nameEn: 'Өнімнің ағылшын тілінде атауы',
+        nameRu: 'Өнімнің орыс тілінде атауы',
+        descriptionKz: "Қазақ тіліндегі сипаттама",
+        descriptionEn: "Ағылшын тіліндегі сипаттама",
+        descriptionRu: "Орыс тіліндегі сипаттама",
+        crAndUpdEdu: "Өнім қосу"
+    },
     telegram: {
         title: 'Чат-бот Е-куратор',
-
         question: 'Сұрақтар',
         anwers: 'Жауаптар',
         author: 'Сұрақтың авторы',

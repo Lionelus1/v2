@@ -35,4 +35,8 @@ export class DicService {
     getspecialities(data, cancelToken) {
         return api.post("/getspecialities", data, { headers: getHeader(), cancelToken: cancelToken});
     }
+
+    checkStudentByManager(data) {
+        return api.post("/dic/practiceManager/checkStudent", data, { headers: getHeader()});
+    }
 }

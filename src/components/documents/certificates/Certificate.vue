@@ -10,7 +10,7 @@
     <TabView style="margin-top:0px" v-model:activeIndex="activeIndex">
       <TabPanel headerStyle="" v-for="lang in languages" :key="lang" :header="$t('common.language.' + lang)">
         <div :ref="'template'+lang" id="candiv" style="overflow:scroll; width:100%; height:100%;">
-          <div class="certificate" style="height: 970px;width:1390px;border: 1px solid #000;user-select:none;position:relative;">
+          <div class="certificate" style="height: 930px;width:1350px;border: 1px solid #000;user-select:none;position:relative;">
             <template v-for="element in template.params">
               <Vue3DraggableResizable   :active="element.active"  :ref="lang+template.params.indexOf(element)"  :id="lang+template.params.indexOf(element)" :key="element.id" v-if="element.value != null && (element.name ==='img'|| element.name ==='txt') && !element.isDeleted && (element.description === lang || element.description == 'common')"
                 v-model:x="element.value.rectelement.x"

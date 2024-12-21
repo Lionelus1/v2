@@ -1,6 +1,7 @@
 export default {
     common: {
         accessDenied: "Access Denied",
+        agreement: "By logging in to the website, you confirm your consent to the collection and processing of your personal data, and you also accept responsibility for all actions performed by you on the website",
         attention: "Attention",
         welcome: "Welcome",
         loginWelcome: "Welcome to smart.enu system.",
@@ -224,6 +225,9 @@ export default {
         paymentForm: 'Payment Form',
         downloadResume: 'Download resume',
         share:'Share',
+        myFinances: 'My finances',
+        finance:'Finance',
+        categoriesFinance:'Finance Categories',
         states: {
             submitted: "Submitted",
             approved: "Approved",
@@ -391,7 +395,14 @@ export default {
         viewOnlyCheckbox: 'Show in viewing mode',
         specialNeedsJobs: 'Jobs for People with Special Needs',
         availabilityForSpecialNeeds: 'Available for People with Special Needs',
-        getDataError: "Error while receiving data"
+        getDataError: "Error while receiving data",
+        services: "Services",
+        amount: "Amount",
+        hide: "Hide",
+        unhide: "Show",
+        hiddenSuccess: "This product will not be displayed on the Site",
+        unhiddenSuccess: "This product will be displayed on the Site",
+        fillRequiredFields: "Not all required fields are filled in"
     },
     positions: {
         menuTitle: "Change position",
@@ -649,6 +660,7 @@ export default {
         contragentRequest: "In approval by counterparty",
         practiceLeaderRequest: "Upon approval from the practice manager",
         practiceLeader: "Practice manager",
+        practiceManagerCanceld: "Practice manager canceled",
         contragentMessage: "Use the link for counterparty consent",
         contragentWarning: "No counterparty consent has been requested for this contract or you do not have permission to view this document!",
         contragentAsEnt: "You accept this contract as an individual entrepreneur!",
@@ -785,8 +797,10 @@ export default {
             "This file has been modified or another file has been provided. Please check the file.",
         signed: "he/she signed this document",
         approved: "he/she approved this document",
+        confirmed: "he/she confirmed the document",
         signingexpected: "Signing is expected",
         approvingExpected: "Approving is expected",
+        approvingСonfirmation: "pending confirmation",
         certTemplate: "Certificate Template: ",
         IIN: "IIN",
         certType: "Signature type: ",
@@ -1517,7 +1531,11 @@ export default {
         editRespUser: "Edit responsive person",
         modifiedPerson: "Modified",
         changeCreatedPerson: "Change creator",
-        requiredCreatedPerson: "The creator field must be filled"
+        requiredCreatedPerson: "The creator field must be filled",
+        eventResultMessages:{
+            resultSavedMessageTitle: "Result Saved!",
+            resultSavedMessageBody: "Your result has been successfully saved but has not yet been sent for review. To submit the result for review, click the 'Send' button. Without this action, your work will not be reviewed."
+        }
     },
     queue: {
         title: "Queue",
@@ -2217,6 +2235,20 @@ export default {
         anwersen: 'Enter a answer in English',
         anwersru: 'Enter a answer in Russian',
         crAndUpdEdu: 'Creating and editing a question and answer'
+    },
+    showcase: {
+        publication:'Publication date',
+        status:'Status',
+        name:'Name',
+        title:'Digital Showcase',
+        author:'Author',
+        nameKz:'Product name in Kazakh',
+        nameEn:'Product name in English',
+        nameRu:'Product name in Russian',
+        descriptionKz: "Description in Kazakh",
+        descriptionEn: "Description  in English",
+        descriptionRu: "Description in Russian",
+        crAndUpdEdu: "Add product"
     },
     hikvision: {
         reportDeleted: 'Report successfully deleted',

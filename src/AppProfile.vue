@@ -47,6 +47,11 @@
           </button>
         </li>
         <li>
+          <button @click="myFinances" class="p-link">
+            <i :class="{active: activeItem === 'categories-finances'}" class="pi pi-wallet"></i><span :class="{active: activeItem === 'categories-finances'}" >{{ $t("common.myFinances") }}</span>
+          </button>
+        </li>
+        <li>
           <button @click="logOutFromSystem" class="p-link">
             <i class="pi pi-fw pi-power-off"></i><span>{{ $t("common.logout") }}</span>
           </button>
@@ -124,6 +129,11 @@ export default {
       this.updateParentVariable('qr');
       localStorage.setItem('activeItem', 'qr');
       this.$router.push({path: "/qr"})
+    },
+    myFinances(){
+      this.updateParentVariable('categories-finances');
+      localStorage.setItem('activeItem', 'categories-finances');
+      this.$router.push({path: "/categories-finances"})
     },
     changeRole() {
       this.$refs.positionChangeDialog.show();

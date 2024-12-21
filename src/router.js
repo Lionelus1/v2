@@ -61,7 +61,7 @@ const ifUserRoles = (to, from, next) => {
 
 const routes = [
     {
-        path: '/login',
+        path: '/login/:sessionID?',
         name: 'Login',
         component: load('Login'),
         beforeEnter: ifNotAuthenticated
@@ -698,6 +698,14 @@ const routes = [
                 beforeEnter: ifUserRoles,
             },
             {
+                path: '/showcase',
+                name: 'ShowcaseComponent',
+                component: load('showcase/Showcase'),
+                meta: { roles: ['showcase'] },
+                beforeEnter: ifUserRoles,
+
+            },
+            {
                 path: '/hikvision',
                 name: 'HikvisionTemplate',
                 component: load('hikvision/Hikvision'),
@@ -971,6 +979,18 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/categories-finances',
+                name: 'categoriesFinances',
+                component: () => import('./components/CategoriesFinances'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/catfinances/:categoryID',
+                name: 'financeCat',
+                component: () => import('./components/MyFinances'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/integrations',
                 name: 'IntegrationList',
                 component: load('integration/IntegrationList'),
@@ -1034,5 +1054,14 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes,
 });
+
+
+router.beforeEach((to, from, next) => {
+    if (to.name === 'Login' && to.params.sessionID) {
+        localStorage.setItem('sessionID', to.params.sessionID);
+    }
+    next();
+});
+
 
 export default router;

@@ -350,6 +350,12 @@ export class MenuService {
                     }
                 ]
             },
+            {
+                label: $t('showcase.title'),
+                icon: 'fa-brands fa-shopify',
+                to: '/showcase',
+                visible: this.findRole('showcase')
+            },
         ]
     }
 
