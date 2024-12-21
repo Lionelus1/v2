@@ -907,8 +907,9 @@ export default {
     onResize() {
       this.windowHeight = window.innerHeight - 270;
     },
-    //осы жерден адамдардын списогын алып алу керек
+
     getWorkPlanApprovalUsersFunc(data) {
+
       this.loadingMembers = true;
 
       this.planService.getWorkPlanApprovalUsers(data).then(res => {
@@ -930,6 +931,7 @@ export default {
           this.isApproval = false;
         }
         this.loadingMembers = false;
+
       }).catch(error => {
         this.loadingMembers = false;
         if (error.response && error.response.status === 401) {
@@ -1022,6 +1024,7 @@ export default {
           };
 
           this.getWorkPlanApprovalUsersFunc(data)
+
         }
         if (this.isWorkSchedule) {
           this.planApprovalStage = [
@@ -1083,6 +1086,7 @@ export default {
           }
 
           this.getWorkPlanApprovalUsersFunc(data)
+
         }
         if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
             this.planApprovalStage = [
@@ -1324,7 +1328,9 @@ export default {
       this.lazyParams.rows = event.rows;
       this.getEventsTree();
     },
+
     onPageMembers(event) {
+
       this.selectedMembers = []
 
       let data = {
@@ -1335,7 +1341,9 @@ export default {
       };
 
       this.getWorkPlanApprovalUsersFunc(data)
+
     },
+
     planSentToApprove(data) {
       this.getPlan();
       this.getEventsTree(null);
