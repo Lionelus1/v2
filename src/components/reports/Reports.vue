@@ -21,14 +21,9 @@
 
         <div v-if="typeReport && typeReport.value === 1" class="filter-item">
           <label>{{ $t('report.TypeContract') }}</label>
-          <Dropdown
-              v-if="typeReport.value === 1"
-              v-model="filters.category.value"
-              :options="reportCategories"
-              optionLabel="label"
-              placeholder="Выберите категорию"
-              class="dropdown full-width"
-          />
+          <MultiSelect v-model="filters.reportTypes.value" :options="reportCategories" optionLabel="label" filter
+                       placeholder="Выберите тип договоров"
+                       :maxSelectedLabels="3" class="w-full md:w-80" />
         </div>
 
 
@@ -237,7 +232,7 @@ const searchMode = {
 };
 
 const filters = ref({
-  category: {enabled: false, value: null},
+  category: {enabled: false, value: []},
   department: {enabled: false, value: []}, // Массив для множественного выбора
   contragent: {enabled: false, value: []},
   signers: {enabled: false, value: []},
@@ -249,7 +244,7 @@ const filters = ref({
   period_end: null,
   lang: null,
   author: {enabled: false, value: []},
-  reportType: {value: null},
+  reportTypes: {value: []},
 });
 
 const ListCategories = [
@@ -258,21 +253,21 @@ const ListCategories = [
     nameRu: "Трехсторонний договор",
     nameEn: "Report Category 1",
     code: 5,
-    id: 1,
+    id: 32,
   },
   {
     nameKz: "Екі жақты келісім-шарт",
     nameRu: "Двухсторонний договор",
     nameEn: "Report Category 2",
     code: 5,
-    id: 2,
+    id: 34  ,
   },
   {
     nameKz: "Студенттік үйде төсек-орын беру шарты",
     nameRu: "Договор на предоставление койко-места в Студенческом доме",
     nameEn: "Agreement for the Provision of a Bed Space in the Student Dormitory",
     code: 5,
-    id: 3,
+    id: 134,
   },
 ];
 
@@ -281,7 +276,7 @@ const ListTypeReports = [
     nameKz: "Келісім-шарт",
     nameRu: "Договор",
     nameEn: "Contract",
-    id:  1,
+    id:  5,
   },
 ];
 
@@ -602,7 +597,9 @@ const generateReport = async () => {
       // period_start: '2022-11-07T20:00:00.000Z',
       // period_end: '2024-11-27T20:00:00.000Z',
       // lang: 'kz',
-      report_type: filters.value.category.value.value,
+      document_type: typeReport.value.value,
+      report_types: filters.value.reportTypes.value.map(reportType => reportType.id),
+      // report_type: filters.value.category.value.value,
       file_path: '',
     },
     vertical_filters: [],
