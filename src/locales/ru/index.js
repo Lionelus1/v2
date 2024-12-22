@@ -228,6 +228,10 @@ export default {
         myFinances: 'Мои финансы',
         finance:'Финансы',
         categoriesFinance:'Категории Финансы',
+        actionLog: 'Журнал действий',
+        attempts: 'Attempts',
+        authorized: 'Авторизован',
+        unauthorized: 'Неавторизован',
         states: {
             submitted: "Подана",
             created: "создан",
@@ -1747,7 +1751,8 @@ export default {
         internalServerError: 'Приносим извинения, с нашей стороны что-то пошло не так. Пожалуйста, повторите попытку позже.',
         unauthorized: 'Пользователь не авторизован.',
         importAlreadyOnProcess: 'Процесс импорта уже запущен. Пожалуйста, дождитесь результатов.',
-        notFound: 'Запрашиваемый ресурс не найден'
+        notFound: 'Запрашиваемый ресурс не найден',
+        attempts: 'Вы пробовали войти %d раз.'
     },
     blog: {
         title: 'Блог',

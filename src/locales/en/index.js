@@ -228,6 +228,10 @@ export default {
         myFinances: 'My finances',
         finance:'Finance',
         categoriesFinance:'Finance Categories',
+        actionLog: 'Action Log',
+        attempts: 'Attempts',
+        authorized: 'Authorized',
+        unauthorized: 'Unauthorized',
         states: {
             submitted: "Submitted",
             approved: "Approved",
@@ -1841,6 +1845,7 @@ export default {
         importAlreadyOnProcess:
             "Import process is already on. Please wait for results.",
         notFound: "The requested resource was not found",
+        attempts: "You have tried to log in %d times."
     },
     visuallyImpaired: {
         fontSize: "Font size",

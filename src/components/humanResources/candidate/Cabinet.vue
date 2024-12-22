@@ -11,6 +11,9 @@
     <TabPanel :header="$t('common.myVacancy')">
       <CandidateVacancy/>
     </TabPanel>
+    <TabPanel :header="$t('common.actionLog')">
+      <ActionLog />
+    </TabPanel>
   </TabView>
 </div>
 </template>
@@ -19,6 +22,7 @@
   import CandidateVacancy from "./CandidateVacancy";
   import Resume from "./Resume";
   import PersonPage from '../../contragent/v2/PersonPage.vue';
+  import ActionLog from "../../contragent/v2/ActionLog.vue";
   import { useI18n } from "vue-i18n";
   import { useToast } from "primevue/usetoast";
   import { inject, ref, onMounted } from "vue";
