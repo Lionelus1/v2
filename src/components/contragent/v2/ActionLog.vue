@@ -54,7 +54,7 @@ const fetchAttempts = async (page = 0, rows = 10) => {
     attempts.value = response.data.attempts;
     total.value = response.data.total;
 
-    totalRecords.value = data.totalRecords;
+    totalRecords.value = response.data.total;
   } catch (error) {
     toast.add({severity: "error", summary: t("error"), detail: error.message});
   }
