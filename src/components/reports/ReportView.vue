@@ -23,10 +23,6 @@
       </div>
     </Dialog>
 
-    <div>
-      <Menubar :model="menu" :key="active"
-               style="height:36px;margin-top:-7px;margin-left:-14px;margin-right:-14px"></Menubar>
-    </div>
     <table class="table-scrollable">
       <thead>
       <tr>
@@ -50,8 +46,8 @@
       </tr>
       <!-- Строка для статусов каждого месяца -->
       <tr v-if="statuses.length > 0">
-<!--        <th v-if="deps.length > 0 "></th>-->
-<!--        <th v-if="authors.length > 0 || contragents.length > 0 || signers.length > 0"></th>-->
+        <!--        <th v-if="deps.length > 0 "></th>-->
+        <!--        <th v-if="authors.length > 0 || contragents.length > 0 || signers.length > 0"></th>-->
         <template v-for="month in months" :key="month">
           <template v-if="month !== 'Total' && month !== 'Қорытынды' && month !== 'Итого' ">
             <th v-for="status in statuses" :key="status">{{ status }}</th>
@@ -123,11 +119,7 @@ const tableData = ref({
 });
 
 const onBackButtonClick = () => {
-  if (isDirty.value) {
-    showDialog.value = true;
-  } else {
     goBack();
-  }
 }
 
 const cancelDialog = () => {
@@ -140,7 +132,7 @@ const confirmLeave = () => {
 }
 
 const goBack = () => {
-  router.push({ "path": "/reports" });
+  router.push({"path": "/reports"});
 }
 
 const menu = ref([
@@ -157,7 +149,7 @@ const menu = ref([
     icon: "pi pi-fw pi-download",
     visible: true,
     command: () => {
-      downloadFile()
+      downloadReport()
     },
   }
 ]);
@@ -231,65 +223,38 @@ async function saveReport() {
     loading.value = false;
   }
 }
-function showMessage(msgtype, message, content) {
-  toast.add({
-    severity: msgtype,
-    summary: message,
-    detail: content,
-    life: 3000
-  });
-}
 
-function downloadFile() {
-  loading.value = true;
+const downloadReport = () => {
+  const req = {
+    filePath: filePath
+  }
 
-  fetch(`${smartEnuApi}/serve?path=${encodeURIComponent(filePath.value)}`, {
-    method: 'GET',
-    headers: getHeader(),
+  fileService.downloadFile(req).then(response => {
+    const link = document.createElement("a");
+    link.href = "data:application/octet-stream;base64," + response.data;
+    link.setAttribute("download", "this.file.name");
+    link.download = "Report";
+    link.click();
+    URL.revokeObjectURL(link.href);
   })
-      .then((response) => {
-        if (!response.ok) {
-          throw response;
-        }
-        return response.blob();
-      })
-      .then((blob) => {
-        loading.value = false;
-
-        // Create a URL for the blob object
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        window.URL.revokeObjectURL(url);  // Clean up the URL object
-      })
       .catch((error) => {
-        loading.value = false;
-
-        if (error.status === 401) {
-          store.dispatch("logOut");
-        } else if (error.json) {
-          error.json().then((errData) => {
-            if (errData.localized) {
-              showMessage('error', t(errData.localizedPath), null);
-            } else {
-              showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
-            }
-          }).catch(() => {
-            showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
-          });
-        } else {
-          showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
-        }
+        toast.add({
+          severity: "error",
+          summary: "downloadFileError:\n" + error,
+          life: 3000,
+        });
       });
-}
+};
 
 // Извлечение фильтров из URL
 function extractFiltersFromUrl() {
-  const filters = route.query.filters ? JSON.parse(route.query.filters) : {};
+  const storedFilters = localStorage.getItem("filter");
+  const parsedData = JSON.parse(storedFilters);
+  console.log("parsedData: ", parsedData)
+  const filters = parsedData || {};
+  console.log(filters)
+
+  // const filters = route.query.filters ? JSON.parse(route.query.filters) : {};
 
   if (filters.filters) {
     lang = filters.filters.lang || 'en'; // Язык по умолчанию — английский
@@ -306,7 +271,7 @@ function extractFiltersFromUrl() {
     signers.value = filters.filters.signers || [];
     periodStart = filters.filters.period_start || '';
     periodEnd = filters.filters.period_end || '';
-    filePath.value = filters.file_path || ''
+    filePath = filters.file_path || ''
 
     if (lang === "kz") {
       totalTitle = 'Қорытынды'
@@ -322,9 +287,11 @@ function extractFiltersFromUrl() {
 // Загрузка данных отчета из localStorage
 function loadReportData() {
   const storedData = localStorage.getItem("docReports");
+  console.log("typeof: ", typeof storedData)
   if (storedData) {
     const parsedData = JSON.parse(storedData);
-    tableData.value = parsedData.tableData || {headers: [], rows: []};
+    tableData.value = parsedData || {headers: [], rows: []};
+    console.log("tableData.value: ", tableData.value)
   } else {
     router.push({name: "GenerateReport"});
   }

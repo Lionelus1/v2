@@ -19,11 +19,11 @@
           />
         </div>
 
-        <div v-if="typeReport && typeReport.value === 1" class="filter-item">
+        <div v-if="typeReport && typeReport.value === 5" class="filter-item">
           <label>{{ $t('report.TypeContract') }}</label>
           <MultiSelect v-model="filters.reportTypes.value" :options="reportCategories" optionLabel="label" filter
                        placeholder="Выберите тип договоров"
-                       :maxSelectedLabels="3" class="w-full md:w-80" />
+                       :maxSelectedLabels="3" class="" style="width: 538px;" />
         </div>
 
 
@@ -294,7 +294,6 @@ const dataTypeReports = ListTypeReports.map((typeReport) => {
 });
 // const categories = ref([]);
 const categories = ListCategories.map((cat) => {
-  console.log("locale.value: ", locale.value)
   const label = locale.value === "kz"
       ? cat.nameKz
       : locale.value === "ru"
@@ -348,7 +347,6 @@ const router = useRouter()
 
 const actionsNode = ref(null)
 const toggle = (node) => {
-  console.log("node: ", node)
   actionsNode.value = node
 }
 
@@ -358,13 +356,14 @@ const actions = computed(() => {
       label: t('common.show'),
       icon: "fa-solid fa-eye",
       command: () => {
+        showReport(actionsNode.value.doc)
       },
     },
     {
       label: t('common.delete'),
       icon: "fa-solid fa-trash-can",
       command: () => {
-        reportService.deleteReport({id: actionsNode.value.id})
+        deleteReport(actionsNode.value.id)
       },
     },
     {
@@ -374,6 +373,23 @@ const actions = computed(() => {
     },
   ]
 })
+
+const showReport = (doc) => {
+  localStorage.setItem('docReports', JSON.stringify(doc.newParams.tableData.value));
+  localStorage.setItem('filter', JSON.stringify(doc.newParams.request.value));
+
+  router.push({
+    name: 'ReportView',
+    params: { report: doc }
+  });
+}
+
+const deleteReport = (reportID) => {
+  const response = reportService.deleteReport({id: reportID})
+  if (response) {
+    loadReports()
+  }
+}
 
 const loadReports = async (page = 0) => {
   loading.value = true;
@@ -393,6 +409,7 @@ const loadReports = async (page = 0) => {
       period: `${formatDate(report.start_date)} - ${formatDate(report.end_date)}`,
       author: report.author?.fullName || "-",
       createdDate: formatDate(report.creation_date),
+      doc: report.doc || null,
     }));
 
     totalRecords.value = total;
