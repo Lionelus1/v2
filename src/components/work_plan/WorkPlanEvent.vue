@@ -1815,7 +1815,7 @@ export default {
           command: () => {
             this.$router.push({
               name: "Protocols",
-              params: {docType: this.docEnum.DocType.WorkPlanProtocol}
+              params: {docType: this.docEnum.DocType.WorkPlanProtocol, workPlanID: this.work_plan_id}
             });
           },
         },

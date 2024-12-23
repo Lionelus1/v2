@@ -511,7 +511,7 @@ const routes = [
                         beforeEnter: ifAuthenticated,
                     },
                     {
-                        path: '/documents/catalog/protocols/:docType',
+                        path: '/documents/catalog/protocols/:docType/:workPlanID',
                         name: 'Protocols',
                         component: load('documents/catalog/Protocols'),
                         beforeEnter: ifAuthenticated,

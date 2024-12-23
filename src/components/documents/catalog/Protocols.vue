@@ -334,7 +334,7 @@
       },
       getActs() {
         this.tableLoading = true;
-        if (this.docType === this.Enum.DocType.WorkPlanProtocolExtract) {
+        if (this.docType === this.Enum.DocType.WorkPlanProtocolExtract || this.docType === this.Enum.DocType.WorkPlanProtocol) {
           this.filter.number = this.workPlanID.toString();
         }
         this.service.getDocumentsV2({
