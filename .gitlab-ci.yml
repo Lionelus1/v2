@@ -66,6 +66,7 @@ deploy_stage:
     - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H $SMARTENU_IP >> ~/.ssh/known_hosts
   script:
+    - echo "$SSH_AUTH_URL"
     - if [ "$CI_COMMIT_BRANCH" == "master" ]; then
       ssh $SSH_AUTH_URL "rm -rf /local/prohtml/*";
       scp -r dist_prod/* $SSH_AUTH_URL:/local/prohtml;
