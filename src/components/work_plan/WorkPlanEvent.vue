@@ -1821,7 +1821,6 @@ export default {
         },
         {
           // Tandau
-          //Enter
           label: this.$t('common.choose'),
           disabled: !this.isPlanApproved,
           visible: this.isDirectorsPlan,
