@@ -136,9 +136,19 @@
               <input type="checkbox" id="contragent" value="filters.contragent.enabled"
                      v-model="filters.contragent.enabled" @change="onContragentChange"/>
               <label for="contragent">{{ $t('report.contragents') }}</label>
-              <MultiSelect v-model="filters.contragent.value" :options="contragents" optionLabel="label" filter
-                           placeholder="Выберите контрагенты"
-                           :maxSelectedLabels="3" class="w-full md:w-80" :disabled="!filters.contragent.enabled"/>
+              <FindUser
+                  :placeholder="$t('common.fullName')"
+                  :searchMode="searchModeAll"
+                  v-model="filters.contragent.value"
+                  :user-type="3"
+                  :max="4"
+                  :editMode="true"
+                  :disabled="!filters.contragent.value"
+                  @add="addContragents"
+              />
+<!--              <MultiSelect v-model="filters.contragent.value" :options="contragents" optionLabel="label" filter-->
+<!--                           placeholder="Выберите контрагенты"-->
+<!--                           :maxSelectedLabels="3" class="w-full md:w-80" :disabled="!filters.contragent.enabled" @scroll="onScroll"/>-->
             </div>
           </div>
         </div>
@@ -208,6 +218,7 @@ import {UserService} from "@/service/user.service";
 import {DocService} from "@/service/doc.service";
 import ActionButton from "@/components/ActionButton.vue";
 import {ContragentService} from "@/service/contragent.service";
+import {getHeader, smartEnuApi} from "@/config/config";
 
 const toast = useToast();
 const {t, locale} = useI18n();
@@ -227,6 +238,11 @@ const selectedOrganizationContragents = ref([]);
 const typeReport = ref(null)
 
 const searchMode = {
+  type: String,
+  default: 'ldap'
+};
+
+const searchModeAll = {
   type: String,
   default: 'ldap'
 };
@@ -369,7 +385,9 @@ const actions = computed(() => {
     {
       label: t("common.download"),
       icon: "pi pi-fw pi-download",
-      command: () => {},
+      command: () => {
+        downloadReportFile(actionsNode.value.type, actionsNode.value.doc.newParams.request.value.file_path)
+      },
     },
   ]
 })
@@ -381,6 +399,62 @@ const showReport = (doc) => {
   router.push({
     name: 'ReportView',
     params: { report: doc }
+  });
+}
+
+const downloadReportFile = (type, filePath) => {
+  loading.value = true;
+
+  fetch(`${smartEnuApi}/serve?path=${encodeURIComponent(filePath)}`, {
+    method: 'GET',
+    headers: getHeader(),
+  })
+      .then((response) => {
+        if (!response.ok) {
+          throw response;
+        }
+        return response.blob();
+      })
+      .then((blob) => {
+        loading.value = false;
+
+        // Create a URL for the blob object
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filePath;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);  // Clean up the URL object
+      })
+      .catch((error) => {
+        loading.value = false;
+
+        if (error.status === 401) {
+          store.dispatch("logOut");
+        } else if (error.json) {
+          error.json().then((errData) => {
+            if (errData.localized) {
+              showMessage('error', t(errData.localizedPath), null);
+            } else {
+              showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
+            }
+          }).catch(() => {
+            showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
+          });
+        } else {
+          showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'));
+        }
+      });
+}
+
+function showMessage(msgtype, message, content) {
+  toast.add({
+    severity: msgtype,
+    summary: message,
+    detail: content,
+    life: 3000
   });
 }
 
@@ -468,6 +542,12 @@ const addSigners = (selectedUser) => {
   }
 }
 
+const addContragents = (selectedUser) => {
+  if (!filters.value.contragent.value.some(contr => contr.id === selectedUser.id)) {
+    filters.value.contragent.value.push({id: selectedUser.id, label: selectedUser.label});
+  }
+}
+
 
 const fetchDepartments = async () => {
   try {
@@ -486,6 +566,9 @@ const fetchDepartments = async () => {
   }
 };
 
+const currentPage = ref(0);
+
+
 const fetchContragents = async () => {
   try {
     const filter = {
@@ -495,6 +578,8 @@ const fetchContragents = async () => {
         orgId: null,
         signers: false,
       },
+      page: currentPage.value,
+      rows: 10,
       ldap: false,
       searchMode: 'individual_entrepreneur'
     };
@@ -504,11 +589,25 @@ const fetchContragents = async () => {
       label: contragent.fullName,
       value: contragent.userID,
     }));
+
+    contragents.value = [...contragents.value, ...newContragents];
+
+    currentPage.value += 1;
+
   } catch (error) {
     toast.add({severity: 'error', detail: t('reports.errorFetchingStatuses'), life: 3000});
   }
 
 }
+
+const onScroll = async (event) => {
+  console.log("event: ", event)
+  const target = event.target;
+  if (target.scrollTop + target.clientHeight >= target.scrollHeight - 10) {
+    await fetchContragents();
+  }
+};
+
 
 const onOrganizationsChange = async () => {
   const currentOrganizationIds = selectedOrganizations.value.map((org) => org.value);

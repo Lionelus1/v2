@@ -260,7 +260,7 @@ function downloadFile() {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = filename;
+        a.download = filePath.value;
         document.body.appendChild(a);
         a.click();
         a.remove();
