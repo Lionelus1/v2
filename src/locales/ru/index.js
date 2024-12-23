@@ -1527,8 +1527,9 @@ export default {
             totalLevelNumber:"Номер индикатора",
             done:"Выполнено",
             notDone:"Не выполнено",
-            strategicDirectionExecutionLevel:"Процент завершения стратегических направлений",
-            structuralDivisionExecutionLevel:"Процент завершения структурные подразделений"
+            strategicDirectionExecutionLevel:"Процент годовой завершения стратегических направлений",
+            structuralDivisionExecutionLevel:"Процент годовой завершения структурные подразделений",
+            selectQuarter:"Выбрать квартал"
         }
     },
     educomplex: {

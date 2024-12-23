@@ -3,10 +3,11 @@
     <TitleBlock :title="$t('workPlan.analyzer.analysisResult')" :show-back-button="true"/>
     <ProgressBar v-if="loading" class="mb-3" mode="indeterminate" style="height: .5em"/>
 <!-- {{ resultData }} -->
-    <TabView>
+    <TabView @tab-change="onTabChange">
       <TabPanel :header="$t('workPlan.analyzer.strategicDirectionTab')">
         <DataTable :value="computedStrategicAnalysisData"
                    tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;">
+          <template #empty> {{ $t('common.noData') }}</template>
           <Column field="eventSummaryDepartment" :header="$t('workPlan.analyzer.strategicDirectionTab')"
                   headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
                   style="border:1px solid #ddd;max-width: 400px;">
@@ -42,8 +43,6 @@
               {{ Number(data.executionLevel).toFixed(2) }}%
             </template>
           </Column>
-
-
         </DataTable>
         <br/>
         <br/>
@@ -66,18 +65,20 @@
                     :show-clear="true"
                     :placeholder="`${$t('hikvision.department')} ${$t('common.select').toLowerCase()}`"
                 />
+                <!-- <Dropdown v-model="selectedQuarter" :options="quarters" :optionLabel="('quarter_'+$i18n.locale)" :placeholder="$t('workPlan.analyzer.selectQuarter')" class="w-full" optionValue="value"/> -->
               </div>
 
             </template>
             <template #end>
               <Button :label="$t('workPlan.analyzer.filterTitle')" class="mr-2"  @click="getEventsTree(null, true)"></Button>
-              <!-- <Button icon="pi pi-trash"  severity="secondary" @click="getEventsTree(null)"/> :disabled="selectedDepartment === null"-->
+              <Button icon="pi pi-trash"  severity="secondary" @click="clearFilter()"/>
             </template>
 
           </Toolbar>
         </div>
         <DataTable :value="computedAnalysisData" removableSort
                    tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;">
+          <template #empty> {{ $t('common.noData') }}</template>
           <Column sortable field="eventSummaryDepartment" :header="$t('workPlan.summary')"
                   headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
                   style="border:1px solid #ddd;">
@@ -117,9 +118,12 @@
         </DataTable>
         <br/>
         <br/>
-        <div class="card" v-if="isGeneralStructuralDivisionChart && tableAnalysisData?.length > 0">
+        <div class="card" v-if="isGeneralStructuralDivisionChart && tableAnalysisData?.length > 0 && selectedQuarter === null">
           <Chart type="bar" :data="chartDataDepartment" :options="chartOptionsDepartment" class="h-30rem"  />
         </div>
+        <!-- <div class="card" v-if="selectedQuarter !== null && tableAnalysisData?.length >0">
+          <Chart type="bar" :data="chartDataDepartmentQuarter" :options="chartOptionsDepartmentQuarter" class="h-30rem"  />
+        </div> -->
         <div class="card flex justify-content-center" v-if="isFilteredStructuralDivisionChart && tableAnalysisData?.length > 0">
           <Chart type="doughnut" :data="chartDataFilteredDepartment" :options="chartOptionsFilteredDepartment" class="w-full md:w-30rem" />
         </div>
@@ -206,8 +210,15 @@ const filters = ref({
   department_id: null,
 });
 
+const quarters = ref( [
+  { quarter_kz: 'I тоқсан', quarter_ru: 'I квартал', quarter_en: 'I quarter', value: 1 },
+  { quarter_kz: 'II тоқсан', quarter_ru: 'II квартал', quarter_en: 'II quarter', value: 2 },
+  { quarter_kz: 'III тоқсан', quarter_ru: 'III квартал', quarter_en: 'III quarter', value: 3 },
+  { quarter_kz: 'IV тоқсан', quarter_ru: 'IV квартал', quarter_en: 'IV quarter', value: 4 },
+  { quarter_kz: 'Жыл бойы', quarter_ru: 'Весь год', quarter_en: 'For a Year', value: 5 }
+])
 
-
+const selectedQuarter = ref(null)
 
 const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
 const isAdmin = computed(() => findRole(authUser.value, "administrator"))
@@ -222,7 +233,7 @@ onMounted(async () => {
   chartOptions.value = setChartOptions();
 
   chartDataDepartment.value = setChartDataDepartments();
-  chartOptionsDepartment.value = setChartOptionsDepartments();
+  chartOptionsDepartment.value = setChartOptions();
 
   //getEventResultData(8583)
 })
@@ -236,10 +247,43 @@ const chartOptionsDepartment = ref();
 const chartDataFilteredDepartment = ref();
 const chartOptionsFilteredDepartment = ref(null);
 
+const chartDataDepartmentQuarter = ref();
+const chartOptionsDepartmentQuarter = ref();
+
+// const setChartDataDepartmentsQuarter = () => {
+//     const documentStyle = getComputedStyle(document.documentElement);
+//     if (!computedAnalysisFilteredData.value.length) {
+//         console.warn("No strategic analysis data available yet.");
+//         return {
+//             labels: [],
+//             datasets: []
+//         };
+//     }
+
+//     const labels = computedAnalysisFilteredData.value.map(
+//         (entry) => entry.department.name || 'No Name'
+//     );
+
+//     const data = computedAnalysisFilteredData.value.map(
+//         (entry) => Number(entry.executionLevel.toFixed(2))
+//     );
+
+
+//     return {
+//         labels: labels,
+//         datasets: [
+//             {
+//                 label: t('workPlan.analyzer.structuralDivisionExecutionLevel'),
+//                 backgroundColor: '#0275d8',
+//                 borderColor: documentStyle.getPropertyValue('--cyan-500'),
+//                 data: data
+//             }
+//         ]
+//     };
+// };
+
 const setChartDataFilteredDepartment = () => {
     const documentStyle = getComputedStyle(document.body);
-    console.log("data::::", computedAnalysisFilteredData.value);
-    
     if (!computedAnalysisFilteredData.value.length) {
         console.warn("No strategic analysis data available yet.");
         return {
@@ -266,8 +310,6 @@ const setChartDataFilteredDepartment = () => {
 
     chartData.push(notCompleted)
     chartLabels.push('Орындалмаған жұмыстар: '+notCompleted+'%')
-
-
     return {
         labels: chartLabels,
         datasets: [
@@ -327,47 +369,6 @@ const setChartDataDepartments = () => {
         ]
     };
 };
-const setChartOptionsDepartments = () => {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
-
-    return {
-        maintainAspectRatio: false,
-        aspectRatio: 0.8,
-        plugins: {
-            legend: {
-                labels: {
-                    color: textColor
-                }
-            }
-        },
-        scales: {
-            x: {
-                ticks: {
-                    color: textColorSecondary,
-                    font: {
-                        weight: 500
-                    }
-                },
-                grid: {
-                    display: false,
-                    drawBorder: false
-                }
-            },
-            y: {
-                ticks: {
-                    color: textColorSecondary
-                },
-                grid: {
-                    color: surfaceBorder,
-                    drawBorder: false
-                }
-            }
-        }
-    };
-}
 
 const setChartData = () => {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -401,6 +402,7 @@ const setChartData = () => {
         ]
     };
 };
+
 const setChartOptions = () => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
@@ -437,6 +439,20 @@ const setChartOptions = () => {
         }
     };
 }
+const clearFilter = () =>{
+  selectedDepartment.value = null;
+  selectedQuarter.value = null;
+  isGeneralStructuralDivisionChart.value = true;
+  isFilteredStructuralDivisionChart.value = false;
+  getEventsTree();
+}
+
+const onTabChange = (event) => {
+  if (event.index === 0) {
+    clearFilter()
+  }
+}
+
 
 const getEventDescendants = async (parentId) => {
   loading.value = true;
@@ -494,8 +510,8 @@ async function getEventsTree(parent, isClickEvent) {
       isFilteredStructuralDivisionChart.value = hasSelectedDepartment;
     }
     lazyParams.work_plan_id = Number(workPlanID);
-    lazyParams.quarter = quarter.value;
-    lazyParams.parent_id = parent == null ? null : parent.id; //8558
+    lazyParams.quarter = selectedQuarter.value;
+    lazyParams.parent_id = parent == null ? null : parent.id;
     lazyParams.department_id = selectedDepartment.value || null;
 
     const filter = JSON.parse(JSON.stringify(filters.value));
@@ -623,35 +639,35 @@ watch(data, (newValue) => {
     data.value.forEach((event) => {
       event.user.forEach((item) => {
         if (item.is_summary_department) {
-          let departmentId = item.user.mainPosition.department.id;
+          let departmentId = item?.user?.mainPosition?.department?.id;
           let existingDepartment = tableAnalysisData.value.find(
               (entry) => entry.department.id === departmentId
           );
 
           let statusCategory = null;
-          if (event.status.work_plan_event_status_id === 2) {
+          if (event?.status?.work_plan_event_status_id === 2) {
             statusCategory = "completed";
-          } else if (event.status.work_plan_event_status_id === 3) {
+          } else if (event?.status.work_plan_event_status_id === 3) {
             statusCategory = "notcompleted";
-          } else if (event.status.work_plan_event_status_id === 4) {
+          } else if (event?.status.work_plan_event_status_id === 4) {
             statusCategory = "partially_completed";
-          } else if (event.status.work_plan_event_status_id === 1) {
+          } else if (event?.status.work_plan_event_status_id === 1) {
             statusCategory = "created";
           }
 
           if (statusCategory) {
             if (existingDepartment) {
               existingDepartment.result_status[statusCategory].push(
-                  event.status.work_plan_event_status_id
+                  event?.status.work_plan_event_status_id
               );
             } else {
               let newDepartment = {
                 department: {
                   id: departmentId,
-                  name: item.user.mainPosition.department.name,
-                  name_kz: item.user.mainPosition.department.nameKz,
-                  name_ru: item.user.mainPosition.department.nameRu,
-                  name_en: item.user.mainPosition.department.nameEn,
+                  name: item?.user?.mainPosition?.department?.name,
+                  name_kz: item?.user?.mainPosition?.department?.nameKz,
+                  name_ru: item?.user?.mainPosition?.department?.nameRu,
+                  name_en: item?.user?.mainPosition?.department?.nameEn,
                 },
                 result_status: {
                   completed: [],
@@ -671,6 +687,9 @@ watch(data, (newValue) => {
     });
     chartDataFilteredDepartment.value = setChartDataFilteredDepartment();
     chartOptionsFilteredDepartment.value = setChartOptionsFilteredDepartment();
+
+    chartDataDepartmentQuarter.value = setChartOptions();
+    chartOptionsDepartmentQuarter.value = setChartOptions();
   }
  
 });

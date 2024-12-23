@@ -1534,8 +1534,9 @@ export default {
             totalLevelNumber:"Көрсеткіш саны",
             done:"Орындалды",
             notDone:"Орындалмады",
-            strategicDirectionExecutionLevel:"Стратегиялық бағыттардың орындалу пайызы",
-            structuralDivisionExecutionLevel:"Құрылымдық бөлімдердің орындалу пайызы"
+            strategicDirectionExecutionLevel:"Стратегиялық бағыттардың жылдық орындалу пайызы",
+            structuralDivisionExecutionLevel:"Құрылымдық бөлімдердің жылдық орындалу пайызы",
+            selectQuarter:"Тоқсанды таңдаңыз"
             
 
         }
