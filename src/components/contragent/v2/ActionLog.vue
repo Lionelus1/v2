@@ -56,7 +56,7 @@ const fetchAttempts = async (page = 0, rows = 10) => {
 
     totalRecords.value = response.data.total;
   } catch (error) {
-    toast.add({severity: "error", summary: t("error"), detail: error.message});
+    // toast.add({severity: "error", summary: t("error"), detail: error.message});
   }
 };
 
