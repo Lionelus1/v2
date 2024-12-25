@@ -11,7 +11,7 @@
           <label>{{ $t('report.TypeReport') }}</label>
           <Dropdown
               v-if="true"
-              v-model="typeReport"
+              v-model="filters.typeReport"
               :options="typeReports"
               optionLabel="label"
               placeholder="Выберите категорию"
@@ -19,7 +19,7 @@
           />
         </div>
 
-        <div v-if="typeReport && typeReport.value === 5" class="filter-item">
+        <div v-if="filters.typeReport && filters.typeReport.value === 5" class="filter-item">
           <label>{{ $t('report.TypeContract') }}</label>
           <MultiSelect v-model="filters.reportTypes.value" :options="reportCategories" optionLabel="label" filter
                        placeholder="Выберите тип договоров"
@@ -233,9 +233,6 @@ const departments = ref([]);
 const statuses = ref([]);
 const organizations = ref([]);
 const contragents = ref([]);
-const selectedOrganizations = ref([]);
-const selectedOrganizationContragents = ref([]);
-const typeReport = ref(null)
 
 const searchMode = {
   type: String,
@@ -261,6 +258,7 @@ const filters = ref({
   lang: null,
   author: {enabled: false, value: []},
   reportTypes: {value: []},
+  typeReport: null,
 });
 
 const ListCategories = [
@@ -566,88 +564,40 @@ const fetchDepartments = async () => {
   }
 };
 
-const currentPage = ref(0);
+// const currentPage = ref(0);
 
 
-const fetchContragents = async () => {
-  try {
-    const filter = {
-      filter: {
-        hasSpecialNeeds: false,
-        name: "",
-        orgId: null,
-        signers: false,
-      },
-      page: currentPage.value,
-      rows: 10,
-      ldap: false,
-      searchMode: 'individual_entrepreneur'
-    };
-
-    const response = await userService.getUser(filter);
-    contragents.value = response.data.foundUsers.map((contragent) => ({
-      label: contragent.fullName,
-      value: contragent.userID,
-    }));
-
-    contragents.value = [...contragents.value, ...newContragents];
-
-    currentPage.value += 1;
-
-  } catch (error) {
-    toast.add({severity: 'error', detail: t('reports.errorFetchingStatuses'), life: 3000});
-  }
-
-}
-
-const onScroll = async (event) => {
-  console.log("event: ", event)
-  const target = event.target;
-  if (target.scrollTop + target.clientHeight >= target.scrollHeight - 10) {
-    await fetchContragents();
-  }
-};
-
-
-const onOrganizationsChange = async () => {
-  const currentOrganizationIds = selectedOrganizations.value.map((org) => org.value);
-
-  // Оставляем контрагентов только для текущих организаций
-  selectedOrganizationContragents.value = selectedOrganizationContragents.value.filter((contragent) =>
-      currentOrganizationIds.includes(contragent.orgId)
-  );
-
-  // Загружаем контрагентов для новых организаций
-  for (const organizationId of currentOrganizationIds) {
-    if (!selectedOrganizationContragents.value.some((contragent) => contragent.orgId === organizationId)) {
-      const filter = {
-        filter: {
-          hasSpecialNeeds: false,
-          name: "",
-          orgId: organizationId, // Устанавливаем текущий ID организации
-          signers: true,
-        },
-        ldap: false,
-      };
-
-      try {
-        const response = await userService.getUser(filter);
-        const newContragents = response.data.foundUsers.map((foundUser) => ({
-          label: foundUser.fullName,
-          value: foundUser.userID,
-          orgId: organizationId, // Связываем контрагента с ID организации
-        }));
-
-        selectedOrganizationContragents.value = [
-          ...selectedOrganizationContragents.value,
-          ...newContragents,
-        ];
-      } catch (error) {
-        console.error(`Ошибка загрузки контрагентов для организации ${organizationId}:`, error);
-      }
-    }
-  }
-};
+// const fetchContragents = async () => {
+//   try {
+//     const filter = {
+//       filter: {
+//         hasSpecialNeeds: false,
+//         name: "",
+//         orgId: null,
+//         signers: false,
+//       },
+//       page: currentPage.value,
+//       rows: 10,
+//       ldap: false,
+//       searchMode: 'individual_entrepreneur'
+//     };
+//
+//     const response = await userService.getUser(filter);
+//     contragents.value = response.data.foundUsers.map((contragent) => ({
+//       label: contragent.fullName,
+//       value: contragent.userID,
+//     }));
+//
+//     contragents.value = [...contragents.value, ...newContragents];
+//
+//     currentPage.value += 1;
+//
+//   } catch (error) {
+//     console.log(error)
+//     toast.add({severity: 'error', detail: t('reports.errorFetchingStatuses1'), life: 3000});
+//   }
+//
+// }
 
 const fetchOrganizations = async () => {
   try {
@@ -669,7 +619,7 @@ const fetchOrganizations = async () => {
       value: organization.id,
     }));
   } catch (error) {
-    toast.add({severity: 'error', detail: t('reports.errorFetchingStatuses'), life: 3000});
+    toast.add({severity: 'error', detail: t('reports.errorFetchingStatuses2'), life: 3000});
   }
 };
 
@@ -682,7 +632,7 @@ const fetchStatuses = async () => {
       value: status.code,
     }));
   } catch (error) {
-    toast.add({severity: 'error', detail: t('reports.errorFetchingStatuses'), life: 3000});
+    toast.add({severity: 'error', detail: t('reports.errorFetchingStatuses3'), life: 3000});
   }
 };
 
@@ -713,7 +663,7 @@ const generateReport = async () => {
       // period_start: '2022-11-07T20:00:00.000Z',
       // period_end: '2024-11-27T20:00:00.000Z',
       // lang: 'kz',
-      document_type: typeReport.value.value,
+      document_type: filters.value.typeReport.value,
       report_types: filters.value.reportTypes.value.map(reportType => reportType.id),
       // report_type: filters.value.category.value.value,
       file_path: '',
@@ -767,7 +717,7 @@ const resetFilters = () => {
       filter.enabled = false;
       filter.value = Array.isArray(filter.value) ? [] : null;
     } else {
-      filters.value[key] = null; // Для полей вроде period_start и period_end
+      filters.value[key] = null;
     }
   }
 };
@@ -779,7 +729,7 @@ onMounted(() => {
   fetchStatuses();
   loadReports();
   fetchOrganizations();
-  fetchContragents();
+  // fetchContragents();
   fetchReportTypes();
 });
 </script>
