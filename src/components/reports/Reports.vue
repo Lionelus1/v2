@@ -9,9 +9,10 @@
         <!-- Категория -->
         <div class="filter-item">
           <label>{{ $t('report.TypeReport') }}</label>
+          {{filters.typeReport2}}
           <Dropdown
               v-if="true"
-              v-model="filters.typeReport"
+              v-model="filters.typeReport2"
               :options="typeReports"
               optionLabel="label"
               placeholder="Выберите категорию"
@@ -19,7 +20,7 @@
           />
         </div>
 
-        <div v-if="filters.typeReport && filters.typeReport.value === 5" class="filter-item">
+        <div v-if="filters.typeReport2?.value === 5" class="filter-item">
           <label>{{ $t('report.TypeContract') }}</label>
           <MultiSelect v-model="filters.reportTypes.value" :options="reportCategories" optionLabel="label" filter
                        placeholder="Выберите тип договоров"
@@ -258,7 +259,7 @@ const filters = ref({
   lang: null,
   author: {enabled: false, value: []},
   reportTypes: {value: []},
-  typeReport: null,
+  typeReport2: null,
 });
 
 const ListCategories = [
@@ -521,7 +522,6 @@ const fetchCategories = async () => {
 
 const fetchReportTypes = async () => {
   try {
-    const response = await docService.getStates();
     typeReports.value = dataTypeReports;
   } catch (error) {
     toast.add({severity: 'error', detail: t('reports.errorFetchingCategories'), life: 3000});
@@ -663,7 +663,7 @@ const generateReport = async () => {
       // period_start: '2022-11-07T20:00:00.000Z',
       // period_end: '2024-11-27T20:00:00.000Z',
       // lang: 'kz',
-      document_type: filters.value.typeReport.value,
+      document_type: filters.value.typeReport2?.value,
       report_types: filters.value.reportTypes.value.map(reportType => reportType.id),
       // report_type: filters.value.category.value.value,
       file_path: '',
@@ -712,14 +712,18 @@ const generateReport = async () => {
 
 const resetFilters = () => {
   for (const key in filters.value) {
+    console.log("key: ", key)
     const filter = filters.value[key];
-    if (filter && typeof filter === 'object' && 'enabled' in filter && 'value' in filter) {
+    console.log("filter: ", filter)
+    if (filter && typeof filter === 'object' && 'enabled' in filter && 'value' in filter || key === "reportTypes") {
       filter.enabled = false;
       filter.value = Array.isArray(filter.value) ? [] : null;
     } else {
-      filters.value[key] = null;
+      filters.value[key] = key === 'typeReport2' ? null : null;
     }
   }
+
+  console.log("filters.value: ", filters.value)
 };
 
 
