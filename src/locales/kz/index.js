@@ -229,6 +229,10 @@ export default {
         myFinances: 'Менің қаржым',
         finance:'Финансы',
         categoriesFinance:'Қаржы Санаттары',
+        actionLog: 'Әрекеттер Журналы',
+        attempts: 'Attempts',
+        authorized: 'Авторизован',
+        unauthorized: 'Рұқсат етілмеген',
         states: {
             submitted: "Берілген",
             created: "Құрылды",
@@ -1816,7 +1820,8 @@ export default {
         internalServerError: 'Кешіріңіз, біздің тарапымыздан бірдеңе дұрыс болмады. Әрекетті кейінірек қайталаңыз.',
         unauthorized: 'Пайдаланушы жүйеге кірмеген.',
         importAlreadyOnProcess: 'Импорттау процесі жүзеге асырылуда. Нәтижелерді күтіңіз.',
-        notFound: 'Сұралған ресурс табылмады'
+        notFound: 'Сұралған ресурс табылмады',
+        attempts: 'Сіз %d рет кіруге әрекет жасадыңыз.'
     },
     visuallyImpaired: {
         fontSize: "Қаріп өлшемі",
@@ -2241,5 +2246,13 @@ export default {
         crAndUpdEdu: 'Сұрақ-Жауап құру және өзгерту',
     },
     status_resume: "Түйіндемені толтыру статусы",
-    people_special_needs: "Ерекше қажеттіліктері бар адамдар"
+    people_special_needs: "Ерекше қажеттіліктері бар адамдар",
+    authorizationParameters: "Авторизация параметрлері",
+    newPassword: "Жаңа құпия сөз",
+    enterNewPassword: "Жаңа құпия сөзді енгізіңіз",
+    passwordConfirmation:"Құпия сөзді растау",
+    confirmNewPassword:"Жаңа құпия сөзді Растаңыз",
+    passwordMismatch: "Жаңа құпия сөз бен растау сәйкес келмейді",
+    passwordTooShort: "Құпия сөздің ұзындығы кемінде 32 таңба болуы керек",
+    fieldsEmpty: "Барлық өрістерді толтырыңыз"
 }

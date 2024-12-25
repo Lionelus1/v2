@@ -15,4 +15,8 @@ export class AccountService {
         return api.post(`/account/info/update`, data, {headers: getHeader()});
     }
 
+    getAttempt(data) {
+        return api.post(`/user/account/attempt`, data, {headers: getHeader()});
+    }
+
 }

@@ -228,6 +228,10 @@ export default {
         myFinances: 'Мои финансы',
         finance:'Финансы',
         categoriesFinance:'Категории Финансы',
+        actionLog: 'Журнал действий',
+        attempts: 'Attempts',
+        authorized: 'Авторизован',
+        unauthorized: 'Неавторизован',
         states: {
             submitted: "Подана",
             created: "создан",
@@ -1762,7 +1766,8 @@ export default {
         internalServerError: 'Приносим извинения, с нашей стороны что-то пошло не так. Пожалуйста, повторите попытку позже.',
         unauthorized: 'Пользователь не авторизован.',
         importAlreadyOnProcess: 'Процесс импорта уже запущен. Пожалуйста, дождитесь результатов.',
-        notFound: 'Запрашиваемый ресурс не найден'
+        notFound: 'Запрашиваемый ресурс не найден',
+        attempts: 'Вы пробовали войти %d раз.'
     },
     blog: {
         title: 'Блог',
@@ -2227,5 +2232,13 @@ export default {
         menuColorLight: 'Светлый',
     },
     status_resume: "Статус заполнения резюме",
-    people_special_needs: "Люди с особыми потребностями"
+    people_special_needs: "Люди с особыми потребностями",
+    authorizationParameters: "Парметры авторизации",
+    newPassword: "Новый пароль",
+    enterNewPassword: "Введите новый пароль",
+    passwordConfirmation:"Подтверждение пароля",
+    confirmNewPassword:"Подтвердите новый пароль",
+    passwordMismatch: "Новый пароль и подтверждение не совпадают",
+    passwordTooShort: "Пароль должен быть длиной не менее 32 символов",
+    fieldsEmpty: "Пожалуйста, заполните все поля"
 }

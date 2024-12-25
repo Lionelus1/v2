@@ -228,6 +228,10 @@ export default {
         myFinances: 'My finances',
         finance:'Finance',
         categoriesFinance:'Finance Categories',
+        actionLog: 'Action Log',
+        attempts: 'Attempts',
+        authorized: 'Authorized',
+        unauthorized: 'Unauthorized',
         states: {
             submitted: "Submitted",
             approved: "Approved",
@@ -1862,6 +1866,7 @@ export default {
         importAlreadyOnProcess:
             "Import process is already on. Please wait for results.",
         notFound: "The requested resource was not found",
+        attempts: "You have tried to log in %d times."
     },
     visuallyImpaired: {
         fontSize: "Font size",
@@ -2298,5 +2303,13 @@ export default {
         unknown: "Unknown error.",
     },
     status_resume: "Status of filling out the resume",
-    people_special_needs: "People with special needs"
+    people_special_needs: "People with special needs",
+    authorizationParameters: "Authorization parameters",
+    newPassword: "New Password",
+    enterNewPassword: "Enter a new password",
+    passwordConfirmation:"Password confirmation",
+    confirmNewPassword:"Confirm the new password",
+    passwordMismatch: "New password and confirmation do not match",
+    passwordTooShort: "Password must be at least 32 characters long",
+    fieldsEmpty: "Please fill in all fields"
 }

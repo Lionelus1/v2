@@ -13,18 +13,6 @@ cache:
   paths:
     - node_modules/
 
-before_script:
-  - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client wget gnupg -y )'
-  - wget -qO- https://get.docker.com/gpg | apt-key add -
-  - eval $(ssh-agent -s)
-  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-  - mkdir -p ~/.ssh
-  - touch ~/.ssh/config
-  - touch ~/.ssh/known_hosts
-  - chmod -R 400 ~/.ssh
-  - ssh-keyscan -H $SMARTENU_IP >> ~/.ssh/known_hosts
-  - '[[ -f /.dockerinit ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-
 install_stage:
   stage: install
   image: node:18
@@ -65,7 +53,20 @@ build_stage:
 deploy_stage:
   stage: deploy
   image: node:lts
+  before_script:
+    - apt-get update -y
+    - apt-get install -y openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - touch ~/.ssh/config
+    - touch ~/.ssh/known_hosts
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod -R 400 ~/.ssh
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $SMARTENU_IP >> ~/.ssh/known_hosts
   script:
+    - echo "$SSH_AUTH_URL"
     - if [ "$CI_COMMIT_BRANCH" == "master" ]; then
       ssh $SSH_AUTH_URL "rm -rf /local/prohtml/*";
       scp -r dist_prod/* $SSH_AUTH_URL:/local/prohtml;
