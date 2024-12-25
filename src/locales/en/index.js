@@ -2282,5 +2282,13 @@ export default {
         unknown: "Unknown error.",
     },
     status_resume: "Status of filling out the resume",
-    people_special_needs: "People with special needs"
+    people_special_needs: "People with special needs",
+    authorizationParameters: "Authorization parameters",
+    newPassword: "New Password",
+    enterNewPassword: "Enter a new password",
+    passwordConfirmation:"Password confirmation",
+    confirmNewPassword:"Confirm the new password",
+    passwordMismatch: "New password and confirmation do not match",
+    passwordTooShort: "Password must be at least 32 characters long",
+    fieldsEmpty: "Please fill in all fields"
 }

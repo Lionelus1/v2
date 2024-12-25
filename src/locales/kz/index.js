@@ -2225,5 +2225,13 @@ export default {
         crAndUpdEdu: 'Сұрақ-Жауап құру және өзгерту',
     },
     status_resume: "Түйіндемені толтыру статусы",
-    people_special_needs: "Ерекше қажеттіліктері бар адамдар"
+    people_special_needs: "Ерекше қажеттіліктері бар адамдар",
+    authorizationParameters: "Авторизация параметрлері",
+    newPassword: "Жаңа құпия сөз",
+    enterNewPassword: "Жаңа құпия сөзді енгізіңіз",
+    passwordConfirmation:"Құпия сөзді растау",
+    confirmNewPassword:"Жаңа құпия сөзді Растаңыз",
+    passwordMismatch: "Жаңа құпия сөз бен растау сәйкес келмейді",
+    passwordTooShort: "Құпия сөздің ұзындығы кемінде 32 таңба болуы керек",
+    fieldsEmpty: "Барлық өрістерді толтырыңыз"
 }

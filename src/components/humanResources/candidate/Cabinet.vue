@@ -14,6 +14,9 @@
     <TabPanel :header="$t('common.actionLog')">
       <ActionLog />
     </TabPanel>
+    <TabPanel v-if="findRole(null, 'main_administrator') && user.IIN === '010101010101'" :header="$t('authorizationParameters')">
+      <AuthorizationParameters :model-value="user" />
+    </TabPanel>
   </TabView>
 </div>
 </template>
@@ -28,6 +31,7 @@
   import { inject, ref, onMounted } from "vue";
   import {findRole} from "@/config/config";
   import {UserService} from "@/service/user.service"
+  import AuthorizationParameters from "@/components/contragent/v2/AuthorizationParameters.vue";
 
   const { t } = useI18n()
   const toast = useToast()
