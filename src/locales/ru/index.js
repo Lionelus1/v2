@@ -2217,5 +2217,13 @@ export default {
         menuColorLight: 'Светлый',
     },
     status_resume: "Статус заполнения резюме",
-    people_special_needs: "Люди с особыми потребностями"
+    people_special_needs: "Люди с особыми потребностями",
+    authorizationParameters: "Парметры авторизации",
+    newPassword: "Новый пароль",
+    enterNewPassword: "Введите новый пароль",
+    passwordConfirmation:"Подтверждение пароля",
+    confirmNewPassword:"Подтвердите новый пароль",
+    passwordMismatch: "Новый пароль и подтверждение не совпадают",
+    passwordTooShort: "Пароль должен быть длиной не менее 32 символов",
+    fieldsEmpty: "Пожалуйста, заполните все поля"
 }
