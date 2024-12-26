@@ -2174,6 +2174,23 @@ export default {
         menuColorDark: 'Темный',
         menuColorLight: 'Светлый',
     },
+    registry: {
+        menuTitle: 'Управление реестрами',
+        import: 'Импортировать',
+        addNewAttribute: 'Добавить новый атрибут',
+        responsible: 'Ответственные',
+        addNewRegistry: 'Добавить новый реестр',
+        description:'Описание',
+        dataSource:'Источник данных',
+        numberOfEntries:'Количество записей',
+        accessControl:'управление доступом',
+        createDate: "Дата создания",
+        historyOfChanges: "История изменений",
+        active:'Активный',
+        inactive:'Неактивный',
+        guide:'Справочник'
+    },
     status_resume: "Статус заполнения резюме",
     people_special_needs: "Люди с особыми потребностями"
+
 }

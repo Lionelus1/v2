@@ -946,6 +946,50 @@ const routes = [
                 beforeEnter: ifMainAdministrator,
             },
             {
+                path: '/registry',
+                name: 'RegistryComponent',
+                component: load('registry/RegistryComponent'),
+                // beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'RegistryManagement',
+                        component: load('registry/RegistryManagement'),
+                        // beforeEnter: ifMainAdministrator,
+                    },
+                    {
+                        path: '/registry/RegistryAdd/:id',
+                        name: 'RegistryAdd',
+                        component: load('registry/RegistryAdd'),
+                        // beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/registry/Registry/:id',
+                        name: 'Registry',
+                        component: load('registry/Registry'),
+                        // beforeEnter: ifAuthenticated,
+                    },
+                ]
+            },
+    //         {
+    //         path: '/helpdesk/v2',
+    // name: 'HelpDeskComponent',
+    // component: load('helpDesk/HelpDeskComponent'),
+    // beforeEnter: ifAuthenticated,
+    // children: [
+    // {
+    //     path: '',
+    //     name: 'DeskJournal',
+    //     component: load('helpDesk/DeskJournal'),
+    //     beforeEnter: ifAuthenticated,
+    // },
+    // {
+    //     path: 'request/:uuid',
+    //     name: 'Request',
+    //     component: load('helpDesk/Request'),
+    //     beforeEnter: ifAuthenticated,
+    // },
+            {
                 path: '/approvalList',
                 name: 'ApprovalListControl',
                 component: load('roleControl/ApprovalListControl'),
