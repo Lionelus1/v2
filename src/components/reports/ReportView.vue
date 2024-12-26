@@ -204,8 +204,6 @@ async function saveReport() {
     filters.filters.tableData = tableData.value
     loading.value = true;
 
-    console.log("filters 1: ", filters)
-
     // if (filters.filters.period_start) {
     //   filters.filters.period_start = filters.filters.period_start.split('T')[0]; // Отрезаем время
     // }
@@ -250,9 +248,7 @@ const downloadReport = () => {
 function extractFiltersFromUrl() {
   const storedFilters = localStorage.getItem("filter");
   const parsedData = JSON.parse(storedFilters);
-  console.log("parsedData: ", parsedData)
   const filters = parsedData || {};
-  console.log(filters)
 
   // const filters = route.query.filters ? JSON.parse(route.query.filters) : {};
 
@@ -287,11 +283,9 @@ function extractFiltersFromUrl() {
 // Загрузка данных отчета из localStorage
 function loadReportData() {
   const storedData = localStorage.getItem("docReports");
-  console.log("typeof: ", typeof storedData)
   if (storedData) {
     const parsedData = JSON.parse(storedData);
     tableData.value = parsedData || {headers: [], rows: []};
-    console.log("tableData.value: ", tableData.value)
   } else {
     router.push({name: "GenerateReport"});
   }

@@ -391,7 +391,7 @@ const actions = computed(() => {
 })
 
 const showReport = (doc) => {
-  console.log("doc: ", doc)
+
   localStorage.setItem('docReports', JSON.stringify(doc.newParams.tableData.value));
   localStorage.setItem('filter', JSON.stringify(doc.newParams.request.value));
 
@@ -403,10 +403,8 @@ const showReport = (doc) => {
 
 const downloadReportFile = (type, filePath) => {
   loading.value = true;
-  console.log("type: ", type)
 
   let nameFile = (locale.value === "kz" ? type.name_kz : locale.value === "ru" ? type.name_ru : type.name_en) + ".xlsx";
-  console.log("nameFile: ", nameFile)
 
   fetch(`${smartEnuApi}/serve?path=${encodeURIComponent(filePath)}`, {
     method: 'GET',
@@ -609,7 +607,6 @@ const fetchStatuses = async () => {
 
 const validateReportFields = (filters) => {
   // const { document_type, reportTypes, lang, author, department, status, signers, contragent } = filters.value;
-  console.log("filters: ", filters)
 
   if (!filters.document_type) {
     showMessage('error', t('report.validation.reportTypesRequired'), t('report.validation.reportTypesRequired'));
@@ -691,7 +688,7 @@ const generateReport = async () => {
     // horizontal_filters: ['author', 'department'],
   };
 
-  console.log("activeFilters.filters: ", activeFilters.filters)
+
   if (!validateReportFields(activeFilters.filters)) {
     return; // Stop execution if validation fails
   }

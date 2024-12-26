@@ -212,7 +212,6 @@ async function saveReport() {
     filters.filters.tableData = tableData.value
     loading.value = true;
 
-    console.log("filters 1: ", filters)
 
     // if (filters.filters.period_start) {
     //   filters.filters.period_start = filters.filters.period_start.split('T')[0]; // Отрезаем время
