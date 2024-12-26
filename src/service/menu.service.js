@@ -344,8 +344,8 @@ export class MenuService {
 
                     },
                     {
-                        label: $t('ReportDesigner.ReportDesigner'),
-                        icon: '',
+                        label: $t('report.title'),
+                        icon: 'fa-solid fa-chart-simple',
                         to: '/reports',
                     }
                 ]
