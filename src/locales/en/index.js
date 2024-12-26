@@ -1465,7 +1465,15 @@ export default {
         individuals: "Individuals",
         noAuth: "",
         TypeContract: "Contract",
-        signers: "Signers"
+        signers: "Signers",
+        validation: {
+            documentTypeRequired: "Document type is required",
+            reportTypesRequired: "Report types are required",
+            languageRequired: "Language is required",
+            recipientRequired: "Recipient is required",
+            ContractRequired: "Contract types are required",
+            PeriodRequired: "Periods are required",
+        },
     },
     workPlan: {
         plans: "Plans",

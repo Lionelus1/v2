@@ -391,6 +391,7 @@ const actions = computed(() => {
 })
 
 const showReport = (doc) => {
+  console.log("doc: ", doc)
   localStorage.setItem('docReports', JSON.stringify(doc.newParams.tableData.value));
   localStorage.setItem('filter', JSON.stringify(doc.newParams.request.value));
 
@@ -563,41 +564,6 @@ const fetchDepartments = async () => {
   }
 };
 
-// const currentPage = ref(0);
-
-
-// const fetchContragents = async () => {
-//   try {
-//     const filter = {
-//       filter: {
-//         hasSpecialNeeds: false,
-//         name: "",
-//         orgId: null,
-//         signers: false,
-//       },
-//       page: currentPage.value,
-//       rows: 10,
-//       ldap: false,
-//       searchMode: 'individual_entrepreneur'
-//     };
-//
-//     const response = await userService.getUser(filter);
-//     contragents.value = response.data.foundUsers.map((contragent) => ({
-//       label: contragent.fullName,
-//       value: contragent.userID,
-//     }));
-//
-//     contragents.value = [...contragents.value, ...newContragents];
-//
-//     currentPage.value += 1;
-//
-//   } catch (error) {
-//     console.log(error)
-//     toast.add({severity: 'error', detail: t('reports.errorFetchingStatuses1'), life: 3000});
-//   }
-//
-// }
-
 const fetchOrganizations = async () => {
   try {
     const activeFilters = {
@@ -631,9 +597,55 @@ const fetchStatuses = async () => {
       value: status.code,
     }));
   } catch (error) {
-    toast.add({severity: 'error', detail: t('reports.errorFetchingStatuses3'), life: 3000});
+    toast.add({severity: 'error', detail: t('report.errorFetchingStatuses3'), life: 3000});
   }
 };
+
+const validateReportFields = (filters) => {
+  // const { document_type, reportTypes, lang, author, department, status, signers, contragent } = filters.value;
+  console.log("filters: ", filters)
+
+  if (!filters.document_type) {
+    showMessage('error', t('report.validation.reportTypesRequired'), t('report.validation.reportTypesRequired'));
+    return false;
+  }
+
+  if (!filters.report_types.length) {
+    showMessage('error', t('report.validation.ContractRequired'), t('report.validation.ContractRequired'));
+    return false;
+  }
+
+  if (!filters.lang) {
+    showMessage('error', t('report.validation.languageRequired'), t('report.validation.languageRequired'));
+    return false;
+  }
+
+  if (!filters.period_start) {
+    showMessage('error', t('report.validation.PeriodRequired'), t('report.validation.PeriodRequired'));
+    return false;
+  }
+
+  if (!filters.period_end) {
+    showMessage('error', t('report.validation.PeriodRequired'), t('report.validation.PeriodRequired'));
+    return false;
+  }
+
+  if (
+      !filters.authors.length && !filters.departments.length &&
+      !filters.signers.length &&
+      !filters.contragents.length
+  ) {
+    showMessage(
+        'error',
+        t('report.validation.recipientRequired'),
+        t('report.validation.recipientRequired')
+    );
+    return false;
+  }
+
+  return true;
+};
+
 
 const generateReport = async () => {
 
@@ -672,6 +684,11 @@ const generateReport = async () => {
     // vertical_filters: ['period', 'status'],
     // horizontal_filters: ['author', 'department'],
   };
+
+  console.log("activeFilters.filters: ", activeFilters.filters)
+  if (!validateReportFields(activeFilters.filters)) {
+    return; // Stop execution if validation fails
+  }
 
   if (activeFilters.filters.statuses?.length) {
     activeFilters.vertical_filters.push('status');
@@ -727,7 +744,6 @@ onMounted(() => {
   fetchStatuses();
   loadReports();
   fetchOrganizations();
-  // fetchContragents();
   fetchReportTypes();
 });
 </script>

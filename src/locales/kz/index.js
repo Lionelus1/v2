@@ -1482,8 +1482,16 @@ export default {
         organizations: "Ұйымдар",
         individuals: "Частные лица",
         noAuth: "Тіркелмегендер",
-        TypeContract: "Шарт түрі",
-        signers: "Қол қоюшылар"
+        TypeContract: "Келісім-шарт түрлері",
+        signers: "Қол қоюшылар",
+        validation: {
+            documentTypeRequired: "Құжат түрі талап етіледі",
+            reportTypesRequired: "Есеп түрлері талап етіледі",
+            languageRequired: "Тіл таңдау қажет",
+            recipientRequired: "Қабылдаушыны көрсету қажет",
+            ContractRequired: "Келісім-шарт түрлері талап етіледі",
+            PeriodRequired: "Периодтар қажет",
+        },
     },
     workPlan: {
         plans: "Жоспарлар",

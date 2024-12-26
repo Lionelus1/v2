@@ -1470,7 +1470,15 @@ export default {
         individuals: "Частные лица",
         noAuth: "Неавторизованные",
         TypeContract: "Тип договора",
-        signers: "Подписанты"
+        signers: "Подписанты",
+        validation: {
+            documentTypeRequired: "Тип документа обязателен",
+            reportTypesRequired: "Типы отчетов обязательны",
+            languageRequired: "Язык обязателен",
+            recipientRequired: "Получатель обязателен",
+            ContractRequired: "Требуются типы договоров",
+            PeriodRequired: "Требуются периоды",
+        },
     },
     workPlan: {
         plans: "Планы",
