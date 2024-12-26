@@ -9,7 +9,6 @@
         <!-- Категория -->
         <div class="filter-item">
           <label>{{ $t('report.TypeReport') }}</label>
-          {{filters.typeReport2}}
           <Dropdown
               v-if="true"
               v-model="filters.typeReport2"
@@ -687,12 +686,10 @@ const generateReport = async () => {
       activeFilters.horizontal_filters.push('department');
     }
   }
-  console.log("activeFilters: ", activeFilters)
 
   try {
     loading.value = true;
     const response = await reportService.getReportData(activeFilters);
-    console.log("response: ", response.data.filePath)
     activeFilters.file_path = response.data.filePath
 
     localStorage.setItem('docReports', JSON.stringify(response.data));
@@ -712,9 +709,7 @@ const generateReport = async () => {
 
 const resetFilters = () => {
   for (const key in filters.value) {
-    console.log("key: ", key)
     const filter = filters.value[key];
-    console.log("filter: ", filter)
     if (filter && typeof filter === 'object' && 'enabled' in filter && 'value' in filter || key === "reportTypes") {
       filter.enabled = false;
       filter.value = Array.isArray(filter.value) ? [] : null;
@@ -723,7 +718,6 @@ const resetFilters = () => {
     }
   }
 
-  console.log("filters.value: ", filters.value)
 };
 
 
