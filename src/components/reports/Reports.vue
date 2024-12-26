@@ -403,6 +403,10 @@ const showReport = (doc) => {
 
 const downloadReportFile = (type, filePath) => {
   loading.value = true;
+  console.log("type: ", type)
+
+  let nameFile = (locale.value === "kz" ? type.name_kz : locale.value === "ru" ? type.name_ru : type.name_en) + ".xlsx";
+  console.log("nameFile: ", nameFile)
 
   fetch(`${smartEnuApi}/serve?path=${encodeURIComponent(filePath)}`, {
     method: 'GET',
@@ -421,7 +425,8 @@ const downloadReportFile = (type, filePath) => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = filePath;
+        a.download =
+            (locale.value === "kz" ? type.name_kz : locale.value === "ru" ? type.name_ru : type.name_en) + ".xlsx";
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -483,6 +488,7 @@ const loadReports = async (page = 0) => {
       author: report.author?.fullName || "-",
       createdDate: formatDate(report.creation_date),
       doc: report.doc || null,
+      type: report.type || null
     }));
 
     totalRecords.value = total;
