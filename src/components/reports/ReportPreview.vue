@@ -10,18 +10,34 @@
 
     <Dialog
         v-model:visible="showDialog"
-        header="Несохраненные изменения"
+        :header="$t('report.UnsavedChanges')"
         :closable="false"
         :draggable="false"
         :modal="true"
         style="width: 400px"
     >
-      <p>Выйти без сохранения?</p>
+      <p>{{ $t('report.LeaveWithoutSaving') }}</p>
       <div class="p-d-flex p-jc-between p-mt-3">
-        <Button label="Остаться на странице" class="p-button-secondary" @click="cancelDialog" />
-        <Button label="Выйти без сохранения" class="p-button-danger" @click="confirmLeave" />
+        <Button :label="$t('report.StayOnThePage')" class="p-button-secondary" @click="cancelDialog" />
+        <Button :label="$t('report.LeaveWithoutSaving')" class="p-button-danger" @click="confirmLeave" />
       </div>
     </Dialog>
+
+    <Dialog
+        v-model:visible="showDialogSave"
+        :header="$t('report.confirmation')"
+        :closable="false"
+        :draggable="false"
+        :modal="true"
+        style="width: 400px"
+    >
+      <p>{{ $t('report.saveReport') }}</p>
+      <div class="p-d-flex p-jc-between p-mt-3">
+        <Button :label=" $t('report.no')" class="p-button-secondary" @click="cancelDialog" />
+        <Button :label=" $t('report.yes')" class="p-button-danger" @click="saveReport" />
+      </div>
+    </Dialog>
+
 
     <div>
       <Menubar :model="menu" :key="active"
@@ -113,6 +129,7 @@ const active = ref(null);
 const {t, locale} = useI18n()
 const isDirty = ref(true);
 const showDialog = ref(false);
+const showDialogSave = ref(false)
 const reportService = new ReportService();
 const fileService = new FileService();
 
@@ -132,6 +149,7 @@ const onBackButtonClick = () => {
 
 const cancelDialog = () => {
   showDialog.value = false;
+  showDialogSave.value = false;
 }
 
 const confirmLeave = () => {
@@ -149,7 +167,7 @@ const menu = ref([
     icon: "pi pi-fw pi-save",
     visible: true,
     command: () => {
-      saveReport()
+      saveReportBefore()
     },
   },
   {
@@ -205,6 +223,10 @@ onMounted(() => {
   extractFiltersFromUrl();
   generateMonths();
 });
+
+async function saveReportBefore() {
+  showDialogSave.value = true
+}
 
 async function saveReport() {
   try {

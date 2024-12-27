@@ -1479,6 +1479,13 @@ export default {
             ContractRequired: "Требуются типы договоров",
             PeriodRequired: "Требуются периоды",
         },
+        confirmation: "Подтверждение",
+        saveReport: "Сохранить отчет ?",
+        no: "Нет",
+        yes: "Да",
+        UnsavedChanges: "Несохраненные изменения",
+        StayOnThePage: "Остаться на странице",
+        LeaveWithoutSaving: "Выйти без сохранения ?"
     },
     workPlan: {
         plans: "Планы",

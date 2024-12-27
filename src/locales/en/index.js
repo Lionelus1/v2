@@ -1474,6 +1474,13 @@ export default {
             ContractRequired: "Contract types are required",
             PeriodRequired: "Periods are required",
         },
+        confirmation: "Confirmation",
+        saveReport: "Save the report?",
+        no: "No",
+        yes: "Yes",
+        UnsavedChanges: "Unsaved changes",
+        StayOnThePage: "Stay on the page",
+        LeaveWithoutSaving: "Leave without saving ?"
     },
     workPlan: {
         plans: "Plans",

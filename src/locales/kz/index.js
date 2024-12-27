@@ -1492,6 +1492,13 @@ export default {
             ContractRequired: "Келісім-шарт түрлері талап етіледі",
             PeriodRequired: "Периодтар қажет",
         },
+        confirmation: "Растау",
+        saveReport: "Есепті сақтау?",
+        no: "Жоқ",
+        yes: "Иә",
+        UnsavedChanges: "Сақталмаған өзгерістер",
+        StayOnThePage: "Бетте қалу",
+        LeaveWithoutSaving: "Сақтамай шығу ?"
     },
     workPlan: {
         plans: "Жоспарлар",
