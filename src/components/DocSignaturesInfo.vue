@@ -116,6 +116,11 @@
             :disabled="currentApprovalUsers.length < 1" />
         </div>
       </TabPanel>
+      <TabPanel v-if="docInfo && docInfo.docHistory.comment" :header="$t('common.comment')">
+        <div class="p-4 border-1">
+          {{docInfo.docHistory.comment}}
+        </div>
+      </TabPanel>
     </TabView>
   </div>
 </template>
