@@ -909,10 +909,11 @@ export default {
     },
 
     getWorkPlanApprovalUsersFunc(data) {
-
       this.loadingMembers = true;
 
-      this.planService.getWorkPlanApprovalUsers(data).then(res => {
+      this.planService.getWorkPlanApprovalUsers(
+          data).then(res => {
+
         if (res.data && res.data.work_plan_users) {
           this.members = res.data.work_plan_users;
 
@@ -1017,14 +1018,15 @@ export default {
           this.getRelatedFiles()
 
           let data = {
+
             work_plan_id: parseInt(this.work_plan_id),
             page: 0,
             rows: 0,
             is_contract: false
           };
 
-          this.getWorkPlanApprovalUsersFunc(data)
-
+          this.getWorkPlanApprovalUsersFunc(
+              data)
         }
         if (this.isWorkSchedule) {
           this.planApprovalStage = [
@@ -1077,6 +1079,7 @@ export default {
           };
 
           if (findRole(null, 'student')){
+
             data = {
               work_plan_id: parseInt(this.work_plan_id),
               page: 0,
@@ -1084,9 +1087,7 @@ export default {
               is_contract: true
             };
           }
-
           this.getWorkPlanApprovalUsersFunc(data)
-
         }
         if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
             this.planApprovalStage = [
@@ -1334,14 +1335,15 @@ export default {
       this.selectedMembers = []
 
       let data = {
+
         work_plan_id: parseInt(this.work_plan_id),
         page: event.page,
         rows: event.rows,
         is_contract: true
+
       };
-
-      this.getWorkPlanApprovalUsersFunc(data)
-
+      this.getWorkPlanApprovalUsersFunc(
+          data)
     },
 
     planSentToApprove(data) {
