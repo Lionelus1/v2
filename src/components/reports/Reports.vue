@@ -23,7 +23,7 @@
           <label>{{ $t('report.TypeContract') }}</label>
           <MultiSelect v-model="filters.reportTypes.value" :options="reportCategories" optionLabel="label" filter
                        placeholder="Выберите тип договоров"
-                       :maxSelectedLabels="3" class="" style="width: 538px;" />
+                       :maxSelectedLabels="3" class="" style="width: 538px;"   :selectedItemsTemplate="customSelectedTemplate"/>
         </div>
 
 
@@ -76,8 +76,6 @@
               <input type="checkbox" id="department" value="filters.department.enabled"
                      v-model="filters.department.enabled" @change="onDepartmentChange"/>
               <label for="department">{{ $t('report.department') }}</label>
-              <!--              <Checkbox v-model="filters.department.enabled" />-->
-              <!--              v-if="filters.department.enabled"-->
               <MultiSelect v-model="filters.department.value" :options="departments" optionLabel="label" filter
                            placeholder="Выберите департаменты"
                            :maxSelectedLabels="3" class="w-full md:w-80" :disabled="!filters.department.enabled"/>
@@ -185,7 +183,7 @@
             :first="first"
             @page="onPage"
         >
-          <Column :field="'typeReport'" :header="$t('report.TypeReport')"/>
+          <Column :field="'typeReportName' + $i18n.locale" :header="$t('report.TypeReport')"/>
           <Column :field="'period'" :header="$t('report.period')"/>
           <Column :field="'author'" :header="$t('report.author')"/>
           <Column :field="'createdDate'" :header="$t('report.createdDate')"/>
@@ -219,6 +217,8 @@ import {DocService} from "@/service/doc.service";
 import ActionButton from "@/components/ActionButton.vue";
 import {ContragentService} from "@/service/contragent.service";
 import {getHeader, smartEnuApi} from "@/config/config";
+import {useConfirm} from "primevue/useconfirm";
+
 
 const toast = useToast();
 const {t, locale} = useI18n();
@@ -335,6 +335,15 @@ const onContragentChange = () => {
     filters.value.author.enabled = false;
     filters.value.signers.enabled = false;
   }
+};
+
+const customSelectedTemplate = () => {
+  if (filters.value.reportTypes.value.length === reportCategories.value.length) {
+    return "Все";
+  }
+  return filters.value.reportTypes.value
+      .map((id) => reportCategories.value.find((item) => item.value === id)?.label)
+      .join(", ");
 };
 
 const onAuthorChange = () => {
@@ -475,13 +484,15 @@ const loadReports = async (page = 0) => {
       page,
       rows,
     });
-
     // Преобразуем данные для таблицы
     const {reports: fetchedReports, totalRecords: total} = response.data;
 
     reports.value = fetchedReports.map((report) => ({
       id: report.id,
-      typeReport: report.type?.[`name_${getCurrentLang()}`] || "-",
+      typeReport: report.type?.['name_' + locale.value] || "-",
+      typeReportNamekz: report.type?.['name_kz'] || "-",
+      typeReportNameru: report.type?.['name_ru'] || "-",
+      typeReportNameen: report.type?.['name_en'] || "-",
       period: `${formatDate(report.start_date)} - ${formatDate(report.end_date)}`,
       author: report.author?.fullName || "-",
       createdDate: formatDate(report.creation_date),
@@ -554,15 +565,26 @@ const addContragents = (selectedUser) => {
 const fetchDepartments = async () => {
   try {
     const filters = {
-      orgType: null,
-      parentID: 1,
-      search_text: null
+      orgId: 1,
+      isFaculty: false,
+      cafedraId: null,
+      isCafedra: false,
+      HasManager: false
+      // page: page.value,
+      // rows: rowsselectedDepartments
     }
-    const response = await userService.getDepartments(filters);
-    departments.value = response.data.map((dept) => ({
-      label: dept.name,
-      value: dept.id,
-    }));
+    const response = await userService.departments(filters);
+    if (response.data.departments.length) {
+      departments.value.push(
+          ...response.data.departments.map((dept) => ({
+            label: locale.value === "kz" ? dept.nameKz : locale.value === "ru"
+                ? dept.nameRu : dept.nameEn,
+            value: dept.id,
+          }))
+      );
+      page.value += 1;
+    }
+
   } catch (error) {
     toast.add({severity: 'error', detail: t('reports.errorFetchingDepartments'), life: 3000});
   }
@@ -591,6 +613,8 @@ const fetchOrganizations = async () => {
     toast.add({severity: 'error', detail: t('reports.errorFetchingStatuses2'), life: 3000});
   }
 };
+
+const page = ref(0);
 
 const fetchStatuses = async () => {
   try {

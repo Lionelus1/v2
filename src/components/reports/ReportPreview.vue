@@ -8,36 +8,6 @@
       <h3 class="p-0 m-0">{{ lang === "kz" ? 'Есеп' : lang === "ru" ? 'Отчет' : 'Report' }}</h3>
     </div>
 
-    <Dialog
-        v-model:visible="showDialog"
-        :header="$t('report.UnsavedChanges')"
-        :closable="false"
-        :draggable="false"
-        :modal="true"
-        style="width: 400px"
-    >
-      <p>{{ $t('report.LeaveWithoutSaving') }}</p>
-      <div class="p-d-flex p-jc-between p-mt-3">
-        <Button :label="$t('report.StayOnThePage')" class="p-button-secondary" @click="cancelDialog" />
-        <Button :label="$t('report.LeaveWithoutSaving')" class="p-button-danger" @click="confirmLeave" />
-      </div>
-    </Dialog>
-
-    <Dialog
-        v-model:visible="showDialogSave"
-        :header="$t('report.confirmation')"
-        :closable="false"
-        :draggable="false"
-        :modal="true"
-        style="width: 400px"
-    >
-      <p>{{ $t('report.saveReport') }}</p>
-      <div class="p-d-flex p-jc-between p-mt-3">
-        <Button :label=" $t('report.no')" class="p-button-secondary" @click="cancelDialog" />
-        <Button :label=" $t('report.yes')" class="p-button-danger" @click="saveReport" />
-      </div>
-    </Dialog>
-
 
     <div>
       <Menubar :model="menu" :key="active"
@@ -121,30 +91,35 @@ import {useToast} from "primevue/usetoast";
 import axios from "axios";
 import {getHeader, smartEnuApi} from "@/config/config";
 import {FileService} from "@/service/file.service";
+import {useConfirm} from "primevue/useconfirm";
 
 const loading = ref(false);
 const router = useRouter();
 const route = useRoute();
 const active = ref(null);
 const {t, locale} = useI18n()
-const isDirty = ref(true);
 const showDialog = ref(false);
 const showDialogSave = ref(false)
 const reportService = new ReportService();
-const fileService = new FileService();
 
 // Для хранения данных таблицы
 const tableData = ref({
   headers: [],
   rows: [],
 });
+const confirm = useConfirm();
 
 const onBackButtonClick = () => {
-  if (isDirty.value) {
-    showDialog.value = true;
-  } else {
-    goBack();
-  }
+  confirm.require({
+    message: t('report.LeaveWithoutSaving'),
+    header: t('report.UnsavedChanges'),
+    icon: 'pi pi-info-circle',
+    acceptClass: 'p-button-rounded p-button-success',
+    rejectClass: 'p-button-rounded p-button-danger',
+    accept: () => {
+      confirmLeave()
+    },
+  });
 }
 
 const cancelDialog = () => {
@@ -225,7 +200,16 @@ onMounted(() => {
 });
 
 async function saveReportBefore() {
-  showDialogSave.value = true
+  confirm.require({
+    message: t('report.saveReport'),
+    header: t('report.confirmation'),
+    icon: 'pi pi-info-circle',
+    acceptClass: 'p-button-rounded p-button-success',
+    rejectClass: 'p-button-rounded p-button-danger',
+    accept: () => {
+      saveReport()
+    },
+  });
 }
 
 async function saveReport() {
@@ -281,7 +265,7 @@ function downloadFile() {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = filePath.value;
+        a.download =  (locale.value === "kz" ? "Келісім-шарттар бойынша есеп" : locale.value === "ru" ? "Отчет по договорам" : "Report on contracts") + ".xlsx";
         document.body.appendChild(a);
         a.click();
         a.remove();
