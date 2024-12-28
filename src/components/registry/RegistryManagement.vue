@@ -25,12 +25,12 @@
       </Column>
       <Column field="dataSource" :header="$t('registry.dataSource')">
         <template #body="{ data }">
-          {{ data.data_source_id }}
+          {{ dataSourceId[data.data_source_id] }}
         </template>
       </Column>
       <Column field="status" :header="$t('common.status')">
         <template #body="{ data }">
-          {{ data.status }}
+          {{ statusList[data.status] }}
         </template>
       </Column>
       <Column field="description" :header="$t('registry.description')">
@@ -145,13 +145,14 @@ export default {
         filtered: false
       },
       data: null,
+      dataSourceId: null,
       showAddPlanDialog: false,
       formData: {
         name_ru: null,
         name_kz: null,
         name_en: null,
         description_ru: null,
-        status: null,
+        statusList: {},
         users: []
       },
       fieldStatus: [
@@ -205,7 +206,7 @@ export default {
       this.getPlans();
     },
     createRegistry(){
-      this.registryService.createRegisty(this.formData).then(res => {
+      this.registryService.createRegistry(this.formData).then(res => {
         // if (res.data) {
         //   this.$toast.add({
         //     severity: 'success',
@@ -256,6 +257,13 @@ export default {
     },
   },
   created() {
+    this.statusList = {
+      0: this.$t('registry.active'),
+      1: this.$t('registry.inactive'),
+    };
+    this.dataSourceId = {
+      0: this.$t('registry.manually'),
+    }
     this.getRegistries();
   }
 }

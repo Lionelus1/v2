@@ -19,28 +19,28 @@
         </Column>
       </DataTable>
     </div>
-    <Dialog :header="$t('registry.addNewRegistry')" v-model:visible="showAddPlanDialog" :style="{width: '450px'}" class="p-fluid"
-            @hide="closeBasic">
-      <div class="field">
-        <label>{{ $t('common.nameInRussian') }}</label>
-        <InputText v-model="formData.name_ru" v-on:keyup.enter="createPlan"/>
-      </div>
-      <div class="field">
-        <label>{{ $t('common.nameInQazaq') }}</label>
-        <InputText v-model="formData.name_kz" v-on:keyup.enter="createPlan"/>
-      </div>
-      <div class="field">
-        <label>{{ $t('common.nameInEnglish') }}</label>
-        <InputText v-model="formData.name_en" v-on:keyup.enter="createPlan"/>
-      </div>
-      <template #footer>
-        <Button :label="$t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger"
-                @click="close('newPublicationDialog')"/>
-        <Button :label="$t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2"
-                :disabled="!formData"
-                @click="createRegistry"/>
-      </template>
-    </Dialog>
+<!--    <Dialog :header="$t('registry.addNewRegistry')" v-model:visible="showAddPlanDialog" :style="{width: '450px'}" class="p-fluid"-->
+<!--            @hide="closeBasic">-->
+<!--      <div class="field">-->
+<!--        <label>{{ $t('common.nameInRussian') }}</label>-->
+<!--        <InputText v-model="formData.name_ru" v-on:keyup.enter="createPlan"/>-->
+<!--      </div>-->
+<!--      <div class="field">-->
+<!--        <label>{{ $t('common.nameInQazaq') }}</label>-->
+<!--        <InputText v-model="formData.name_kz" v-on:keyup.enter="createPlan"/>-->
+<!--      </div>-->
+<!--      <div class="field">-->
+<!--        <label>{{ $t('common.nameInEnglish') }}</label>-->
+<!--        <InputText v-model="formData.name_en" v-on:keyup.enter="createPlan"/>-->
+<!--      </div>-->
+<!--      <template #footer>-->
+<!--        <Button :label="$t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger"-->
+<!--                @click="close('newPublicationDialog')"/>-->
+<!--        <Button :label="$t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2"-->
+<!--                :disabled="!formData"-->
+<!--                @click="createRegistry"/>-->
+<!--      </template>-->
+<!--    </Dialog>-->
   </div>
 </template>
 
@@ -62,11 +62,11 @@ export default {
         plan_type: null,
         filtered: false
       },
-      data: [], // Здесь ваши данные для таблицы
+      data: [],
       columns: [
         { field: 'registry_name', header: 'mailing.title' },
         { field: 'dataSource', header: 'registry.dataSource' }
-        // Добавьте сюда другие колонки
+
       ],
       showAddPlanDialog: false,
       formData: {
@@ -87,7 +87,7 @@ export default {
       this.$router.push({ name: 'RegistryAdd', "params": {} });
     },
     open(){
-      this.$router.push({ name: 'RegistryAdd', params: {id: 4} });
+      this.$router.push({ name: 'RegistryAdd', params: {id: parseInt(this.$route.params.id)} });
       // this.showAddPlanDialog = true;
     },
     close(){
@@ -155,6 +155,28 @@ export default {
         this.data = res.data.registries;
       })
     },
+    getRegisterParameter() {
+      let req = {
+        register_id: parseInt(this.$route.params.id)
+      };
+      this.registryService.getRegistryParameters(req)
+          .then(response => {
+            response.data.register_parameter.forEach((item, index) => {
+              if (index >= 6) {
+                this.columns.push({
+                  field: item.label_en,
+                  header: item.label_ru,
+                  registry_id: parseInt(item.id),
+                });
+              }
+            });
+          })
+          .catch(error => {
+            console.error('Ошибка при получении параметров:', error);
+          });
+    }
+
+
   },
   computed: {
     toolbarMenus() {
@@ -177,6 +199,7 @@ export default {
     },
   },
   created() {
+    this.getRegisterParameter()
     this.getRegistry()
   }
 }

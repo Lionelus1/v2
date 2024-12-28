@@ -25,4 +25,8 @@ export default class RegistryService {
     deleteRegistryParameters(data) {
         return api.post(`/registry/parameter/delete`, data, { headers: getHeader() });
     }
+
+    createApplication(data) {
+        return api.post(`/registry/parameter/application`, data, { headers: getHeader() });
+    }
 }

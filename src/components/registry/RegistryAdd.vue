@@ -41,11 +41,11 @@
               }} <span v-if="isCurrentUserSender"
                        style="font-size: 20px; color: red;">*</span></label>
 <div v-if="field.type === 1">
-  <InputText v-model="field.model" :type="field.type" :placeholder="$i18n.locale === 'kz' ? field.name_kz : $i18n.locale === 'ru' ? field.name_ru :
+  <InputText v-model="field.value" :type="field.type" :placeholder="$i18n.locale === 'kz' ? field.name_kz : $i18n.locale === 'ru' ? field.name_ru :
       field.name_en" @input="input"/>
 </div>
             <div v-if="field.type === 2">
-              <Textarea v-model="field.model" autoResize rows="5" cols="30"/>
+              <Textarea v-model="field.value" autoResize rows="5" cols="30"/>
             </div>
           </div>
         </div>
@@ -127,12 +127,11 @@ const visibility = ref({
 });
 
 const fieldTypes = [
-  { label: t('common.inputText'), value: 1 },
-  { label: t('common.textArea'), value: 2 },
+  { label: t('registry.inputText'), value: 1 },
+  { label: t('registry.textArea'), value: 2 },
 ];
 
 const newAttribute = reactive({
-  key: '',
   label_kz: '',
   label_ru: '',
   label_en: '',
@@ -149,7 +148,7 @@ const addNewAttribute = () => {
   reqFormFields.value.push({ ...newAttribute, registry_id: parseInt(route.params.id) });
   toast.add({ severity: 'success', summary: t('common.success'), detail: t('common.attributeAdded'), life: 3000 });
   close('addAttributeDialog');
-  registryService.createRegistryParameter(reqFormFields.value).then((res) => {
+  registryService.createRegistryParameter(reqFormFields.value[0]).then((res) => {
     console.log(res);
   })
 };
@@ -157,7 +156,6 @@ const addNewAttribute = () => {
 const close = (dialog) => {
   visibility.value[dialog] = false;
   Object.assign(newAttribute, {
-    key: '',
     label_kz: '',
     label_ru: '',
     label_en: '',
@@ -184,17 +182,33 @@ const menu = computed(() => [
 ]);
 
 const save = () => {
-  console.log(reqFormFields.value);
-}
+  const req = {
+    status: 0,
+    registry: {
+      id: parseInt(route.params.id),
+    },
+    parameters: formFields.value.map(field => ({
+      parameter: {
+        label_kz: field.label_kz || '',
+        label_ru: field.label_ru || '',
+        label_en: field.label_en || '',
+        type: field.type || 1,
+        registry_id: parseInt(route.params.id),
+      },
+      value_en: field.value || '',
+      value_kz: field.value || '',
+      value_ru: field.value || '',
+    })),
+  };
 
-// const input = () => {
-//   changed.value = true;
-//   validation.value = {
-//     course: !validateCourse(request.value.course),
-//     email: !(request.value.email === null || /\S+@\S+\.\S+/.test(request.value.email)),
-//     phone: request.value.phone === null || !validatePhoneNumber(request.value.phone),
-//   }
-// }
+  registryService.createApplication(req)
+      .then(response => {
+        console.log('Application saved successfully:', response);
+      })
+      .catch(error => {
+        console.error('Error saving application:', error);
+      });
+}
 
 const getRegisterParameter = () => {
   let req = {
@@ -202,15 +216,6 @@ const getRegisterParameter = () => {
   };
   registryService.getRegistryParameters(req).then(response => {
     formFields.value = response.data.register_parameter;
-    // response.data.register_parameter.forEach(item => {
-    //   formFields.value.push({
-    //     key: item.id,
-    //     name_kz: item.label_kz || '',
-    //     name_ru: item.label_ru || '',
-    //     name_en: item.label_en || '',
-    //     type: item.type
-    //   });
-    // });
   }).catch(error => {
     console.error('Ошибка при получении параметров:', error);
   });

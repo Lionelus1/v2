@@ -2188,7 +2188,10 @@ export default {
         historyOfChanges: "История изменений",
         active:'Активный',
         inactive:'Неактивный',
-        guide:'Справочник'
+        guide:'Справочник',
+        manually:'Вручную',
+        inputText: 'Ввод текста',
+        textArea: 'Ввод описание'
     },
     status_resume: "Статус заполнения резюме",
     people_special_needs: "Люди с особыми потребностями"
