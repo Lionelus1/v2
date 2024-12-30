@@ -249,9 +249,9 @@ export default {
         {
           label: this.$t('registry.import'),
           icon: "pi pi-file-import",
-          command: () => {
-            this.openBasic()
-          },
+          // command: () => {
+          //   this.openBasic()
+          // },
         },
       ]
     },

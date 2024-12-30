@@ -151,6 +151,7 @@ const addNewAttribute = () => {
   registryService.createRegistryParameter(reqFormFields.value[0]).then((res) => {
     console.log(res);
   })
+  this.newAttribute = null
 };
 
 const close = (dialog) => {
@@ -189,6 +190,7 @@ const save = () => {
     },
     parameters: formFields.value.map(field => ({
       parameter: {
+        id: field.id,
         label_kz: field.label_kz || '',
         label_ru: field.label_ru || '',
         label_en: field.label_en || '',

@@ -2244,6 +2244,25 @@ export default {
         network: "Server is not responding. Check your internet connection.",
         unknown: "Unknown error.",
     },
+    registry: {
+      menuTitle: 'Registry Management',
+      import: 'Import',
+      addNewAttribute: 'Add New Attribute',
+      responsible: 'Responsible',
+      addNewRegistry: 'Add New Registry',
+      description: 'Description',
+      dataSource: 'Data Source',
+      numberOfEntries: 'Number of Entries',
+      accessControl: 'Access Control',
+      createDate: 'Creation Date',
+      historyOfChanges: 'History of Changes',
+      active: 'Active',
+      inactive: 'Inactive',
+      guide: 'Guide',
+      manually: 'Manually',
+      inputText: 'Input Text',
+      textArea: 'Input Description'
+    },  
     status_resume: "Status of filling out the resume",
     people_special_needs: "People with special needs"
 }

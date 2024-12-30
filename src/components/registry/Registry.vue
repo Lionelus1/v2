@@ -4,7 +4,7 @@
       <div class="arrow-icon" @click="$router.back()">
         <i class="fas fa-arrow-left"></i>
       </div>
-      <h4 class="m-0">Registry</h4>
+      <h4 class="m-0">Реестр</h4>
     </div>
     <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
     <div class="card">
@@ -174,7 +174,38 @@ export default {
           .catch(error => {
             console.error('Ошибка при получении параметров:', error);
           });
-    }
+    },
+
+    getRegisterParamterApplaction() {
+  this.loading = true;
+  const req = {
+    page: 0,
+    rows: 10,
+    registry_id: parseInt(this.$route.params.id),
+  };
+
+  this.registryService.getApplication(req).then((res) => {
+    const applications = res.data.applications[0];
+
+    // Удаляем дубликаты по value_kz, value_ru и value_en
+    const uniqueParameters = applications.parameters.reduce((acc, current) => {
+      if (
+        !acc.find(
+          item =>
+            item.value_kz === current.value_kz &&
+            item.value_ru === current.value_ru &&
+            item.value_en === current.value_en
+        )
+      ) {
+        acc.push(current);
+      }
+      return acc;
+    }, []);
+
+    console.log(uniqueParameters);
+  });
+}
+
 
 
   },
@@ -201,6 +232,7 @@ export default {
   created() {
     this.getRegisterParameter()
     this.getRegistry()
+    this.getRegisterParamterApplaction()
   }
 }
 </script>
