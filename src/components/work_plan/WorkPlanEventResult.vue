@@ -49,7 +49,7 @@
           <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
             <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
-          <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
+          <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() <= 2023)">
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
               <div class="field" v-if="event && isOperPlan">
                 <label class="bold">{{ $t('common.fact') }}: </label>
