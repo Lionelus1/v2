@@ -709,16 +709,27 @@ export default {
 
     //   return secondMonthOfQuarter;
     // },
+    getFirstQuarterFirstMonth(){
+      const now = new Date();
+      return now.getMonth() === 0;
+    },
     filterQuarters() {
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentQuarter = Math.ceil(currentMonth / 3);
       const currentDay = currentDate.getDate();
+      const currentYear = currentDate.getFullYear();
+      const prevYear = currentDate.getFullYear() - 1;
+
+
       //currentDay <= 7 && (currentMonth === this.getFirstMonthOfQuarter() || currentMonth === this.getSecondMonthOfQuarter())
       if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter()) {
         // Agymdagy ai agymdagy toqsannyng birinshi aiy bolsa aldyngy toqsanga natije toltyra alady
         return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
-      } else {
+      } else if(this.getFirstQuarterFirstMonth() && currentYear === prevYear + 1 && currentDay <= 15){
+        return this.quarters.filter(quarter => quarter.value === 4);
+
+      }else {
         // Tek agymdagy toqsandy korsetu
         return this.quarters.filter(quarter => quarter.value === currentQuarter);
       }
