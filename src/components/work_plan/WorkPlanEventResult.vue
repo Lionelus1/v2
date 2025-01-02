@@ -719,11 +719,11 @@ export default {
       const currentQuarter = Math.ceil(currentMonth / 3);
       const currentDay = currentDate.getDate();
       const currentYear = currentDate.getFullYear();
-      const prevYear = currentDate.getFullYear() - 1;
+      const prevYear = currentYear - 1;
 
 
       //currentDay <= 7 && (currentMonth === this.getFirstMonthOfQuarter() || currentMonth === this.getSecondMonthOfQuarter())
-      if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter()) {
+      if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter() && !this.getFirstQuarterFirstMonth()) {
         // Agymdagy ai agymdagy toqsannyng birinshi aiy bolsa aldyngy toqsanga natije toltyra alady
         return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
       } else if(this.getFirstQuarterFirstMonth() && currentYear === prevYear + 1 && currentDay <= 15){
