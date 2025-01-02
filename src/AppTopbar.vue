@@ -132,11 +132,8 @@ export default {
       this.notificationService.viewNotifications({views: nots}).then(response => {
             if (this.newCount > 0)
               this.newCount = this.newCount - nots.length < 0 ? 0 : this.newCount - nots.length;
-            console.info("view result", response)
           }
-      ).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
-      });
+      );
     },
     loadNotifications() {
       if (this.loginedUser) {
@@ -173,9 +170,7 @@ export default {
           if (newNots.length > 0) {
             this.ViewNotification(newNots);
           }
-        }).catch(error => {
-          console.log(error)
-        })
+        });
       }
     },
     isMobile() {
@@ -224,9 +219,7 @@ export default {
         this.newCount = response.data.NewCount ? response.data.NewCount : 0;
         let recordCount = response.data.RecordCount;
         this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
-      }).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
-      })
+      });
     }
   },
   async created() {
