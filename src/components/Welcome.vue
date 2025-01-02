@@ -261,13 +261,8 @@ export default {
         });
         this.total = response.data.total;
         this.loading = false;
-      }).catch((error) => {
+      }).catch(() => {
         this.loading = false;
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
-          life: 3000,
-        });
       });
     },
     async getAllEvents(data) {
@@ -303,11 +298,6 @@ export default {
         this.loadingEvents = false;
       }).catch((error) => {
         this.loadingEvents = false;
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.loadAllEventsError") + ":\n" + error,
-          life: 3000,
-        });
       });
     },
     eventView(item) {

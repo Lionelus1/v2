@@ -107,6 +107,7 @@
 <script>
 import {getHeader, smartEnuApi} from "@/config/config";
 import api from "@/service/api";
+import {AccountService} from "./service/account.service";
 
 export default {
   props: {
@@ -124,7 +125,8 @@ export default {
       active: false,
       d_layoutColorMode: this.layoutColorMode,
       userTheme: "default-theme",
-      userFontSize: "default"
+      userFontSize: "default",
+      accountService: new AccountService()
     }
   },
   mounted() {
@@ -283,7 +285,7 @@ export default {
         this.$emit('layout-color-change', layoutModeColor);
 
       } else {
-        api.get(smartEnuApi + "/smartenu/settings/get", {headers: getHeader()}).then((res) => {
+        this.accountService.getSettings().then((res) => {
           if (res.data && res.data.enu_settings) {
             this.setTheme(res.data.enu_settings.user_theme)
             this.setFz(res.data.enu_settings.user_font_size)

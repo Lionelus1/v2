@@ -8,7 +8,7 @@
         {{ $t("common.hint") }}
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
           <div style="display: flex; align-items: center;">
-            <Checkbox v-model="showAnymore" :binary="true" style="margin-left: 10px;" />
+            <Checkbox v-model="showAnymore" :binary="true" style="margin-left: 10px;"/>
             <div style="margin-left: 10px">{{ $t("common.doNotShowAnymore") }}</div>
           </div>
           <Button class="p-button-outlined" @click="hideOverlay">OK</Button>
@@ -16,10 +16,12 @@
 
       </div>
     </div>
-    <div :class="[sidebarClass,{ 'hide_items': hasClass }]" @click="onSidebarClick" v-show="isSidebarVisible()" :style="{ width: menuWidth + 'px' }"
+    <div :class="[sidebarClass,{ 'hide_items': hasClass }]" @click="onSidebarClick" v-show="isSidebarVisible()"
+         :style="{ width: menuWidth + 'px' }"
          @mouseover="expandMenu" @mouseleave="collapseMenu">
       <div class="relative fixed_icon">
-        <div class="absolute right-0 top-0" v-if="isDesktop()" @click="toggleMenuWidth" :style="{color: fixedMenu? '#2196f3':'#ced4da'}">
+        <div class="absolute right-0 top-0" v-if="isDesktop()" @click="toggleMenuWidth"
+             :style="{color: fixedMenu? '#2196f3':'#ced4da'}">
           <i class="fa-solid fa-thumbtack"></i>
         </div>
       </div>
@@ -41,25 +43,40 @@
     <AppConfig :layoutMode="layoutMode" :layoutColorMode="layoutColorMode" @layout-change="onLayoutChange"
                @layout-color-change="onLayoutColorChange"/>
     <AppFooter/>
-    <Dialog v-model:visible="showModal" :header="$i18n.locale === 'kz' ? `Құрметті Гүлмира Тілеубердіқызы!` : $i18n.locale === 'ru' ? `Дорогая Гульмира Тылеубердиевна!` : `Құрметті Гүлмира Тілеубердіқызы!`" @hide="closeModal" modal :style="{ width: '800px' }" :breakpoints="{ '800px': '75vw', '640px': '90vw' }">
+    <Dialog v-model:visible="showModal"
+            :header="$i18n.locale === 'kz' ? `Құрметті Гүлмира Тілеубердіқызы!` : $i18n.locale === 'ru' ? `Дорогая Гульмира Тылеубердиевна!` : `Құрметті Гүлмира Тілеубердіқызы!`"
+            @hide="closeModal" modal :style="{ width: '800px' }" :breakpoints="{ '800px': '75vw', '640px': '90vw' }">
       <div v-if="$i18n.locale === 'kz' || $i18n.locale === 'en'">
         <p>Шын жүректен Сізді туған күніңізбен құттықтаймыз! 🎉</p>
-        <p>Сіз — кәсібилік пен мақсаткерлікті ғана емес, сонымен қатар әрқайсымызға деген мейірімділік пен қамқорлықты бойына жиған ерекше жансыз. Сіздің биік мақсаттарыңыз бізді шабыттандырады, ал команданы біріктіріп, әрқайсымызды жетістікке жетелейтін қасиетіңіз Сізді нағыз көшбасшы етеді.</p>
-        <p>Әрдайым қолдау көрсетіп, орынды әзілдесіп, қажет кезінде қатал бола білесіз. Сіздің күш-жігеріңізге, даналығыңызға және мансаптағы биіктерді бағындыра отырып, қамқор ана, сүйікті жар болып қалуыңызға тәнтіміз.</p>
-        <p>Әрқайсымызға назар аударып, қамқорлық танытқаныңыз үшін алғыс айтамыз. Бізді жаңа жетістіктерге шабыттандырғаныңыз үшін алғыс білдіреміз! Сізге зор денсаулық, шексіз бақыт және жаңа табыстар тілейміз. Әр күніңіз қуаныш пен шабытқа толы болсын!</p>
+        <p>Сіз — кәсібилік пен мақсаткерлікті ғана емес, сонымен қатар әрқайсымызға деген мейірімділік пен қамқорлықты
+          бойына жиған ерекше жансыз. Сіздің биік мақсаттарыңыз бізді шабыттандырады, ал команданы біріктіріп,
+          әрқайсымызды жетістікке жетелейтін қасиетіңіз Сізді нағыз көшбасшы етеді.</p>
+        <p>Әрдайым қолдау көрсетіп, орынды әзілдесіп, қажет кезінде қатал бола білесіз. Сіздің күш-жігеріңізге,
+          даналығыңызға және мансаптағы биіктерді бағындыра отырып, қамқор ана, сүйікті жар болып қалуыңызға
+          тәнтіміз.</p>
+        <p>Әрқайсымызға назар аударып, қамқорлық танытқаныңыз үшін алғыс айтамыз. Бізді жаңа жетістіктерге
+          шабыттандырғаныңыз үшін алғыс білдіреміз! Сізге зор денсаулық, шексіз бақыт және жаңа табыстар тілейміз. Әр
+          күніңіз қуаныш пен шабытқа толы болсын!</p>
         <p>Ізгі ниетпен,
           Сіздің командаңыз</p>
       </div>
       <div v-if="$i18n.locale === 'ru'">
         <p>От всей души поздравляем Вас с Днём Рождения! 🎉</p>
-        <p>Вы — удивительный человек, который сочетает в себе не только профессионализм и целеустремлённость, но и невероятную теплоту и внимание к каждому из нас. Ваши высокие цели вдохновляют, а Ваша способность объединять команду и мотивировать всех на успех делает Вас настоящим лидером.</p>
-        <p>Вы всегда находите слова поддержки, шутите в нужный момент и остаётесь строгой, когда это необходимо. Мы восхищаемся Вашей силой, мудростью и тем, как Вы, успевая достигать карьерных высот, остаётесь заботливой мамой и любящей супругой.</p>
-        <p>Спасибо Вам за Ваше внимание и заботу о каждом из нас, за то, что вдохновляете нас на новые достижения! Желаем Вам счастья, здоровья, успехов во всех начинаниях и чтобы каждый новый день был наполнен радостью и вдохновением!</p>
+        <p>Вы — удивительный человек, который сочетает в себе не только профессионализм и целеустремлённость, но и
+          невероятную теплоту и внимание к каждому из нас. Ваши высокие цели вдохновляют, а Ваша способность объединять
+          команду и мотивировать всех на успех делает Вас настоящим лидером.</p>
+        <p>Вы всегда находите слова поддержки, шутите в нужный момент и остаётесь строгой, когда это необходимо. Мы
+          восхищаемся Вашей силой, мудростью и тем, как Вы, успевая достигать карьерных высот, остаётесь заботливой
+          мамой и любящей супругой.</p>
+        <p>Спасибо Вам за Ваше внимание и заботу о каждом из нас, за то, что вдохновляете нас на новые достижения!
+          Желаем Вам счастья, здоровья, успехов во всех начинаниях и чтобы каждый новый день был наполнен радостью и
+          вдохновением!</p>
         <p>С уважением и самыми тёплыми пожеланиями, Ваша команда</p>
       </div>
       <img style="border-radius: 10px; margin-top: 20px;" width="100%" src="@/assets/layout/images/birthday.jpg" alt="">
     </Dialog>
-    <PositionChangeDialog v-if="!showModal && loginedUser && loginedUser.userID > 0" ref="positionChangeDialog"></PositionChangeDialog>
+    <PositionChangeDialog v-if="!showModal && loginedUser && loginedUser.userID > 0"
+                          ref="positionChangeDialog"></PositionChangeDialog>
   </div>
 </template>
 
@@ -68,7 +85,6 @@ import {useRoute} from "vue-router"
 
 import {MenuService} from "../service/menu.service";
 import {smartEnuApi, getHeader} from "@/config/config";
-import axios from 'axios';
 import AppTopBar from '../AppTopbar.vue';
 import AppProfile from '../AppProfile.vue';
 import AppMenu from '../AppMenu.vue';
@@ -78,6 +94,7 @@ import PositionChangeDialog from './PositionChangeDialog.vue';
 import {isNumber} from "chart.js/helpers";
 import Bold from "quill/formats/bold";
 import logger from "quill/core/logger";
+import {AccountService} from "../service/account.service";
 
 export default {
   setup() {
@@ -104,7 +121,8 @@ export default {
       showAnymore: false,
       fixedMenu: localStorage.getItem('fixedMenu') === 'true' || false,
       birthday: '1996-09-18T00:00:00Z',
-      showModal: false
+      showModal: false,
+      accountService: new AccountService()
     }
   },
 
@@ -204,20 +222,11 @@ export default {
       this.menuWidth = this.menuWidth === 85 ? 250 : 85;
       this.fixedMenu = !this.fixedMenu
       localStorage.setItem("fixedMenu", this.fixedMenu)
+      let data = {
+        fixed_menu: this.fixedMenu
+      };
 
-      axios
-          .post(smartEnuApi + "/smartenu/settings/insert", {
-                fixed_menu: this.fixedMenu,
-              },
-              {
-                headers: getHeader()
-              },).then((res) => {
-
-      }).catch((err) => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
-
+      this.accountService.saveSettings(data).catch(() => {
         this.$toast.add({
           severity: "error",
           detail: this.$t("common.message.saveError"),
@@ -286,23 +295,16 @@ export default {
       const isValueMissing = fixedMenu === null || fixedMenu === undefined || fixedMenu === 'null' || fixedMenu === 'undefined';
 
       if (isValueMissing) {
-
-        axios
-            .get(smartEnuApi + "/smartenu/settings/get", {
-              headers: getHeader()
-            })
-            .then((res) => {
-
-              if (res.data && res.data.enu_settings) {
-                localStorage.setItem("fixedMenu", res.data.enu_settings.fixed_menu);
-                this.fixedMenu = res.data.enu_settings.fixed_menu;
-              } else {
-                this.fixedMenu = false
-              }
-            })
-            .catch((_) => {
-              this.fixedMenu = false;
-            });
+        this.accountService.getSettings().then((res) => {
+          if (res.data && res.data.enu_settings) {
+            localStorage.setItem("fixedMenu", res.data.enu_settings.fixed_menu);
+            this.fixedMenu = res.data.enu_settings.fixed_menu;
+          } else {
+            this.fixedMenu = false
+          }
+        }).catch((_) => {
+          this.fixedMenu = false;
+        });
       } else {
 
         this.fixedMenu = fixedMenu === 'true';
@@ -320,20 +322,11 @@ export default {
     changeShowAnymore(value) {
       this.showAnymore = value;
     },
-    saveThemeStyles(){
-      axios
-          .post(smartEnuApi + "/smartenu/settings/insert",{
-                show_anymore: this.showAnymore,
-              },
-              {
-                headers: getHeader()
-              },).then((res) => {
-
-      }).catch((err) => {
-        if (err.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
-
+    saveThemeStyles() {
+      let data = {
+        show_anymore: this.showAnymore
+      };
+      this.accountService.saveSettings(data).catch((_) => {
         this.$toast.add({
           severity: "error",
           detail: this.$t("common.message.saveError"),
@@ -344,21 +337,12 @@ export default {
       });
     },
     getThemeStyles() {
-      axios
-          .get(smartEnuApi + "/smartenu/settings/get",
-              {
-                headers: getHeader()
-              },
-          )
-          .then((res) => {
-            if (res.data && res.data.enu_settings){
-              this.changeShowAnymore(res.data.enu_settings.show_anymore)
-              this.showOverlay = !res.data.enu_settings.show_anymore
-            }
-          })
-          .catch((err) => {
-            this.$toast.add({severity: "error", summary: this.$t('common.getDataError'), life: 3000});
-          });
+      this.accountService.getSettings().then((res) => {
+        if (res.data && res.data.enu_settings) {
+          this.changeShowAnymore(res.data.enu_settings.show_anymore)
+          this.showOverlay = !res.data.enu_settings.show_anymore
+        }
+      });
     },
     checkBirthday() {
       const today = new Date();
