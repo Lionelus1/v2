@@ -83,13 +83,15 @@
               <input type="checkbox" id="department" value="filters.department.enabled"
                      v-model="filters.department.enabled" @change="onDepartmentChange"/>
               <label for="department">{{ $t('report.department') }}</label>
-              <CustomMultiSelect
-                  v-model="filters.department.value"
-                  :options="departmentsFormatted"
-                  :disabled="!filters.department.enabled"
-                  :placeholder="$t('report.SelectDepartments')"
-                  @update:modelValue="updateSelectedTypeDeps"
-              />
+              <div class="CustomMultiSelectDepartment">
+                <CustomMultiSelect
+                    v-model="filters.department.value"
+                    :options="departmentsFormatted"
+                    :disabled="!filters.department.enabled"
+                    :placeholder="$t('report.SelectDepartments')"
+                    @update:modelValue="updateSelectedTypeDeps"
+                />
+              </div>
 
               <!--              <MultiSelect v-if="departments.length === filters.department.value.length" v-model="customDep" display="chip" :options="customDep" optionLabel="label" filter-->
 <!--                           placeholder="Выберите департаменты"-->
@@ -1053,6 +1055,11 @@ onMounted(() => {
 }
 
 .customStatusSelect {
+  margin-left: 0; /* Убираем лишний отступ */
+  flex: 1; /* Занимает оставшееся пространство */
+}
+
+.CustomMultiSelectDepartment {
   margin-left: 0; /* Убираем лишний отступ */
   flex: 1; /* Занимает оставшееся пространство */
 }

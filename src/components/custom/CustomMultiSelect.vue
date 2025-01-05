@@ -142,7 +142,7 @@ export default {
 <style scoped>
 .custom-multiselect {
   position: relative;
-  width: 300px;
+  width: 100%;
 }
 
 .multiselect-display {
