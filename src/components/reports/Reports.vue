@@ -24,6 +24,7 @@
         <div v-if="filters.typeReport2?.value === 5" class="filter-item">
           <label>{{ $t('report.TypeContract') }}</label>
           <CustomMultiSelect
+              class="CustomMultiSelectTypeContract"
               v-model="filters.reportTypes.value"
               :options="reportCategoriesFormatted"
               :placeholder="$t('report.SelectContractTypes')"
@@ -1072,6 +1073,10 @@ onMounted(() => {
 
 .dropdownFullWidth .dropdown {
   width: 100%; /* Делаем dropdown адаптивным */
+}
+
+.CustomMultiSelectTypeContract {
+  max-width: 34.3%;
 }
 
 </style>
