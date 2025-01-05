@@ -1109,7 +1109,7 @@ export default {
       let comment = "";
       comment = this.rejectComment
 
-      this.planService.verifyEventResultHistory(this.isInspected, comment, this.resultUserId, this.user_id, this.eventResultId).then(res => {
+      this.planService.verifyEventResultHistory(this.isInspected, comment, this.resultUserId, this.user_id, this.eventResultId, this.event_id).then(res => {
         if (res.data) {
           this.$toast.add({
             severity: 'success',
