@@ -291,7 +291,6 @@ const updateSelectedTypeContracts = (selectedValues) => {
   filters.value.reportTypes.value = selectedValues.map((value) => {
     return value;
   });
-  console.log("updateSelectedTypeContracts: ", filters.value.reportTypes.value)
 };
 
 const updateSelectedTypeDeps = (selectedValues) => {
@@ -299,14 +298,12 @@ const updateSelectedTypeDeps = (selectedValues) => {
     return value;
   });
 
-  console.log("ok")
 };
 
 const updateSelectedTypeStatuses = (selectedValues) => {
   filters.value.status.value = selectedValues.map((value) => {
     return value;
   });
-  console.log("updateSelectedTypeStatuses: ", filters.value.status.value)
 };
 
 const customDep = ref([{
@@ -684,7 +681,6 @@ const fetchDepartments = async () => {
 
 
 const departmentsFormatted = computed(() => {
-  console.log("departments: ", departments)
   return departments.value.map((dept) => ({
     name: dept.label, // label -> name
     value: dept.code, // code -> value
@@ -733,7 +729,6 @@ const fetchStatuses = async () => {
 };
 
 const statusesFormatted = computed(() => {
-  console.log("statuses: ", statuses)
   return statuses.value.map((status) => ({
     name: status.label,
     value: status.code,
