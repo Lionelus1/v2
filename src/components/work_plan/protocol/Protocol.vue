@@ -78,6 +78,15 @@
 
             </div>
             <div class="p-fluid mt-3">
+              <label for="protocolSecretary" class="block mb-1">{{
+                  $t('workPlan.protocol.protocolSecretary')
+                }}{{ "*" }}</label>
+              <FindUser class="mt-2" v-model="protocolSecretaryMember" :max="1" :editMode="true" :user-type="3"
+                        :disabled="isInApprove || isApproved"/>
+              <small class="p-error" v-if="validation.protocol_secretary">{{ $t("common.requiredField") }}</small>
+
+            </div>
+            <div class="p-fluid mt-3">
               <div :class="{ 'inactiveMode': isApproved }">
                 <Panel :header="$t('workPlan.protocol.absentMembers')" toggleable :collapsed="isCollapsedAbsent"
                        @toggle="onToggleAbsent">
@@ -626,6 +635,7 @@ const member = ref([]);
 const reason = ref('');
 const currentProtocolUUID = ref(null)
 const participatedBoardMembers = ref([])
+const protocolSecretaryMember = ref([])
 const absentBoardMembers = ref([])
 const invitedBoardMembers = ref([])
 const boardAgendaSpeaker = ref([])
@@ -659,6 +669,7 @@ const validation = ref({
   meeting_date: false,
   meeting_venue: false,
   participated_members: false,
+  protocol_secretary: false,
   invited_persons: false,
   vote_aye: false,
   vote_con: false,
@@ -740,6 +751,7 @@ const data = ref([{
   meeting_date: null,
   meeting_place: '',
   participated_board_members: [],
+  protocol_secretary_member: [],
   absent_members: [],
   quorum_info: selectedQuorum.value.label,
   invited_persons: [],
@@ -855,6 +867,7 @@ const validateForm = () => {
   validation.value.meeting_date = !data.value[0].meeting_date || data.value[0].meeting_date == "";
   validation.value.meeting_venue = !data.value[0].meeting_place || data.value[0].meeting_place == "";
   validation.value.participated_members = !data.value[0].participated_board_members || data.value[0].participated_board_members == "" || data.value[0].participated_board_members.length <= 0;
+  validation.value.protocol_secretary = !data.value[0].protocol_secretary_member || data.value[0].protocol_secretary_member == "" || data.value[0].protocol_secretary_member.length <= 0;
   validation.value.invited_persons = !data.value[0].invited_persons || data.value[0].invited_persons == "" || data.value[0].invited_persons.length <= 0;
   validation.value.vote_aye = data.value[0].voting_results.vote_aye === null || data.value[0].voting_results.vote_aye === undefined;
   validation.value.vote_con = data.value[0].voting_results.vote_con === null || data.value[0].voting_results.vote_con === undefined;
@@ -865,6 +878,7 @@ const validateForm = () => {
       !validation.value.meeting_date &&
       !validation.value.meeting_venue &&
       !validation.value.participated_members &&
+      !validation.value.protocol_secretary &&
       !validation.value.invited_persons &&
       !validation.value.vote_aye &&
       !validation.value.vote_con &&
@@ -1157,6 +1171,9 @@ const removeBoardAgendaSpeaker = () => removeMembers(boardAgendaSpeaker, agendaD
 const addParticipatedMembers = () => addMembers(participatedBoardMembers, data.value[0], 'participated_board_members');
 const removeParticipatedMembers = () => removeMembers(participatedBoardMembers, data.value[0], 'participated_board_members');
 
+const addSecretaryMember = () => addMembers(protocolSecretaryMember, data.value[0], 'protocol_secretary_member');
+const removeSecretaryMember = () => removeMembers(protocolSecretaryMember, data.value[0], 'protocol_secretary_member');
+
 const addInvitedMembers = () => addMembers(invitedBoardMembers, data.value[0], 'invited_persons');
 const removeInvitedMembers = () => removeMembers(invitedBoardMembers, data.value[0], 'invited_persons');
 
@@ -1185,6 +1202,7 @@ const watchItems = [
   {target: boardAgendaReporter, add: addBoardAgendaReporter, remove: removeBoardAgendaReporter},
   {target: boardAgendaSpeaker, add: addBoardAgendaSpeaker, remove: removeBoardAgendaSpeaker},
   {target: participatedBoardMembers, add: addParticipatedMembers, remove: removeParticipatedMembers},
+  {target: protocolSecretaryMember, add: addSecretaryMember, remove: removeSecretaryMember},
   {target: invitedBoardMembers, add: addInvitedMembers, remove: removeInvitedMembers},
 ];
 
@@ -1363,6 +1381,7 @@ const generatePdf = async () => {
       data.value[0].meeting_date = res.data.protocol_doc?.params[0]?.value?.meeting_date || null;
       data.value[0].extract_created_date = res.data.protocol_doc?.createDate || null;
       data.value[0].participated_board_members = res.data.protocol_doc?.params[0]?.value?.participated_board_members;
+      data.value[0].protocol_secretary_member = res.data.protocol_doc?.params[0]?.value?.protocol_secretary_member;
       data.value[0].absent_members = res.data.protocol_doc?.params[0]?.value?.absent_members || [];
       data.value[0].quorum_info = res.data.protocol_doc?.params[0]?.value?.quorum_info;
       data.value[0].protocol_issues = res?.data?.protocol_doc?.params[0]?.value?.protocol_issues || [];
@@ -1428,6 +1447,31 @@ const generatePdf = async () => {
 
               if (!exists) {
                 participatedBoardMembers.value.push(foundUser);
+              }
+            }
+          }).catch(err => {
+            showMessage('error', t(common.error), err)
+          });
+        })
+      }
+
+      if (res.data.protocol_doc?.params[0]?.value?.protocol_secretary_member) {
+        protocolSecretaryMember.value = []
+        res.data.protocol_doc?.params[0]?.value?.protocol_secretary_member.forEach(member => {
+          contragentService.getPersons({
+            "filter": {
+              "userIDs": [member.user_id],
+            }
+          }).then(res => {
+            if (res.data.foundUsers && res.data.foundUsers.length > 0) {
+              const foundUser = res.data.foundUsers[0];
+
+              const exists = protocolSecretaryMember.value.some(existingMember =>
+                  existingMember.userID === member.user_id
+              );
+
+              if (!exists) {
+                protocolSecretaryMember.value.push(foundUser);
               }
             }
           }).catch(err => {

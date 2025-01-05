@@ -1531,7 +1531,8 @@ export default {
                 eventNotFound: "Название события не найдено",
                 eventNotSelected: "Событие не выбрано"
             },
-            addQuestion: "Добавить вопрос"
+            addQuestion: "Добавить вопрос",
+            protocolSecretary: "Секретарь Правления"
         }
         
     },

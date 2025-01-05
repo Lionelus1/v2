@@ -1516,7 +1516,8 @@ export default {
                 eventNotSelected: "Event not selected"
 
             },
-            addQuestion: "Add a question"
+            addQuestion: "Add a question",
+            protocolSecretary: "Secretary of the Board"
         }
         
     },

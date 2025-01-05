@@ -235,6 +235,7 @@ const paramData = ref({
   meeting_date: null,
   meeting_place: '',
   participated_board_members: [],
+  protocol_secretary_member: [],
   absent_members: [],
   quorum_info: '',
   invited_persons: [],

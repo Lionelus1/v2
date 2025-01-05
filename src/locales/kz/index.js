@@ -1541,7 +1541,8 @@ export default {
                 eventNotSelected: "Оқиға таңдалмаған"
 
             },
-            addQuestion: "Сұрақ қосу"
+            addQuestion: "Сұрақ қосу",
+            protocolSecretary: "Басқарма хатшы"
         }
     },
     educomplex: {
