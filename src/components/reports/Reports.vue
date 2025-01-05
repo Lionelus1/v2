@@ -9,14 +9,16 @@
         <!-- Категория -->
         <div class="filter-item">
           <label>{{ $t('report.TypeReport') }}</label>
-          <Dropdown
-              v-if="true"
-              v-model="filters.typeReport2"
-              :options="typeReports"
-              optionLabel="label"
-              placeholder="Выберите категорию"
-              class="dropdown full-width"
-          />
+          <div class="dropdownFullWidth">
+            <Dropdown
+                v-if="true"
+                v-model="filters.typeReport2"
+                :options="typeReports"
+                optionLabel="label"
+                :placeholder="$t('report.SelectCategory')"
+                class="dropdown full-width"
+            />
+          </div>
         </div>
 
         <div v-if="filters.typeReport2?.value === 5" class="filter-item">
@@ -24,7 +26,7 @@
           <CustomMultiSelect
               v-model="filters.reportTypes.value"
               :options="reportCategoriesFormatted"
-              placeholder="Выберите элементы..."
+              :placeholder="$t('report.SelectContractTypes')"
               @update:modelValue="updateSelectedTypeContracts"
           />
 <!--          <MultiSelect v-model="filters.reportTypes.value" display="chip" :options="reportCategories" optionLabel="label" filter-->
@@ -38,14 +40,14 @@
           <label>{{ $t('report.period') }}</label>
           <Calendar
               v-model="filters.period_start"
-              placeholder="Дата начала"
+              :placeholder="$t('report.StartDate')"
               :showIcon="true"
               :dateFormat="'dd.mm.yy'"
               class="calendar"
           />
           <Calendar
               v-model="filters.period_end"
-              placeholder="Дата окончания"
+              :placeholder="$t('report.EndDate')"
               :showIcon="true"
               :dateFormat="'dd.mm.yy'"
               class="calendar"
@@ -72,8 +74,7 @@
         </div>
       </div>
 
-      <!-- Правая часть -->
-      <div class="filters-right">
+      <div v-if="true" class="filters-right">
         <div class="additional-filters">
           <!-- Департамент/Группа -->
           <div class="filter-item">
@@ -86,7 +87,7 @@
                   v-model="filters.department.value"
                   :options="departmentsFormatted"
                   :disabled="!filters.department.enabled"
-                  placeholder="Выберите элементы..."
+                  :placeholder="$t('report.SelectDepartments')"
                   @update:modelValue="updateSelectedTypeDeps"
               />
 
@@ -102,16 +103,18 @@
           <div class="filter-item">
             <!--            <label>{{ $t('report.status') }}</label>-->
             <div class="filter-controls">
-              <input type="checkbox" id="status" value="filters.status.enabled" v-model="filters.status.enabled"/>
+              <input type="checkbox" id="status" value="filters.status.enabled" v-model="filters.status.enabled" @change="onStatusChange"/>
               <label for="status">{{ $t('report.status') }}</label>
               <!--              <Checkbox v-model="filters.status.enabled" />-->
-              <CustomMultiSelect
-                  v-model="filters.status.value"
-                  :options="statusesFormatted"
-                  :disabled="!filters.status.enabled"
-                  placeholder="Выберите статусы"
-                  @update:modelValue="updateSelectedTypeStatuses"
-              />
+              <div class="customStatusSelect">
+                <CustomMultiSelect
+                    v-model="filters.status.value"
+                    :options="statusesFormatted"
+                    :disabled="!filters.status.enabled"
+                    :placeholder="$t('report.SelectStatuses')"
+                    @update:modelValue="updateSelectedTypeStatuses"
+                />
+              </div>
 <!--              <MultiSelect v-model="filters.status.value" display="chip" :options="statuses" optionLabel="label" filter-->
 <!--                           placeholder="Выберите статусы"-->
 <!--                           :maxSelectedLabels="3" class="w-fullStatus" :disabled="!filters.status.enabled"/>-->
@@ -127,11 +130,11 @@
               <!--            <Checkbox v-model="filters.author.enabled" />-->
               <div class="w-fullAuthor">
                 <FindUser
+                    class="findUserAuthor"
                     :placeholder="$t('common.fullName')"
                     :searchMode="searchMode"
                     v-model="filters.author.value"
                     :user-type="3"
-                    :max="4"
                     :editMode="true"
                     :disabled="!filters.author.enabled"
                     @add="addAuthor"
@@ -145,6 +148,7 @@
               <label for="signers">{{ $t('report.signers') }}</label>
               <div class="w-fullSigners">
               <FindUser
+                  class="findUserSigners"
                   :placeholder="$t('common.fullName')"
                   :searchMode="searchMode"
                   v-model="filters.signers.value"
@@ -294,8 +298,8 @@ const updateSelectedTypeDeps = (selectedValues) => {
   filters.value.department.value = selectedValues.map((value) => {
     return value;
   });
-  console.log("updateSelectedTypeDeps: ", filters.value.department.value)
 
+  console.log("ok")
 };
 
 const updateSelectedTypeStatuses = (selectedValues) => {
@@ -402,6 +406,8 @@ const onSignersChange = () => {
     filters.value.department.enabled = false;
     filters.value.author.enabled = false;
     filters.value.contragent.enabled = false;
+  } else if (!filters.value.author.enabled) {
+    filters.value.signers.value = [];
   }
 };
 
@@ -410,6 +416,8 @@ const onContragentChange = () => {
     filters.value.department.enabled = false;
     filters.value.author.enabled = false;
     filters.value.signers.enabled = false;
+  } else if (!filters.value.author.enabled) {
+    filters.value.contragent.value = [];
   }
 };
 
@@ -426,6 +434,8 @@ const onAuthorChange = () => {
   if (filters.value.author.enabled) {
     filters.value.contragent.enabled = false;
     filters.value.signers.enabled = false;
+  } else if (!filters.value.author.enabled) {
+    filters.value.author.value = [];
   }
 };
 
@@ -433,6 +443,14 @@ const onDepartmentChange = () => {
   if (filters.value.department.enabled) {
     filters.value.contragent.enabled = false;
     filters.value.signers.enabled = false;
+  } else if (!filters.value.department.enabled) {
+    filters.value.department.value = [];
+  }
+};
+
+const onStatusChange = () => {
+   if (!filters.value.status.enabled) {
+    filters.value.status.value = [];
   }
 };
 
@@ -905,6 +923,11 @@ onMounted(() => {
   gap: 10px;
 }
 
+.filter-controls label {
+  min-width: 100px; /* Фиксированная ширина для всех меток */
+  text-align: left; /* Текст всегда выравнивается влево */
+}
+
 .filter-item label {
   font-size: 14px;
   font-weight: bold;
@@ -1006,8 +1029,34 @@ onMounted(() => {
 }
 
 .w-fullAuthor {
-  margin-left: 5.5% !important;
-  width: 30%;
+  margin-left: 0; /* Убираем лишний отступ */
+  flex: 1; /* Занимает оставшееся пространство */
+  width: 35.5%;
+}
+
+.w-fullSigners {
+  margin-left: 0; /* Убираем лишний отступ */
+  flex: 1; /* Занимает оставшееся пространство */
+}
+
+.w-fullContragent {
+  margin-left: 0; /* Убираем лишний отступ */
+  flex: 1; /* Занимает оставшееся пространство */
+}
+
+.customStatusSelect {
+  margin-left: 0; /* Убираем лишний отступ */
+  flex: 1; /* Занимает оставшееся пространство */
+}
+
+.dropdownFullWidth {
+  width: 300px; /* Устанавливаем фиксированную ширину */
+  max-width: 100%; /* Для адаптивности */
+  display: inline-block; /* Гарантирует, что div не изменяет свои размеры */
+}
+
+.dropdownFullWidth .dropdown {
+  width: 100%; /* Делаем dropdown адаптивным */
 }
 
 </style>

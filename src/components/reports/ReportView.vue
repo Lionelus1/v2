@@ -385,7 +385,7 @@ tr:hover {
 
 .table-scrollable {
   display: block;
-  max-height: 400px; /* Задайте подходящую высоту */
+  max-height: 800px; /* Задайте подходящую высоту */
   overflow: scroll;
   overflow-y: auto; /* Включает вертикальный скроллинг */
   border: 1px solid #ddd; /* Рамка вокруг области таблицы */

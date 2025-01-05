@@ -1498,7 +1498,13 @@ export default {
         yes: "Иә",
         UnsavedChanges: "Сақталмаған өзгерістер",
         StayOnThePage: "Бетте қалу",
-        LeaveWithoutSaving: "Сақтамай шығу ?"
+        LeaveWithoutSaving: "Сақтамай шығу ?",
+        SelectCategory: "Категорияны таңдаңыз",
+        SelectContractTypes: "Келісім-шарттардың түрін таңдаңыз",
+        StartDate: "Басталу күні",
+        EndDate: "Аяқталу күні",
+        SelectDepartments: "Департаменттерді таңдаңыз",
+        SelectStatuses: "Статустарды таңдаңыз",
     },
     workPlan: {
         plans: "Жоспарлар",

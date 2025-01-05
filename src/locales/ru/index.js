@@ -1485,7 +1485,13 @@ export default {
         yes: "Да",
         UnsavedChanges: "Несохраненные изменения",
         StayOnThePage: "Остаться на странице",
-        LeaveWithoutSaving: "Выйти без сохранения ?"
+        LeaveWithoutSaving: "Выйти без сохранения ?",
+        SelectCategory: "Выберите категорию",
+        SelectContractTypes: "Выберите тип договоров",
+        StartDate: "Дата начала",
+        EndDate: "Дата окончания",
+        SelectDepartments: "Выберите департаменты",
+        SelectStatuses: "Выберите статусы\n",
     },
     workPlan: {
         plans: "Планы",

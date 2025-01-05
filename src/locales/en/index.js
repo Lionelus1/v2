@@ -1480,7 +1480,13 @@ export default {
         yes: "Yes",
         UnsavedChanges: "Unsaved changes",
         StayOnThePage: "Stay on the page",
-        LeaveWithoutSaving: "Leave without saving ?"
+        LeaveWithoutSaving: "Leave without saving ?",
+        SelectCategory: "Select Category",
+        SelectContractTypes: "Select Contract Types",
+        StartDate: "Start Date",
+        EndDate: "End Date",
+        SelectDepartments: "Select Departments",
+        SelectStatuses: "Select Statuses",
     },
     workPlan: {
         plans: "Plans",

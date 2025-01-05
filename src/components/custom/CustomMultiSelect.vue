@@ -4,7 +4,7 @@
       <div class="chips-container">
         <span v-for="(label, index) in displayedLabels" :key="index" class="chip">
           {{ label }}
-          <span class="chip-clear" @click.stop="removeSelection(index)">X</span>
+          <span v-if="label != 'Все'" class="chip-clear" @click.stop="removeSelection(index)">X</span>
         </span>
 
         <span v-if="!modelValue.length" class="placeholder">{{ placeholder }}</span>
@@ -73,11 +73,10 @@ export default {
       if (this.isAllSelected) {
         return ["Все"];
       }
-      return this.modelValue
-          .map((value) => {
-            const option = this.options.find((opt) => opt.value === value);
-            return option ? option.name : "";
-          });
+      return this.modelValue.map((value) => {
+        const option = this.options.find((opt) => opt.value === value);
+        return option ? option.name : "";
+      });
     },
     filteredOptions() {
       if (!this.searchTerm) {
@@ -92,6 +91,15 @@ export default {
     toggleDropdown() {
       if (this.disabled) return;
       this.dropdownOpen = !this.dropdownOpen;
+    },
+    closeDropdown() {
+      this.dropdownOpen = false;
+    },
+    handleOutsideClick(event) {
+      // Проверяем, произошел ли клик вне компонента
+      if (!this.$el.contains(event.target)) {
+        this.closeDropdown();
+      }
     },
     toggleAll() {
       if (this.disabled) return;
@@ -121,8 +129,15 @@ export default {
       this.$emit("update:modelValue", newValue);
     },
   },
+  mounted() {
+    document.addEventListener("click", this.handleOutsideClick);
+  },
+  beforeUnmount() {
+    document.removeEventListener("click", this.handleOutsideClick);
+  },
 };
 </script>
+
 
 <style scoped>
 .custom-multiselect {
