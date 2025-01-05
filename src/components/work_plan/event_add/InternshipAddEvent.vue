@@ -27,7 +27,7 @@
   </div>
   <div class="field">
     <label>{{ $t('workPlan.approvalUsers') }}</label>
-    <FindUser v-model="resp_person" :editMode="true" :user-type="3"></FindUser>
+    <FindUser v-model="resp_person" :editMode="true" :user-type="3" :max="1"></FindUser>
     <small class="p-error" v-if="formValid?.users">{{
         $t('workPlan.errors.approvalUserError')
       }}</small>

@@ -1,11 +1,12 @@
 <template>
   <div class="col-12" v-if="plan">
-    <TitleBlock v-if="plan" :title="plan.work_plan_name" :show-back-button="true" />
+    <TitleBlock v-if="plan" :title="plan.work_plan_name" :show-back-button="true"/>
     <div class="card" v-if="showCreateReportButton">
       <WorkPlanReportModal :plan-id="this.work_plan_id" :plan="plan"></WorkPlanReportModal>
     </div>
     <div class="card">
-      <DataTable :lazy="true" :loading="loading" :value="data" :rows="10" dataKey="id" :rowHover="true" responsiveLayout="scroll">
+      <DataTable :lazy="true" :loading="loading" :value="data" :rows="10" dataKey="id" :rowHover="true"
+                 responsiveLayout="scroll">
         <template #header>
           <div class="flex justify-content-between align-items-center">
             <h5 class="m-0">{{ $t('workPlan.reports') }}</h5>
@@ -17,7 +18,12 @@
             <a href="javascript:void(0)" @click="navigate(data)">{{ data.report_name }}</a>
           </template>
         </Column>
-        <Column field="department" :header="$t('common.department')">
+        <Column v-if="isInternshipPlan" :header="$t('dissertation.disstitle')">
+          <template #body="{ data }">
+            {{data.disstitle}}
+          </template>
+        </Column>
+        <Column v-if="!isInternshipPlan" field="department" :header="$t('common.department')">
           <template #body="{ data }">
             <span v-if="data.department"> {{
                 $i18n.locale === "kz" ? data.department.nameKz : $i18n.locale === "ru" ? data.department.nameRu : data.department.nameEn
@@ -26,22 +32,23 @@
         </Column>
         <Column field="status" :header="$t('common.status')">
           <template #body="slotProps">
-            <span v-if="slotProps.data.doc_info && slotProps.data.doc_info.docHistory" :class="'customer-badge status-' + slotProps.data.doc_info.docHistory.stateEn">
+            <span v-if="slotProps.data.doc_info && slotProps.data.doc_info.docHistory"
+                  :class="'customer-badge status-' + slotProps.data.doc_info.docHistory.stateEn">
               {{ $t('common.states.' + slotProps.data.doc_info?.docHistory.stateEn) }}
             </span>
           </template>
         </Column>
-        <Column :header="$t('common.type')">
+        <Column v-if="!isInternshipPlan" :header="$t('common.type')">
           <template #body="{ data }">
             {{ initReportType(data.report_type, data.halfYearType) }}
           </template>
         </Column>
-        <Column :header="$t('workPlan.quarter')">
+        <Column :header="isInternshipPlan ? $t('workPlan.protocolNumber') : $t('workPlan.quarter')">
           <template #body="{ data }">
-            {{ initQuarter(data.quarter) }}
+            {{ isInternshipPlan ? data.quarter : initQuarter(data.quarter) }}
           </template>
         </Column>
-        <Column :header="$t('common.comment')">
+        <Column v-if="!isInternshipPlan" :header="$t('common.comment')">
           <template #body="{ data }">
             <p v-if="data.reject_history"> {{ data.reject_history.message }} </p>
           </template>
@@ -51,9 +58,17 @@
             <p v-if="data.created_date"> {{ formatDateMoment(data.created_date) }} </p>
           </template>
         </Column>
+        <Column v-if="isInternshipPlan" :header="$t('workPlan.protocolApprovedDate')">
+          <template #body="{ data }">
+            <p v-if="data.approved_date">
+              {{ formatDateMoment(data.approved_date) }}
+            </p>
+          </template>
+        </Column>
         <Column>
           <template #body="{ data }">
-            <Button type="button" v-if="data.creator_id === loginedUserId && (data.doc_info && data.doc_info.docHistory.stateId === 1)"
+            <Button type="button"
+                    v-if="data.creator_id === loginedUserId && (data.doc_info && data.doc_info.docHistory.stateId === 1)"
                     icon="pi pi-trash" class="p-button-danger mr-2"
                     label="" @click="deleteConfirm(data)"></Button>
           </template>
@@ -88,6 +103,9 @@ export default {
   computed: {
     isSciencePlan() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
+    },
+    isInternshipPlan() {
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Internship;
     },
     showCreateReportButton() {
       return this.plan && (this.isPlanCreator || this.getResponsiveUser());
@@ -204,8 +222,8 @@ export default {
       }
       return result;
     },
-    getResponsiveUser(){
-      return this.plan.responsive_users.some(user => user.id === this.loginedUser.userID)
+    getResponsiveUser() {
+      return this.plan?.responsive_users?.some(user => user.id === this.loginedUser.userID)
     },
     initQuarter(quarter) {
       let res = '';

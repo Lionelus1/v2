@@ -6,7 +6,7 @@
       <label>{{ $t('workPlan.reportName') }}</label>
       <InputText v-model="report_name" />
     </div>
-    <div class="field">
+    <div class="field" v-if="!isInternshipPlan">
       <label>{{ $t('common.type') }}</label>
       <Dropdown v-model="type" :options="reportTypes" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" @select="selectReportType" />
     </div>
@@ -22,6 +22,22 @@
       <label>{{ $t('common.department') }}</label>
       <Dropdown v-model="selectedDepartment" :options="departments" optionLabel="department_name" optionValue="department_id" :filter="true" :show-clear="true"
         :placeholder="$t('common.select')" />
+    </div>
+    <div v-if="isInternshipPlan">
+      <div class="field">
+        <label>{{ $t('dissertation.disstitle') }}</label>
+        <InputText v-model="disstitle"/>
+      </div>
+      <div class="field">
+        <label>{{ $t('workPlan.numberAndApprovedDate') }}</label>
+        <div class="flex align-items-center">
+          <span class="mr-1" style="font-size: 16px">&#x2116;</span>
+          <InputNumber v-model="protocolNumber" class="mr-2 col-3"/>
+          <PrimeCalendar class="" :manualInput="true" v-model="protocolApprovedDate" dateFormat="dd.mm.yy"
+                         showIcon iconDisplay="input">
+          </PrimeCalendar>
+        </div>
+      </div>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeModal" />
@@ -99,7 +115,10 @@ export default {
       isAdmin: false,
       planService: new WorkPlanService(),
       Enum: Enum,
-      departmentId:null
+      departmentId:null,
+      disstitle: null,
+      protocolNumber: null,
+      protocolApprovedDate: null,
     }
   },
   mounted() {
@@ -116,6 +135,9 @@ export default {
   computed: {
     isOperPlan() {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
+    },
+    isInternshipPlan() {
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Internship;
     },
     showCreateReportButton() {
       return (this.plan && this.plan.user.id === this.loginedUser.userID) || this.getResposiveUser;
@@ -191,6 +213,12 @@ export default {
         halfYearType: this.type === 3 ? this.selectedHalfYear : null,
         department_id: this.departmentId,
       };
+      if (this.plan.plan_type.code === Enum.WorkPlanTypes.Internship) {
+        data.quarter = this.protocolNumber;
+        data.approved_date = this.protocolApprovedDate
+        data.diss_title = this.disstitle
+        data.creator_id = this.loginedUser.userID;
+      }
       this.planService.createWorkPlanReport(data).then(res => {
         this.emitter.emit("isReportCreated", true);
         this.closeModal();

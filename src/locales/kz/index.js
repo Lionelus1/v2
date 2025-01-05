@@ -1546,6 +1546,9 @@ export default {
         feedbackFromDoctorsStudent: "Ғылыми тағылымдамадан өтудің тиімділігі мен тиімділігі туралы докторанттың кері байланысы",
         researchWork: "Зерттеу жұмысы",
         contentsOfPlannedWork: "Ғылыми тағылымдама аясындағы жоспарлы жұмыстардың мазмұны",
+        numberAndApprovedDate: "Хаттаманың нөмірі мен бекітілген күні",
+        protocolNumber: "Протокол нөмірі",
+        protocolApprovedDate: "Протоколдың бекітілген күні",
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",

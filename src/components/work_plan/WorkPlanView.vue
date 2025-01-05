@@ -398,5 +398,10 @@ export default {
     background: #FEEDAF;
     color: #8A5340;
   }
+
+  &.status-1 {
+    background: #B3E5FC;
+    color: #23547B;
+  }
 }
 </style>

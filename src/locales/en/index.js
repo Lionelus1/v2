@@ -1528,6 +1528,9 @@ export default {
         feedbackFromDoctorsStudent: "Feedback from a doctoral student on the effectiveness and efficiency of a research internship",
         researchWork: "Research work",
         contentsOfPlannedWork: "Contents of the planned work within the framework of the scientific internship",
+        numberAndApprovedDate: "Number and Date of Approval of the Protocol",
+        protocolNumber: "Protocol number",
+        protocolApprovedDate: "Date of approval of the protocol"
     },
     queue: {
         title: "Queue",

@@ -1539,6 +1539,9 @@ export default {
         feedbackFromDoctorsStudent: "Отзыв докторанта о результативности и эффективности научной стажировки",
         researchWork: "Научно-исследовательская работа",
         contentsOfPlannedWork: "Содержание планируемых работ в рамках научной стажировки",
+        numberAndApprovedDate: "Номер и Дата утверждения протокола",
+        protocolNumber: "Номер протокола",
+        protocolApprovedDate: "Дата утверждения протокола",
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

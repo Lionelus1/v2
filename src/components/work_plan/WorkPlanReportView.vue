@@ -122,7 +122,7 @@ export default {
   },
   computed: {
     visibleSendToApprove() {
-      return ((this.loginedUser && this.respUsers.some(user => user.id === this.loginedUser.userID)) || this.isPlanCreator) && (this.report && this.report.doc_info && (this.report.doc_info.docHistory.stateId === 1 || this.report.doc_info.docHistory.stateId === 4));
+      return ((this.loginedUser && this.respUsers?.some(user => user.id === this.loginedUser.userID)) || this.isPlanCreator) && (this.report && this.report.doc_info && (this.report.doc_info.docHistory.stateId === 1 || this.report.doc_info.docHistory.stateId === 4));
     },
   },
   created() {
