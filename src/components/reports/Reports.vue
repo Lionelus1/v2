@@ -21,9 +21,15 @@
 
         <div v-if="filters.typeReport2?.value === 5" class="filter-item">
           <label>{{ $t('report.TypeContract') }}</label>
-          <MultiSelect v-model="filters.reportTypes.value" :options="reportCategories" optionLabel="label" filter
-                       placeholder="Выберите тип договоров"
-                       :maxSelectedLabels="3" class="" style="width: 538px;"   :selectedItemsTemplate="customSelectedTemplate"/>
+          <CustomMultiSelect
+              v-model="filters.reportTypes.value"
+              :options="reportCategoriesFormatted"
+              placeholder="Выберите элементы..."
+              @update:modelValue="updateSelectedTypeContracts"
+          />
+<!--          <MultiSelect v-model="filters.reportTypes.value" display="chip" :options="reportCategories" optionLabel="label" filter-->
+<!--                       placeholder="Выберите тип договоров"-->
+<!--                       :maxSelectedLabels="3" class="" style="width: 538px;"   :selectedItemsTemplate="customSelectedTemplate"/>-->
         </div>
 
 
@@ -76,9 +82,20 @@
               <input type="checkbox" id="department" value="filters.department.enabled"
                      v-model="filters.department.enabled" @change="onDepartmentChange"/>
               <label for="department">{{ $t('report.department') }}</label>
-              <MultiSelect v-model="filters.department.value" :options="departments" optionLabel="label" filter
-                           placeholder="Выберите департаменты"
-                           :maxSelectedLabels="3" class="w-full md:w-80" :disabled="!filters.department.enabled"/>
+              <CustomMultiSelect
+                  v-model="filters.department.value"
+                  :options="departmentsFormatted"
+                  :disabled="!filters.department.enabled"
+                  placeholder="Выберите элементы..."
+                  @update:modelValue="updateSelectedTypeDeps"
+              />
+
+              <!--              <MultiSelect v-if="departments.length === filters.department.value.length" v-model="customDep" display="chip" :options="customDep" optionLabel="label" filter-->
+<!--                           placeholder="Выберите департаменты"-->
+<!--                           :maxSelectedLabels="3" class="w-fullDepartment" :disabled="!filters.department.enabled"/>-->
+<!--              <MultiSelect v-model="filters.department.value" display="chip" :options="departments" optionLabel="label" filter-->
+<!--                           placeholder="Выберит департаменты"-->
+<!--                           :maxSelectedLabels="maxSelectedMax" class="w-fullDepartment" @change="changeDep" :disabled="!filters.department.enabled"/>-->
             </div>
           </div>
 
@@ -88,9 +105,16 @@
               <input type="checkbox" id="status" value="filters.status.enabled" v-model="filters.status.enabled"/>
               <label for="status">{{ $t('report.status') }}</label>
               <!--              <Checkbox v-model="filters.status.enabled" />-->
-              <MultiSelect v-model="filters.status.value" :options="statuses" optionLabel="label" filter
-                           placeholder="Выберите статусы"
-                           :maxSelectedLabels="3" class="w-full md:w-80" :disabled="!filters.status.enabled"/>
+              <CustomMultiSelect
+                  v-model="filters.status.value"
+                  :options="statusesFormatted"
+                  :disabled="!filters.status.enabled"
+                  placeholder="Выберите статусы"
+                  @update:modelValue="updateSelectedTypeStatuses"
+              />
+<!--              <MultiSelect v-model="filters.status.value" display="chip" :options="statuses" optionLabel="label" filter-->
+<!--                           placeholder="Выберите статусы"-->
+<!--                           :maxSelectedLabels="3" class="w-fullStatus" :disabled="!filters.status.enabled"/>-->
             </div>
           </div>
 
@@ -101,22 +125,25 @@
               <label for="author">{{ $t('report.author') }}</label>
               <!--            <label>{{ $t('report.author') }}</label>-->
               <!--            <Checkbox v-model="filters.author.enabled" />-->
-              <FindUser
-                  :placeholder="$t('common.fullName')"
-                  :searchMode="searchMode"
-                  v-model="filters.author.value"
-                  :user-type="3"
-                  :max="4"
-                  :editMode="true"
-                  :disabled="!filters.author.enabled"
-                  @add="addAuthor"
-              />
+              <div class="w-fullAuthor">
+                <FindUser
+                    :placeholder="$t('common.fullName')"
+                    :searchMode="searchMode"
+                    v-model="filters.author.value"
+                    :user-type="3"
+                    :max="4"
+                    :editMode="true"
+                    :disabled="!filters.author.enabled"
+                    @add="addAuthor"
+                />
+              </div>
             </div>
           </div>
           <div class="filter-item">
             <div class="filter-controls">
               <input type="checkbox" id="signers" value="filters.signers.enabled" v-model="filters.signers.enabled"  @change="onSignersChange"/>
               <label for="signers">{{ $t('report.signers') }}</label>
+              <div class="w-fullSigners">
               <FindUser
                   :placeholder="$t('common.fullName')"
                   :searchMode="searchMode"
@@ -127,6 +154,7 @@
                   :disabled="!filters.signers.enabled"
                   @add="addSigners"
               />
+              </div>
             </div>
           </div>
           <div class="filter-item">
@@ -134,6 +162,7 @@
               <input type="checkbox" id="contragent" value="filters.contragent.enabled"
                      v-model="filters.contragent.enabled" @change="onContragentChange"/>
               <label for="contragent">{{ $t('report.contragents') }}</label>
+              <div class="w-fullContragent">
               <FindUser
                   :placeholder="$t('common.fullName')"
                   :searchMode="searchModeAll"
@@ -141,9 +170,10 @@
                   :user-type="3"
                   :max="4"
                   :editMode="true"
-                  :disabled="!filters.contragent.value"
+                  :disabled="!filters.contragent.enabled"
                   @add="addContragents"
               />
+              </div>
 <!--              <MultiSelect v-model="filters.contragent.value" :options="contragents" optionLabel="label" filter-->
 <!--                           placeholder="Выберите контрагенты"-->
 <!--                           :maxSelectedLabels="3" class="w-full md:w-80" :disabled="!filters.contragent.enabled" @scroll="onScroll"/>-->
@@ -201,7 +231,7 @@
 
 <script setup>
 import {useRouter} from "vue-router";
-import {ref, onMounted, computed} from 'vue';
+import {ref, onMounted, computed, watch} from 'vue';
 import {useToast} from 'primevue/usetoast';
 import {useI18n} from 'vue-i18n';
 import Dropdown from 'primevue/dropdown';
@@ -218,6 +248,7 @@ import ActionButton from "@/components/ActionButton.vue";
 import {ContragentService} from "@/service/contragent.service";
 import {getHeader, smartEnuApi} from "@/config/config";
 import {useConfirm} from "primevue/useconfirm";
+import CustomMultiSelect from "@/components/custom/CustomMultiSelect.vue";
 
 
 const toast = useToast();
@@ -233,7 +264,52 @@ const departments = ref([]);
 const statuses = ref([]);
 const organizations = ref([]);
 const contragents = ref([]);
+const maxSelectedMax = ref(3)
 
+const reportCategoriesFormatted = computed(() => {
+  return reportCategories.value.map((rc) => ({
+    name: rc.label, // label -> name
+    value: rc.code, // code -> value
+  }));
+});
+
+
+const selectedItems = ref([]);
+const items = ref([
+  { name: 'Опция 1', value: '1' },
+  { name: 'Опция 2', value: '2' },
+  { name: 'Опция 3', value: '3' },
+]);
+
+const selectedCodes = ref([]);
+
+const updateSelectedTypeContracts = (selectedValues) => {
+  filters.value.reportTypes.value = selectedValues.map((value) => {
+    return value;
+  });
+  console.log("updateSelectedTypeContracts: ", filters.value.reportTypes.value)
+};
+
+const updateSelectedTypeDeps = (selectedValues) => {
+  filters.value.department.value = selectedValues.map((value) => {
+    return value;
+  });
+  console.log("updateSelectedTypeDeps: ", filters.value.department.value)
+
+};
+
+const updateSelectedTypeStatuses = (selectedValues) => {
+  filters.value.status.value = selectedValues.map((value) => {
+    return value;
+  });
+  console.log("updateSelectedTypeStatuses: ", filters.value.status.value)
+};
+
+const customDep = ref([{
+  label:"all",
+  // name_en:"all",
+  // name_ru:"all",
+}])
 const searchMode = {
   type: String,
   default: 'ldap'
@@ -316,7 +392,7 @@ const categories = ListCategories.map((cat) => {
 
   return {
     label,
-    value: cat.id,
+    code: cat.id,
     id: cat.id,
   };
 });
@@ -398,6 +474,7 @@ const actions = computed(() => {
     },
   ]
 })
+
 
 const showReport = (doc) => {
 
@@ -575,20 +652,28 @@ const fetchDepartments = async () => {
     }
     const response = await userService.departments(filters);
     if (response.data.departments.length) {
-      departments.value.push(
-          ...response.data.departments.map((dept) => ({
-            label: locale.value === "kz" ? dept.nameKz : locale.value === "ru"
-                ? dept.nameRu : dept.nameEn,
-            value: dept.id,
-          }))
-      );
-      page.value += 1;
+      departments.value = response.data.departments.map((dept) => ({
+        label: locale.value === "kz" ? dept.nameKz : locale.value === "ru" ? dept.nameRu : dept.nameEn,
+        code: dept.id,
+      }));
     }
 
   } catch (error) {
     toast.add({severity: 'error', detail: t('reports.errorFetchingDepartments'), life: 3000});
   }
 };
+
+
+
+const departmentsFormatted = computed(() => {
+  console.log("departments: ", departments)
+  return departments.value.map((dept) => ({
+    name: dept.label, // label -> name
+    value: dept.code, // code -> value
+  }));
+});
+
+
 
 const fetchOrganizations = async () => {
   try {
@@ -622,12 +707,20 @@ const fetchStatuses = async () => {
     statuses.value = response.data.map((status) => ({
       label: locale.value === "kz" ? status.nameKz : locale.value === "ru"
           ? status.nameRu : status.nameEn,
-      value: status.code,
+      code: status.code,
     }));
   } catch (error) {
     toast.add({severity: 'error', detail: t('report.errorFetchingStatuses3'), life: 3000});
   }
 };
+
+const statusesFormatted = computed(() => {
+  console.log("statuses: ", statuses)
+  return statuses.value.map((status) => ({
+    name: status.label,
+    value: status.code,
+  }));
+});
 
 const validateReportFields = (filters) => {
   // const { document_type, reportTypes, lang, author, department, status, signers, contragent } = filters.value;
@@ -681,8 +774,8 @@ const generateReport = async () => {
       authors: filters.value.author.value.map(author => author.userID),
       // authors: [180433, 180434, 156581, 142675],
       // authors: [],
-      departments: filters.value.department.value.map(department => department.value),
-      statuses: filters.value.status.value.map(status => status.value),
+      departments: filters.value.department.value,
+      statuses: filters.value.status.value,
       period_start: filters.value.period_start,
       period_end: filters.value.period_end,
       lang: filters.value.lang,
@@ -702,7 +795,7 @@ const generateReport = async () => {
       // period_end: '2024-11-27T20:00:00.000Z',
       // lang: 'kz',
       document_type: filters.value.typeReport2?.value,
-      report_types: filters.value.reportTypes.value.map(reportType => reportType.id),
+      report_types: filters.value.reportTypes.value,
       // report_type: filters.value.category.value.value,
       file_path: '',
     },
@@ -902,6 +995,19 @@ onMounted(() => {
 
 .text-contr {
   margin-left: 1.5%;
+}
+.w-fullStatus {
+  margin-left: 5%;
+  width: 30%;
+}
+
+.w-fullDepartment {
+  width: 60%;
+}
+
+.w-fullAuthor {
+  margin-left: 5.5% !important;
+  width: 30%;
 }
 
 </style>
