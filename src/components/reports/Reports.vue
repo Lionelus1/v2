@@ -477,7 +477,7 @@ const actions = computed(() => {
       label: t('common.delete'),
       icon: "fa-solid fa-trash-can",
       command: () => {
-        deleteReport(actionsNode.value.id)
+        deleteReportBefore(actionsNode.value.id)
       },
     },
     {
@@ -560,7 +560,20 @@ function showMessage(msgtype, message, content) {
     life: 3000
   });
 }
+const confirm = useConfirm();
 
+const deleteReportBefore = (reportID) => {
+  confirm.require({
+    message: t('common.doYouWantDelete'),
+    header: t('common.delete'),
+    icon: 'pi pi-info-circle',
+    acceptClass: 'p-button-rounded p-button-success',
+    rejectClass: 'p-button-rounded p-button-danger',
+    accept: () => {
+      deleteReport(reportID)
+    },
+  });
+}
 const deleteReport = (reportID) => {
   const response = reportService.deleteReport({id: reportID})
   if (response) {
