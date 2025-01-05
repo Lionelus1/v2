@@ -26,11 +26,13 @@
         <vue-element-loading :active="contrConcLoading" color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
         <span :class="'ml-3'">
           <br/>
+
           {{ report?.doc_info.owner.fullName }}
           <br/>
           {{ report?.doc_info.owner.mainPosition.name}}
           <br/>
           {{ report?.doc_info.owner.mainPosition.department.name }} {{ report?.doc_info.owner.mainPosition.department.cafedra.name}}
+
         </span>
         <div style="height: 10px;"/>
         <div class="field">
