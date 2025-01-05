@@ -1,40 +1,42 @@
 <template>
-  <div class="field">
-    <label style="text-transform: capitalize">{{ $t('workPlan.week') }}</label>
-    <InputNumber v-model="quarter"/>
-  </div>
-  <div class="field">
-    <label>{{ $t('common.startDate') }}</label>
-    <PrimeCalendar
-        v-model="start_date"
-        dateFormat="dd.mm.yy"
-        showIcon
-        :showButtonBar="true"
-    ></PrimeCalendar>
-  </div>
-  <div class="field">
-    <label>{{ $t('common.endDate') }}</label>
-    <PrimeCalendar
-        v-model="end_date"
-        dateFormat="dd.mm.yy"
-        showIcon
-        :showButtonBar="true"
-    ></PrimeCalendar>
-  </div>
-  <div class="field">
-    <label>{{ $t('workPlan.contentsOfPlannedWork') }}</label>
-    <Textarea v-model="event_name" rows="3" style="resize: vertical"/>
-  </div>
-  <div class="field">
-    <label>{{ $t('workPlan.approvalUsers') }}</label>
-    <FindUser v-model="resp_person" :editMode="true" :user-type="3"></FindUser>
-    <small class="p-error" v-if="formValid?.users">{{
-        $t('workPlan.errors.approvalUserError')
-      }}</small>
-  </div>
-  <div class="field">
-    <label>{{ $t('web.note') }}</label>
-    <Textarea v-model="result" rows="3" style="resize: vertical"/>
+  <div class="p-fluid">
+    <div class="field">
+      <label style="text-transform: capitalize">{{ $t('workPlan.week') }}</label>
+      <InputNumber v-model="quarter"/>
+    </div>
+    <div class="field">
+      <label>{{ $t('common.startDate') }}</label>
+      <PrimeCalendar
+          v-model="start_date"
+          dateFormat="dd.mm.yy"
+          showIcon
+          :showButtonBar="true"
+      ></PrimeCalendar>
+    </div>
+    <div class="field">
+      <label>{{ $t('common.endDate') }}</label>
+      <PrimeCalendar
+          v-model="end_date"
+          dateFormat="dd.mm.yy"
+          showIcon
+          :showButtonBar="true"
+      ></PrimeCalendar>
+    </div>
+    <div class="field">
+      <label>{{ $t('workPlan.contentsOfPlannedWork') }}</label>
+      <Textarea v-model="event_name" rows="3" style="resize: vertical"/>
+    </div>
+    <div class="field">
+      <label>{{ $t('workPlan.approvalUsers') }}</label>
+      <FindUser v-model="resp_person" :editMode="true" :user-type="3"></FindUser>
+      <small class="p-error" v-if="formValid?.users">{{
+          $t('workPlan.errors.approvalUserError')
+        }}</small>
+    </div>
+    <div class="field">
+      <label>{{ $t('web.note') }}</label>
+      <Textarea v-model="result" rows="3" style="resize: vertical"/>
+    </div>
   </div>
 </template>
 
