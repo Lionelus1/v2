@@ -17,6 +17,7 @@
 
 <script setup>
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
+import {watch} from "vue";
 
 const props = defineProps(['params'])
 
@@ -27,4 +28,24 @@ const uploadFile = (event, name) => {
     }
   })
 }
+
+watch(() => props.params, () => {
+  let startDate, endDate;
+  props.params.forEach((param) => {
+    if (param.name === "start_date") {
+      startDate = param.value
+    }
+    if (param.name === "end_date") {
+      endDate = param.value
+    }
+    if (param.name === "number_of_days") {
+      if (startDate === null || endDate === null) {
+        param.value = null
+      } else {
+        param.value = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24))
+      }
+    }
+  })
+}, {deep: true})
+
 </script>

@@ -1,7 +1,10 @@
 <template>
-  <div class="toolbar_menu card mb-3" ref="containerRef" :class="{ 'scrollable':!search || !filter,'toolbar_border': border }">
-    <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-left']" icon="pi pi-angle-left" @click="scrollLeft"/>
-    <div :class="['justify-content-between', {'flex': search || filter},{'inline-flex': isScrollable && (!search || !filter)}]">
+  <div class="toolbar_menu card mb-3" ref="containerRef"
+       :class="{ 'scrollable':!search || !filter,'toolbar_border': border }">
+    <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-left']" icon="pi pi-angle-left"
+            @click="scrollLeft"/>
+    <div
+        :class="['justify-content-between', {'flex': search || filter},{'inline-flex': isScrollable && (!search || !filter)}]">
       <div class="toolbar_bars" v-if="(search || filter)">
         <Button
             class="p-button-text p-button-secondary"
@@ -20,7 +23,8 @@
                 {'button_blue': i.color === 'blue'},
                 {'button_purple': i.color === 'purple'},
                 {'button_yellow': i.color === 'yellow'},
-                {'button_red': i.color === 'red'}
+                {'button_red': i.color === 'red'},
+                {'button_grey': i.color === 'grey' }
                 ]"
               :icon="i.icon"
               :label="label(i.label)"
@@ -74,7 +78,8 @@
         </template>
       </div>
     </div>
-    <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-right']" icon="pi pi-angle-right" @click="scrollRight"/>
+    <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-right']" icon="pi pi-angle-right"
+            @click="scrollRight"/>
   </div>
 </template>
 
@@ -253,6 +258,15 @@ onBeforeUnmount(() => {
 
 .button_red:hover {
   background: rgba(255, 0, 0, 0.30) !important;
+}
+
+.button_grey {
+  color: #000000 !important;
+  background: rgba(79, 83, 87, 0.15);
+}
+
+.button_grey:hover {
+  background: rgba(64, 66, 68, 0.30) !important;
 }
 
 @media (max-width: 960px) {

@@ -140,15 +140,26 @@ onMounted(() => {
 })
 
 watch(() => formData.plan_type, () => {
-  const id = types.value[formData.plan_type - 1].dic_document_types
-  if (id == null) {
+  let id = null
+  types.value.forEach((type) => {
+    if (type.id === formData.plan_type) {
+      id = type.dic_document_types
+    }
+  })
+  if (id === null) {
     params.value = null
     return
   }
   docService.getDocParams(id).then(res => {
-    params.value = JSON.parse(res.data)
+    params.value = JSON.parse(res.data);
+    if (formData.plan_type === 9) {
+      let user = JSON.parse(localStorage.getItem("loginedUser"))
+      if (user?.mainPosition?.id === 37290) {
+        params.value = params.value.filter(item => item.name !== 'foreign_consultant');
+      }
+    }
   }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
+    params.value = null
   })
 
 })

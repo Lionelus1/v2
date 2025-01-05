@@ -1,6 +1,11 @@
 <template>
   <Dialog :header="$t('workPlan.addEvent')" v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
+      <!-- internship -->
+      <InternshipAddEvent :plan="plan" @update-data="updateData" :form-valid="formValid"
+                          v-if="isInternshipPlan"/>
+    </div>
+    <div class="p-fluid" v-if="!isInternshipPlan">
       <div class="field">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') : $t('workPlan.eventName') }}</label>
         <InputText v-model="event_name" />
@@ -67,7 +72,7 @@
         <label>{{ $t('common.suppDocs') }}</label>
         <Textarea v-model="supporting_docs" rows="3" style="resize: vertical" />
       </div>
-      <div class="field">
+      <div class="field" v-if="!isInternshipPlan">
         <label>{{ isOperPlan ? $t('common.additionalInfo') : $t('common.result') }}</label>
         <Textarea v-model="result" rows="3" style="resize: vertical"/>
       </div>
@@ -86,11 +91,13 @@ import {getHeader, smartEnuApi} from "@/config/config";
 import {WorkPlanService} from "@/service/work.plan.service";
 import Enum from "@/enum/workplan/index";
 import RolesByName from "@/components/smartenu/RolesByName.vue";
+import InternshipAddEvent from './event_add/InternshipAddEvent.vue';
+import {ref} from 'vue';
 
 export default {
   name: 'WorkPlanEventAdd',
   props: ['visible', 'data', 'isMain', 'items', 'planData'],
-  components: {RolesByName},
+  components: {RolesByName, InternshipAddEvent},
   emits: ['hide'],
   data() {
     return {
@@ -135,6 +142,7 @@ export default {
         summaryUser: false,
         users: false,
         quarter: false,
+        semester: false,
       },
       submitted: false,
       newQuarters: [],
@@ -149,7 +157,7 @@ export default {
       inputSets: [{ selectedUsers: '', selectedRole: '' }],
       start_date: new Date,
       end_date: new Date(),
-      
+      comingData: ref(),
     }
   },
   mounted() {
@@ -191,7 +199,10 @@ export default {
     },
     isOperPlan() {
       return this.plan && ((this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) || this.plan.is_oper)
-    }
+    },
+    isInternshipPlan() {
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Internship;
+    },
   },
   methods: {
     getFullname(user) {
@@ -278,6 +289,9 @@ export default {
         data.end_date = this.end_date
       }
 
+      if (this.isInternshipPlan) {
+        data = {...data, ...this.comingData, semester: this.data?.semester};
+      }
       this.planService.createEvent(data).then(res => {
         this.emitter.emit("workPlanEventIsAdded", {is_success: true, is_main: this.isMain});
         this.$toast.add({severity: 'success', detail: this.$t('workPlan.message.eventCreated'), life: 3000});
@@ -302,6 +316,9 @@ export default {
       this.parentItems.push(data);
     },
     validateForm() {
+      if (this.isInternshipPlan) {
+        return true
+      }
       this.formValid.event_name = !this.event_name;
       this.formValid.summaryUser = !this.summaryDepartment.length === 0;
       // this.formValid.users = this.selectedUsers.length === 0;
@@ -332,7 +349,10 @@ export default {
     },
     removeInputSet(index) {
       this.inputSets.splice(index, 1);
-    }
+    },
+    updateData(data) {
+      this.comingData = data;
+    },
   },
 }
 </script>
