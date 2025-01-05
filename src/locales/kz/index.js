@@ -1467,7 +1467,7 @@ export default {
         }
     },
     report: {
-        title: 'Есеп алу',
+        title: 'Есеп құрастырушы',
         success: 'Сәтті құрылды!',
         ReportDesigner: "Есеп Құрастырушы",
         TypeReport: "Есеп түрі",

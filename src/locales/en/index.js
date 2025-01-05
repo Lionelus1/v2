@@ -1449,7 +1449,7 @@ export default {
         },
     },
     report: {
-        title: "Report",
+        title: "Report Designer",
         success: "Successfully generated!",
         ReportDesigner: "Report Designer",
         TypeReport: "Type of report",

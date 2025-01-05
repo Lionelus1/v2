@@ -1454,7 +1454,7 @@ export default {
         }
     },
     report: {
-        title: 'Отчет',
+        title: 'Конструктор отчетов',
         success: 'Успешно сформирован!',
         ReportDesigner: "Конструктор отчетов",
         TypeReport: "Тип отчета",
