@@ -49,7 +49,7 @@
           <div v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5">
             <Menubar :model="verifyMenu" :key="active" style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
-          <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() < new Date().getFullYear())">
+          <div class="grid mt-3" v-if="plan && resultData && (new Date(plan.create_date).getFullYear() <= 2023)">
             <div class="p-sm-12 md:col-12 lg:col-12 p-xl-6">
               <div class="field" v-if="event && isOperPlan">
                 <label class="bold">{{ $t('common.fact') }}: </label>
@@ -709,16 +709,27 @@ export default {
 
     //   return secondMonthOfQuarter;
     // },
+    getFirstQuarterFirstMonth(){
+      const now = new Date();
+      return now.getMonth() === 0;
+    },
     filterQuarters() {
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth() + 1;
       const currentQuarter = Math.ceil(currentMonth / 3);
       const currentDay = currentDate.getDate();
+      const currentYear = currentDate.getFullYear();
+      const prevYear = currentYear - 1;
+
+
       //currentDay <= 7 && (currentMonth === this.getFirstMonthOfQuarter() || currentMonth === this.getSecondMonthOfQuarter())
-      if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter()) {
+      if (currentDay <= 15 && currentMonth === this.getFirstMonthOfQuarter() && !this.getFirstQuarterFirstMonth()) {
         // Agymdagy ai agymdagy toqsannyng birinshi aiy bolsa aldyngy toqsanga natije toltyra alady
         return this.quarters.filter(quarter => quarter.value >= currentQuarter - 1 && quarter.value <= currentQuarter);
-      } else {
+      } else if(this.getFirstQuarterFirstMonth() && currentYear === prevYear + 1 && currentDay <= 15){
+        return this.quarters.filter(quarter => quarter.value === 4);
+
+      }else {
         // Tek agymdagy toqsandy korsetu
         return this.quarters.filter(quarter => quarter.value === currentQuarter);
       }
