@@ -74,7 +74,7 @@
         </div>
       </div>
 
-      <div v-if="true" class="filters-right">
+      <div v-if="filters.typeReport2?.value === 5" class="filters-right">
         <div class="additional-filters">
           <!-- Департамент/Группа -->
           <div class="filter-item">
