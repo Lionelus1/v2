@@ -76,7 +76,7 @@
         </div>
       </div>
 
-      <div v-if="true" class="filters-right">
+      <div v-if="filters.typeReport2?.value === 5" class="filters-right">
         <div class="additional-filters">
           <div style="display: grid; gap: 16px">
             <div style="margin: auto">
