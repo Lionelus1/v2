@@ -8,7 +8,7 @@
       <div class="filters-left">
         <!-- Категория -->
         <div class="filter-item">
-          <label>{{ $t('report.TypeReport') }}</label>
+          <label>{{ $t('report.TypeDocument') }}</label>
           <div class="dropdownFullWidth">
             <Dropdown
                 v-if="true"
@@ -21,9 +21,10 @@
           </div>
         </div>
 
-        <div v-if="filters.typeReport2?.value === 5" class="filter-item">
+        <div v-if="filters.typeReport2?.value === 5" class="filter-item" style="width: 115%">
           <label>{{ $t('report.TypeContract') }}</label>
           <CustomMultiSelect
+              style="width: 115%"
               class="CustomMultiSelectTypeContract"
               v-model="filters.reportTypes.value"
               :options="reportCategoriesFormatted"
@@ -75,119 +76,96 @@
         </div>
       </div>
 
-      <div v-if="filters.typeReport2?.value === 5" class="filters-right">
+      <div v-if="true" class="filters-right">
         <div class="additional-filters">
-          <!-- Департамент/Группа -->
-          <div class="filter-item">
-            <!--            <label>{{ $t('report.department') }}</label>-->
-            <div class="filter-controls">
+          <div style="display: grid; gap: 16px">
+            <div style="margin: auto">
               <input type="checkbox" id="department" value="filters.department.enabled"
                      v-model="filters.department.enabled" @change="onDepartmentChange"/>
-              <label for="department">{{ $t('report.department') }}</label>
-              <div class="CustomMultiSelectDepartment">
+            </div>
+            <div style="margin: auto"><input type="checkbox" id="status" value="filters.status.enabled"
+                        v-model="filters.status.enabled" @change="onStatusChange"/></div>
+            <div style="margin: auto"> <input type="checkbox" id="author" value="filters.author.enabled"
+                        v-model="filters.author.enabled" @change="onAuthorChange"/></div>
+            <div style="margin: auto"> <input type="checkbox" id="signers" value="filters.signers.enabled"
+                         v-model="filters.signers.enabled" @change="onSignersChange"/></div>
+            <div style="margin: auto"> <input type="checkbox" id="contragent" value="filters.contragent.enabled"
+                         v-model="filters.contragent.enabled" @change="onContragentChange"/></div>
+          </div>
+          <div style="display: grid; gap: 16px">
+            <div style="margin: auto; margin-left: 0;">
+              <label>{{ $t('report.department') }}</label>
+            </div>
+            <div style="margin: auto; margin-left: 0;"><label>{{ $t('report.status') }}</label></div>
+            <div style="margin: auto; margin-left: 0;" ><label>{{ $t('report.author') }}</label></div>
+            <div style="margin: auto; margin-left: 0;"><label>{{ $t('report.signers') }}</label></div>
+            <div style="margin: auto; margin-left: 0;"><label>{{ $t('report.contragents') }}</label></div>
+          </div>
+          <div style="display: grid; gap: 16px; width: 100%;">
+            <div>
                 <CustomMultiSelect
+                    style="width: 100%"
                     v-model="filters.department.value"
                     :options="departmentsFormatted"
                     :disabled="!filters.department.enabled"
                     :placeholder="$t('report.SelectDepartments')"
+                    class="dropdownFullWidth"
                     @update:modelValue="updateSelectedTypeDeps"
                 />
-              </div>
-
-              <!--              <MultiSelect v-if="departments.length === filters.department.value.length" v-model="customDep" display="chip" :options="customDep" optionLabel="label" filter-->
-<!--                           placeholder="Выберите департаменты"-->
-<!--                           :maxSelectedLabels="3" class="w-fullDepartment" :disabled="!filters.department.enabled"/>-->
-<!--              <MultiSelect v-model="filters.department.value" display="chip" :options="departments" optionLabel="label" filter-->
-<!--                           placeholder="Выберит департаменты"-->
-<!--                           :maxSelectedLabels="maxSelectedMax" class="w-fullDepartment" @change="changeDep" :disabled="!filters.department.enabled"/>-->
             </div>
-          </div>
-
-          <div class="filter-item">
-            <!--            <label>{{ $t('report.status') }}</label>-->
-            <div class="filter-controls">
-              <input type="checkbox" id="status" value="filters.status.enabled" v-model="filters.status.enabled" @change="onStatusChange"/>
-              <label for="status">{{ $t('report.status') }}</label>
-              <!--              <Checkbox v-model="filters.status.enabled" />-->
-              <div class="customStatusSelect">
+            <div>
                 <CustomMultiSelect
+                    style="width: 100%"
                     v-model="filters.status.value"
                     :options="statusesFormatted"
                     :disabled="!filters.status.enabled"
                     :placeholder="$t('report.SelectStatuses')"
+                    class="customStatusSelect"
                     @update:modelValue="updateSelectedTypeStatuses"
                 />
-              </div>
-<!--              <MultiSelect v-model="filters.status.value" display="chip" :options="statuses" optionLabel="label" filter-->
-<!--                           placeholder="Выберите статусы"-->
-<!--                           :maxSelectedLabels="3" class="w-fullStatus" :disabled="!filters.status.enabled"/>-->
             </div>
-          </div>
-
-
-          <div class="filter-item">
-            <div class="filter-controls">
-              <input type="checkbox" id="author" value="filters.author.enabled" v-model="filters.author.enabled" @change="onAuthorChange"/>
-              <label for="author">{{ $t('report.author') }}</label>
-              <!--            <label>{{ $t('report.author') }}</label>-->
-              <!--            <Checkbox v-model="filters.author.enabled" />-->
-              <div class="w-fullAuthor">
+            <div >
                 <FindUser
-                    class="findUserAuthor"
                     :placeholder="$t('common.fullName')"
                     :searchMode="searchMode"
                     v-model="filters.author.value"
                     :user-type="3"
                     :editMode="true"
                     :disabled="!filters.author.enabled"
+                    class="w-fullAuthor"
                     @add="addAuthor"
                 />
-              </div>
             </div>
-          </div>
-          <div class="filter-item">
-            <div class="filter-controls">
-              <input type="checkbox" id="signers" value="filters.signers.enabled" v-model="filters.signers.enabled"  @change="onSignersChange"/>
-              <label for="signers">{{ $t('report.signers') }}</label>
-              <div class="w-fullSigners">
-              <FindUser
-                  class="findUserSigners"
-                  :placeholder="$t('common.fullName')"
-                  :searchMode="searchMode"
-                  v-model="filters.signers.value"
-                  :user-type="3"
-                  :max="4"
-                  :editMode="true"
-                  :disabled="!filters.signers.enabled"
-                  @add="addSigners"
-              />
-              </div>
+            <div >
+                <FindUser
+                    :placeholder="$t('common.fullName')"
+                    :searchMode="searchMode"
+                    v-model="filters.signers.value"
+                    :user-type="3"
+                    :max="4"
+                    :editMode="true"
+                    :disabled="!filters.signers.enabled"
+                    class="w-fullSigners"
+                    @add="addSigners"
+                />
             </div>
-          </div>
-          <div class="filter-item">
-            <div class="filter-controls">
-              <input type="checkbox" id="contragent" value="filters.contragent.enabled"
-                     v-model="filters.contragent.enabled" @change="onContragentChange"/>
-              <label for="contragent">{{ $t('report.contragents') }}</label>
-              <div class="w-fullContragent">
-              <FindUser
-                  :placeholder="$t('common.fullName')"
-                  :searchMode="searchModeAll"
-                  v-model="filters.contragent.value"
-                  :user-type="3"
-                  :max="4"
-                  :editMode="true"
-                  :disabled="!filters.contragent.enabled"
-                  @add="addContragents"
-              />
-              </div>
-<!--              <MultiSelect v-model="filters.contragent.value" :options="contragents" optionLabel="label" filter-->
-<!--                           placeholder="Выберите контрагенты"-->
-<!--                           :maxSelectedLabels="3" class="w-full md:w-80" :disabled="!filters.contragent.enabled" @scroll="onScroll"/>-->
+            <div >
+                <FindUser
+                    :placeholder="$t('common.fullName')"
+                    :searchMode="searchModeAll"
+                    v-model="filters.contragent.value"
+                    :user-type="3"
+                    :max="4"
+                    :editMode="true"
+                    :disabled="!filters.contragent.enabled"
+                    class="w-fullContragent"
+                    @add="addContragents"
+                />
             </div>
           </div>
         </div>
       </div>
+
     </div>
 
     <!-- Кнопки -->
@@ -941,15 +919,36 @@ onMounted(() => {
   margin-bottom: 16px;
 }
 
-.filter-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+.filters-controls {
+  flex: 2;
 }
 
 .filter-controls label {
-  min-width: 100px; /* Фиксированная ширина для всех меток */
+  min-width: 150px; /* Фиксированная ширина для всех меток */
   text-align: left; /* Текст всегда выравнивается влево */
+}
+
+.filters-labels {
+  flex: 1;
+}
+
+.filters-labels label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 16px;
+  min-width: 150px;
+}
+
+.filters-controls .filter-item {
+  margin-bottom: 16px;
+}
+
+.filters-controls .filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .filter-item label {
@@ -981,12 +980,9 @@ onMounted(() => {
 }
 
 .additional-filters {
-  padding: 15px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  display: flex;
+  gap: 20px;
 }
-
 .report-table {
   margin-top: 30px;
   background-color: #fff;
@@ -1052,30 +1048,14 @@ onMounted(() => {
   width: 60%;
 }
 
-.w-fullAuthor {
-  margin-left: 0; /* Убираем лишний отступ */
-  flex: 1; /* Занимает оставшееся пространство */
-  width: 35.5%;
-}
-
-.w-fullSigners {
-  margin-left: 0; /* Убираем лишний отступ */
-  flex: 1; /* Занимает оставшееся пространство */
-}
-
+.CustomMultiSelectDepartment,
+.dropdownFullWidth,
+.customStatusSelect,
+.w-fullAuthor,
+.w-fullSigners,
 .w-fullContragent {
-  margin-left: 0; /* Убираем лишний отступ */
-  flex: 1; /* Занимает оставшееся пространство */
-}
-
-.customStatusSelect {
-  margin-left: 0; /* Убираем лишний отступ */
-  flex: 1; /* Занимает оставшееся пространство */
-}
-
-.CustomMultiSelectDepartment {
-  margin-left: 0; /* Убираем лишний отступ */
-  flex: 1; /* Занимает оставшееся пространство */
+  width: 300px;
+  max-width: 100%;
 }
 
 .dropdownFullWidth {
