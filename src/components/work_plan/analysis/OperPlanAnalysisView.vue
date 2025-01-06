@@ -2,7 +2,6 @@
   <div class="col-12">
     <TitleBlock :title="$t('workPlan.analyzer.analysisResult')" :show-back-button="true"/>
     <ProgressBar v-if="loading" class="mb-3" mode="indeterminate" style="height: .5em"/>
-<!-- {{ resultData }} -->
     <TabView @tab-change="onTabChange">
       <TabPanel :header="$t('workPlan.analyzer.strategicDirectionTab')">
         <DataTable :value="computedStrategicAnalysisData"
@@ -449,7 +448,7 @@ const clearFilter = () =>{
 
 const onTabChange = (event) => {
   if (event.index === 0) {
-    clearFilter()
+    //clearFilter()
   }
 }
 
@@ -512,7 +511,7 @@ async function getEventsTree(parent, isClickEvent) {
     lazyParams.work_plan_id = Number(workPlanID);
     lazyParams.quarter = selectedQuarter.value;
     lazyParams.parent_id = parent == null ? null : parent.id;
-    lazyParams.department_id = selectedDepartment.value || null;
+    lazyParams.department_id = null;
 
 
     if (selectedDepartment.value !== null) {
@@ -552,7 +551,6 @@ async function getEventsTree(parent, isClickEvent) {
             };
             if (descendants && descendants.items) {
               descendants.items.forEach((item) => {
-                console.log("item", item);
                 if (item.status.work_plan_event_status_id === 2) {
                   newstrategicDirectionData.result_status.completed.push(item.status.work_plan_event_status_id)
                 }
@@ -633,53 +631,113 @@ watch(data, (newValue) => {
   tableAnalysisData.value = [];
   if (data.value !== null && data.value.length > 0) {
     data.value.forEach((event) => {
-      event.user.forEach((item) => {
-        if (item.is_summary_department) {
-          let departmentId = item?.user?.mainPosition?.department?.id;
-          let existingDepartment = tableAnalysisData.value.find(
-              (entry) => entry.department.id === departmentId
-          );
+      const processEvents = async () => {
+      const descendants = await getEventDescendants(event.work_plan_event_id);
+      if (descendants?.items && Array.isArray(descendants.items)) {
+        descendants?.items?.forEach((items) => {
+          items?.user?.forEach((item) => {
+            if (item.is_summary_department) {
+            let departmentId = item?.user?.mainPosition?.department?.id;
+            let existingDepartment = tableAnalysisData.value.find(
+                (entry) => entry.department.id === departmentId
+            );
 
-          let statusCategory = null;
-          if (event?.status?.work_plan_event_status_id === 2) {
-            statusCategory = "completed";
-          } else if (event?.status.work_plan_event_status_id === 3) {
-            statusCategory = "notcompleted";
-          } else if (event?.status.work_plan_event_status_id === 4) {
-            statusCategory = "partially_completed";
-          } else if (event?.status.work_plan_event_status_id === 1) {
-            statusCategory = "created";
-          }
+            let statusCategory = null;
+            if (event?.status?.work_plan_event_status_id === 2) {
+              statusCategory = "completed";
+            } else if (event?.status.work_plan_event_status_id === 3) {
+              statusCategory = "notcompleted";
+            } else if (event?.status.work_plan_event_status_id === 4) {
+              statusCategory = "partially_completed";
+            } else if (event?.status.work_plan_event_status_id === 1) {
+              statusCategory = "created";
+            }
 
-          if (statusCategory) {
-            if (existingDepartment) {
-              existingDepartment.result_status[statusCategory].push(
-                  event?.status.work_plan_event_status_id
-              );
-            } else {
-              let newDepartment = {
-                department: {
-                  id: departmentId,
-                  name: item?.user?.mainPosition?.department?.name,
-                  name_kz: item?.user?.mainPosition?.department?.nameKz,
-                  name_ru: item?.user?.mainPosition?.department?.nameRu,
-                  name_en: item?.user?.mainPosition?.department?.nameEn,
-                },
-                result_status: {
-                  completed: [],
-                  notcompleted: [],
-                  partially_completed: [],
-                  created:[]
-                },
-              };
-              newDepartment.result_status[statusCategory].push(
-                  event.status.work_plan_event_status_id
-              );
-              tableAnalysisData.value.push(newDepartment);
+            if (statusCategory) {
+              if (existingDepartment) {
+                existingDepartment.result_status[statusCategory].push(
+                    event?.status.work_plan_event_status_id
+                );
+              } else {
+                let newDepartment = {
+                  department: {
+                    id: departmentId,
+                    name: item?.user?.mainPosition?.department?.name,
+                    name_kz: item?.user?.mainPosition?.department?.nameKz,
+                    name_ru: item?.user?.mainPosition?.department?.nameRu,
+                    name_en: item?.user?.mainPosition?.department?.nameEn,
+                  },
+                  result_status: {
+                    completed: [],
+                    notcompleted: [],
+                    partially_completed: [],
+                    created:[]
+                  },
+                };
+                newDepartment.result_status[statusCategory].push(
+                    event.status.work_plan_event_status_id
+                );
+                tableAnalysisData.value.push(newDepartment);
+              }
             }
           }
-        }
-      });
+          })
+
+        });
+      }
+
+    
+      };
+      processEvents();
+      
+      
+      // event.user.forEach((item) => {
+      //   if (item.is_summary_department) {
+      //     let departmentId = item?.user?.mainPosition?.department?.id;
+      //     let existingDepartment = tableAnalysisData.value.find(
+      //         (entry) => entry.department.id === departmentId
+      //     );
+
+      //     let statusCategory = null;
+      //     if (event?.status?.work_plan_event_status_id === 2) {
+      //       statusCategory = "completed";
+      //     } else if (event?.status.work_plan_event_status_id === 3) {
+      //       statusCategory = "notcompleted";
+      //     } else if (event?.status.work_plan_event_status_id === 4) {
+      //       statusCategory = "partially_completed";
+      //     } else if (event?.status.work_plan_event_status_id === 1) {
+      //       statusCategory = "created";
+      //     }
+
+      //     if (statusCategory) {
+      //       if (existingDepartment) {
+      //         existingDepartment.result_status[statusCategory].push(
+      //             event?.status.work_plan_event_status_id
+      //         );
+      //       } else {
+      //         let newDepartment = {
+      //           department: {
+      //             id: departmentId,
+      //             name: item?.user?.mainPosition?.department?.name,
+      //             name_kz: item?.user?.mainPosition?.department?.nameKz,
+      //             name_ru: item?.user?.mainPosition?.department?.nameRu,
+      //             name_en: item?.user?.mainPosition?.department?.nameEn,
+      //           },
+      //           result_status: {
+      //             completed: [],
+      //             notcompleted: [],
+      //             partially_completed: [],
+      //             created:[]
+      //           },
+      //         };
+      //         newDepartment.result_status[statusCategory].push(
+      //             event.status.work_plan_event_status_id
+      //         );
+      //         tableAnalysisData.value.push(newDepartment);
+      //       }
+      //     }
+      //   }
+      // });
     });
     chartDataFilteredDepartment.value = setChartDataFilteredDepartment();
     chartOptionsFilteredDepartment.value = setChartOptionsFilteredDepartment();
