@@ -1468,7 +1468,7 @@ export default {
         safetyPrecautions: "Техника безопасности",
         conclusionCounterparty: "Заключение контрагента",
         conclusionHeadDepartment: "Заключение руководителя на кафедре",
-        practiceAssessment: "Оценка практики",
+        practiceAssessment: "Оценивание",
         events: "Мероприятия",
         performEvent: "Выполнить мероприятие",
         reportName: "Наименование отчета",

@@ -1033,9 +1033,9 @@ export default {
             {
               stage: 1,
               users: [],
-              titleRu: "Руководитель практики кафедры",
-              titleKz: "Кафедрасының практика меңгерушісі",
-              titleEn: "Head of Department Practice",
+              titleRu: "Руководитель практики на кафедре",
+              titleKz: "Кафедрадан практика жетекшісі",
+              titleEn: "Head of practice at the department",
               certificate: {
                 namekz: "Жеке тұлғаның сертификаты",
                 nameru: "Сертификат физического лица",

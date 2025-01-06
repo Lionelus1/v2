@@ -1475,7 +1475,7 @@ export default {
         journalReports: "Күнделік есеп",
         safetyPrecautions: "Қауіпсіздік ережесі",
         conclusionCounterparty: "Контрагенттің қорытындысы",
-        conclusionHeadDepartment: "Кафедра меңгерушісінің қорытындысы",
+        conclusionHeadDepartment: "Кафедраның практиканы бағалауы",
         practiceAssessment: "Тәжірибелік бағалау",
         events: "Іс-шаралар",
         performEvent: "Іс-шараны орындау",
