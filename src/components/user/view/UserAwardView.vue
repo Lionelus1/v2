@@ -39,7 +39,7 @@
         <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
             <template #body="slotProps">
                 <Button icon="fa-solid fa-pencil fa-xl" class="p-button-text p-button-warning p-1 mr-2" @click="award=slotProps.data;update()"></Button>
-                <Button v-if="!slotProps.data.platonus_award_id" icon="fa-solid fa-trash-can fa-xl" class="p-button-text p-button-danger p-1 mr-2" @click="award=slotProps.data;deleteValue()"></Button>
+                <Button icon="fa-solid fa-trash-can fa-xl" class="p-button-text p-button-danger p-1 mr-2" @click="award=slotProps.data;deleteValue()"></Button>
             </template>
         </Column>
       
