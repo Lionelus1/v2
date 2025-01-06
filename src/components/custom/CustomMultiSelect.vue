@@ -77,7 +77,6 @@ export default {
         return [this.$i18n.locale === "kz" ? "Барлығы" : this.$i18n.locale === "ru" ? "Все" :
             "All"];
       }
-      console.log("this.modelValue: ", this.modelValue)
       return this.modelValue.map((value) => {
         const option = this.options.find((opt) => opt.value === value);
         return option ? this.$i18n.locale === "kz" ? option.name_kz : this.$i18n.locale === "ru" ? option.name_ru :
@@ -88,7 +87,6 @@ export default {
       if (!this.searchTerm) {
         return this.options;
       }
-      console.log("option: ", this.options)
       return this.options.filter((option) =>
           option.name.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
