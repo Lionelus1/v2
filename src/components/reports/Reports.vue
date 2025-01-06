@@ -672,22 +672,35 @@ const addContragents = (selectedUser) => {
 
 const fetchDepartments = async () => {
   try {
-    const filters = {
+    const filters1 = {
       orgId: 1,
       isFaculty: false,
       cafedraId: null,
       isCafedra: false,
       HasManager: false
-      // page: page.value,
-      // rows: rowsselectedDepartments
-    }
-    const response = await userService.departments(filters);
-    if (response.data.departments.length) {
-      departments.value = response.data.departments.map((dept) => ({
+    };
+
+    const filters2 = {
+      orgId: 1,
+      isFaculty: true,
+      cafedraId: null,
+      isCafedra: false,
+      HasManager: false
+    };
+
+    const response1 = await userService.departments(filters1);
+    const response2 = await userService.departments(filters2);
+
+    departments.value = [
+      ...response1.data.departments.map((dept) => ({
         label: locale.value === "kz" ? dept.nameKz : locale.value === "ru" ? dept.nameRu : dept.nameEn,
         code: dept.id,
-      }));
-    }
+      })),
+      ...response2.data.departments.map((dept) => ({
+        label: locale.value === "kz" ? dept.nameKz : locale.value === "ru" ? dept.nameRu : dept.nameEn,
+        code: dept.id,
+      }))
+    ];
 
   } catch (error) {
     toast.add({severity: 'error', detail: t('reports.errorFetchingDepartments'), life: 3000});
