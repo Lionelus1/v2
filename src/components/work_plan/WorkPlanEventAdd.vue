@@ -5,6 +5,7 @@
     <div class="p-fluid">
       <DoctorsMastersAddEvent :plan="plan" v-if="!isShedulePlan  && !isDirectorsPlan" 
       @update-data="updateData" />
+      <div class="p-fluid" v-if="isDirectorsPlan && (!isMastersPlan && !isDoctorsPlan && !isInternshipPlan)">
       <div class="field" v-if="!isMastersPlan && !isDoctorsPlan && !isDirectorsPlan">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
             isShedulePlan ? $t('workPlan.worksByWeek') : $t('workPlan.eventName') }} </label>
@@ -128,6 +129,7 @@
         <Textarea v-model="result" rows="3" style="resize: vertical" />
       </div>
     </div>
+  </div>
 
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
