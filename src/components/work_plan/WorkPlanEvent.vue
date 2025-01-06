@@ -957,6 +957,10 @@ export default {
               },
             }
           ];
+          let user = JSON.parse(localStorage.getItem("loginedUser"))
+          if (user?.mainPosition?.id === 37290) {
+            this.planApprovalStage.pop();
+          }
         }
         if (this.isInternshipPlan && !this.isFinish && !this.isApproval) {
           this.getAdditionalInfo()
