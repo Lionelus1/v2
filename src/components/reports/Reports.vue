@@ -9,7 +9,7 @@
         <!-- Категория -->
         <div class="filter-item">
           <label>{{ $t('report.TypeDocument') }}</label>
-          <div class="dropdownFullWidth">
+          <div class="dropdownFullWidth" style="width: 300px">
             <Dropdown
                 v-if="true"
                 v-model="filters.typeReport2"
@@ -23,14 +23,15 @@
 
         <div v-if="filters.typeReport2?.value === 5" class="filter-item" style="width: 115%">
           <label>{{ $t('report.TypeContract') }}</label>
-          <CustomMultiSelect
-              style="width: 115%"
-              class="CustomMultiSelectTypeContract"
-              v-model="filters.reportTypes.value"
-              :options="reportCategoriesFormatted"
-              :placeholder="$t('report.SelectContractTypes')"
-              @update:modelValue="updateSelectedTypeContracts"
-          />
+         <div style="width: 300px">
+           <CustomMultiSelect
+               class="CustomMultiSelectTypeContract"
+               v-model="filters.reportTypes.value"
+               :options="reportCategoriesFormatted"
+               :placeholder="$t('report.SelectContractTypes')"
+               @update:modelValue="updateSelectedTypeContracts"
+           />
+         </div>
 <!--          <MultiSelect v-model="filters.reportTypes.value" display="chip" :options="reportCategories" optionLabel="label" filter-->
 <!--                       placeholder="Выберите тип договоров"-->
 <!--                       :maxSelectedLabels="3" class="" style="width: 538px;"   :selectedItemsTemplate="customSelectedTemplate"/>-->
@@ -988,7 +989,7 @@ onMounted(() => {
 }
 
 .calendar {
-  width: 180px;
+  width: 300px;
 }
 
 .additional-filters {
@@ -1081,7 +1082,7 @@ onMounted(() => {
 }
 
 .CustomMultiSelectTypeContract {
-  max-width: 34.3%;
+  width: 100%
 }
 
 </style>
