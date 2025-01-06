@@ -279,8 +279,7 @@
       </div>
     </div>
   </OverlayPanel>
-  <add-info v-if="dialog.info.state" :visible="dialog.info.state" @hide="hideDialog(dialog.info)" :plan="plan"
-            :info="additionalInfo"/>
+  <add-info v-if="dialog.info.state" :visible="dialog.info.state" @hide="hideDialog(dialog.info)" :plan="plan" :info="additionalInfo"/>
 
   <work-plan-event-add v-if="dialog.add.state" :visible="dialog.add.state" :data="selectedEvent"
                        :items="selectedEvent ? selectedEvent.children : null"
