@@ -514,8 +514,7 @@ async function getEventsTree(parent, isClickEvent) {
     lazyParams.parent_id = parent == null ? null : parent.id;
     lazyParams.department_id = selectedDepartment.value || null;
 
-    const filter = JSON.parse(JSON.stringify(filters.value));
-    lazyParams.filters = filter;
+
     if (selectedDepartment.value !== null) {
       if (!lazyParams.filters.department_id) {
         lazyParams.filters.department_id = selectedDepartment.value;
@@ -526,9 +525,6 @@ async function getEventsTree(parent, isClickEvent) {
         lazyParams.is_oper_plan_analysis = true;
       }
     }
-
-    
-
     const res = await workPlanService.getEventsTree(lazyParams);
 
     if (parent == null) {
