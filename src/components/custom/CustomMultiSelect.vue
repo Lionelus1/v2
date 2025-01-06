@@ -4,7 +4,7 @@
       <div class="chips-container">
         <span v-for="(label, index) in displayedLabels" :key="index" class="chip">
           {{ label }}
-          <span v-if="label != 'Все'" class="chip-clear" @click.stop="removeSelection(index)">X</span>
+          <span v-if="label != 'Все' && label != 'Барлығы' && label != 'All'" class="chip-clear" @click.stop="removeSelection(index)">X</span>
         </span>
 
         <span v-if="!modelValue.length" class="placeholder">{{ placeholder }}</span>
@@ -22,7 +22,10 @@
       />
       <div class="multiselect-option" @click="toggleAll" :class="{ disabled: disabled }">
         <input type="checkbox" :checked="isAllSelected" :disabled="disabled" />
-        <label>Все</label>
+        <label>{{
+            $i18n.locale === "kz" ? "Барлығы" : $i18n.locale === "ru" ? "Все" :
+                "All"
+          }}</label>
       </div>
       <div
           v-for="option in filteredOptions"
@@ -32,7 +35,7 @@
           :class="{ disabled: disabled }"
       >
         <input type="checkbox" :checked="isSelected(option)" :disabled="disabled" />
-        <label>{{ option.name }}</label>
+        <label>{{ option['name_' + $i18n.locale] }}</label>
       </div>
     </div>
   </div>
@@ -71,17 +74,21 @@ export default {
     },
     displayedLabels() {
       if (this.isAllSelected) {
-        return ["Все"];
+        return [this.$i18n.locale === "kz" ? "Барлығы" : this.$i18n.locale === "ru" ? "Все" :
+            "All"];
       }
+      console.log("this.modelValue: ", this.modelValue)
       return this.modelValue.map((value) => {
         const option = this.options.find((opt) => opt.value === value);
-        return option ? option.name : "";
+        return option ? this.$i18n.locale === "kz" ? option.name_kz : this.$i18n.locale === "ru" ? option.name_ru :
+            option.name_en : "";
       });
     },
     filteredOptions() {
       if (!this.searchTerm) {
         return this.options;
       }
+      console.log("option: ", this.options)
       return this.options.filter((option) =>
           option.name.toLowerCase().includes(this.searchTerm.toLowerCase())
       );

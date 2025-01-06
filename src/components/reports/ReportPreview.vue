@@ -5,7 +5,7 @@
         <i class="fa-solid fa-arrow-left ml-2" style="font-size: 16px;cursor: pointer"></i>
       </div>
       <h3 class="p-0 m-0">{{ lang.value }}</h3>
-      <h3 class="p-0 m-0">{{ lang === "kz" ? 'Есеп' : lang === "ru" ? 'Отчет' : 'Report' }}</h3>
+      <h3 class="p-0 m-0">{{ $i18n.locale === "kz" ? 'Есеп' : $i18n.locale === "ru" ? 'Отчет' : 'Report' }}</h3>
     </div>
 
 
@@ -16,7 +16,7 @@
     <table class="table-scrollable">
       <thead>
       <tr>
-        <th :rowspan="verticals.length" v-if="deps.length > 0">{{lang === "kz" ? "Бөлім" : lang === "ru" ? "Отдел" : "Department"}}</th>
+        <th :rowspan="verticals.length" v-if="deps.length > 0">{{lang === "kz" ? "Құрылымдық бөлімше" : lang === "ru" ? "Структурное подразделение" : "Structural division"}}</th>
         <th :rowspan="verticals.length" v-if="organizations.length > 0">{{ lang === "kz" ? "Ұйымдар" : lang === "ru" ? "Организации" : "Organizations" }}</th>
 
         <th :rowspan="verticals.length" v-if="authors.length > 0">{{ lang === "kz" ? "Автор" : lang === "ru" ? "Автор" : "Author" }}</th>

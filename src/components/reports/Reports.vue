@@ -14,7 +14,7 @@
                 v-if="true"
                 v-model="filters.typeReport2"
                 :options="typeReports"
-                optionLabel="label"
+                :optionLabel='"name_" + $i18n.locale'
                 :placeholder="$t('report.SelectCategory')"
                 class="dropdown full-width"
             />
@@ -66,7 +66,7 @@
             </div>
             <div class="flex items-center gap-2">
               <RadioButton v-model="filters.lang" inputId="ru" name="language" value="ru"/>
-              <label for="ingredient2">Орысша</label>
+              <label for="ingredient2">Русский</label>
             </div>
             <div class="flex items-center gap-2">
               <RadioButton v-model="filters.lang" inputId="en" name="language" value="en"/>
@@ -253,20 +253,12 @@ const maxSelectedMax = ref(3)
 
 const reportCategoriesFormatted = computed(() => {
   return reportCategories.value.map((rc) => ({
-    name: rc.label, // label -> name
+    name_kz: rc.name_kz,
+    name_ru: rc.name_ru,
+    name_en: rc.name_en,
     value: rc.code, // code -> value
   }));
 });
-
-
-const selectedItems = ref([]);
-const items = ref([
-  { name: 'Опция 1', value: '1' },
-  { name: 'Опция 2', value: '2' },
-  { name: 'Опция 3', value: '3' },
-]);
-
-const selectedCodes = ref([]);
 
 const updateSelectedTypeContracts = (selectedValues) => {
   filters.value.reportTypes.value = selectedValues.map((value) => {
@@ -366,14 +358,10 @@ const dataTypeReports = ListTypeReports.map((typeReport) => {
 });
 // const categories = ref([]);
 const categories = ListCategories.map((cat) => {
-  const label = locale.value === "kz"
-      ? cat.nameKz
-      : locale.value === "ru"
-          ? cat.nameRu
-          : cat.nameEn;
-
   return {
-    label,
+    name_kz: cat.nameKz,
+    name_ru: cat.nameRu,
+    name_en: cat.nameEn,
     code: cat.id,
     id: cat.id,
   };
@@ -621,12 +609,25 @@ const fetchCategories = async () => {
   }
 };
 
-const fetchReportTypes = async () => {
-  try {
-    typeReports.value = dataTypeReports;
-  } catch (error) {
-    toast.add({severity: 'error', detail: t('reports.errorFetchingCategories'), life: 3000});
-  }
+const fetchReportTypes = () => {
+  typeReports.value = computeLocalizedReports();
+};
+
+const computeLocalizedReports = () => {
+  return ListTypeReports.map((typeReport) => {
+    // const label = locale.value === "kz"
+    //     ? typeReport.nameKz
+    //     : locale.value === "ru"
+    //         ? typeReport.nameRu
+    //         : typeReport.nameEn;
+
+    return {
+      name_kz: typeReport.nameKz,
+      name_ru: typeReport.nameRu,
+      name_en: typeReport.nameEn,
+      value: typeReport.id,
+    };
+  });
 };
 
 const addAuthor = (selectedUser) => {
@@ -671,7 +672,9 @@ const fetchDepartments = async () => {
 
     departments.value = [
       ...response1.data.departments.map((dept) => ({
-        label: locale.value === "kz" ? dept.nameKz : locale.value === "ru" ? dept.nameRu : dept.nameEn,
+        name_kz: dept.nameKz,
+        name_ru: dept.nameRu,
+        name_en: dept.nameRu,
         code: dept.id,
       })),
       ...response2.data.departments.map((dept) => ({
@@ -689,7 +692,9 @@ const fetchDepartments = async () => {
 
 const departmentsFormatted = computed(() => {
   return departments.value.map((dept) => ({
-    name: dept.label, // label -> name
+    name_kz: dept.name_kz, // label -> name
+    name_ru: dept.name_ru, // label -> name
+    name_en: dept.name_en, // label -> name
     value: dept.code, // code -> value
   }));
 });
@@ -726,8 +731,9 @@ const fetchStatuses = async () => {
   try {
     const response = await docService.getStates();
     statuses.value = response.data.map((status) => ({
-      label: locale.value === "kz" ? status.nameKz : locale.value === "ru"
-          ? status.nameRu : status.nameEn,
+      name_kz: status.nameKz,
+      name_ru: status.nameRu,
+      name_en: status.nameEn,
       code: status.code,
     }));
   } catch (error) {
@@ -737,7 +743,9 @@ const fetchStatuses = async () => {
 
 const statusesFormatted = computed(() => {
   return statuses.value.map((status) => ({
-    name: status.label,
+    name_kz: status.name_kz,
+    name_ru: status.name_ru,
+    name_en: status.name_en,
     value: status.code,
   }));
 });
@@ -863,6 +871,10 @@ const generateReport = async () => {
     loading.value = false;
   }
 };
+
+watch(locale, () => {
+  fetchReportTypes();
+});
 
 const resetFilters = () => {
   for (const key in filters.value) {

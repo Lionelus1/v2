@@ -26,7 +26,7 @@
     <table class="table-scrollable">
       <thead>
       <tr>
-        <th :rowspan="verticals.length" v-if="deps.length > 0">{{lang === "kz" ? "Бөлім" : lang === "ru" ? "Отдел" : "Department"}}</th>
+        <th :rowspan="verticals.length" v-if="deps.length > 0">{{lang === "kz" ? "Құрылымдық бөлімше" : lang === "ru" ? "Структурное подразделение" : "Structural division"}}</th>
         <th :rowspan="verticals.length" v-if="organizations.length > 0">{{ lang === "kz" ? "Ұйымдар" : lang === "ru" ? "Организации" : "Organizations" }}</th>
 
         <th :rowspan="verticals.length" v-if="authors.length > 0">{{ lang === "kz" ? "Автор" : lang === "ru" ? "Автор" : "Author" }}</th>
