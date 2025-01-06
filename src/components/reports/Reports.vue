@@ -198,7 +198,7 @@
             :first="first"
             @page="onPage"
         >
-          <Column :field="'typeReportName' + $i18n.locale" :header="$t('report.TypeReport')"/>
+          <Column :field="'typeReportName' + $i18n.locale" :header="$t('report.TypeDocument')"/>
           <Column :field="'period'" :header="$t('report.period')"/>
           <Column :field="'author'" :header="$t('report.author')"/>
           <Column :field="'createdDate'" :header="$t('report.createdDate')"/>
