@@ -87,10 +87,16 @@ export default {
       if (!this.searchTerm) {
         return this.options;
       }
-      return this.options.filter((option) =>
-          option.name.toLowerCase().includes(this.searchTerm.toLowerCase())
-      );
+
+      const localeKey = this.$i18n.locale === "kz" ? "name_kz" :
+          this.$i18n.locale === "ru" ? "name_ru" : "name_en";
+
+      return this.options.filter((option) => {
+        const name = option[localeKey];
+        return name && name.toLowerCase().includes(this.searchTerm.toLowerCase());
+      });
     },
+
   },
   methods: {
     toggleDropdown() {
