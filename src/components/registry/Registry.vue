@@ -8,39 +8,14 @@
     </div>
     <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
     <div class="card">
-      <DataTable :lazy="true" :rowsPerPageOptions="[10, 25, 50]" dataKey="id" :rowHover="true"
-                 :loading="loading" responsiveLayout="scroll" :paginator="true" :value="data">
-        <template #empty> {{ $t('common.noData') }}</template>
-        <template #loading> {{ $t('common.loading') }}</template>
-        <Column v-for="column in columns" :key="column.field" :field="column.field" :header="$t(column.header)">
-          <template #body="{ data }">
-            {{ data[column.field] }}
-          </template>
-        </Column>
+      <DataTable :value="applications"  @page="onPageChange" :paginator="true"  :page="0" :rows="10"  :totalRecords="totalRecords">
+                <Column v-for="column in columns" :key="column.id" :header="$t(column.header)">
+                  <template #body="slotProps">
+                    {{ getValue(slotProps, column.id) }}
+                  </template>
+                </Column>
       </DataTable>
     </div>
-<!--    <Dialog :header="$t('registry.addNewRegistry')" v-model:visible="showAddPlanDialog" :style="{width: '450px'}" class="p-fluid"-->
-<!--            @hide="closeBasic">-->
-<!--      <div class="field">-->
-<!--        <label>{{ $t('common.nameInRussian') }}</label>-->
-<!--        <InputText v-model="formData.name_ru" v-on:keyup.enter="createPlan"/>-->
-<!--      </div>-->
-<!--      <div class="field">-->
-<!--        <label>{{ $t('common.nameInQazaq') }}</label>-->
-<!--        <InputText v-model="formData.name_kz" v-on:keyup.enter="createPlan"/>-->
-<!--      </div>-->
-<!--      <div class="field">-->
-<!--        <label>{{ $t('common.nameInEnglish') }}</label>-->
-<!--        <InputText v-model="formData.name_en" v-on:keyup.enter="createPlan"/>-->
-<!--      </div>-->
-<!--      <template #footer>-->
-<!--        <Button :label="$t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger"-->
-<!--                @click="close('newPublicationDialog')"/>-->
-<!--        <Button :label="$t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2"-->
-<!--                :disabled="!formData"-->
-<!--                @click="createRegistry"/>-->
-<!--      </template>-->
-<!--    </Dialog>-->
   </div>
 </template>
 
@@ -63,11 +38,7 @@ export default {
         filtered: false
       },
       data: [],
-      columns: [
-        { field: 'registry_name', header: 'mailing.title' },
-        { field: 'dataSource', header: 'registry.dataSource' }
-
-      ],
+      columns: [],
       showAddPlanDialog: false,
       formData: {
         name_ru: null,
@@ -80,6 +51,10 @@ export default {
         { label: this.$t('registry.active'), value: "active" },
         { label: this.$t('registry.inactive'), value: "inactive" },
       ],
+      applications: [],
+      totalRecords:0,
+      page: 0,
+      rows: 10,
     }
   },
   methods: {
@@ -162,13 +137,11 @@ export default {
       this.registryService.getRegistryParameters(req)
           .then(response => {
             response.data.register_parameter.forEach((item, index) => {
-              if (index >= 6) {
-                this.columns.push({
-                  field: item.label_en,
-                  header: item.label_ru,
-                  registry_id: parseInt(item.id),
-                });
-              }
+              this.columns.push({
+                field: item.label_en,
+                header: item.label_ru,
+                id: parseInt(item.id),
+              });
             });
           })
           .catch(error => {
@@ -177,37 +150,29 @@ export default {
     },
 
     getRegisterParamterApplaction() {
-  this.loading = true;
-  const req = {
-    page: 0,
-    rows: 10,
-    registry_id: parseInt(this.$route.params.id),
-  };
+    this.loading = true;
+      const req = {
+        page: this.page,
+        rows: this.rows,
+        registry_id: parseInt(this.$route.params.id),
+      };
 
-  this.registryService.getApplication(req).then((res) => {
-    const applications = res.data.applications[0];
-
-    // Удаляем дубликаты по value_kz, value_ru и value_en
-    const uniqueParameters = applications.parameters.reduce((acc, current) => {
-      if (
-        !acc.find(
-          item =>
-            item.value_kz === current.value_kz &&
-            item.value_ru === current.value_ru &&
-            item.value_en === current.value_en
-        )
-      ) {
-        acc.push(current);
+      this.registryService.getApplication(req).then((res) => {
+        this.applications = res.data.applications
+        this.totalRecords = res.data.total
+      });
+    },
+    getValue: (slotProps, id) => {
+      if (slotProps && slotProps.data && slotProps.data.parameters) {
+        const param = slotProps.data.parameters.find((p) => p.parameter.id === id);
+        return param ? param.value_kz : '';
       }
-      return acc;
-    }, []);
-
-    console.log(uniqueParameters);
-  });
-}
-
-
-
+      return '';
+    },
+    onPageChange: (event) => {
+      this.page = event.page
+      this.getRegisterParamterApplaction()
+    }
   },
   computed: {
     toolbarMenus() {

@@ -40,12 +40,21 @@
                     field.label_en
               }} <span v-if="isCurrentUserSender"
                        style="font-size: 20px; color: red;">*</span></label>
-<div v-if="field.type === 1">
-  <InputText v-model="field.value" :type="field.type" :placeholder="$i18n.locale === 'kz' ? field.name_kz : $i18n.locale === 'ru' ? field.name_ru :
-      field.name_en" @input="input"/>
-</div>
+            <div v-if="field.type === 1">
+              <InputText v-model="field.value" :type="field.type" :placeholder="$i18n.locale === 'kz' ? field.name_kz : $i18n.locale === 'ru' ? field.name_ru :
+                  field.name_en" @input="input"/>
+            </div>
             <div v-if="field.type === 2">
               <Textarea v-model="field.value" autoResize rows="5" cols="30"/>
+            </div>
+            <div class="p-field" v-if="field.type === 3">
+              <Dropdown
+                  v-model="field.value"
+                  :options="field.parents.map(item => item['label_' + $i18n.locale])"
+                  autoResize
+                  :appendTo="'body'"
+                  :emptyMessage="$t('common.noOptions')"
+              />
             </div>
           </div>
         </div>
