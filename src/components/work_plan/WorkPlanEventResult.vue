@@ -255,7 +255,7 @@
                   </div>
 
                   <div v-else class="p-0">
-                    <span style="float:right;margin-top: -7px;" v-if="isPlanCreator && !isInternshipPlan">
+                    <span style="float:right;margin-top: -7px;" v-if="isPlanCreator &&  !isInternshipPlan">
                       <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)" :label="$t('common.action.accept')"></Button>
                       <Button icon="pi pi-fw pi-times" class="p-button-rounded p-button-text" @click="showToCorrectSidebar()" :label="$t('workPlan.toCorrect')"></Button>
                     </span>
