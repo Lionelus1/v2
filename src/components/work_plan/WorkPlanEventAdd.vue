@@ -3,7 +3,8 @@
       :header="isShedulePlan ? $t('workPlan.addTask') : $t('workPlan.addEvent')"
       v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
-      <DoctorsMastersAddEvent :plan="plan" v-if="!isShedulePlan  && !isDirectorsPlan" @update-data="updateData" />
+      <DoctorsMastersAddEvent :plan="plan" v-if="!isShedulePlan  && !isDirectorsPlan" 
+      @update-data="updateData" />
       <div class="field" v-if="!isMastersPlan && !isDoctorsPlan && !isDirectorsPlan">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
             isShedulePlan ? $t('workPlan.worksByWeek') : $t('workPlan.eventName') }} </label>
@@ -55,15 +56,18 @@
         }}</small>
       </div>
       <!-- directors plan -->
-      <div class="field" v-if="isDirectorsPlan">
+      <div class="field" 
+      v-if="isDirectorsPlan">
         <label>{{ $t('workPlan.issueTitle') }}</label>
         <InputText v-model="event_name" />
       </div>
-      <div class="field" v-if="isDirectorsPlan">
+      <div class="field" 
+      v-if="isDirectorsPlan">
         <label>{{ $t('workPlan.implementationDate') }}</label>
         <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field" v-if="!isSciencePlan && !isMastersPlan && !isDoctorsPlan && !isShedulePlan">
+      <div class="field" 
+      v-if="!isSciencePlan && !isMastersPlan && !isDoctorsPlan && !isShedulePlan">
         <label>{{
           plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper
             ? $t('workPlan.summary')
@@ -116,7 +120,8 @@
         <label>{{ $t('common.suppDocs') }}</label>
         <Textarea v-model="supporting_docs" rows="3" style="resize: vertical" />
       </div>
-      <div class="field" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan  && !isDirectorsPlan">
+      <div class="field" 
+      v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan  && !isDirectorsPlan">
         <label>{{
           isOperPlan ? $t('common.additionalInfo') : $t('common.result')
           }}</label>
