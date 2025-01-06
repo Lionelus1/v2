@@ -1,5 +1,6 @@
 <template>
   <Dialog
+
       :header="isShedulePlan ? $t('workPlan.addTask') : $t('workPlan.addEvent')"
       v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
     <div class="p-fluid">
@@ -8,30 +9,36 @@
       <!-- mastersplan -->
       <div class="field" v-if="!isMastersPlan && !isDoctorsPlan">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
+
             isShedulePlan ? $t('workPlan.worksByWeek') : $t('workPlan.eventName') }} </label>
         <InputText v-model="event_name" />
         <small class="p-error" v-if="submitted && formValid.event_name">{{
           $t('workPlan.errors.eventNameError')
         }}</small>
       </div>
+
       <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan && !isShedulePlan)">
         <label>{{ $t('common.startDate') }}</label>
         <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
+
       <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan && !isShedulePlan)">
         <label>{{ $t('common.endDate') }}</label>
         <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
 
       <div class="field" v-if="isShedulePlan">
+
         <label>{{ $t('common.startDate') + "(" + $t('workPlan.week') + ")" }}</label>
         <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
       <div class="field" v-if="isShedulePlan">
+
         <label>{{ $t('common.endDate') + "(" + $t('workPlan.week') + ")" }}</label>
         <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
       <div class="field" v-if="isShedulePlan">
+
         <label>{{ $t('web.note') }}</label>
         <InputText v-model="comment" />
       </div>
@@ -58,6 +65,7 @@
       </div>
 
       <div class="field" v-if="!isSciencePlan && !isMastersPlan && !isDoctorsPlan && !isShedulePlan">
+
         <label>{{
           plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper
             ? $t('workPlan.summary')
@@ -91,6 +99,7 @@
         @click="addNewUser" />
     </div>
     <div class="p-fluid" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan">
+
       <div class="field" v-if="
         (plan &&
           plan.plan_type.code !== Enum.WorkPlanTypes.Science &&
@@ -109,6 +118,7 @@
         <Textarea v-model="supporting_docs" rows="3" style="resize: vertical" />
       </div>
       <div class="field" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan">
+
         <label>{{
           isOperPlan ? $t('common.additionalInfo') : $t('common.result')
           }}</label>
@@ -231,6 +241,7 @@ export default {
   },
   computed: {
     isShedulePlan() {
+
       return (
           this.plan &&
           this.plan.plan_type &&
