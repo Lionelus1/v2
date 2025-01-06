@@ -1451,7 +1451,7 @@ export default {
     report: {
         title: "Report Designer",
         success: "Successfully generated!",
-        ReportDesigner: "Report Designer",
+        ReportDesigner: "Report builder",
         TypeDocument: "Type of document",
         period: "Period",
         department: "Structural division",

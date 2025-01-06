@@ -316,14 +316,14 @@ const ListCategories = [
   {
     nameKz: "Үш жақты келісім-шарт",
     nameRu: "Трехсторонний договор",
-    nameEn: "Report Category 1",
+    nameEn: "Trilateral agreement",
     code: 5,
     id: 32,
   },
   {
     nameKz: "Екі жақты келісім-шарт",
     nameRu: "Двухсторонний договор",
-    nameEn: "Report Category 2",
+    nameEn: "Bilateral agreement",
     code: 5,
     id: 34  ,
   },
