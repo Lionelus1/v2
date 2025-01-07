@@ -31,4 +31,10 @@ export default class RegistryService {
   getApplication(data) {
     return api.post(`/registry/application`, data, { headers: getHeader() });
   }
+  updateApplication(data) {
+    return api.post(`/registry/application/update`, data, { headers: getHeader() });
+  }
+  deleteApplication(data) {
+    return api.post(`/registry/application/delete`, data, { headers: getHeader() });
+  }
 }

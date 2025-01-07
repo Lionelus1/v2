@@ -41,19 +41,20 @@
               }} <span v-if="isCurrentUserSender"
                        style="font-size: 20px; color: red;">*</span></label>
             <div v-if="field.type === 1">
-              <InputText v-model="field.value" :type="field.type" :placeholder="$i18n.locale === 'kz' ? field.name_kz : $i18n.locale === 'ru' ? field.name_ru :
+              <InputText style="width: 295px;" v-model="field.value" :type="field.type" :placeholder="$i18n.locale === 'kz' ? field.name_kz : $i18n.locale === 'ru' ? field.name_ru :
                   field.name_en" @input="input"/>
             </div>
             <div v-if="field.type === 2">
               <Textarea v-model="field.value" autoResize rows="5" cols="30"/>
             </div>
-            <div class="p-field" v-if="field.type === 3">
+            <div class="p-field" v-if="field.type === 3" >
               <Dropdown
                   v-model="field.value"
                   :options="field.parents.map(item => item['label_' + $i18n.locale])"
                   autoResize
                   :appendTo="'body'"
                   :emptyMessage="$t('common.noOptions')"
+                  style="width: 295px;"
               />
             </div>
           </div>
@@ -160,7 +161,7 @@ const addNewAttribute = () => {
   registryService.createRegistryParameter(reqFormFields.value[0]).then((res) => {
     console.log(res);
   })
-  this.newAttribute = null
+
 };
 
 const close = (dialog) => {
@@ -190,9 +191,67 @@ const menu = computed(() => [
     command: save
   },
 ]);
+const selectedApplication = computed(() => {
+  return route.query.selectedApplicationId;
+})
+
+const getRegisterParameterApplication = () => {
+  loading.value = true;
+
+  const req = {
+    page: 0,
+    rows: 1,
+    registry_id: parseInt(route.params.id, 10),
+    id: parseInt(selectedApplication.value, 10),
+  };
+
+  registryService.getApplication(req)
+      .then((res) => {
+        if (res.data.applications.length === 1) {
+          // Берем первый объект application
+          const application = res.data.applications[0];
+
+          // Перебираем параметры из application.parameters
+          application.parameters.forEach((param) => {
+            // Находим индекс объекта в formFields
+            console.log(param);
+            const index = formFields.value.findIndex((p) => p.id === param.parameter.id);
+
+            // Если индекс найден, проверяем и добавляем value, если его нет
+            if (index !== -1) {
+              if (!Object.prototype.hasOwnProperty.call(formFields.value[index], 'value')) {
+                formFields.value[index].value = ''; // Инициализируем значение value
+              }
+              formFields.value[index].value = param.value_ru; // Устанавливаем value_ru
+            }
+          });
+        }
+        loading.value = false;
+      })
+      .catch(() => {
+        loading.value = false; // Обработка ошибки
+      });
+};
+
+
+
+
+
+
+/*
+
+const getValue  = (slotProps, id) => {
+  if (slotProps && slotProps.data && slotProps.data.parameters) {
+    const param = slotProps.data.parameters.find((p) => p.parameter.id === id);
+    return param ? param.value_kz : '';
+  }
+  return '';
+}*/
 
 const save = () => {
+  const id = selectedApplication.value ? selectedApplication.value : null
   const req = {
+    id: parseInt(id),
     status: 0,
     registry: {
       id: parseInt(route.params.id),
@@ -211,14 +270,24 @@ const save = () => {
       value_ru: field.value || '',
     })),
   };
+  if (selectedApplication.value && selectedApplication.value.length > 0) {
+    registryService.updateApplication(req)
+        .then(response => {
+          console.log('Application saved successfully:', response);
+        })
+        .catch(error => {
+          console.error('Error saving application:', error);
+        });
+  } else {
+    registryService.createApplication(req)
+        .then(response => {
+          console.log('Application saved successfully:', response);
+        })
+        .catch(error => {
+          console.error('Error saving application:', error);
+        });
+  }
 
-  registryService.createApplication(req)
-      .then(response => {
-        console.log('Application saved successfully:', response);
-      })
-      .catch(error => {
-        console.error('Error saving application:', error);
-      });
 }
 
 const getRegisterParameter = () => {
@@ -227,6 +296,9 @@ const getRegisterParameter = () => {
   };
   registryService.getRegistryParameters(req).then(response => {
     formFields.value = response.data.register_parameter;
+    if (selectedApplication.value && selectedApplication.value.length > 0) {
+      getRegisterParameterApplication()
+    }
   }).catch(error => {
     console.error('Ошибка при получении параметров:', error);
   });
@@ -234,6 +306,10 @@ const getRegisterParameter = () => {
 
 onMounted(() => {
   getRegisterParameter()
+  // if (selectedApplication.value && selectedApplication.value.length > 0) {
+  //   getRegisterParameterApplication();
+  // }
+
 })
 
 </script>

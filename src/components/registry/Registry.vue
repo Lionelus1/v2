@@ -6,9 +6,9 @@
       </div>
       <h4 class="m-0">Реестр</h4>
     </div>
-    <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
+    <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)"/>
     <div class="card">
-      <DataTable :value="applications"  @page="onPageChange" :paginator="true"  :page="0" :rows="10"  :totalRecords="totalRecords">
+      <DataTable :value="applications"  @page="onPageChange" :paginator="true"  :page="0" :rows="10"  :totalRecords="totalRecords" v-model:selection="selectedApplication" selectionMode="single">
                 <Column v-for="column in columns" :key="column.id" :header="$t(column.header)">
                   <template #body="slotProps">
                     {{ getValue(slotProps, column.id) }}
@@ -22,6 +22,7 @@
 
 <script>
 import RegistryService from "../../service/registry_service";
+import {registry} from "chart.js";
 
 
 export default {
@@ -55,6 +56,7 @@ export default {
       totalRecords:0,
       page: 0,
       rows: 10,
+      selectedApplication: null,
     }
   },
   methods: {
@@ -63,7 +65,18 @@ export default {
     },
     open(){
       this.$router.push({ name: 'RegistryAdd', params: {id: parseInt(this.$route.params.id)} });
-      // this.showAddPlanDialog = true;
+    },
+    update() {
+      this.$router.push({ name: 'RegistryAdd', params: {id: parseInt(this.$route.params.id)}, query: {selectedApplicationId: this.selectedApplication.id} });
+    },
+    delete() {
+      const req = {
+        id: parseInt(this.selectedApplication.id),
+      }
+      this.registryService.deleteApplication(req).then(response => {
+        this.selectedApplication = null
+        this.getRegisterParamterApplaction()
+      })
     },
     close(){
       this.showAddPlanDialog = false;
@@ -181,14 +194,31 @@ export default {
           label: this.$t('common.add'),
           icon: "pi pi-plus",
           command: () => {
-            this.open('newPublicationDialog')
+            this.open()
           },
         },
         {
           label: this.$t('registry.import'),
           icon: "pi pi-file-import",
+          disabled: false,
           command: () => {
             this.openBasic()
+          },
+        },
+        {
+          label: this.$t('workPlan.modifiedPerson'),
+          icon: "pi pi-pencil",
+          disabled: this.selectedApplication === null,
+          command: () => {
+            this.update()
+          },
+        },
+        {
+          label: this.$t('common.delete'),
+          icon: "pi pi-trash",
+          disabled: this.selectedApplication === null,
+          command: () => {
+            this.delete()
           },
         },
       ]

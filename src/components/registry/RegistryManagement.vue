@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
   <h3>{{$t('registry.menuTitle')}}</h3>
-  <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)" :filter="true" :filtered="filtered"/>
+  <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)"/>
   <div class="card">
 
     <DataTable :lazy="true" :rowsPerPageOptions="[10, 25, 50]" dataKey="id" :rowHover="true"
