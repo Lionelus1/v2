@@ -2191,7 +2191,8 @@ export default {
         guide:'Справочник',
         manually:'Вручную',
         inputText: 'Ввод текста',
-        textArea: 'Ввод описание'
+        textArea: 'Ввод описание',
+        dropdown: 'Выпадающий список',
     },
     status_resume: "Статус заполнения резюме",
     people_special_needs: "Люди с особыми потребностями"

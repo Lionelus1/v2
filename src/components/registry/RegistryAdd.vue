@@ -98,9 +98,9 @@ const formData = ref({
   science_params: null
 })
 const selectedDirection = ref({
-  name_ru: 'Саулет братан',
-  name_kz: 'Саулет братан',
-  name_en: 'Saulet bratan',
+  name_ru: 'Реестр',
+  name_kz: 'Тізілім',
+  name_en: 'Registry',
 })
 const languages = ref([
   {
@@ -139,6 +139,7 @@ const visibility = ref({
 const fieldTypes = [
   { label: t('registry.inputText'), value: 1 },
   { label: t('registry.textArea'), value: 2 },
+  { label: t('registry.dropdown'), value: 3 },
 ];
 
 const newAttribute = reactive({
