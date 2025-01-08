@@ -1531,7 +1531,7 @@ export default {
             presentDateTime: "Қазіргі дата",
             listened: "Тыңдады",
             previewDocument: 'Алдын ала қарау',
-            createProtocolExtract: "Кесінді жасау",
+            createProtocolExtract: "Хаттама көшірмесін жасау",
             messages: {
                 decisionAddedSuccess: "Шешім сәтті қосылды",
                 personAlreadyExists: "Жауапты тұлға қосылған",

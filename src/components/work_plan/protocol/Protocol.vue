@@ -472,11 +472,7 @@
             </div>
           </div>
         </div>
-        <div class="p-fluid mt-3">
-          <label for="reporter" class="block mb-1">{{ $t('workPlan.protocol.reported') }}{{ "*" }}</label>
-          <FindUser class="mt-2" v-model="boardAgendaReporter" :editMode="true" :user-type="3"
-                    :disabled="isInApprove"/>
-        </div>
+      
         <div class="p-fluid mt-3">
           <label for="innerRules" class="block mb-1">{{ $t('workPlan.protocol.innerRule') }}{{ "*" }}</label>
           <Textarea id="innerRule" v-model="agendaData.inner_rule" class="mt-2" rows="3" :disabled="isInApprove"/>
@@ -639,7 +635,6 @@ const protocolSecretaryMember = ref([])
 const absentBoardMembers = ref([])
 const invitedBoardMembers = ref([])
 const boardAgendaSpeaker = ref([])
-const boardAgendaReporter = ref([])
 const boardAgendaResponsivePerson = ref([])
 const addBoardAgendaResponsiveMember = ref([])
 const workPlanID = route.params.workPlanId;
@@ -977,7 +972,6 @@ const updateProtocolAgenda = () => {
 };
 
 const agendasModalView = (eventId) => {
-  boardAgendaReporter.value = []
   boardAgendaSpeaker.value = []
   boardAgendaResponsivePerson.value = []
   selectedEvent.value = null;
@@ -1061,31 +1055,8 @@ const agendasModalView = (eventId) => {
             : 0,
       };
     }
-    agendaData.value.reporter = foundEvent.protocol_agenda?.reporter || [];
     agendaData.value.inner_rule = foundEvent.protocol_agenda?.inner_rule || null;
-    if (agendaData.value.reporter && agendaData.value.reporter.length > 0) {
-      boardAgendaReporter.value = []
-      agendaData?.value?.reporter.forEach(member => {
-        contragentService.getPersons({
-          "filter": {
-            "userIDs": [member.user_id],
-          }
-        }).then(res => {
-          if (res.data.foundUsers && res.data.foundUsers.length > 0) {
-            const foundUser = res.data.foundUsers[0];
-
-            const exists = boardAgendaReporter.value.some(existingMember =>
-                existingMember.userID === member.user_id
-            );
-
-            if (!exists) {
-              boardAgendaReporter.value.push(foundUser);
-            }
-          }
-        })
-      });
-
-    }
+    
     agendaData.value.board_decisions = foundEvent.protocol_agenda?.board_decisions || [{
       board_decision: null,
       responsive_person: [],
@@ -1162,9 +1133,6 @@ const removeBoardAgendaRespMember = () => removeMembers(addBoardAgendaResponsive
 const addBoardAgendaResponsivePerson = () => addMembers(boardAgendaResponsivePerson, agendaData.value.board_decisions[0], 'responsive_person');
 const removeBoardAgendaResponsivePerson = () => removeMembers(boardAgendaResponsivePerson, agendaData.value.board_decisions[0], 'responsive_person');
 
-const addBoardAgendaReporter = () => addMembers(boardAgendaReporter, agendaData.value, 'reporter');
-const removeBoardAgendaReporter = () => removeMembers(boardAgendaReporter, agendaData.value, 'reporter');
-
 const addBoardAgendaSpeaker = () => addMembers(boardAgendaSpeaker, agendaData.value, 'speaker');
 const removeBoardAgendaSpeaker = () => removeMembers(boardAgendaSpeaker, agendaData.value, 'speaker');
 
@@ -1199,7 +1167,6 @@ const addProtocolIssues = () => {
 const watchItems = [
   {target: addBoardAgendaResponsiveMember, add: addBoardAgendaRespMember, remove: removeBoardAgendaRespMember},
   {target: boardAgendaResponsivePerson, add: addBoardAgendaResponsivePerson, remove: removeBoardAgendaResponsivePerson},
-  {target: boardAgendaReporter, add: addBoardAgendaReporter, remove: removeBoardAgendaReporter},
   {target: boardAgendaSpeaker, add: addBoardAgendaSpeaker, remove: removeBoardAgendaSpeaker},
   {target: participatedBoardMembers, add: addParticipatedMembers, remove: removeParticipatedMembers},
   {target: protocolSecretaryMember, add: addSecretaryMember, remove: removeSecretaryMember},
