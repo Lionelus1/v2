@@ -290,7 +290,7 @@ export default {
       }
 
       if (this.isInternshipPlan) {
-        data = {...data, ...this.comingData, semester: this.data?.semester};
+        data = {...data, ...this.comingData, semester: this.data?.semester, parent_id: null};
       }
       this.planService.createEvent(data).then(res => {
         this.emitter.emit("workPlanEventIsAdded", {is_success: true, is_main: this.isMain});
