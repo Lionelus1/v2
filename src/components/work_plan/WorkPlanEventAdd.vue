@@ -143,6 +143,9 @@ export default {
         users: false,
         quarter: false,
         semester: false,
+        startDate: false,
+        content: false,
+        responsible_executor: false,
       },
       submitted: false,
       newQuarters: [],
@@ -317,7 +320,10 @@ export default {
     },
     validateForm() {
       if (this.isInternshipPlan) {
-        return true
+        this.formValid.startDate = !this.comingData?.start_date;
+        this.formValid.content = !this.comingData?.event_name;
+        this.formValid.responsible_executor = !this.comingData?.resp_person_id;
+        return !this.formValid.startDate && !this.formValid.content && !this.formValid.responsible_executor;
       }
       this.formValid.event_name = !this.event_name;
       this.formValid.summaryUser = !this.summaryDepartment.length === 0;

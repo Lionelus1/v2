@@ -1469,6 +1469,8 @@ export default {
             approvalUserError: "Select the responsible persons",
             quarterError: "Select a quarter",
             langError: "Choose language",
+            contentError: "Content is required",
+            startDateError: "Start date is required",
         },
         message: {
             eventCreated: "Event created successfully",

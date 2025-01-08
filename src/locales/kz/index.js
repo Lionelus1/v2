@@ -1487,6 +1487,8 @@ export default {
             approvalUserError: "Жауапты тұлғаларды таңдаңыз",
             quarterError: "Тоқсан таңдаңыз",
             langError: "Тіл таңдаңыз",
+            contentError: "Мазмұн қажет",
+            startDateError: "Басталу күні қажет",
         },
         message: {
             eventCreated: "Іс-шара сәтті құрылды",

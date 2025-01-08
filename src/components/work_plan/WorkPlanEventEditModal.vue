@@ -108,11 +108,13 @@
                 $t("workPlan.content")
           }}</label>
         <Textarea v-model="editData.event_name" rows="3" style="resize: vertical"/>
+        <small class="p-error" v-if="submitted && formValid?.content">{{ $t('workPlan.errors.contentError') }}</small>
       </div>
       <div class="field">
         <label>{{ $t('common.startDate') }}</label>
         <PrimeCalendar v-model="editData.start_date" dateFormat="dd.mm.yy" showIcon
                        :showButtonBar="true"></PrimeCalendar>
+        <small class="p-error" v-if="submitted && formValid?.startDate">{{ $t('workPlan.errors.startDateError') }}</small>
       </div>
       <div class="field">
         <label>{{ $t('common.endDate') }}</label>
@@ -121,7 +123,7 @@
       <div class="field">
         <label>{{ $t('workPlan.approvalUsers') }}</label>
         <FindUser v-model="resp_person" :editMode="true" :user-type="3"></FindUser>
-        <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
+        <small class="p-error" v-if="submitted && formValid.responsible_executor">{{ $t('workPlan.errors.approvalUserError') }}</small>
       </div>
       <div class="field">
         <label>{{
@@ -186,7 +188,10 @@ export default {
       formValid: {
         event_name: false,
         users: false,
-        quarter: false
+        quarter: false,
+        startDate: false,
+        content: false,
+        responsible_executor: false,
       },
       submitted: false,
       planService: new WorkPlanService(),
@@ -624,7 +629,10 @@ export default {
 
     notValid() {
       if (this.isInternshipPlan) {
-        return false
+        this.formValid.startDate = !this.editData?.start_date;
+        this.formValid.content = !this.editData?.event_name;
+        this.formValid.responsible_executor = !this.resp_person || this.resp_person?.length === 0;
+        return !(!this.formValid.startDate && !this.formValid.content && !this.formValid.responsible_executor);
       }
       this.formValid.event_name = this.editData.event_name === null || this.editData.event_name === '';
       this.formValid.users = this.selectedUsers.length === 0;

@@ -12,6 +12,7 @@
           showIcon
           :showButtonBar="true"
       ></PrimeCalendar>
+      <small class="p-error" v-if="formValid?.startDate">{{ $t('workPlan.errors.startDateError') }}</small>
     </div>
     <div class="field">
       <label>{{ $t('common.endDate') }}</label>
@@ -25,11 +26,12 @@
     <div class="field">
       <label>{{ $t('workPlan.contentsOfPlannedWork') }}</label>
       <Textarea v-model="event_name" rows="3" style="resize: vertical"/>
+      <small class="p-error" v-if="formValid?.content">{{ $t('workPlan.errors.contentError') }}</small>
     </div>
     <div class="field">
       <label>{{ $t('workPlan.approvalUsers') }}</label>
       <FindUser v-model="resp_person" :editMode="true" :user-type="3" :max="1"></FindUser>
-      <small class="p-error" v-if="formValid?.users">{{
+      <small class="p-error" v-if="formValid?.responsible_executor">{{
           $t('workPlan.errors.approvalUserError')
         }}</small>
     </div>
@@ -49,7 +51,7 @@ const emit = defineEmits('updateData');
 
 const quarter = ref(null);
 const start_date = ref(new Date());
-const end_date = ref(new Date());
+const end_date = ref(null);
 const event_name = ref(null);
 const result = ref(null);
 const resp_person = ref([JSON.parse(localStorage.getItem('loginedUser'))]);

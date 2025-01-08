@@ -1480,6 +1480,8 @@ export default {
             approvalUserError: "Выберите ответственных лиц",
             quarterError: "Выберите квартал",
             langError: "Выберите язык",
+            contentError: "Содержание обязательно",
+            startDateError: "Дата начала обязательна",
         },
         message: {
             eventCreated: "Мероприятие успешно создано",
