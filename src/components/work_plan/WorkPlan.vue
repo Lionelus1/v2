@@ -637,6 +637,13 @@ export default {
     border-radius: 3px;
   }
 
+  &.masters {
+    background: #cf29c7;
+    color: #fff;
+    font-weight: 500;
+    border-radius: 3px;
+  }
+
   .approved {
     color: #42855B;
   }

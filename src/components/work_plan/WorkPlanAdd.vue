@@ -13,7 +13,7 @@
     </div>
     <div class="field">
       <label>{{ $t('workPlan.planType') }}</label>
-      <Dropdown v-model="formData.plan_type" :options="types" :optionLabel="'name_' + $i18n.locale" optionValue="id"
+      <Dropdown v-model="plan_type" :options="types" :optionLabel="'name_' + $i18n.locale" @change="planChange"
                 :placeholder="$t('common.select')"/>
       <small class="p-error" v-if="submitted && !formData.plan_type">{{ $t('common.requiredField') }}</small>
     </div>
@@ -73,6 +73,7 @@ const planService = new WorkPlanService()
 const docService = new DocService()
 const types = ref([])
 const params = ref(null)
+const plan_type = ref(null)
 
 const closeBasic = () => {
   emit('hide')
@@ -139,8 +140,10 @@ onMounted(() => {
   getWorkPlanTypes();
 })
 
-watch(() => formData.plan_type, () => {
-  const id = types.value[formData.plan_type - 1].dic_document_types
+const planChange = (event) => {
+  formData.plan_type = event.value?.id
+
+  const id = event.value?.dic_document_types
   if (id == null) {
     params.value = null
     return
@@ -148,8 +151,8 @@ watch(() => formData.plan_type, () => {
   docService.getDocParams(id).then(res => {
     params.value = JSON.parse(res.data)
   }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
+    params.value = null
   })
+}
 
-})
 </script>
