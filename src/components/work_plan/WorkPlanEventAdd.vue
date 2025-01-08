@@ -363,6 +363,10 @@ export default {
       if (this.plan && this.plan.plan_type && (this.plan.plan_type.code === this.Enum.WorkPlanTypes.Directors)) {
         data.start_date = this.start_date
       }
+      //plan?.doc_info?.docHistory?.stateId
+      if (this.plan && this.plan.plan_type && (this.plan.plan_type.code === this.Enum.WorkPlanTypes.Directors) && (this.plan?.doc_info?.docHistory?.stateId === 3)) {
+        data.fact = "Внеплановый вопрос";
+      }
 
       if (
         this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters ||

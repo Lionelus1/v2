@@ -26,6 +26,8 @@
       <Column field="content" :expander="true" class="max-w-20rem" :header="$t('workPlan.issueTitle')">
         <template #body="{ node }">
           {{ node.event_name }}
+          <span v-if="node.fact" style="background-color: blueviolet;color: white;padding: 2px;font-size: 10px;">{{ node.fact }}</span>
+        
         </template>
       </Column>
 
