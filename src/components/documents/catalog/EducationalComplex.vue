@@ -460,6 +460,19 @@ export default {
         {
           stage: 4,
           users: null,
+          titleRu: "Директор научной библиотеки",
+          titleKz: "Ғылыми кітапхана директоры",
+          titleEn: "Director of the Scientific Library",
+          certificate: {
+            namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+            nameru: "Для внутреннего документооборота (ГОСТ)",
+            nameen: "For internal document management (GOST)",
+            value: "internal"
+          },
+        },
+        {
+          stage: 4,
+          users: null,
           titleRu: "Декан",
           titleKz: "Декан",
           titleEn: "Dean",
