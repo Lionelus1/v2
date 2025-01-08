@@ -123,6 +123,10 @@ export class DocService {
         return api.post("/documents/ids", data, {headers: getHeader()});
     }
 
+    getStates() {
+        return api.get("/getStates", {headers: getHeader()});
+    }
+
     getDocumentV2(data) {
         return api.post("/document/get", data, {headers: getHeader()});
     }

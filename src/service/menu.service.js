@@ -341,6 +341,12 @@ export class MenuService {
                         label: $t('Hikvision'),
                         icon: 'fa-solid fa-file-signature',
                         to: '/hikvision',
+
+                    },
+                    {
+                        label: $t('report.title'),
+                        icon: 'fa-solid fa-chart-simple',
+                        to: '/reports',
                     }
                 ]
             },
