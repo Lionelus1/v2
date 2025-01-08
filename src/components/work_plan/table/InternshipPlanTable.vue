@@ -38,7 +38,7 @@
                   item.status.name_en
             }}</span></td>
           <td>
-            <ActionButton :items="items" :show-label="true" @toggle="emit('onToggle', item)" style="width: 100%"/>
+            <ActionButton :items="items(item)" :show-label="true" @toggle="emit('onToggle', item)" style="width: 100%"/>
           </td>
         </template>
       </tr>
