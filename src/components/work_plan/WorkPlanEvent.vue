@@ -139,7 +139,7 @@
         </Column>
         <Column field="actions" header="">
           <template #body="{ node }">
-            <ActionButton :items="initItems" :show-label="true" @toggle="actionsToggle(node)"/>
+            <ActionButton :items="initItems(node)" :show-label="true" @toggle="actionsToggle(node)"/>
           </template>
         </Column>
       </TreeTable>
