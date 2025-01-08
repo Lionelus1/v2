@@ -9,8 +9,11 @@
     <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)"/>
     <div class="card">
       <DataTable :value="applications"  @page="onPageChange" :paginator="true"  :page="0" :rows="10"  :totalRecords="totalRecords" v-model:selection="selectedApplication" selectionMode="single">
-                <Column v-for="column in columns" :key="column.id" :header="$t(column.header)">
+                <Column v-for="column in columns" :key="column.id" :header="$i18n.locale === 'kz' ? column.label_kz : $i18n.locale === 'ru' ? column.label_ru :
+        column.label_en">
                   <template #body="slotProps">
+<!--                    {{ $i18n.locale === 'kz' ? column.value_kz : $i18n.locale === 'ru' ? column.value_ru :-->
+<!--                      column.value_en }}-->
                     {{ getValue(slotProps, column.id) }}
                   </template>
                 </Column>
@@ -152,7 +155,12 @@ export default {
             response.data.register_parameter.forEach((item, index) => {
               this.columns.push({
                 field: item.label_en,
-                header: item.label_ru,
+                label_kz: item.label_kz,
+                label_ru: item.label_ru,
+                label_en: item.label_en,
+                value_kz: item.value_kz,
+                value_en: item.value_en,
+                value_ru: item.value_ru,
                 id: parseInt(item.id),
               });
             });

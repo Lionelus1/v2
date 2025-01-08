@@ -2193,6 +2193,7 @@ export default {
         inputText: 'Ввод текста',
         textArea: 'Ввод описание',
         dropdown: 'Выпадающий список',
+        dataEntry: 'Ввод данных'
     },
     status_resume: "Статус заполнения резюме",
     people_special_needs: "Люди с особыми потребностями"

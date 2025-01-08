@@ -26,7 +26,12 @@
             <div class="field">
               <label>{{ t('common.type') }}</label>
               <Dropdown v-model="newAttribute.type" :options="fieldTypes"  optionLabel="label"
-                        optionValue="value" placeholder="Тип поля" />
+                        optionValue="value" placeholder="Тип поля" style="width: 350px;" />
+            </div>
+            <div class="field" v-if="newAttribute.type === 3">
+              <label>{{ t('registry.dataEntry') }}</label>
+              <Dropdown v-model="newAttribute.type" :options="fieldTypes"  optionLabel="label"
+                        optionValue="value" placeholder="Тип поля" style="width: 350px;" />
             </div>
             <template #footer>
               <Button :label="t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="close('addAttributeDialog')" />
@@ -38,24 +43,29 @@
             <label>{{
                 $i18n.locale === "kz" ? field.label_kz : $i18n.locale === "ru" ? field.label_ru :
                     field.label_en
-              }} <span v-if="isCurrentUserSender"
-                       style="font-size: 20px; color: red;">*</span></label>
+              }}</label>
             <div v-if="field.type === 1">
-              <InputText style="width: 295px;" v-model="field.value" :type="field.type" :placeholder="$i18n.locale === 'kz' ? field.name_kz : $i18n.locale === 'ru' ? field.name_ru :
-                  field.name_en" @input="input"/>
+              <InputText style="width: 295px;" v-model="field.value_kz" :type="field.type" :placeholder="field.label_kz"/>
+              <InputText style="width: 295px; margin-left: 15px" v-model="field.value_ru" :type="field.type" :placeholder="field.label_ru" />
+              <InputText style="width: 295px; margin-left: 15px" v-model="field.value_en" :type="field.type" :placeholder="field.label_en"/>
             </div>
             <div v-if="field.type === 2">
-              <Textarea v-model="field.value" autoResize rows="5" cols="30"/>
+              <Textarea v-model="field.value_kz" autoResize rows="5" cols="30" :placeholder="field.label_kz"/>
+              <Textarea style="margin-left: 15px" v-model="field.value_ru" autoResize rows="5" cols="30" :placeholder="field.label_ru"/>
+              <Textarea style="margin-left: 15px" v-model="field.value_en" autoResize rows="5" cols="30" :placeholder="field.label_en"/>
             </div>
             <div class="p-field" v-if="field.type === 3" >
               <Dropdown
-                  v-model="field.value"
+                  v-model="field.value_kz"
                   :options="field.parents.map(item => item['label_' + $i18n.locale])"
                   autoResize
                   :appendTo="'body'"
                   :emptyMessage="$t('common.noOptions')"
                   style="width: 295px;"
               />
+            </div>
+            <div class="field" v-if="field.type === 4" style="width: 295px;">
+              <FindUser :v-model="field.value ? field.value : field.applicant" :max="1"></FindUser>
             </div>
           </div>
         </div>
@@ -77,6 +87,8 @@ import {useI18n} from "vue-i18n";
 import {useRoute, useRouter} from "vue-router";
 import {findRole} from "../../config/config";
 import RegistryService from "../../service/registry_service";
+import FindUser from "../../helpers/FindUser.vue";
+
 
 const props = defineProps(['visible', 'isAdded', 'isSub'])
 const emit = defineEmits(['hide']);
@@ -140,6 +152,7 @@ const fieldTypes = [
   { label: t('registry.inputText'), value: 1 },
   { label: t('registry.textArea'), value: 2 },
   { label: t('registry.dropdown'), value: 3 },
+  { label: t('common.user'), value: 4 },
 ];
 
 const newAttribute = reactive({
@@ -147,6 +160,7 @@ const newAttribute = reactive({
   label_ru: '',
   label_en: '',
   type: null,
+  dataEntry: null
 });
 
 const addNewAttribute = () => {
@@ -209,28 +223,30 @@ const getRegisterParameterApplication = () => {
   registryService.getApplication(req)
       .then((res) => {
         if (res.data.applications.length === 1) {
-          // Берем первый объект application
+
           const application = res.data.applications[0];
 
-          // Перебираем параметры из application.parameters
+
           application.parameters.forEach((param) => {
-            // Находим индекс объекта в formFields
-            console.log(param);
+
             const index = formFields.value.findIndex((p) => p.id === param.parameter.id);
 
-            // Если индекс найден, проверяем и добавляем value, если его нет
+
             if (index !== -1) {
               if (!Object.prototype.hasOwnProperty.call(formFields.value[index], 'value')) {
-                formFields.value[index].value = ''; // Инициализируем значение value
+                formFields.value[index].value = '';
               }
-              formFields.value[index].value = param.value_ru; // Устанавливаем value_ru
+              formFields.value[index].value = param.value_ru;
             }
           });
         }
         loading.value = false;
       })
-      .catch(() => {
-        loading.value = false; // Обработка ошибки
+      .catch(error => {
+        if (error) {
+          toast.add({severity: "error", summary: error, life: 3000});
+        }
+
       });
 };
 
@@ -251,6 +267,7 @@ const getValue  = (slotProps, id) => {
 
 const save = () => {
   const id = selectedApplication.value ? selectedApplication.value : null
+  console.log(formFields.value)
   const req = {
     id: parseInt(id),
     status: 0,
@@ -266,9 +283,15 @@ const save = () => {
         type: field.type || 1,
         registry_id: parseInt(route.params.id),
       },
-      value_en: field.value || '',
-      value_kz: field.value || '',
-      value_ru: field.value || '',
+      value_en: field.applicant && field.applicant[0]
+          ? String(field.applicant[0].fullName)
+          : field.value_en || '',
+      value_kz: field.applicant && field.applicant[0]
+          ? String(field.applicant[0].fullName)
+          : field.value_kz || '',
+      value_ru: field.applicant && field.applicant[0]
+          ? String(field.applicant[0].fullName)
+          : field.value_ru || '',
     })),
   };
   if (selectedApplication.value && selectedApplication.value.length > 0) {
@@ -277,7 +300,10 @@ const save = () => {
           console.log('Application saved successfully:', response);
         })
         .catch(error => {
-          console.error('Error saving application:', error);
+          if (error) {
+            toast.add({severity: "error", summary: error, life: 3000});
+          }
+
         });
   } else {
     registryService.createApplication(req)
@@ -285,7 +311,9 @@ const save = () => {
           console.log('Application saved successfully:', response);
         })
         .catch(error => {
-          console.error('Error saving application:', error);
+          if (error) {
+            toast.add({severity: "error", summary: error, life: 3000});
+          }
         });
   }
 
@@ -301,7 +329,10 @@ const getRegisterParameter = () => {
       getRegisterParameterApplication()
     }
   }).catch(error => {
-    console.error('Ошибка при получении параметров:', error);
+    if (error) {
+      toast.add({severity: "error", summary: error, life: 3000});
+    }
+
   });
 };
 
