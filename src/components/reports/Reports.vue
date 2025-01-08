@@ -544,12 +544,31 @@ const deleteReportBefore = (reportID) => {
     },
   });
 }
-const deleteReport = (reportID) => {
-  const response = reportService.deleteReport({id: reportID})
-  if (response) {
-    loadReports()
+
+const deleteReport = async (reportID) => {
+  try {
+    const response = await reportService.deleteReport({ id: reportID });
+
+    if (response.status === 200) {
+      console.log("dweeeee")
+      toast.add({
+        severity: 'success',
+        detail: t('common.deletedSuccessfully'),
+        life: 3000,
+      });
+
+      loadReports();
+    }
+  } catch (error) {
+    console.error('Error deleting report:', error);
+    toast.add({
+      severity: 'error',
+      detail: t('mailing.deleteFailed'),
+      life: 3000,
+    });
   }
-}
+};
+
 
 const loadReports = async (page = 0) => {
   loading.value = true;
@@ -855,18 +874,40 @@ const generateReport = async () => {
 
   try {
     loading.value = true;
-    const response = await reportService.getReportData(activeFilters);
-    activeFilters.file_path = response.data.filePath
 
-    localStorage.setItem('docReports', JSON.stringify(response.data));
+    reportService.getReportData(activeFilters)
+        .then((response) => {
+          if (response.status === 200) {
+            setTimeout(() => {
+              toast.add({
+                severity: 'success',
+                detail: t('common.successfullyFormed'),
+                life: 3000,
+              });
+            }, 1000);
 
-    router.push({
-      name: "ReportPreview",
-      query: {filters: JSON.stringify(activeFilters)}
-    });
+            activeFilters.file_path = response.data.filePath;
 
+            localStorage.setItem('docReports', JSON.stringify(response.data));
+
+            router.push({
+              name: 'ReportPreview',
+              query: { filters: JSON.stringify(activeFilters) },
+            });
+          }
+        })
+        .catch((error) => {
+          console.error('Error generating report:', error);
+          toast.add({
+            severity: 'error',
+            detail: t('reports.errorGeneratingReport'),
+            life: 3000,
+          });
+        })
+        .finally(() => {
+          loading.value = false;
+        });
   } catch (error) {
-    console.error("Error generating report: ", error);
     toast.add({severity: 'error', detail: t('reports.errorGeneratingReport'), life: 3000});
   } finally {
     loading.value = false;
@@ -887,6 +928,11 @@ const resetFilters = () => {
       filters.value[key] = key === 'typeReport2' ? null : null;
     }
   }
+  toast.add({
+    severity: 'success',
+    detail: t('common.successfullyReset'),
+    life: 3000,
+  })
 
 };
 

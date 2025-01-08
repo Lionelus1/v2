@@ -215,27 +215,34 @@ async function saveReportBefore() {
 async function saveReport() {
   try {
     let filters = route.query.filters ? JSON.parse(route.query.filters) : {};
-    filters.filters.tableData = tableData.value
+    filters.filters.tableData = tableData.value;
     loading.value = true;
 
-
-    // if (filters.filters.period_start) {
-    //   filters.filters.period_start = filters.filters.period_start.split('T')[0]; // Отрезаем время
-    // }
-    //
-    // if (filters.filters.period_end) {
-    //   filters.filters.period_end = filters.filters.period_end.split('T')[0]; // Отрезаем время
-    // }
-
     const response = await reportService.saveReport(filters);
-    await router.push({"path": "/reports"});
+    if (response.status === 200) {
+      setTimeout(() => {
+        toast.add({
+          severity: 'success',
+          detail: t('common.dataSavedSuccessfully'),
+          life: 3000,
+        })
+      }, 1000);
+    }
+
+     router.push({ path: '/reports' });
   } catch (error) {
-    console.error("Error generating report: ", error);
-    toast.add({severity: 'error', detail: t('reports.errorGeneratingReport'), life: 3000});
+    console.error('Error generating report: ', error);
+    toast.add({
+      severity: 'error',
+      detail: t('reports.errorGeneratingReport'),
+      life: 3000,
+    });
   } finally {
     loading.value = false;
   }
 }
+
+
 function showMessage(msgtype, message, content) {
   toast.add({
     severity: msgtype,
