@@ -364,7 +364,7 @@ export default {
       docFilter: {
         name: null,
         status: null,
-        years: [new Date(new Date().getFullYear(), 0)],
+        years: [],
         author: null,
       },
 
@@ -853,7 +853,7 @@ export default {
         author: null,
         name: null,
         status: null,
-        years: [new Date(new Date().getFullYear(), 0)],
+        years: [],
       };
     },
     clearFilter() {
@@ -862,7 +862,7 @@ export default {
         global: false,
         name: null,
         status: null,
-        years: [new Date(new Date().getFullYear(), 0)],
+        years: [],
       };
     },
     onPageDepartment(event) {
