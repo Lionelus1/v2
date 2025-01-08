@@ -226,17 +226,15 @@ const getRegisterParameterApplication = () => {
 
           const application = res.data.applications[0];
 
-
           application.parameters.forEach((param) => {
 
             const index = formFields.value.findIndex((p) => p.id === param.parameter.id);
 
-
             if (index !== -1) {
-              if (!Object.prototype.hasOwnProperty.call(formFields.value[index], 'value')) {
-                formFields.value[index].value = '';
-              }
-              formFields.value[index].value = param.value_ru;
+              // Обновляем значения на всех языках
+              formFields.value[index].value_kz = param.value_kz || '';
+              formFields.value[index].value_ru = param.value_ru || '';
+              formFields.value[index].value_en = param.value_en || '';
             }
           });
         }
@@ -246,8 +244,8 @@ const getRegisterParameterApplication = () => {
         if (error) {
           toast.add({severity: "error", summary: error, life: 3000});
         }
-
       });
+
 };
 
 
