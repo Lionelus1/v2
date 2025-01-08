@@ -347,6 +347,7 @@ export class MenuService {
                         label: $t('report.title'),
                         icon: 'fa-solid fa-chart-simple',
                         to: '/reports',
+                        visible: this.findRole('report_builder_manager'),
                     }
                 ]
             },
