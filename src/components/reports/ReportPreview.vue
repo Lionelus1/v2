@@ -219,13 +219,15 @@ async function saveReport() {
     loading.value = true;
 
     const response = await reportService.saveReport(filters);
-    setTimeout(() => {
-      toast.add({
-        severity: 'success',
-        detail: t('common.dataSavedSuccessfully'),
-        life: 3000,
-      })
-    }, 1000);
+    if (response.status === 200) {
+      setTimeout(() => {
+        toast.add({
+          severity: 'success',
+          detail: t('common.dataSavedSuccessfully'),
+          life: 3000,
+        })
+      }, 1000);
+    }
 
      router.push({ path: '/reports' });
   } catch (error) {
