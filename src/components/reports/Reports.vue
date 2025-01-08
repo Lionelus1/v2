@@ -547,6 +547,13 @@ const deleteReportBefore = (reportID) => {
 const deleteReport = (reportID) => {
   const response = reportService.deleteReport({id: reportID})
   if (response) {
+    setTimeout(() => {
+      toast.add({
+        severity: 'success',
+        detail: t('common.deletedSuccessfully'),
+        life: 3000,
+      })
+    }, 1000);
     loadReports()
   }
 }
@@ -856,6 +863,13 @@ const generateReport = async () => {
   try {
     loading.value = true;
     const response = await reportService.getReportData(activeFilters);
+    setTimeout(() => {
+      toast.add({
+        severity: 'success',
+        detail: t('common.successfullyFormed'),
+        life: 3000,
+      })
+    }, 1000);
     activeFilters.file_path = response.data.filePath
 
     localStorage.setItem('docReports', JSON.stringify(response.data));
@@ -887,6 +901,11 @@ const resetFilters = () => {
       filters.value[key] = key === 'typeReport2' ? null : null;
     }
   }
+  toast.add({
+    severity: 'success',
+    detail: t('common.successfullyReset'),
+    life: 3000,
+  })
 
 };
 
