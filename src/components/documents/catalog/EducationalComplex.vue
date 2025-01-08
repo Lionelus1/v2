@@ -471,7 +471,7 @@ export default {
           },
         },
         {
-          stage: 4,
+          stage: 5,
           users: null,
           titleRu: "Декан",
           titleKz: "Декан",
@@ -671,8 +671,10 @@ export default {
       this.$refs[name].style.zIndex = index
     },
     openDialog(dialog) {
+      console.log(this.approvalStages)
       if (dialog === "sendToApprove") {
         this.approveComponentKey++;
+
         this.stages = JSON.parse(JSON.stringify(this.approvalStages));
       }
 
