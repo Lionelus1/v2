@@ -550,7 +550,6 @@ const deleteReport = async (reportID) => {
     const response = await reportService.deleteReport({ id: reportID });
 
     if (response.status === 200) {
-      console.log("dweeeee")
       toast.add({
         severity: 'success',
         detail: t('common.deletedSuccessfully'),
