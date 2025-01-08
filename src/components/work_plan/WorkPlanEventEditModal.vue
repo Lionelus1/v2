@@ -103,11 +103,6 @@
                   :placeholder="$t('educationalPrograms.semester')"/>
       </div>
       <div class="field">
-        <label>{{ $t('workPlan.approvalUsers') }}</label>
-        <FindUser v-model="resp_person" :editMode="true" :user-type="3"></FindUser>
-        <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
-      </div>
-      <div class="field">
         <label>{{
             plan?.plan_type?.code === Enum.WorkPlanTypes.Internship ? $t("workPlan.contentsOfPlannedWork") :
                 $t("workPlan.content")
@@ -122,6 +117,11 @@
       <div class="field">
         <label>{{ $t('common.endDate') }}</label>
         <PrimeCalendar v-model="editData.end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field">
+        <label>{{ $t('workPlan.approvalUsers') }}</label>
+        <FindUser v-model="resp_person" :editMode="true" :user-type="3"></FindUser>
+        <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
       </div>
       <div class="field">
         <label>{{

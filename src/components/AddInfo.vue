@@ -10,7 +10,7 @@
       <div class="field" v-for="(current, index) in fields.info" :key="index">
         <label>{{ $t(`${current?.label}`) }}</label>
         <InputText v-if="current?.field === 'InputText' " v-model="current.value"/>
-        <Textarea v-if="current?.field === 'Textarea' " rows="3" style="resize: vertical" v-model="current.value"/>
+        <Textarea v-if="current?.field === 'Textarea' " rows="10" style="resize: vertical" v-model="current.value"/>
         <FindUser v-if="current?.field === 'FindUser'" :max="1" :user-type="2" :editMode="false" v-model="current.value"
                   :disabled="readonly"/>
         <Dropdown v-if="current?.field === 'Dropdown'" :options="current?.items" optionLabel="name" optionValue="id"
