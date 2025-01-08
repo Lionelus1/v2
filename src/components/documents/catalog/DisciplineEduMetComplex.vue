@@ -350,7 +350,7 @@ export default {
         author: [],
         name: null,
         status: null,
-        years: [new Date(new Date().getFullYear(), 0)],
+        years: [],
       },
 
       departments: [],
