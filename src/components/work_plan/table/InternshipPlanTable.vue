@@ -29,7 +29,7 @@
         <template v-else>
           <td>{{ item.quarter }}</td>
           <td>{{ formatDateMoment(item.start_date) }}</td>
-          <td>{{ formatDateMoment(item.end_date) }}</td>
+          <td>{{ item.end_date ? formatDateMoment(item.end_date) : ""}}</td>
           <td>{{ item.event_name }}</td>
           <td>{{ item.result }}</td>
           <td>{{ item.responsible_executor }}</td>
