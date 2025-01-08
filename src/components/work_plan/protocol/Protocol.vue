@@ -1251,6 +1251,7 @@ const SendProtocolToApprove = async () => {
     const response = await workPlanService.sendProtocolToApprove(data);
     loading.value = true
     if (response.data.is_success) {
+      await generatePdf(true)
       loading.value = false
       approving.value = false
       showSendToApproveModal.value = false;
@@ -1272,7 +1273,7 @@ const SendProtocolToApprove = async () => {
   }
 }
 
-const generatePdf = async () => {
+const generatePdf = async (isNotification) => {
   const workPlanIdNumber = parseInt(workPlanID, 10);
   if (isProtocolExtractDoc.value && selectedAgenda.value) {
     if (responsivePerson.value !== null && responsivePerson.value.length > 0) {
@@ -1323,10 +1324,13 @@ const generatePdf = async () => {
   const protocolData = data.value[0];
   saveLoading.value = true;
 
+  const isNotify = !!isNotification;
+
   let requestData = {
     work_plan_id: workPlanIdNumber,
     protocol_id: String(protocolId),
     protocol_data: protocolData,
+    is_protocol_members_message: isNotify,
   }
 
   try {
