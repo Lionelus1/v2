@@ -205,7 +205,7 @@ export default {
       });
     },
     formatDateMoment(date) {
-      return moment(new Date(date)).utc().format("DD.MM.YYYY HH:mm:ss")
+      return moment(new Date(date)).utc().format("DD.MM.YYYY")
     },
     initReportType(type, halfYearType) {
       let result = "";
