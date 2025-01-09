@@ -1449,7 +1449,7 @@ export default {
           label: this.$t('common.add'),
           icon: 'fa-solid fa-plus',
           disabled: !(this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent?.user) && !this.isFinish),
-          visible: !this.isFinish,
+          visible: !this.isFinish && !this.isInternshipPlan,
           command: () => {
             this.showDialog(this.dialog.add)
           }
