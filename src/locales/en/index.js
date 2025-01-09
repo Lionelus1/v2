@@ -2261,7 +2261,9 @@ export default {
       guide: 'Guide',
       manually: 'Manually',
       inputText: 'Input Text',
-      textArea: 'Input Description'
+      textArea: 'Input Description',
+        dropdown: 'Dropdown list',
+        dataEntry: 'Data entry'
     },  
     status_resume: "Status of filling out the resume",
     people_special_needs: "People with special needs"

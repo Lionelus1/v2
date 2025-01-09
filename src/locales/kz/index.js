@@ -2236,6 +2236,8 @@ export default {
     manually: 'Қолмен',
     inputText: 'Мәтін енгізу',
     textArea: 'Сипаттама енгізу',
+    dropdown: 'Төмен түсетін тізім',
+    dataEntry: 'Деректер енгізу'
   },
   status_resume: 'Түйіндемені толтыру статусы',
   people_special_needs: 'Ерекше қажеттіліктері бар адамдар',

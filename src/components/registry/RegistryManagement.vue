@@ -80,11 +80,11 @@
           <Dropdown v-model="formData.status" :options="fieldStatus"  optionLabel="label"
                     optionValue="value" placeholder="Тип статуса" />
         </div>
-        <div class="field">
-          <label>{{$t('workPlan.approvalUsers')}}</label>
-          <FindUser v-model="formData.users" :editMode="true" :user-type="3"></FindUser>
-          <small class="p-error">{{ $t('workPlan.errors.approvalUserError') }}</small>
-        </div>
+<!--        <div class="field">-->
+<!--          <label>{{$t('workPlan.approvalUsers')}}</label>-->
+<!--          <FindUser v-model="formData.users" :editMode="true" :user-type="3"></FindUser>-->
+<!--          <small class="p-error">{{ $t('workPlan.errors.approvalUserError') }}</small>-->
+<!--        </div>-->
         <div class="field">
           <label>{{ $t('registry.description') }}</label>
           <Textarea v-model="formData.description_ru" autoResize rows="5" cols="30"/>
@@ -133,7 +133,7 @@ import {formatDate} from "@/helpers/HelperUtil";
 
 export default {
   name: 'RegistryManagement',
-  components: {FindUser},
+  components: {},
   data() {
     return {
       registryService: new RegistryService(),

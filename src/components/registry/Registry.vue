@@ -183,13 +183,24 @@ export default {
         this.totalRecords = res.data.total
       });
     },
-    getValue: (slotProps, id) => {
+    getValue (slotProps, id) {
       if (slotProps && slotProps.data && slotProps.data.parameters) {
         const param = slotProps.data.parameters.find((p) => p.parameter.id === id);
-        return param ? param.value_kz : '';
+        if (param) {
+          switch (this.$i18n.locale) {
+            case 'kz':
+              return param.value_kz || '';
+            case 'ru':
+              return param.value_ru || '';
+            case 'en':
+            default:
+              return param.value_en || '';
+          }
+        }
       }
       return '';
     },
+
     onPageChange: (event) => {
       this.page = event.page
       this.getRegisterParamterApplaction()

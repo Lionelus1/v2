@@ -30,9 +30,18 @@
             </div>
             <div class="field" v-if="newAttribute.type === 3">
               <label>{{ t('registry.dataEntry') }}</label>
-              <Dropdown v-model="newAttribute.type" :options="fieldTypes"  optionLabel="label"
-                        optionValue="value" placeholder="Тип поля" style="width: 350px;" />
+              <Dropdown
+                  v-model="newAttribute.additional_registry_id"
+                  :options="registryData.map(item => ({
+                  label: item['name_' + $i18n.locale],
+                  value: item.id}))"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Тип поля"
+                  style="width: 350px;"
+              />
             </div>
+
             <template #footer>
               <Button :label="t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="close('addAttributeDialog')" />
               <Button :label="t('common.add')" icon="pi pi-check" class="p-button-rounded p-button-success" @click="addNewAttribute" />
@@ -56,16 +65,20 @@
             </div>
             <div class="p-field" v-if="field.type === 3" >
               <Dropdown
-                  v-model="field.value_kz"
-                  :options="field.parents.map(item => item['label_' + $i18n.locale])"
+                  v-model="field.value_en"
+                  :options="field.additionalSelect ? field.additionalSelect : null"
                   autoResize
-                  :appendTo="'body'"
-                  :emptyMessage="$t('common.noOptions')"
+                  :optionLabel="$i18n.locale === 'kz' ? 'value_kz' : $i18n.locale === 'ru' ? 'value_ru' :
+              'value_en' "
+                  :optionValue="$i18n.locale === 'kz' ? 'value_kz' : $i18n.locale === 'ru' ? 'value_ru' :
+              'value_en' "
                   style="width: 295px;"
+                  @onchange="updateValues(field, field.value_en, field.value_ru, field.value_en)"
               />
             </div>
             <div class="field" v-if="field.type === 4" style="width: 295px;">
-              <FindUser :v-model="field.value ? field.value : field.applicant" :max="1"></FindUser>
+
+              <FindUser v-model="field.applicant" :max="1"/>
             </div>
           </div>
         </div>
@@ -88,6 +101,7 @@ import {useRoute, useRouter} from "vue-router";
 import {findRole} from "../../config/config";
 import RegistryService from "../../service/registry_service";
 import FindUser from "../../helpers/FindUser.vue";
+import {UserService} from "../../service/user.service";
 
 
 const props = defineProps(['visible', 'isAdded', 'isSub'])
@@ -97,12 +111,13 @@ const {t, locale} = useI18n()
 const router = useRouter();
 const route = useRoute();
 const registryService = new RegistryService()
+const userService = new UserService()
 
 const types = ref([])
 const params = ref(null)
 const loading = ref(false)
 const request = ref({})
-
+const registryData = ref(null)
 const formData = ref({
   work_plan_name: null,
   lang: null,
@@ -160,8 +175,14 @@ const newAttribute = reactive({
   label_ru: '',
   label_en: '',
   type: null,
-  dataEntry: null
+  additional_registry_id: null,
 });
+
+const updateValues = (field, selectedValueEn, selectedValueRu, selectedValueKz) => {
+  field.value_kz = selectedValueKz;
+  field.value_ru = selectedValueRu;
+  field.value_en = selectedValueEn;
+}
 
 const addNewAttribute = () => {
   if (!newAttribute.label_kz || !newAttribute.label_ru || !newAttribute.label_en) {
@@ -174,9 +195,7 @@ const addNewAttribute = () => {
   toast.add({ severity: 'success', summary: t('common.success'), detail: t('common.attributeAdded'), life: 3000 });
   close('addAttributeDialog');
   registryService.createRegistryParameter(reqFormFields.value[0]).then((res) => {
-    console.log(res);
   })
-
 };
 
 const close = (dialog) => {
@@ -231,13 +250,39 @@ const getRegisterParameterApplication = () => {
             const index = formFields.value.findIndex((p) => p.id === param.parameter.id);
 
             if (index !== -1) {
-              // Обновляем значения на всех языках
               formFields.value[index].value_kz = param.value_kz || '';
               formFields.value[index].value_ru = param.value_ru || '';
               formFields.value[index].value_en = param.value_en || '';
             }
+
+            // type 4 is Find User
+            if (param.parameter.type === 4) {
+              formFields.value.forEach((field) => {
+
+
+                const index = formFields.value.findIndex((p) => p.id === param.parameter.id);
+
+                const req = {
+                  page:0,
+                  rows: 1,
+                  filter:{
+                    name: param.value_kz,
+                  }
+                }
+
+                userService.getUsers(req).then((res) => {
+                  if (res.data) {
+                    formFields.value[index].applicant = res.data.foundUsers;
+                  }
+                })
+
+
+              })
+            }
+
           });
         }
+        getRegisterParameterApplicationSelect()
         loading.value = false;
       })
       .catch(error => {
@@ -245,12 +290,62 @@ const getRegisterParameterApplication = () => {
           toast.add({severity: "error", summary: error, life: 3000});
         }
       });
+};
 
+const getRegisterParameterApplicationSelect = () => {
+  loading.value = true;
+
+  formFields.value.forEach((field, index) => {
+    if (field.additional_registry_id) {
+      if (field.type === 3) {
+        const req = {
+          page: 0,
+          rows: 10,
+          registry_id: field.additional_registry_id,
+        };
+
+        registryService.getApplication(req).then((res) => {
+          const application = res.data.applications
+          field.additionalSelect = application.flatMap((app) => {
+            return app.parameters
+                .filter(
+                    (param) => param.parameter?.label_kz === "Атауы"
+                )
+                .map((param) => ({
+                  value_kz: param.value_kz || "",
+                  value_ru: param.value_ru || "",
+                  value_en: param.value_en || "",
+                }));
+          });
+        }).catch((error) => {
+          console.error(`Error fetching application for index ${index}:`, error);
+        });
+      }
+    }
+  });
 };
 
 
 
-
+const getRegistries = () => {
+  loading.value = true;
+  let req = {
+    id: null
+  }
+  registryService.getRegistry(req).then(res => {
+    loading.value = false;
+    registryData.value = res.data.registries.map(registry => ({
+      id: registry.id,
+      name_kz: registry.name_kz,
+      name_ru: registry.name_ru,
+      name_en: registry.name_en
+    }));
+  }).catch(error => {
+    if (error) {
+      toast.add({severity: "error", summary: error.message, life: 3000});
+    }
+  });
+};
 
 
 /*
@@ -265,7 +360,6 @@ const getValue  = (slotProps, id) => {
 
 const save = () => {
   const id = selectedApplication.value ? selectedApplication.value : null
-  console.log(formFields.value)
   const req = {
     id: parseInt(id),
     status: 0,
@@ -334,8 +428,13 @@ const getRegisterParameter = () => {
   });
 };
 
+const updateValue = (event) => {
+console.log("event: ", event);
+}
+
 onMounted(() => {
   getRegisterParameter()
+  getRegistries()
   // if (selectedApplication.value && selectedApplication.value.length > 0) {
   //   getRegisterParameterApplication();
   // }
