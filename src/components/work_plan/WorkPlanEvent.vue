@@ -1829,8 +1829,8 @@ export default {
           },
         },
         {
-          // Suraq qosu
-          //Enter
+          //Suraq qosu
+          //Entercd   
           label: this.$t('workPlan.protocol.addQuestion'),
           disabled: !this.isPlanApproved,
           visible: this.isDirectorsPlan,
@@ -1841,9 +1841,9 @@ export default {
         {
           label: this.$t('workPlan.reports'),
           visible:
-              this.isFinish &&
+              this.isFinish && !this.isDirectorsPlan &&
               !this.isWorkSchedule &&
-              !this.isSciencePlan && !this.isDirectorsPlan &&
+              !this.isSciencePlan &&
               (this.isApproval || this.isPlanCreator || this.isAdmin) &&
               (!(this.isMastersPlan || this.isDoctorsPlan) ||
                   this.isPlanApproved),
