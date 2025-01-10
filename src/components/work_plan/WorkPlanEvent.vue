@@ -208,53 +208,11 @@
                 </div>
                 <!--Вид исследования-->
                 <div class="field" v-else-if="s.data.name === 'projectTypeOfResearch'">
-                  <Dropdown v-model="s.data.value"
-                            optionValue=""
-                            :options="statuses"
-                            :placeholder="$t('common.select')"
-                            class="p-column-filter">
-                    <template #value="slotProps">
-                      <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
-                        {{
-                          $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
-                              ? slotProps.value.nameRu : slotProps.value.nameEn
-                        }}
-                      </span>
-                    </template>
-                    <template #option="slotProps">
-                      <span :class="'customer-badge status-' + slotProps.option.id">
-                        {{
-                          $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
-                              ? slotProps.option.nameRu : slotProps.option.nameEn
-                        }}
-                      </span>
-                    </template>
-                  </Dropdown>
+                  <textarea id="en" v-model="s.data.value" class="resizable-textarea"></textarea>
                 </div>
                 <!--Наименование приоритетного направления-->
                 <div class="field" v-else-if="s.data.name === 'nameOfPriorityArea'">
-                  <Dropdown v-model="s.data.value"
-                            optionValue=""
-                            :options="statuses"
-                            :placeholder="$t('common.select')"
-                            class="p-column-filter">
-                    <template #value="slotProps">
-                      <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
-                        {{
-                          $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
-                              ? slotProps.value.nameRu : slotProps.value.nameEn
-                        }}
-                      </span>
-                    </template>
-                    <template #option="slotProps">
-                      <span :class="'customer-badge status-' + slotProps.option.id">
-                        {{
-                          $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
-                              ? slotProps.option.nameRu : slotProps.option.nameEn
-                        }}
-                      </span>
-                    </template>
-                  </Dropdown>
+                  <textarea id="en" v-model="s.data.value" class="resizable-textarea"></textarea>
                 </div>
                 <!--Документы-->
                 <div v-else-if="s.data.name === 'projectContract'">
@@ -301,28 +259,7 @@
                 </div>
                 <!--Источник финансирования-->
                 <div class="field" v-else-if="s.data.name === 'projectFundingType'">
-                  <Dropdown v-model="s.data.value"
-                            optionValue=""
-                            :options="statuses"
-                            :placeholder="$t('common.select')"
-                            class="p-column-filter">
-                    <template #value="slotProps">
-                      <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
-                        {{
-                          $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
-                              ? slotProps.value.nameRu : slotProps.value.nameEn
-                        }}
-                      </span>
-                    </template>
-                    <template #option="slotProps">
-                      <span :class="'customer-badge status-' + slotProps.option.id">
-                        {{
-                          $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
-                              ? slotProps.option.nameRu : slotProps.option.nameEn
-                        }}
-                      </span>
-                    </template>
-                  </Dropdown>
+                  <textarea id="en" v-model="s.data.value" class="resizable-textarea"></textarea>
                 </div>
                 <!--Период реализации-->
                 <div v-else-if="s.data.name === 'projectYears'">
