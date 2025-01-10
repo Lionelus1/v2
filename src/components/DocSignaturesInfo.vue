@@ -696,7 +696,8 @@ export default {
           .then((res) => {
             this.loading = false;
             // this.$emit('sentToRevision', this.revisionComment)
-            location.reload();
+            // location.reload();
+            this.getData();
           })
           .catch((err) => {
             if (err.response.status == 401) {
