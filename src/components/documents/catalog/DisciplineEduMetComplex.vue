@@ -845,7 +845,7 @@ export default {
         name: this.filter.name,
         status: this.filter.status,
         years: this.filter.years,
-        author: this.filter.author.length > 0 && this.filter.author[0] ? this.filter.author[0].userID : null,
+        author: this.filter.author?.length > 0 && this.filter.author[0] ? this.filter.author[0].userID : null,
       };
     },
     clearDocFilter() {
