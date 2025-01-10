@@ -1977,6 +1977,10 @@ export default {
     background: #c8e6c9;
     color: #256029;
   }
+  &.status-protocolQuestion {
+    background: #ea1cf1;
+    color: #ffffff;
+  }
 
   .inline-container {
     display: flex;

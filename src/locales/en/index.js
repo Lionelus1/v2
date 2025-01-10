@@ -1517,7 +1517,8 @@ export default {
 
             },
             addQuestion: "Add a question",
-            protocolSecretary: "Secretary of the Board"
+            protocolSecretary: "Secretary of the Board",
+            questionStatus: "Question status"
         }
         
     },

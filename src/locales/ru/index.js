@@ -1532,7 +1532,8 @@ export default {
                 eventNotSelected: "Событие не выбрано"
             },
             addQuestion: "Добавить вопрос",
-            protocolSecretary: "Секретарь Правления"
+            protocolSecretary: "Секретарь Правления",
+            questionStatus: "Статус вопроса"
         }
         
     },
