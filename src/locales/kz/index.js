@@ -1501,8 +1501,8 @@ export default {
             createdDate: "Хаттаманың құрылған күні",
             meetingTime: "Отырыстың ашылған  уақыты",
             meetingPlace: "Отырыстың өткізілген  орны",
-            participatedMembers: "Қатысқан басқарма мүшелер",
-            absentMembers: "Қатыспаған басқарма мүшелер",
+            participatedMembers: "Қатысқан басқарма мүшелері",
+            absentMembers: "Қатыспаған басқарма мүшелері",
             addAbsentMembers: "Қатыспаған мүшелерді қосу",
             reasonAbsence: "Қатыспау себебі",
             quorumInfo: "Кворум бойынша ақпарат",
@@ -1542,7 +1542,7 @@ export default {
 
             },
             addQuestion: "Сұрақ қосу",
-            protocolSecretary: "Басқарма хатшы",
+            protocolSecretary: "Басқарма хатшысы",
         }
     },
     educomplex: {
