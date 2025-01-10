@@ -1543,7 +1543,6 @@ export default {
             },
             addQuestion: "Сұрақ қосу",
             protocolSecretary: "Басқарма хатшы",
-            questionStatus: "Сұрақ статусы"
         }
     },
     educomplex: {

@@ -49,7 +49,7 @@
         </template>
       </Column>
 
-      <Column field="status" :header="$t('common.status')">
+      <Column field="status" :header="$t('common.status')" class="max-w-5rem">
         <template #body="{ node }">
                     <span :class="'customer-badge status-' + node.status.work_plan_event_status_id">
                         {{
@@ -57,12 +57,7 @@
                             node.status.name_en
                       }}
                     </span>
-        </template>
-      </Column>
-
-      <Column field="content" :expander="true" class="max-w-9rem" :header="$t('workPlan.protocol.questionStatus')">
-        <template #body="{ node }">
-          <span v-if="node.fact" :class="'customer-badge status-protocolQuestion'">{{node.fact}}</span>
+                    <span v-if="node.fact" style="background-color: blueviolet;color: white;"><br/><br/>{{node.fact}}</span>
         </template>
       </Column>
 

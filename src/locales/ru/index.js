@@ -1533,7 +1533,6 @@ export default {
             },
             addQuestion: "Добавить вопрос",
             protocolSecretary: "Секретарь Правления",
-            questionStatus: "Статус вопроса"
         }
         
     },
