@@ -219,7 +219,7 @@ export default {
         {
           label: this.$t('registry.import'),
           icon: "pi pi-file-import",
-          disabled: false,
+          disabled: true,
           command: () => {
             this.openBasic()
           },

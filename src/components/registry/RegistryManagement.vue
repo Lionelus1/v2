@@ -205,25 +205,34 @@ export default {
       this.userNameSearch = null
       this.getPlans();
     },
-    createRegistry(){
+    createRegistry() {
+      if (!this.isFormValid()) {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t('common.message.fillError'),
+          life: 3000
+        });
+        return;
+      }
+
       this.registryService.createRegistry(this.formData).then(res => {
-        // if (res.data) {
-        //   this.$toast.add({
-        //     severity: 'success',
-        //     summary: t('common.success'),
-        //     detail: t('workPlan.message.planCreated'),
-        //     life: 3000
-        //   });
-        // } else {
-        //   this.$toast.add({severity: "error", summary: "Create plan error", life: 3000});
-        // }
-        this.closeBasic()
-        this.$router.push({name: 'Registry', params: {id: res.data}});
+        this.closeBasic();
+        this.$router.push({ name: 'Registry', params: { id: res.data } });
       }).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
+        this.$toast.add({
+          severity: "error",
+          summary: error.message || error,
+          life: 3000
+        });
       });
-      // this.closeBasic()
-      // this.$router.push({name: 'Registry', params: {id: 4}});
+    },
+
+    isFormValid() {
+      return this.formData.name_ru &&
+          this.formData.name_kz &&
+          this.formData.name_en &&
+          (this.formData.status === 0 || this.formData.status === 1) &&
+          this.formData.description_ru;
     },
     getRegistries(){
       this.loading = true;
@@ -249,6 +258,7 @@ export default {
         {
           label: this.$t('registry.import'),
           icon: "pi pi-file-import",
+          disabled: true,
           // command: () => {
           //   this.openBasic()
           // },

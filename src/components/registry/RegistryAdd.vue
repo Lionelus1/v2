@@ -194,7 +194,11 @@ const addNewAttribute = () => {
   reqFormFields.value.push({ ...newAttribute, registry_id: parseInt(route.params.id) });
   toast.add({ severity: 'success', summary: t('common.success'), detail: t('common.attributeAdded'), life: 3000 });
   close('addAttributeDialog');
+  loading.value = true;
   registryService.createRegistryParameter(reqFormFields.value[0]).then((res) => {
+    loading.value = false;
+  }).catch((err) => {
+    console.log(err);
   })
 };
 
@@ -305,6 +309,7 @@ const getRegisterParameterApplicationSelect = () => {
         };
 
         registryService.getApplication(req).then((res) => {
+
           const application = res.data.applications
           field.additionalSelect = application.flatMap((app) => {
             return app.parameters
@@ -317,6 +322,7 @@ const getRegisterParameterApplicationSelect = () => {
                   value_en: param.value_en || "",
                 }));
           });
+          loading.value = false;
         }).catch((error) => {
           console.error(`Error fetching application for index ${index}:`, error);
         });
@@ -386,13 +392,15 @@ const save = () => {
           : field.value_ru || '',
     })),
   };
+  loading.value = true;
   if (selectedApplication.value && selectedApplication.value.length > 0) {
     registryService.updateApplication(req)
         .then(response => {
-          console.log('Application saved successfully:', response);
+        loading.value = false;
         })
         .catch(error => {
           if (error) {
+            loading.value = false;
             toast.add({severity: "error", summary: error, life: 3000});
           }
 
@@ -400,10 +408,11 @@ const save = () => {
   } else {
     registryService.createApplication(req)
         .then(response => {
-          console.log('Application saved successfully:', response);
+          loading.value = false;
         })
         .catch(error => {
           if (error) {
+            loading.value = false;
             toast.add({severity: "error", summary: error, life: 3000});
           }
         });
@@ -412,10 +421,12 @@ const save = () => {
 }
 
 const getRegisterParameter = () => {
+  loading.value = true;
   let req = {
     register_id: parseInt(route.params.id)
   };
   registryService.getRegistryParameters(req).then(response => {
+    loading.value = false;
     formFields.value = response.data.register_parameter;
     if (selectedApplication.value && selectedApplication.value.length > 0) {
       getRegisterParameterApplication()
@@ -424,7 +435,7 @@ const getRegisterParameter = () => {
     if (error) {
       toast.add({severity: "error", summary: error, life: 3000});
     }
-
+    loading.value = false;
   });
 };
 
