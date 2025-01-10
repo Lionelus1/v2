@@ -327,7 +327,7 @@
               <InputText id="presentDate" class="mt-2" v-model="protocolCreatedDate" :disabled="extractEditDisabled"
                          :placeholder="$t('workPlan.protocol.autogenerate')"/>
             </div>
-            <div class="p-fluid mt-3">
+            <div class="p-fluid mt-3" v-show="false">
               <label for="agendas" class="block mb-1">{{ $t('workPlan.protocol.agendas') }}{{ "*" }}</label>
               <Textarea id="agendas" v-model="selectedAgenda.agenda" class="mt-2" rows="5" :disabled="true"/>
             </div>
