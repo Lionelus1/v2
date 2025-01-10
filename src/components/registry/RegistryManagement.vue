@@ -4,11 +4,11 @@
   <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)"/>
   <div class="card">
 
-    <DataTable :lazy="true" :rowsPerPageOptions="[10, 25, 50]" dataKey="id" :rowHover="true"
-               :loading="loading" responsiveLayout="scroll" :paginator="true" :value="data"
-               selectionMode="single" stripedRows scrollable
-               scrollHeight="flex" @lazy="true"
-               class="p-datatable-sm" :rows="10">
+    <DataTable :lazy="true" :rowsPerPageOptions="[10, 25, 50]" :value="data" dataKey="id" :rowHover="true"
+               :loading="loading" :paginatorTemplate="paginatorTemplate"
+               :currentPageReportTemplate="currentPageReportTemplate" responsiveLayout="scroll" :paginator="true"
+               :first="lazyParams.first || 0" :rows="lazyParams.rows" :totalRecords="total" stripedRows
+               class="flex-grow-1" @page="onPage">
       <template #empty> {{ $t('common.noData') }}</template>
       <template #loading> {{ $t('common.loading') }}</template>
       <Column field="name" :header="$t('mailing.title')">
@@ -139,7 +139,12 @@ export default {
       registryService: new RegistryService(),
       filtered: false,
       loading: false,
-      lazyParams: null,
+      lazyParams: {
+        page: 0,
+        rows: 10,
+        first: 0
+      },
+      total: null,
       filter: {
         plan_type: null,
         filtered: false
@@ -159,7 +164,13 @@ export default {
         { label: this.$t('registry.active'), value: 0 },
         { label: this.$t('registry.inactive'), value: 1 },
       ],
-      selectedUsers: []
+      selectedUsers: [],
+      paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
+      currentPageReportTemplate: this.$t('common.showingRecordsCount', {
+        first: '{first}',
+        last: '{last}',
+        totalRecords: '{totalRecords}',
+      }),
     }
   },
   methods: {
@@ -173,9 +184,14 @@ export default {
       this.formData.description = null;
       this.formData.status = null;
     },
+    onPage(event) {
+      this.lazyParams.first = event?.first
+      this.lazyParams.page = event?.page
+      this.lazyParams.rows = event?.rows
+      this.getRegistries();
+    },
     closeBasic() {
       this.showAddPlanDialog = false
-      // this.getPlans()
     },
     toggle(ref, event, node) {
       if (node) {
@@ -191,8 +207,6 @@ export default {
         this.filter.user_id = null
       }
       localStorage.setItem("registryFilter", JSON.stringify(this.filter));
-      this.lazyParams.first = 0
-      this.lazyParams.page = 0
     },
     clearFilter() {
       localStorage.removeItem("registryFilter");
@@ -237,14 +251,18 @@ export default {
     getRegistries(){
       this.loading = true;
       let req = {
-        id: null
+        id: null,
+        page: this.lazyParams.page,
+        rows: this.lazyParams.rows,
       }
       this.registryService.getRegistry(req).then(res => {
         this.loading = false;
+        this.total = res.data.total;
         this.data = res.data.registries;
       })
     },
   },
+
   computed: {
     toolbarMenus() {
       return [

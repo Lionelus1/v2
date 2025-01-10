@@ -8,15 +8,34 @@
     </div>
     <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)"/>
     <div class="card">
-      <DataTable :value="applications"  @page="onPageChange" :paginator="true"  :page="0" :rows="10"  :totalRecords="totalRecords" v-model:selection="selectedApplication" selectionMode="single">
-                <Column v-for="column in columns" :key="column.id" :header="$i18n.locale === 'kz' ? column.label_kz : $i18n.locale === 'ru' ? column.label_ru :
-        column.label_en">
-                  <template #body="slotProps">
-<!--                    {{ $i18n.locale === 'kz' ? column.value_kz : $i18n.locale === 'ru' ? column.value_ru :-->
-<!--                      column.value_en }}-->
-                    {{ getValue(slotProps, column.id) }}
-                  </template>
-                </Column>
+      <DataTable  :loading="loading" :value="applications"  @page="onPageChange" :paginator="true"  :page="0" :rows="10"  :totalRecords="totalRecords" v-model:selection="selectedApplication" selectionMode="single">
+        <Column
+            v-for="column in columns"
+            :key="column.id"
+            :header="$i18n.locale === 'kz' ? column.label_kz : $i18n.locale === 'ru' ? column.label_ru : column.label_en">
+
+          <template #body="slotProps">
+            <div v-if="column.id">
+              {{ getValue(slotProps, column.id) }}
+            </div>
+            <div v-else>
+              <Button
+                  style="margin-right: 0.5rem;"
+                  icon="pi pi-exclamation-triangle"
+                  class="p-button-warning"
+                  v-if="!slotProps.data.canDelete"
+                  v-tooltip="slotProps.data.canDelete ? '' : slotProps.data.cantDeleteReason[$i18n.locale]"/>
+
+              <Button
+                  icon="pi pi-times"
+                  class="p-button-danger"
+                  :disabled="!slotProps.data.canDelete"
+                  v-tooltip="slotProps.data.canDelete ? '' : slotProps.data.cantDeleteReason[$i18n.locale]"
+                  @click="openDelete(slotProps.data)"/>
+            </div>
+          </template>
+
+        </Column>
       </DataTable>
     </div>
   </div>
@@ -140,6 +159,8 @@ export default {
       this.loading = true;
       let req = {
         id: parseInt(this.$route.params.id),
+        page: 0,
+        rows: 10,
       }
       this.registryService.getRegistry(req).then(res => {
         this.loading = false;
@@ -147,11 +168,13 @@ export default {
       })
     },
     getRegisterParameter() {
+      this.loading = true;
       let req = {
         register_id: parseInt(this.$route.params.id)
       };
       this.registryService.getRegistryParameters(req)
           .then(response => {
+            this.loading = false;
             response.data.register_parameter.forEach((item, index) => {
               this.columns.push({
                 field: item.label_en,
@@ -166,6 +189,7 @@ export default {
             });
           })
           .catch(error => {
+            this.loading = false;
             console.error('Ошибка при получении параметров:', error);
           });
     },

@@ -8,8 +8,6 @@
   <ToolbarMenu :data="menu"/>
   <TabView v-model:activeIndex="activeTab" @tab-change="tabChanged" class="flex flex-column flex-grow-1">
     <TabPanel :header="selectedDirection['name_' + locale]">
-      <BlockUI :blocked="loading" class="card">
-        <div>
           <Dialog :header="t('registry.addNewAttribute')" v-model:visible="visibility.addAttributeDialog" :style="{ width: '450px' }" class="p-fluid">
             <div class="field">
               <label>{{ t('common.nameInQazaq') }}</label>
@@ -65,7 +63,7 @@
             </div>
             <div class="p-field" v-if="field.type === 3" >
               <Dropdown
-                  v-model="field.value_en"
+                  v-model="field.value_ru"
                   :options="field.additionalSelect ? field.additionalSelect : null"
                   autoResize
                   :optionLabel="$i18n.locale === 'kz' ? 'value_kz' : $i18n.locale === 'ru' ? 'value_ru' :
@@ -77,12 +75,24 @@
               />
             </div>
             <div class="field" v-if="field.type === 4" style="width: 295px;">
-
               <FindUser v-model="field.applicant" :max="1"/>
             </div>
+<!--            <div class="field" v-if="field.type === 5" style="width: 295px;">-->
+<!--              <PrimeCalendar-->
+<!--                  style="width: 340px"-->
+<!--                  dateFormat="dd.mm.yy"-->
+<!--                  selectionMode="single"-->
+<!--                  v-model="field.value_en"-->
+<!--                  @input="updateDate"-->
+<!--                  :placeholder="$t('common.date')"-->
+<!--                  :showIcon="true"-->
+<!--              />-->
+<!--            </div>-->
+<!--            <div class="field" v-if="field.type === 4" style="width: 295px;">-->
+<!--              <FileUpload mode="basic" :customUpload="true" @uploader="uploadThumb" :auto="true"-->
+<!--                          v-bind:chooseLabel="$t('hdfs.chooseFile')" accept="image/*"/>-->
+<!--            </div>-->
           </div>
-        </div>
-      </BlockUI>
       <Button class="toggle-button" @click="open('addAttributeDialog')">{{
           t('registry.addNewAttribute')
         }}
@@ -168,6 +178,8 @@ const fieldTypes = [
   { label: t('registry.textArea'), value: 2 },
   { label: t('registry.dropdown'), value: 3 },
   { label: t('common.user'), value: 4 },
+  // { label: t('mailing.time'), value: 5 },
+  // { label: t('registry.file'), value: 6 },
 ];
 
 const newAttribute = reactive({
@@ -182,6 +194,12 @@ const updateValues = (field, selectedValueEn, selectedValueRu, selectedValueKz) 
   field.value_kz = selectedValueKz;
   field.value_ru = selectedValueRu;
   field.value_en = selectedValueEn;
+}
+
+const updateDate = (field) => {
+  const selectedDate = field.value_en;
+  field.value_ru = selectedDate;
+  field.value_kz = selectedDate;
 }
 
 const addNewAttribute = () => {
@@ -259,7 +277,6 @@ const getRegisterParameterApplication = () => {
               formFields.value[index].value_en = param.value_en || '';
             }
 
-            // type 4 is Find User
             if (param.parameter.type === 4) {
               formFields.value.forEach((field) => {
 
@@ -286,7 +303,6 @@ const getRegisterParameterApplication = () => {
 
           });
         }
-        getRegisterParameterApplicationSelect()
         loading.value = false;
       })
       .catch(error => {
@@ -294,11 +310,11 @@ const getRegisterParameterApplication = () => {
           toast.add({severity: "error", summary: error, life: 3000});
         }
       });
+
 };
 
 const getRegisterParameterApplicationSelect = () => {
   loading.value = true;
-
   formFields.value.forEach((field, index) => {
     if (field.additional_registry_id) {
       if (field.type === 3) {
@@ -336,7 +352,9 @@ const getRegisterParameterApplicationSelect = () => {
 const getRegistries = () => {
   loading.value = true;
   let req = {
-    id: null
+    id: null,
+    page: 0,
+    rows: 10,
   }
   registryService.getRegistry(req).then(res => {
     loading.value = false;
@@ -396,7 +414,7 @@ const save = () => {
   if (selectedApplication.value && selectedApplication.value.length > 0) {
     registryService.updateApplication(req)
         .then(response => {
-        loading.value = false;
+          router.back()
         })
         .catch(error => {
           if (error) {
@@ -408,6 +426,7 @@ const save = () => {
   } else {
     registryService.createApplication(req)
         .then(response => {
+          router.back()
           loading.value = false;
         })
         .catch(error => {
@@ -428,9 +447,9 @@ const getRegisterParameter = () => {
   registryService.getRegistryParameters(req).then(response => {
     loading.value = false;
     formFields.value = response.data.register_parameter;
-    if (selectedApplication.value && selectedApplication.value.length > 0) {
       getRegisterParameterApplication()
-    }
+      getRegisterParameterApplicationSelect()
+
   }).catch(error => {
     if (error) {
       toast.add({severity: "error", summary: error, life: 3000});
