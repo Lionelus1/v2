@@ -164,23 +164,27 @@
     </template>
   </Dialog>
 
-  <!--  информация о проекте-->
-  <Dialog
-      v-if="dialog.projectInfo.state"
-      v-model:visible="dialog.projectInfo.state"
-      :style="{ width: '80%' }"
-      :header="$t('common.sciProject')"
-      :modal="true"
-      class="p-fluid"
-  >
+  <!--  Диалог добавить публикацию-->
+<!--  <Dialog v-if="dialog.addPublish.state" v-model:visible="dialog.addPublish.state" :style="{ width: '80%' }" -->
+<!--          :header="$t('common.projectPublishAdd')" :modal="true" class="p-fluid">-->
+<!--    <ScienceWorks/>-->
+<!--  </Dialog>-->
 
+  <Sidebar v-model:visible="dialog.addPublish.state" position="right" class="p-sidebar-lg">
+    <ScienceWorks
+        :openCardInSidebar="true"
+        :for-sci-plan="true"
+        @select="handleSelect"
+    />
+  </Sidebar>
+
+  <!--  Диалог информация о проекте-->
+  <Dialog v-if="dialog.projectInfo.state" v-model:visible="dialog.projectInfo.state"
+      :style="{ width: '90%' }" :header="$t('common.sciProject')" :modal="true" class="p-fluid">
     <TabView>
       <TabPanel :header="$t('common.mainInfo')">
         <div v-if="planDoc && planDoc.params" class="flex flex-column p-4">
-
-          <DataTable :rows="20"
-                     class="table_no_header mt-4"
-                     :value="filteredParamsMainInfo">
+          <DataTable :rows="20" class="table_no_header mt-4" :value="filteredParamsMainInfo">
             <Column>
               <template #body="s">
                 {{ $t(s.data.description) }}
@@ -202,6 +206,57 @@
                     <textarea id="en" v-model="s.data.value.en" class="resizable-textarea"></textarea>
                   </div>
                 </div>
+                <!--Вид исследования-->
+                <div class="field" v-else-if="s.data.name === 'projectTypeOfResearch'">
+                  <Dropdown v-model="s.data.value"
+                            optionValue=""
+                            :options="statuses"
+                            :placeholder="$t('common.select')"
+                            class="p-column-filter">
+                    <template #value="slotProps">
+                      <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
+                        {{
+                          $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
+                              ? slotProps.value.nameRu : slotProps.value.nameEn
+                        }}
+                      </span>
+                    </template>
+                    <template #option="slotProps">
+                      <span :class="'customer-badge status-' + slotProps.option.id">
+                        {{
+                          $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
+                              ? slotProps.option.nameRu : slotProps.option.nameEn
+                        }}
+                      </span>
+                    </template>
+                  </Dropdown>
+                </div>
+                <!--Наименование приоритетного направления-->
+                <div class="field" v-else-if="s.data.name === 'nameOfPriorityArea'">
+                  <Dropdown v-model="s.data.value"
+                            optionValue=""
+                            :options="statuses"
+                            :placeholder="$t('common.select')"
+                            class="p-column-filter">
+                    <template #value="slotProps">
+                      <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
+                        {{
+                          $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
+                              ? slotProps.value.nameRu : slotProps.value.nameEn
+                        }}
+                      </span>
+                    </template>
+                    <template #option="slotProps">
+                      <span :class="'customer-badge status-' + slotProps.option.id">
+                        {{
+                          $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
+                              ? slotProps.option.nameRu : slotProps.option.nameEn
+                        }}
+                      </span>
+                    </template>
+                  </Dropdown>
+                </div>
+                <!--Документы-->
                 <div v-else-if="s.data.name === 'projectContract'">
                   <Button icon="fa-solid fa-download" @click="downloadContract('contract')" :label="$t('contracts.contract')" />
                 </div>
@@ -218,10 +273,7 @@
       </TabPanel>
       <TabPanel :header="$t('common.fundInfo')">
         <div v-if="planDoc && planDoc.params" class="flex flex-column">
-          <DataTable :rows="10"
-                     class="table_no_header mt-4"
-                     :value="filteredParamsFundingInfo"
-          >
+          <DataTable :rows="10" class="table_no_header mt-4" :value="filteredParamsFundingInfo">
             <Column>
               <template #body="s">
                 {{ $t(s.data.description) }}
@@ -243,6 +295,39 @@
                     <textarea id="en" v-model="s.data.value.en" class="resizable-textarea"></textarea>
                   </div>
                 </div>
+                <!--Дата договора-->
+                <div v-else-if="s.data.name === 'projectContractDate'">
+                  <PrimeCalendar v-model="s.data.value" dateFormat="dd.mm.yy" showIcon :showButtonBar="true" :manualInput="false"/>
+                </div>
+                <!--Источник финансирования-->
+                <div class="field" v-else-if="s.data.name === 'projectFundingType'">
+                  <Dropdown v-model="s.data.value"
+                            optionValue=""
+                            :options="statuses"
+                            :placeholder="$t('common.select')"
+                            class="p-column-filter">
+                    <template #value="slotProps">
+                      <span v-if="slotProps.value" :class="'customer-badge status-' + slotProps.value.id">
+                        {{
+                          $i18n.locale === 'kz' ? slotProps.value.nameKz : $i18n.locale === 'ru'
+                              ? slotProps.value.nameRu : slotProps.value.nameEn
+                        }}
+                      </span>
+                    </template>
+                    <template #option="slotProps">
+                      <span :class="'customer-badge status-' + slotProps.option.id">
+                        {{
+                          $i18n.locale === 'kz' ? slotProps.option.nameKz : $i18n.locale === 'ru'
+                              ? slotProps.option.nameRu : slotProps.option.nameEn
+                        }}
+                      </span>
+                    </template>
+                  </Dropdown>
+                </div>
+                <!--Период реализации-->
+                <div v-else-if="s.data.name === 'projectYears'">
+                  <PrimeCalendar v-model="s.data.value" dateFormat="yy" selectionMode="range" view="year" showIcon :manualInput="false" />
+                </div>
                 <div v-else>
                   <InputText v-model="s.data.value" />
                 </div>
@@ -254,35 +339,32 @@
       <TabPanel :header="$t('common.resultInfo')">
         <div v-if="planDoc && planDoc.params" class="flex flex-column position-relative">
           <div class="button-container">
-            <Button
-                :label="$t('common.add')"
-                icon="pi pi-plus"
-                @click="addToProjectRes"
-            />
+            <Button :label="$t('common.add') + ' ' + $t('common.projectRes')" icon="pi pi-plus" @click="addToProjectRes"/>
           </div>
-          <DataTable :rows="10"
-                     class="table_no_header mt-4"
-                     :value="filteredParamsResultInfo">
+          <DataTable class="table_no_header mt-4" :value="filteredParamsResultInfo">
             <Column>
               <template #body="s">
                 <div v-if="s.data.name === 'projectRes'" class="horizontal-fields full-width">
-                  <table class="multi-data-table">
+                  <table>
                     <thead>
                     <tr>
+                      <th></th>
                       <th>{{ $t('common.projectYear') }}</th>
                       <th>{{ $t('common.projectRes') }} {{ $t('common.language.kz') }}</th>
                       <th>{{ $t('common.projectRes') }} {{ $t('common.language.ru') }}</th>
                       <th>{{ $t('common.projectRes') }} {{ $t('common.language.en') }}</th>
                       <th>{{ $t('common.projectPulish') }}</th>
+                      <th></th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr v-for="(item, index) in s.data.value" :key="index">
                       <td>
-                        <InputText v-model="item.year" />
+                        <!-- Кнопка удаления РЕЗУЛЬТАТ -->
+                        <Button icon="pi pi-trash" class="p-button-danger p-button-sm" @click="removeFromProjectRes(index, s.data.value)"/>
                       </td>
                       <td>
-                        <textarea id="kz" v-model="item.publish" class="resizable-textarea"></textarea>
+                        <PrimeCalendar v-model="item.year" view="year" dateFormat="yy" showIcon :manualInput="false" ></PrimeCalendar>
                       </td>
                       <td>
                         <textarea id="kz" v-model="item.resKz" class="resizable-textarea"></textarea>
@@ -294,12 +376,13 @@
                         <textarea id="kz" v-model="item.resEn" class="resizable-textarea"></textarea>
                       </td>
                       <td>
-                        <!-- Кнопка удаления -->
-                        <Button
-                            icon="pi pi-trash"
-                            class="p-button-danger p-button-sm"
-                            @click="removeFromProjectRes(index, s.data.value)"
-                        />
+                        <div v-for="(pub, pubIndex) in item.publish" :key="pubIndex" class="publication">
+                          <Button icon="pi pi-times" @click="removeResult(pubIndex, item.publish)" class="p-button-danger p-button-sm" />
+                          {{ pubIndex + 1 }} {{ pub.pubName }}
+                        </div>
+                      </td>
+                      <td>
+                        <Button :label="$t('common.projectPublishAdd')" icon="pi pi-plus" @click="addPublication(item.publish)" />
                       </td>
                     </tr>
                     </tbody>
@@ -314,12 +397,6 @@
     </TabView>
     <template #footer>
       <div class="dialog-footer">
-        <Button
-            :label="$t('common.close')"
-            icon="pi pi-times"
-            class="p-button-text"
-            @click="dialog.projectInfo.state = false"
-        />
         <Button
             :label="$t('common.save')"
             icon="pi pi-check"
@@ -436,10 +513,13 @@ import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import DocState from "@/enum/docstates/index";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import RolesByName from "@/components/smartenu/RolesByName.vue";
+import {format} from "date-fns";
+import ScienceWorks from "@/components/documents/catalog/ScienceWorks.vue";
 
 export default {
   name: "WorkPlanEvent",
   components: {
+    ScienceWorks,
     ToolbarMenu,
     CustomFileUpload,
     WorkPlanReportApprove,
@@ -588,6 +668,9 @@ export default {
         },
         projectInfo: {
           state: false
+        },
+        addPublish: {
+          state: false
         }
       },
       planApprovalStage: null,
@@ -607,7 +690,8 @@ export default {
       inputSets: null,
       submitted: false,
       selectedUsers: [],
-      editRespUser:false
+      editRespUser:false,
+      selectedItem: null, // Данные, которые будут получены из ScienceWorks
     }
   },
   created() {
@@ -691,10 +775,91 @@ export default {
     },
   },
   methods: {
+    validString(str) {
+      return str && str.length > 0;
+    },
+
+    getFullname(user) {
+      let name = '';
+
+      if (!user) {
+        return name;
+      }
+
+      if (this.$i18n.locale === 'en' && this.validString(user.thirdnameEn) && this.validString(user.firstnameEn)) {
+        name = user.thirdnameEn + ' ' + user.firstnameEn;
+
+        if (this.validString(user.lastnameEn)) {
+          name += ' ' + user.lastnameEn;
+        }
+
+        return name;
+      }
+
+      name = user.thirdName + ' ' + user.firstName;
+
+      if (this.validString(user.lastName)) {
+        name += ' ' + user.lastName;
+      }
+
+      return name;
+    },
+
+    //запрос названия статьи для проекта Научного плана
+    getScienceWorkName(doc) {
+      if (!doc.newParams || !doc.newParams.publicationName ||
+          !this.validString(doc.newParams.publicationName.value)) {
+        return '';
+      }
+
+      return doc.newParams.publicationName.value;
+    },
+
+    getScienceEditionName(doc) {
+      let full = '';
+
+      if (!doc.newParams) return '';
+
+      const name = this.validString(doc.newParams.editionName?.value)
+          ? doc.newParams.editionName.value
+          : '';
+
+      const year = this.validString(doc.newParams.publicationDate?.value)
+          ? new Date(doc.newParams.publicationDate.value).getFullYear()
+          : '';
+      const num = this.validString(doc.newParams.editionNumber?.value)
+          ? doc.newParams.editionNumber.value
+          : '';
+      const page = this.validString(doc.newParams.editionPages?.value)
+          ? doc.newParams.editionPages.value
+          : '';
+
+      full = `${name} (${year}, ${num}, ${page})`;
+
+      return full;
+    },
+
+    handleSelect(item) {
+      // Обрабатываем данные, полученные из ScienceWorks
+      console.log("Полученные данные:", item);
+
+      if(item){
+        this.selectedItem.push({
+          pubName:
+              this.getFullname(item.owner) + ". " +
+              this.getScienceWorkName(item) + ". " +
+              this.getScienceEditionName(item),
+          id: item.id,
+        });
+      }
+
+      this.dialog.addPublish.state = false;
+      this.selectedItem = null;
+    },
     addToProjectRes() {
       // Новый объект для добавления
       const newObject = {
-        publish: "",
+        publish: [],
         resEn: "",
         resKz: "",
         resRu: "",
@@ -711,11 +876,21 @@ export default {
         projectRes.value.push(newObject);
       }
     },
+    //удалить результат
     removeFromProjectRes(index, array) {
       array.splice(index, 1); // Удаляем элемент по индексу
     },
+    //удалить публикацию
+    removeResult(index, array) {
+      array.splice(index, 1);
+    },
+    //добавить публикацию
+    addPublication(resultData) {
+      this.dialog.addPublish.state = true;
+      this.selectedItem = resultData;
+    },
+    // Проверяем, содержит ли value языковые ключи
     isMultiLanguage(value) {
-      // Проверяем, содержит ли value языковые ключи
       return typeof value === 'object' && value !== null && ('kz' in value || 'ru' in value || 'en' in value);
     },
     findRole: findRole,
@@ -1030,6 +1205,26 @@ export default {
           ];
           this.getRelatedFiles()
           this.getWorkPlanApprovalUsers(this.work_plan_id)
+
+          for (const param of this.planDoc.params) {
+            if (param.name === "projectContractDate") { //Дата договора
+              param.value = param.value ? format(new Date(param.value), 'dd.MM.yyyy') : null;
+            }
+            else if (param.name === "projectYears") { //Период реализации
+              if (param.value) {
+                let tempD = [];
+                for (let vParam of param.value) {
+                  tempD.push(new Date(vParam));
+                }
+                param.value = tempD;
+              }
+            }
+            else if (param.name === "projectRes") { //результат проекта
+              for (const projectResDate of param.value) {
+                projectResDate.year = projectResDate.year ? new Date(projectResDate.year) : null;
+              }
+            }
+          }
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -1499,11 +1694,41 @@ export default {
     },
     checkProjectInfo() {
       if (this.planDoc.params) {
+
+        let pName = {"kz": "", "ru": "", "en": ""} //название проекта
+        let priorName = {"kz": "", "ru": "", "en": ""} // По приоритету
+        let conNum = "" //Номер договора
+        let conDate = "" //date договора
+
+        for (const param of this.planDoc.params) {
+          if(param.name === "plancontracttopic"){
+            if(this.plan.lang === 1){
+              pName = {"kz": param.value, "ru": "", "en": ""}
+            } else if(this.plan.lang === 2){
+              pName = {"kz": "", "ru": param.value, "en": ""}
+            }else if(this.plan.lang === 3){
+              pName = {"kz": "", "ru": "", "en": param.value}
+            }
+          } else if(param.name === "plancontractprioruty"){
+            if(this.plan.lang === 1){
+              priorName = {"kz": param.value, "ru": "", "en": ""}
+            } else if(this.plan.lang === 2){
+              priorName = {"kz": "", "ru": param.value, "en": ""}
+            }else if(this.plan.lang === 3){
+              priorName = {"kz": "", "ru": "", "en": param.value}
+            }
+          } else if(param.name === "plancontractnumber"){
+            conNum = param.value;
+          } else if(param.name === "plancontractdate"){
+            conDate = param.value;
+          }
+        }
+
         const requiredParams = [
-          { name: "projectSupervisor", description: "common.projectSupervisor" },
+          { name: "projectSupervisor", description: "common.projectSupervisor", multi: this.plan?.user?.fullName },
           { name: "zhtn", description: "common.zhtn" },
-          { name: "projectName", description: "common.projectName", multi: {"kz": "", "ru": "", "en": ""} },
-          { name: "projectPriority", description: "common.projectPriority", multi: {"kz": "", "ru": "", "en": ""} },
+          { name: "projectName", description: "common.projectName", multi: pName },
+          { name: "projectPriority", description: "common.projectPriority", multi: priorName },
           { name: "projectRelevance", description: "common.projectRelevance", multi: {"kz": "", "ru": "", "en": ""} },
           { name: "projectGoal", description: "common.projectGoal", multi: {"kz": "", "ru": "", "en": ""} },
           { name: "projectTypeOfResearch", description: "common.projectTypeOfResearch" },
@@ -1513,14 +1738,14 @@ export default {
           { name: "projectContract", description: "common.projectContract" },
           { name: "projectPlan", description: "common.projectPlan" },
 
-          { name: "projectContractNum", description: "common.projectContractNum" },
-          { name: "projectContractDate", description: "common.projectContractDate" },
+          { name: "projectContractNum", description: "common.projectContractNum", multi: conNum },
+          { name: "projectContractDate", description: "common.projectContractDate", multi: conDate },
           { name: "projectClient", description: "common.projectClient", multi: {"kz": "", "ru": "", "en": ""} },
           { name: "projectFundingType", description: "common.projectFundingType" },
           { name: "projectYears", description: "common.projectYears" },
           { name: "projectRes", description: "common.projectRes", multi:
                 [
-                    {"year": "", "publish": "", "resKz": "", "resRu": "", "resEn": ""},
+                    {"year": "", "publish": [], "resKz": "", "resRu": "", "resEn": ""},
                 ]
           },
         ];
@@ -1539,9 +1764,7 @@ export default {
         });
       }
     },
-    showSciDoc(param){
 
-    },
     saveParams() {
       this.planDoc.newParams = {};
       for (let i = 0; i < this.planDoc.params.length; i++) {
