@@ -654,8 +654,8 @@ const boardDecisionSpeaker = ref([])
 const validatedAgendaFields = ref(true)
 const boardMembersList = ref([])
 const quorumData = ref([
-  {name_kz: 'Қол жетімді', name_ru: 'Имеется'},
-  {name_kz: 'Жоқ', name_ru: 'Отсутствует'}
+  {name_kz: 'Қол жетімді', name_ru: 'Имеется', value: "yes"},
+  {name_kz: 'Жоқ', name_ru: 'Отсутствует', value: "no"}
 ])
 const stages = ref([]);
 const selectedQuorum = ref('');
@@ -811,7 +811,7 @@ const handlePtagClick = (eventID) => {
 const localizedQuorumData = computed(() => {
   return quorumData.value.map(item => ({
     label: item[`name_${locale.value}`],
-    value: item[`name_${locale.value}`]
+    value: item[`value`]
   }));
 });
 
