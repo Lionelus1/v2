@@ -335,7 +335,7 @@
               <label for="listened" class="block mb-1">{{ $t('workPlan.protocol.listened') }}{{ "*" }}</label>
               <FindUser class="mt-2" v-model="boardDecisionSpeaker" :editMode="true" :user-type="3"
                         :disabled="isInApprove || isApproved || extractEditDisabled"/>
-              <Textarea id="agendas" v-model="selectedAgenda.agenda" class="mt-2" rows="5"
+              <Textarea id="agendas" v-model="selectedAgenda.agenda_extract" class="mt-2" rows="5"
                         :disabled="isInApprove || isApproved || extractEditDisabled"/>
             </div>
             <div class="p-fluid mt-3">
@@ -705,6 +705,7 @@ const parsedAgendaVotingResults = computed(() => ({
 
 const selectedAgenda = ref({
   agenda: null,
+  agenda_extract: null,
   speaker: [],
   voting_result: parsedAgendaVotingResults,
   reporter: [],
@@ -823,6 +824,8 @@ const getSelectedAgendaData = () => {
     const foundEvent = data.value[0].protocol_issues.find(issue => issue.event_id === parseInt(data?.value[0]?.protocol_number));
     if (foundEvent && foundEvent.protocol_agenda) {
       selectedAgenda.value = foundEvent.protocol_agenda;
+      selectedAgenda.value.agenda_extract = foundEvent.protocol_agenda.agenda
+      
     }
 
   }
@@ -844,6 +847,7 @@ const createProtocolExtractConfirm = (eventID) => {
 
 const agendaData = ref({
   agenda: null,
+  agenda_extract: null,
   speaker: [],
   voting_result: parsedAgendaVotingResults,
   reporter: [],
@@ -948,6 +952,9 @@ const updateProtocolAgenda = () => {
     const eventToUpdate = data.value[0].protocol_issues.find(issue => issue.event_id === selectedEvent.value.event_id);
     if (eventToUpdate) {
       eventToUpdate.protocol_agenda = agendaData.value;
+      eventToUpdate.protocol_agenda.agenda = agendaData.value.agenda;
+      eventToUpdate.protocol_agenda.agenda_extract = agendaData.value.agenda
+
 
       toast.add({
         severity: 'success',
@@ -984,6 +991,7 @@ const agendasModalView = (eventId) => {
 
   agendaData.value = {
     agenda: '',
+    agenda_extract: '',
     speaker: [],
     voting_result: {
       vote_aye: null,
@@ -1007,7 +1015,8 @@ const agendasModalView = (eventId) => {
   const foundEvent = data.value[0].protocol_issues.find(issue => issue.event_id === eventId);
   if (foundEvent) {
     selectedEvent.value = foundEvent;
-    agendaData.value.agenda = foundEvent.event_name || '';
+    agendaData.value.agenda = foundEvent.protocol_agenda?.agenda || foundEvent.event_name;
+    agendaData.value.agenda_extract = foundEvent.event_name || '';
     agendaData.value.speaker = foundEvent.protocol_agenda?.speaker || [];
     if (agendaData.value.speaker && agendaData.value.speaker.length > 0) {
       boardAgendaSpeaker.value = []

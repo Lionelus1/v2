@@ -214,6 +214,7 @@ const votingResults = ref({
 
 const agendaData = ref({
   agenda: '',
+  agenda_extract: '',
   speaker: [],
   voting_result: votingResults.value,
   reporter: [],
