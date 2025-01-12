@@ -2194,7 +2194,14 @@ export default {
         textArea: 'Ввод описание',
         dropdown: 'Выпадающий список',
         dataEntry: 'Ввод данных',
-        file: 'Файл'
+        file: 'Файл',
+        registry: 'Реестр',
+        photo:'Загрузить фото',
+        basicInformation: 'Основная информация',
+        objectPassport: 'Паспорт объекта',
+        img: 'Изображение',
+        field: 'Поле',
+        meaning: 'Значение'
     },
     status_resume: "Статус заполнения резюме",
     people_special_needs: "Люди с особыми потребностями"

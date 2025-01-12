@@ -4,10 +4,11 @@
       <div class="arrow-icon" @click="$router.back()">
         <i class="fas fa-arrow-left"></i>
       </div>
-      <h4 class="m-0">Реестр</h4>
+      <h4 class="m-0">{{$t('registry.registry')}}</h4>
     </div>
     <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)"/>
     <div class="card">
+      <input type="file" ref="fileInput" @change="onFileChange" style="display: none;" />
       <DataTable  :loading="loading" :value="applications"  @page="onPageChange" :paginator="true"  :page="0" :rows="10"  :totalRecords="totalRecords" v-model:selection="selectedApplication" selectionMode="single">
         <Column
             v-for="column in columns"
@@ -20,23 +21,20 @@
             </div>
             <div v-else>
               <Button
-                  style="margin-right: 0.5rem;"
-                  icon="pi pi-exclamation-triangle"
-                  class="p-button-warning"
-                  v-if="!slotProps.data.canDelete"
-                  v-tooltip="slotProps.data.canDelete ? '' : slotProps.data.cantDeleteReason[$i18n.locale]"/>
-
-              <Button
-                  icon="pi pi-times"
-                  class="p-button-danger"
-                  :disabled="!slotProps.data.canDelete"
-                  v-tooltip="slotProps.data.canDelete ? '' : slotProps.data.cantDeleteReason[$i18n.locale]"
-                  @click="openDelete(slotProps.data)"/>
+                  icon="pi pi-qrcode"
+                  class="p-button"
+                  @click="openDocGeneration(slotProps)"/>
             </div>
           </template>
 
         </Column>
       </DataTable>
+      <!-- QR CODE ҚАРАУ -->
+      <Sidebar v-model:visible="qrVisible"
+               position="right"
+               class="p-sidebar-lg">
+        <QrGenerator :data="qrUrl" :showBackButton="false"/>
+      </Sidebar>
     </div>
   </div>
 </template>
@@ -44,12 +42,15 @@
 
 <script>
 import RegistryService from "../../service/registry_service";
+import {smartEnuApi, findRole, fileRoute} from "@/config/config";
 import {registry} from "chart.js";
+import QrGenerator from "@/components/QrGenerator.vue";
+import * as XLSX from 'xlsx';
 
 
 export default {
   name: 'Registry',
-  components: {},
+  components: {QrGenerator},
   data() {
     return {
       registryService: new RegistryService(),
@@ -79,12 +80,11 @@ export default {
       page: 0,
       rows: 10,
       selectedApplication: null,
+      qrVisible: false,
+      qrUrl: null,
     }
   },
   methods: {
-    openBasic() {
-      this.$router.push({ name: 'RegistryAdd', "params": {} });
-    },
     open(){
       this.$router.push({ name: 'RegistryAdd', params: {id: parseInt(this.$route.params.id)} });
     },
@@ -99,6 +99,11 @@ export default {
         this.selectedApplication = null
         this.getRegisterParamterApplaction()
       })
+    },
+    openDocGeneration(slotProps) {
+        this.qrUrl = smartEnuApi + "/registry/Registry/" + parseInt(this.$route.params.id) + "/" + slotProps.data.id;
+
+        this.qrVisible = true;
     },
     close(){
       this.showAddPlanDialog = false;
@@ -187,6 +192,15 @@ export default {
                 id: parseInt(item.id),
               });
             });
+            this.columns.push({
+              field: "QR",
+              label_kz: null,
+              label_ru: null,
+              label_en: null,
+              value_kz: null,
+              value_en: null,
+              value_ru: null,
+            });
           })
           .catch(error => {
             this.loading = false;
@@ -196,12 +210,12 @@ export default {
 
     getRegisterParamterApplaction() {
     this.loading = true;
+
       const req = {
         page: this.page,
         rows: this.rows,
         registry_id: parseInt(this.$route.params.id),
       };
-
       this.registryService.getApplication(req).then((res) => {
         this.applications = res.data.applications
         this.totalRecords = res.data.total
@@ -226,9 +240,71 @@ export default {
     },
 
     onPageChange: (event) => {
+      console.log(event.page)
       this.page = event.page
       this.getRegisterParamterApplaction()
-    }
+    },
+    getQR: (uuid) => {
+      this.qrUrl = smartEnuApi + "/document?qrcode=" + uuid;
+
+      this.qrVisible = true;
+    },
+    triggerFileInput() {
+      this.$refs.fileInput.click();
+    },
+    onFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.readExcel(file);
+      }
+    },
+    readExcel(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = e.target.result;
+        const workbook = XLSX.read(data, { type: 'binary' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(sheet);
+        this.processExcelData(jsonData);
+      };
+      reader.readAsBinaryString(file);
+    },
+    processExcelData(data) {
+      const formattedRows = []; // Создаем массив для всех строк
+      data.forEach(row => {
+        const formattedRow = {
+          label_kz: "Атауы",
+          value_kz: row["Атауы"],
+          label_ru: "Наименование",
+          value_ru: row["Наименование"],
+          label_en: "Name",
+          value_en: row["Name"],
+        };
+        formattedRows.push(formattedRow);
+      });
+      const req = {
+        status: 0,
+        registry: {
+          id: parseInt(this.$route.params.id),
+        },
+        parameters: formattedRows.map(field => ({
+          parameter: {
+            id: this.columns[0].id,
+            label_kz: field.label_kz,
+            label_ru: field.label_ru,
+            label_en: field.label_en,
+            type: 1,
+            registry_id: parseInt(this.$route.params.id),
+          },
+          value_en: field.value_en,
+          value_kz:  field.value_kz,
+          value_ru: field.value_ru,
+        })),
+      };
+      this.registryService.createApplication(req).then((res) => {
+
+      })
+    },
   },
   computed: {
     toolbarMenus() {
@@ -243,9 +319,9 @@ export default {
         {
           label: this.$t('registry.import'),
           icon: "pi pi-file-import",
-          disabled: true,
+          // disabled: true,
           command: () => {
-            this.openBasic()
+            this.triggerFileInput()
           },
         },
         {

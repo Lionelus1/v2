@@ -71,27 +71,32 @@
                   :optionValue="$i18n.locale === 'kz' ? 'value_kz' : $i18n.locale === 'ru' ? 'value_ru' :
               'value_en' "
                   style="width: 295px;"
-                  @onchange="updateValues(field, field.value_en, field.value_ru, field.value_en)"
+                  @change="updateValues(field, field.additionalSelect)"
               />
             </div>
             <div class="field" v-if="field.type === 4" style="width: 295px;">
               <FindUser v-model="field.applicant" :max="1"/>
             </div>
-<!--            <div class="field" v-if="field.type === 5" style="width: 295px;">-->
-<!--              <PrimeCalendar-->
-<!--                  style="width: 340px"-->
-<!--                  dateFormat="dd.mm.yy"-->
-<!--                  selectionMode="single"-->
-<!--                  v-model="field.value_en"-->
-<!--                  @input="updateDate"-->
-<!--                  :placeholder="$t('common.date')"-->
-<!--                  :showIcon="true"-->
-<!--              />-->
-<!--            </div>-->
-<!--            <div class="field" v-if="field.type === 4" style="width: 295px;">-->
-<!--              <FileUpload mode="basic" :customUpload="true" @uploader="uploadThumb" :auto="true"-->
-<!--                          v-bind:chooseLabel="$t('hdfs.chooseFile')" accept="image/*"/>-->
-<!--            </div>-->
+            <div class="field" v-if="field.type === 5" style="width: 295px;">
+              <PrimeCalendar
+                  style="width: 340px"
+                  dateFormat="dd.mm.yy"
+                  selectionMode="single"
+                  v-model="field.value_ru"
+                  @input="(value) => updateDate(value, field)"
+                  :placeholder="$t('common.date')"
+                  :showIcon="true"
+              />
+            </div>
+            <div class="field" v-if="field.type === 6" style="width: 295px;">
+              <div class="col">
+                <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="event => uploadPosterImageKk(event, field)"
+                            :auto="true" v-bind:chooseLabel="$t('registry.photo')" accept="image/*"/>
+                <div class="mt-3" v-if="poster.imageKkUrl">
+                  <img :src="poster.imageKkUrl" style="width: 50%; height: 50%"/>
+                </div>
+              </div>
+            </div>
           </div>
       <Button class="toggle-button" @click="open('addAttributeDialog')">{{
           t('registry.addNewAttribute')
@@ -112,6 +117,8 @@ import {findRole} from "../../config/config";
 import RegistryService from "../../service/registry_service";
 import FindUser from "../../helpers/FindUser.vue";
 import {UserService} from "../../service/user.service";
+import {FileService} from "../../service/file.service";
+import {smartEnuApi, fileRoute} from "../../config/config";
 
 
 const props = defineProps(['visible', 'isAdded', 'isSub'])
@@ -121,6 +128,7 @@ const {t, locale} = useI18n()
 const router = useRouter();
 const route = useRoute();
 const registryService = new RegistryService()
+const fileService = new FileService()
 const userService = new UserService()
 
 const types = ref([])
@@ -153,6 +161,13 @@ const languages = ref([
     name: 'English'
   }
 ])
+
+const poster = ref( {
+  link: "",
+  imageKk: null,
+  imageRu: null,
+  imageEn: null,
+})
 const reqFormFields = ref([])
 const formFields = ref([
   // {
@@ -178,8 +193,8 @@ const fieldTypes = [
   { label: t('registry.textArea'), value: 2 },
   { label: t('registry.dropdown'), value: 3 },
   { label: t('common.user'), value: 4 },
-  // { label: t('mailing.time'), value: 5 },
-  // { label: t('registry.file'), value: 6 },
+  { label: t('mailing.time'), value: 5 },
+  { label: t('registry.file'), value: 6 },
 ];
 
 const newAttribute = reactive({
@@ -190,16 +205,38 @@ const newAttribute = reactive({
   additional_registry_id: null,
 });
 
-const updateValues = (field, selectedValueEn, selectedValueRu, selectedValueKz) => {
-  field.value_kz = selectedValueKz;
-  field.value_ru = selectedValueRu;
-  field.value_en = selectedValueEn;
+const updateValues = (field, selected) => {
+  const matchedItem = selected.find(item => item.value_ru === field.value_ru);
+
+  if (matchedItem) {
+    field.value_kz = matchedItem.value_kz;
+    field.value_ru = matchedItem.value_ru;
+    field.value_en = matchedItem.value_en;
+  }
 }
 
-const updateDate = (field) => {
-  const selectedDate = field.value_en;
-  field.value_ru = selectedDate;
-  field.value_kz = selectedDate;
+const updateDate = (value, field) => {
+  field.value_kz = value;
+  field.value_ru = value;
+  field.value_en = value;
+}
+
+const uploadPosterImageKk = (event, field) => {
+  const fd = new FormData()
+  fd.append("files[]", event.files[0])
+  fd.append("watermark", false)
+  fileService.uploadFile(fd).then(res => {
+    if (res.data) {
+      poster.value.image_kk_file = res.data[0];
+      poster.value.imageKkUrl = smartEnuApi + fileRoute + poster.value.image_kk_file.filepath
+      poster.value.imageKk = poster.value.image_kk_file.filepath
+      field.value_en = poster.value.image_kk_file.filepath
+      field.value_kz = poster.value.image_kk_file.filepath
+      field.value_ru = poster.value.image_kk_file.filepath
+    }
+  }).catch(error => {
+    toast.add({severity: "error", summary: error, life: 3000});
+  })
 }
 
 const addNewAttribute = () => {
@@ -307,7 +344,7 @@ const getRegisterParameterApplication = () => {
       })
       .catch(error => {
         if (error) {
-          toast.add({severity: "error", summary: error, life: 3000});
+          console.log(error);
         }
       });
 
@@ -436,7 +473,6 @@ const save = () => {
           }
         });
   }
-
 }
 
 const getRegisterParameter = () => {
@@ -457,10 +493,6 @@ const getRegisterParameter = () => {
     loading.value = false;
   });
 };
-
-const updateValue = (event) => {
-console.log("event: ", event);
-}
 
 onMounted(() => {
   getRegisterParameter()

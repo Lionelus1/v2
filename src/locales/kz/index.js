@@ -2237,7 +2237,15 @@ export default {
     inputText: 'Мәтін енгізу',
     textArea: 'Сипаттама енгізу',
     dropdown: 'Төмен түсетін тізім',
-    dataEntry: 'Деректер енгізу'
+    dataEntry: 'Деректер енгізу',
+    file: 'Файл',
+    registry: 'Тізілім',
+    photo: 'Суретті жүктеу',
+    basicInformation: 'Негізгі ақпарат',
+    objectPassport: 'Объект паспорты',
+    img: 'Сурет',
+    field: 'Өріс',
+    meaning: 'Мәні'
   },
   status_resume: 'Түйіндемені толтыру статусы',
   people_special_needs: 'Ерекше қажеттіліктері бар адамдар',
