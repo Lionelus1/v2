@@ -1536,7 +1536,8 @@ export default {
             notDone:"Орындалмады",
             strategicDirectionExecutionLevel:"Стратегиялық бағыттардың жылдық орындалу пайызы",
             structuralDivisionExecutionLevel:"Құрылымдық бөлімдердің жылдық орындалу пайызы",
-            selectQuarter:"Тоқсанды таңдаңыз"
+            selectQuarter:"Тоқсанды таңдаңыз",
+            departmentNotFound: "Құрылымдық бөлім табылмады",
             
 
         }

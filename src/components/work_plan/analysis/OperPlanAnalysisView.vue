@@ -69,13 +69,13 @@
 
             </template>
             <template #end>
-              <Button :label="$t('workPlan.analyzer.filterTitle')" class="mr-2"  @click="getEventsTree(null, true)"></Button>
+              <Button :label="$t('workPlan.analyzer.filterTitle')" class="mr-2"  @click="getDepartmentById(selectedDepartment)"></Button>
               <Button icon="pi pi-trash"  severity="secondary" @click="clearFilter()"/>
             </template>
 
           </Toolbar>
         </div>
-        <DataTable :value="computedAnalysisData" removableSort
+        <DataTable :value="isFiltered ? computedSingleDepartmentAnalysisData : computedAnalysisData" removableSort
                    tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;">
           <template #empty> {{ $t('common.noData') }}</template>
           <Column sortable field="eventSummaryDepartment" :header="$t('workPlan.summary')"
@@ -120,10 +120,7 @@
         <div class="card" v-if="isGeneralStructuralDivisionChart && tableAnalysisData?.length > 0 && selectedQuarter === null">
           <Chart type="bar" :data="chartDataDepartment" :options="chartOptionsDepartment" class="h-30rem"  />
         </div>
-        <!-- <div class="card" v-if="selectedQuarter !== null && tableAnalysisData?.length >0">
-          <Chart type="bar" :data="chartDataDepartmentQuarter" :options="chartOptionsDepartmentQuarter" class="h-30rem"  />
-        </div> -->
-        <div class="card flex justify-content-center" v-if="isFilteredStructuralDivisionChart && tableAnalysisData?.length > 0">
+        <div class="card flex justify-content-center" v-if="isFiltered">
           <Chart type="doughnut" :data="chartDataFilteredDepartment" :options="chartOptionsFilteredDepartment" class="w-full md:w-30rem" />
         </div>
       </TabPanel>
@@ -169,6 +166,23 @@ const tableAnalysisData = ref([
     }
   }
 ])
+const analysisDataOfSingeDepartment = ref([
+  {
+    department: {
+      id: null,
+      name: null,
+      name_kz: null,
+      name_ru: null,
+      name_en: null
+    },
+    result_status: {
+      completed: [],
+      notcompleted: [],
+      partially_completed: [],
+      created: []
+    }
+  }
+])
 const strategicDirectionData = ref([
   {
     direction: {
@@ -190,6 +204,7 @@ const loading = ref(false);
 const isCreator = ref(false);
 const isGeneralStructuralDivisionChart = ref(true)
 const isFilteredStructuralDivisionChart = ref(false)
+const isFiltered = ref(false)
 
 const lazyParams = reactive({
   page: 0,
@@ -221,12 +236,10 @@ const selectedQuarter = ref(null)
 
 const authUser = computed(() => JSON.parse(localStorage.getItem("loginedUser")))
 const isAdmin = computed(() => findRole(authUser.value, "administrator"))
-// authUser?.value?.mainPosition?.department?.id
 const selectedDepartment = ref(null);
 
 onMounted(async () => {
   await getEventsTree();
-  getDepartments();
 
   chartData.value = setChartData();
   chartOptions.value = setChartOptions();
@@ -234,7 +247,6 @@ onMounted(async () => {
   chartDataDepartment.value = setChartDataDepartments();
   chartOptionsDepartment.value = setChartOptions();
 
-  //getEventResultData(8583)
 })
 
 const chartData = ref();
@@ -249,61 +261,27 @@ const chartOptionsFilteredDepartment = ref(null);
 const chartDataDepartmentQuarter = ref();
 const chartOptionsDepartmentQuarter = ref();
 
-// const setChartDataDepartmentsQuarter = () => {
-//     const documentStyle = getComputedStyle(document.documentElement);
-//     if (!computedAnalysisFilteredData.value.length) {
-//         console.warn("No strategic analysis data available yet.");
-//         return {
-//             labels: [],
-//             datasets: []
-//         };
-//     }
-
-//     const labels = computedAnalysisFilteredData.value.map(
-//         (entry) => entry.department.name || 'No Name'
-//     );
-
-//     const data = computedAnalysisFilteredData.value.map(
-//         (entry) => Number(entry.executionLevel.toFixed(2))
-//     );
-
-
-//     return {
-//         labels: labels,
-//         datasets: [
-//             {
-//                 label: t('workPlan.analyzer.structuralDivisionExecutionLevel'),
-//                 backgroundColor: '#0275d8',
-//                 borderColor: documentStyle.getPropertyValue('--cyan-500'),
-//                 data: data
-//             }
-//         ]
-//     };
-// };
-
 const setChartDataFilteredDepartment = () => {
     const documentStyle = getComputedStyle(document.body);
-    if (!computedAnalysisFilteredData.value.length) {
-        console.warn("No strategic analysis data available yet.");
+    if (!computedSingleDepartmentAnalysisData.value.length) {
         return {
             labels: [],
             datasets: []
         };
     }
 
-    const labels = computedAnalysisFilteredData.value.map(
+    const labels = computedSingleDepartmentAnalysisData.value.map(
         (entry) => entry.department.name || 'No Name'
     );
     const chartData = []
-
     const chartLabels = []
 
-    const completed = computedAnalysisFilteredData.value.map(
+    const completed = computedSingleDepartmentAnalysisData.value.map(
         (entry) => Number(entry.executionLevel.toFixed(2))
     );
     chartData.push(completed)
     chartLabels.push('Орындалған жұмыстар: '+completed+'%')
-    const notCompleted = computedAnalysisFilteredData.value.map(
+    const notCompleted = computedSingleDepartmentAnalysisData.value.map(
         (entry) => 100 - Number(entry.executionLevel.toFixed(2))
     );
 
@@ -340,7 +318,6 @@ const setChartOptionsFilteredDepartment = () => {
 const setChartDataDepartments = () => {
     const documentStyle = getComputedStyle(document.documentElement);
     if (!computedAnalysisData.value.length) {
-        console.warn("No strategic analysis data available yet.");
         return {
             labels: [],
             datasets: []
@@ -372,7 +349,6 @@ const setChartDataDepartments = () => {
 const setChartData = () => {
     const documentStyle = getComputedStyle(document.documentElement);
     if (!computedStrategicAnalysisData.value.length) {
-        console.warn("No strategic analysis data available yet.");
         return {
             labels: [],
             datasets: []
@@ -443,6 +419,7 @@ const clearFilter = () =>{
   selectedQuarter.value = null;
   isGeneralStructuralDivisionChart.value = true;
   isFilteredStructuralDivisionChart.value = false;
+  isFiltered.value = false;
   getEventsTree();
 }
 
@@ -451,7 +428,6 @@ const onTabChange = (event) => {
     //clearFilter()
   }
 }
-
 
 const getEventDescendants = async (parentId) => {
   loading.value = true;
@@ -465,40 +441,49 @@ const getEventDescendants = async (parentId) => {
   }
 }
 
-const getEventResultData = async (eventID) => {
+const getDepartmentById = async (departmentID) => {
   loading.value = true;
-  const data = {
-    event_id: eventID,
-    result_filter: {
-      quarter: null,
-      responsiveUser: null
-    },
-  };
-
   try {
-    const res = await workPlanService.getEventResult(data);
+    if (departmentID !== null && typeof departmentID !== "undefined") {
+      const department = tableAnalysisData.value.find(
+        (entry) => entry.department.id === departmentID
+      );
 
-    if (res.data) {
-      resultData.value = res.data;
+      if (department) {
+        isFiltered.value = true;
+        isGeneralStructuralDivisionChart.value = false;
+        isFilteredStructuralDivisionChart.value = true;
+        analysisDataOfSingeDepartment.value = [department];
+        chartDataFilteredDepartment.value = setChartDataFilteredDepartment();
+        chartOptionsFilteredDepartment.value = setChartOptionsFilteredDepartment();
+
+      } else {
+        toast.add({
+        severity: 'warn',
+        summary: t('workPlan.analyzer.departmentNotFound'),
+        life: 3000,
+      });
       loading.value = false;
-    } else if (res.data === null) {
-      loading.value = false;
-      resultData.value = res.data;
-    }
-  } catch (error) {
-    if (error.response && error.response.status === 401) {
-      loading.value = false;
-      store.dispatch('logOut');
+      }
     } else {
       toast.add({
-        severity: 'error',
-        summary: error.message || 'An error occurred',
+        severity: 'warn',
+        summary: t('workPlan.analyzer.departmentNotFound'),
         life: 3000,
       });
       loading.value = false;
     }
+  } catch (error) {
+    toast.add({
+        severity: 'warn',
+        summary: t('workPlan.analyzer.departmentNotFound'),
+        life: 3000,
+      });
+      loading.value = false;
+  } finally {
+    loading.value = false;
   }
-};
+}
 
 async function getEventsTree(parent, isClickEvent) {
   try {
@@ -511,19 +496,19 @@ async function getEventsTree(parent, isClickEvent) {
     lazyParams.work_plan_id = Number(workPlanID);
     lazyParams.quarter = selectedQuarter.value;
     lazyParams.parent_id = parent == null ? null : parent.id;
-    lazyParams.department_id = null;
-
-
+    
     if (selectedDepartment.value !== null) {
-      if (!lazyParams.filters.department_id) {
-        lazyParams.filters.department_id = selectedDepartment.value;
-      }
+        const filter = JSON.parse(JSON.stringify(filters.value));
+        filter.department_id = selectedDepartment.value;
+        lazyParams.filters = filter;
+      
     }
     if (selectedDepartment.value == null) {
       if (!lazyParams.is_oper_plan_analysis) {
         lazyParams.is_oper_plan_analysis = true;
       }
     }
+   
     const res = await workPlanService.getEventsTree(lazyParams);
 
     if (parent == null) {
@@ -534,7 +519,6 @@ async function getEventsTree(parent, isClickEvent) {
         strategicDirectionData.value = []
         for (const e of data.value) {
           if (e.parent_id === null) {
-            // strategicDirectionData
             const descendants = await getEventDescendants(e.work_plan_event_id);
 
             let newstrategicDirectionData = {
@@ -607,27 +591,8 @@ async function getEventsTree(parent, isClickEvent) {
   }
 }
 
-const getDepartments = async () => {
-  departments.value = [];
-  try {
-    const res = await workPlanService.getDepartments(Number(workPlanID));
-    if (res.data) {
-      departments.value = res.data;
-    }
-  } catch (error) {
-    if (error.response && error.response.status === 401) {
-      store.dispatch("logOut");
-    } else {
-      toast.add({
-        severity: "error",
-        summary: error.message || error,
-        life: 3000,
-      });
-    }
-  }
-};
-
 watch(data, (newValue) => {
+  departments.value = [];
   tableAnalysisData.value = [];
   if (data.value !== null && data.value.length > 0) {
     data.value.forEach((event) => {
@@ -674,10 +639,18 @@ watch(data, (newValue) => {
                     created:[]
                   },
                 };
+                let departmentFilter = {
+                  department_id: departmentId,
+                  department_name: item?.user?.mainPosition?.department?.name
+                }
                 newDepartment.result_status[statusCategory].push(
                     event.status.work_plan_event_status_id
                 );
-                tableAnalysisData.value.push(newDepartment);
+                if (newDepartment.department.id || newDepartment.department.name) {
+                    tableAnalysisData.value.push(newDepartment);
+                    departments.value.push(departmentFilter)
+                }
+                
               }
             }
           }
@@ -685,59 +658,9 @@ watch(data, (newValue) => {
 
         });
       }
-
-    
       };
       processEvents();
-      
-      
-      // event.user.forEach((item) => {
-      //   if (item.is_summary_department) {
-      //     let departmentId = item?.user?.mainPosition?.department?.id;
-      //     let existingDepartment = tableAnalysisData.value.find(
-      //         (entry) => entry.department.id === departmentId
-      //     );
 
-      //     let statusCategory = null;
-      //     if (event?.status?.work_plan_event_status_id === 2) {
-      //       statusCategory = "completed";
-      //     } else if (event?.status.work_plan_event_status_id === 3) {
-      //       statusCategory = "notcompleted";
-      //     } else if (event?.status.work_plan_event_status_id === 4) {
-      //       statusCategory = "partially_completed";
-      //     } else if (event?.status.work_plan_event_status_id === 1) {
-      //       statusCategory = "created";
-      //     }
-
-      //     if (statusCategory) {
-      //       if (existingDepartment) {
-      //         existingDepartment.result_status[statusCategory].push(
-      //             event?.status.work_plan_event_status_id
-      //         );
-      //       } else {
-      //         let newDepartment = {
-      //           department: {
-      //             id: departmentId,
-      //             name: item?.user?.mainPosition?.department?.name,
-      //             name_kz: item?.user?.mainPosition?.department?.nameKz,
-      //             name_ru: item?.user?.mainPosition?.department?.nameRu,
-      //             name_en: item?.user?.mainPosition?.department?.nameEn,
-      //           },
-      //           result_status: {
-      //             completed: [],
-      //             notcompleted: [],
-      //             partially_completed: [],
-      //             created:[]
-      //           },
-      //         };
-      //         newDepartment.result_status[statusCategory].push(
-      //             event.status.work_plan_event_status_id
-      //         );
-      //         tableAnalysisData.value.push(newDepartment);
-      //       }
-      //     }
-      //   }
-      // });
     });
     chartDataFilteredDepartment.value = setChartDataFilteredDepartment();
     chartOptionsFilteredDepartment.value = setChartOptionsFilteredDepartment();
@@ -792,8 +715,8 @@ const computedAnalysisData = computed(() =>
     })
 );
 
-const computedAnalysisFilteredData = computed(() =>
-    tableAnalysisData.value.map((entry) => {
+const computedSingleDepartmentAnalysisData = computed(() =>
+    analysisDataOfSingeDepartment.value.map((entry) => {
       const totalStatuses =
           entry.result_status.completed.length +
           entry.result_status.notcompleted.length +
@@ -815,7 +738,6 @@ const computedAnalysisFilteredData = computed(() =>
 );
 
 </script>
-
 
 <style scoped>
 .flex-start {
