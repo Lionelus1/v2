@@ -1042,26 +1042,6 @@ export default {
         textEmails: "Please enter your email correctly",
         textTemplate: "Please select a template"
     },
-    mailing: {
-        title: "Title",
-        fileTitle: "Attached file",
-        categories: "Categories",
-        author: "Author",
-        dateAndTIme: "Date and Time",
-        deletedSuccessfully: "Deleted Successfully",
-        deleteFailed: "Delete Failed",
-        unknownSender: "Unknown Sender",
-        invalidSenderData: "Invalid Sender Data",
-        text: "text",
-        time: "time",
-        emails: "Emails",
-        sender: "Sender",
-        template: "Template",
-        status: "Status",
-        textCategory: "Please select a category",
-        textEmails: "Please enter your email correctly",
-        textTemplate: "Please select a template"
-    },
     vaccination: {
         title: "Vaccination",
         list: "Vaccinated List",
