@@ -77,6 +77,7 @@ export default {
       fd.append("file", this.file)
       fd.append("report_id", this.data.id)
       fd.append("doc_id", this.doc_id)
+      fd.append("eventUserId", this.$route.params.userId)
       fd.append("approval_users", JSON.stringify(this.approval_users))
       this.planService.approvePlan(fd).then(res => {
         if (res.data && res.data.is_success) {
@@ -96,6 +97,7 @@ export default {
       this.loading = true;
       let data = {
         work_plan_id: parseInt(this.plan.work_plan_id),
+        eventUserId: parseInt(this.$route.params.userId),
         quarter: this.report.report_type === 2 ? this.report.quarter : null,
         halfYearType: this.report.report_type === 3 ? this.report.halfYearType : null,
         department_id: this.report.department_id ? this.report.department_id : null,
