@@ -804,7 +804,7 @@ export default {
         {
           label: this.$t('common.action.accept'),
           icon: 'pi pi-check',
-          visible: this.isPlanCreator && (this.isOperPlan || this.isStandartPlan),
+          visible: this.isPlanCreator && (this.isOperPlan || this.isStandartPlan || this.isDirectorsPlan),
           items: [
             {
               label: this.$t("common.done"),
