@@ -1804,7 +1804,7 @@ export default {
           //Enter
           label: this.$t('workPlan.protocol.createProtocols'),
           disabled: this.SelectedEventParamsLength <= 0 || !this.isPlanApproved,
-          visible: this.isDirectorsPlan,
+          visible: this.isPlanCreator && this.isDirectorsPlan,
           command: () => {
             this.createProtocal();
           },
@@ -1813,7 +1813,7 @@ export default {
           // Qattama registeri
           //Enter
           label: this.$t('contracts.menu.registerProtocols'),
-          visible: this.isDirectorsPlan && this.isPlanApproved,
+          visible: this.isPlanCreator && this.isDirectorsPlan && this.isPlanApproved,
           command: () => {
             this.$router.push({
               name: "Protocols",
@@ -1825,7 +1825,7 @@ export default {
           // Tandau
           label: this.$t('common.choose'),
           disabled: !this.isPlanApproved,
-          visible: this.isDirectorsPlan,
+          visible: this.isPlanCreator && this.isDirectorsPlan,
           command: () => {
             this.eventSelection();
           },
@@ -1835,7 +1835,7 @@ export default {
           //Entercd   
           label: this.$t('workPlan.protocol.addQuestion'),
           disabled: !this.isPlanApproved,
-          visible: this.isDirectorsPlan,
+          visible: this.isPlanCreator && this.isDirectorsPlan,
           command: () => {
             this.showDialog(this.dialog.add);
           },
