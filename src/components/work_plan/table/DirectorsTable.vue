@@ -57,7 +57,12 @@
                             node.status.name_en
                       }}
                     </span>
-                    <span v-if="node.fact" style="background-color: blueviolet;color: white;"><br/><br/>{{node.fact}}</span>
+                    <p v-if="node.fact" :class="'customer-badge status-' + node.status.work_plan_event_status_id" style="background-color: blueviolet;color: white;margin-top: 8px !important;">
+                        {{
+                        $i18n.locale === "kz" ? "Жоспардан тыс сұрақ" : $i18n.locale === "ru" ? "Внеплановый вопрос" :
+                            "Unscheduled question"
+                        }}
+                    </p>
         </template>
       </Column>
 
