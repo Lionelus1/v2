@@ -1524,7 +1524,7 @@ export default {
             filterTitle: "Применить фильтр",
             strategicDirectionTab:"Стратегическое направление",
             structuralDivisionTab:"Структурные подразделений",
-            totalLevelNumber:"Номер индикатора",
+            totalLevelNumber:"Количество показателей",
             done:"Выполнено",
             notDone:"Не выполнено",
             strategicDirectionExecutionLevel:"Процент выполнения стратегических направлений",
