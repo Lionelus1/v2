@@ -824,7 +824,7 @@ const getSelectedAgendaData = () => {
     const foundEvent = data.value[0].protocol_issues.find(issue => issue.event_id === parseInt(data?.value[0]?.protocol_number));
     if (foundEvent && foundEvent.protocol_agenda) {
       selectedAgenda.value = foundEvent.protocol_agenda;
-      selectedAgenda.value.agenda_extract = foundEvent.protocol_agenda.agenda
+      selectedAgenda.value.agenda_extract = foundEvent.protocol_agenda.agenda_extract
       
     }
 
@@ -1302,8 +1302,11 @@ const generatePdf = async (isNotification) => {
 
       }
     }
-
+    //selectedAgenda.agenda_extract
+  
     if (boardDecisionSpeaker.value !== null && boardDecisionSpeaker.value.length > 0) {
+      console.log("board decision speaker: ", boardDecisionSpeaker.value);
+      
       const users = boardDecisionSpeaker.value;
       if (users.length > 0) {
         const speakers = users.map(user => ({
