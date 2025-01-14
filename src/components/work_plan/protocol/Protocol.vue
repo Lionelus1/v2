@@ -1302,11 +1302,7 @@ const generatePdf = async (isNotification) => {
 
       }
     }
-    //selectedAgenda.agenda_extract
-  
     if (boardDecisionSpeaker.value !== null && boardDecisionSpeaker.value.length > 0) {
-      console.log("board decision speaker: ", boardDecisionSpeaker.value);
-      
       const users = boardDecisionSpeaker.value;
       if (users.length > 0) {
         const speakers = users.map(user => ({
