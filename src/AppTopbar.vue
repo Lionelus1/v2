@@ -53,7 +53,7 @@
               <div :style="{fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="content_notific font-semibold"
                    v-html="getContentWithLinkHandler(n['description_' + $i18n.locale])" :class="{ 'visible': n.isShow }"  @click="handleLinkClick">
               </div>
-              <div v-if="n.description_kz.length > maxLength" class="read_more" @click="toggleShowMore(n)" :class="{ 'visible': n.isShow }">
+              <div v-if="n.description_kz && n.description_kz.length > maxLength" class="read_more" @click="toggleShowMore(n)" :class="{ 'visible': n.isShow }">
                 {{ n.isShow ? $t("educomplex.tooltip.cover")+'^' : $t("common.readMore")+'...' }}
               </div>
               <span class="text-gray-500">{{ timeDifference(n.createdDate) }}</span>
@@ -144,7 +144,7 @@ export default {
         }
         this.notificationService.getNotifications(this.pageNum, this.itemsPerPage).then(response => {
           this.newCount = response.data.NewCount ? response.data.NewCount : 0;
-          let recordCount = response.data.RecordCount;
+          let recordCount = response.data.RecordCount
           this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
           //alert("private len "+response.data.private.length+" "+" general len"+response.data.general.length);
           if (!response.data.private) {
@@ -166,7 +166,7 @@ export default {
           this.pageNum = this.pageNum + 1;
             this.btnLoading = false;
             this.notLoading = false;
-          let newNots = this.notifications.filter(f => parseInt(f.isSeen) == 0);
+          let newNots = this.notifications.filter(f => parseInt(f.isSeen) === 0);
           if (newNots.length > 0) {
             this.ViewNotification(newNots);
           }
