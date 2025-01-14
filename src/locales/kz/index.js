@@ -1542,7 +1542,7 @@ export default {
 
             },
             addQuestion: "Сұрақ қосу",
-            protocolSecretary: "Басқарма хатшысы",
+            protocolSecretary: "Басқарма хатшысы - Ғылым хатшы",
         }
     },
     educomplex: {

@@ -247,7 +247,7 @@ const paramData = ref({
   quorum_info: '',
   invited_persons: [],
   protocol_issues: [],
-  voting_results: votingResults.value,
+  //voting_results: votingResults.value,
   session_closed_time: null,
   lang: parseInt(props.planData.lang),
   board_members: []

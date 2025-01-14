@@ -1517,7 +1517,7 @@ export default {
 
             },
             addQuestion: "Add a question",
-            protocolSecretary: "Secretary of the Board",
+            protocolSecretary: "Executive Secretary - Scientific Secretary",
         }
         
     },

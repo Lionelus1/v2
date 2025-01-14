@@ -180,7 +180,7 @@
                   </p>
                 </div>
 
-                <div class="p-fluid mt-3 surface-ground pt-3 pb-1 pl-3 pr-3 rounded">
+                <!-- <div class="p-fluid mt-3 surface-ground pt-3 pb-1 pl-3 pr-3 rounded">
                   <label for="votingResults" class="block mb-1">{{ $t('workPlan.protocol.votingResults') }}{{
                       "*"
                     }}</label>
@@ -267,7 +267,7 @@
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> -->
 
                 <div class="p-fluid mt-3">
                   <label for="closingTimeMeeting" class="block mb-1">{{
@@ -474,7 +474,7 @@
         </div>
       
         <div class="p-fluid mt-3">
-          <label for="innerRules" class="block mb-1">{{ $t('workPlan.protocol.innerRule') }}{{ "*" }}</label>
+          <label for="innerRules" class="block mb-1">{{ $t('workPlan.protocol.innerRule') }}</label>
           <Textarea id="innerRule" v-model="agendaData.inner_rule" class="mt-2" rows="3" :disabled="isInApprove"/>
         </div>
         <div class="p-fluid mt-3">
@@ -489,7 +489,7 @@
                     :disabled="isInApprove"/>
         </div>
         <div class="p-fluid mt-3">
-          <label for="deadline" class="block mb-1">{{ $t('workPlan.protocol.deadline') }}{{ "*" }}</label>
+          <label for="deadline" class="block mb-1">{{ $t('workPlan.protocol.deadline') }}</label>
           <PrimeCalendar v-model="agendaData.board_decisions[0].deadline" showIcon :showOnFocus="false"
                          dateFormat="dd-mm-yy"
                          inputId="buttondisplay" :disabled="isInApprove"/>
@@ -666,10 +666,10 @@ const validation = ref({
   participated_members: false,
   protocol_secretary: false,
   invited_persons: false,
-  vote_aye: false,
-  vote_con: false,
-  vote_abstained: false,
-  vote_total_decisions: false,
+  // vote_aye: false,
+  // vote_con: false,
+  // vote_abstained: false,
+  // vote_total_decisions: false,
   agenda: false,
   speaker: false,
   agenda_vote_aye: false,
@@ -681,12 +681,12 @@ const validation = ref({
 
 })
 
-const votingResults = ref({
-  vote_aye: null,
-  vote_con: null,
-  vote_abstained: null,
-  vote_total_decisions: null,
-});
+// const votingResults = ref({
+//   vote_aye: null,
+//   vote_con: null,
+//   vote_abstained: null,
+//   vote_total_decisions: null,
+// });
 
 const agendaVotingResults = ref({
   vote_aye: null,
@@ -731,12 +731,12 @@ const docLang = computed(() => {
   }
 });
 
-const parsedVotingResults = computed(() => ({
-  vote_aye: !isNaN(parseInt(votingResults.value.vote_aye, 10)) ? parseInt(votingResults.value.vote_aye, 10) : null,
-  vote_con: !isNaN(parseInt(votingResults.value.vote_con, 10)) ? parseInt(votingResults.value.vote_con, 10) : null,
-  vote_abstained: !isNaN(parseInt(votingResults.value.vote_abstained, 10)) ? parseInt(votingResults.value.vote_abstained, 10) : null,
-  vote_total_decisions: !isNaN(parseInt(votingResults.value.vote_total_decisions, 10)) ? parseInt(votingResults.value.vote_total_decisions, 10) : null,
-}));
+// const parsedVotingResults = computed(() => ({
+//   vote_aye: !isNaN(parseInt(votingResults.value.vote_aye, 10)) ? parseInt(votingResults.value.vote_aye, 10) : null,
+//   vote_con: !isNaN(parseInt(votingResults.value.vote_con, 10)) ? parseInt(votingResults.value.vote_con, 10) : null,
+//   vote_abstained: !isNaN(parseInt(votingResults.value.vote_abstained, 10)) ? parseInt(votingResults.value.vote_abstained, 10) : null,
+//   vote_total_decisions: !isNaN(parseInt(votingResults.value.vote_total_decisions, 10)) ? parseInt(votingResults.value.vote_total_decisions, 10) : null,
+// }));
 
 
 const data = ref([{
@@ -752,7 +752,7 @@ const data = ref([{
   quorum_info: selectedQuorum.value.label,
   invited_persons: [],
   protocol_issues: [],
-  voting_results: parsedVotingResults.value,
+  //voting_results: parsedVotingResults.value,
   session_closed_time: null,
   lang: docLang.value,
   board_members: []
@@ -786,7 +786,7 @@ const validateAgendas = () => {
     const invalidFields = [
       protocol_agenda.agenda,
       protocol_agenda.board_decisions,
-      protocol_agenda.inner_rule,
+      //protocol_agenda.inner_rule,
       protocol_agenda.speaker,
       protocol_agenda.voting_result,
     ];
@@ -868,21 +868,21 @@ const validateForm = () => {
   validation.value.participated_members = !data.value[0].participated_board_members || data.value[0].participated_board_members == "" || data.value[0].participated_board_members.length <= 0;
   validation.value.protocol_secretary = !data.value[0].protocol_secretary_member || data.value[0].protocol_secretary_member == "" || data.value[0].protocol_secretary_member.length <= 0;
   validation.value.invited_persons = !data.value[0].invited_persons || data.value[0].invited_persons == "" || data.value[0].invited_persons.length <= 0;
-  validation.value.vote_aye = data.value[0].voting_results.vote_aye === null || data.value[0].voting_results.vote_aye === undefined;
-  validation.value.vote_con = data.value[0].voting_results.vote_con === null || data.value[0].voting_results.vote_con === undefined;
-  validation.value.vote_abstained = data.value[0].voting_results.vote_abstained === null || data.value[0].voting_results.vote_abstained === undefined;
-  validation.value.vote_total_decisions = data.value[0].voting_results.vote_total_decisions === null || data.value[0].voting_results.vote_total_decisions === undefined;
+  // validation.value.vote_aye = data.value[0].voting_results.vote_aye === null || data.value[0].voting_results.vote_aye === undefined;
+  // validation.value.vote_con = data.value[0].voting_results.vote_con === null || data.value[0].voting_results.vote_con === undefined;
+  // validation.value.vote_abstained = data.value[0].voting_results.vote_abstained === null || data.value[0].voting_results.vote_abstained === undefined;
+  // validation.value.vote_total_decisions = data.value[0].voting_results.vote_total_decisions === null || data.value[0].voting_results.vote_total_decisions === undefined;
 
   return (
       !validation.value.meeting_date &&
       !validation.value.meeting_venue &&
       !validation.value.participated_members &&
       !validation.value.protocol_secretary &&
-      !validation.value.invited_persons &&
-      !validation.value.vote_aye &&
-      !validation.value.vote_con &&
-      !validation.value.vote_abstained &&
-      !validation.value.vote_total_decisions
+      !validation.value.invited_persons
+      // !validation.value.vote_aye &&
+      // !validation.value.vote_con &&
+      // !validation.value.vote_abstained &&
+      // !validation.value.vote_total_decisions
   )
 }
 
@@ -901,14 +901,14 @@ const selectedAbsentMember = ref([
   }
 ])
 
-watch(votingResults, (newValue) => {
-  data.value[0].voting_results = {
-    vote_aye: !isNaN(parseInt(newValue.vote_aye, 10)) ? parseInt(newValue.vote_aye, 10) : null,
-    vote_con: !isNaN(parseInt(newValue.vote_con, 10)) ? parseInt(newValue.vote_con, 10) : null,
-    vote_abstained: !isNaN(parseInt(newValue.vote_abstained, 10)) ? parseInt(newValue.vote_abstained, 10) : null,
-    vote_total_decisions: !isNaN(parseInt(newValue.vote_total_decisions, 10)) ? parseInt(newValue.vote_total_decisions, 10) : null,
-  };
-}, {deep: true});
+// watch(votingResults, (newValue) => {
+//   data.value[0].voting_results = {
+//     vote_aye: !isNaN(parseInt(newValue.vote_aye, 10)) ? parseInt(newValue.vote_aye, 10) : null,
+//     vote_con: !isNaN(parseInt(newValue.vote_con, 10)) ? parseInt(newValue.vote_con, 10) : null,
+//     vote_abstained: !isNaN(parseInt(newValue.vote_abstained, 10)) ? parseInt(newValue.vote_abstained, 10) : null,
+//     vote_total_decisions: !isNaN(parseInt(newValue.vote_total_decisions, 10)) ? parseInt(newValue.vote_total_decisions, 10) : null,
+//   };
+// }, {deep: true});
 
 watch(agendaVotingResults, (newValue) => {
   agendaData.value.voting_result = {
@@ -1366,19 +1366,19 @@ const generatePdf = async (isNotification) => {
       data.value[0].protocol_issues = res?.data?.protocol_doc?.params[0]?.value?.protocol_issues || [];
       data.value[0].session_closed_time = res?.data?.protocol_doc?.params[0]?.value?.session_closed_time || null;
 
-      if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_aye !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_aye !== null) {
-        votingResults.value.vote_aye = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_aye;
-      }
+      // if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_aye !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_aye !== null) {
+      //   votingResults.value.vote_aye = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_aye;
+      // }
 
-      if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_con !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_con !== null) {
-        votingResults.value.vote_con = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_con;
-      }
-      if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_abstained !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_abstained !== null) {
-        votingResults.value.vote_abstained = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_abstained;
-      }
-      if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_total_decisions !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_total_decisions !== null) {
-        votingResults.value.vote_total_decisions = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_total_decisions;
-      }
+      // if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_con !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_con !== null) {
+      //   votingResults.value.vote_con = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_con;
+      // }
+      // if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_abstained !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_abstained !== null) {
+      //   votingResults.value.vote_abstained = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_abstained;
+      // }
+      // if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_total_decisions !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_total_decisions !== null) {
+      //   votingResults.value.vote_total_decisions = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_total_decisions;
+      // }
       let lang = (locale === "ru") ? 1 : 0;
       data.value[0].lang = lang;
 
@@ -1860,9 +1860,9 @@ const approval_users = ref([
   {
     stage: 1,
     users: [],
-    titleKz: "Басқарма хатшысы",
-    titleRu: "Секретарь Правления",
-    titleEn: "Secretary of the Board",
+    titleKz: "Басқарма хатшысы - Ғалым хатшы",
+    titleRu: "Секретарь Правления - Учёный секретарь",
+    titleEn: "Executive Secretary - Scientific Secretary",
     certificate: {
       namekz: "Жеке тұлғаның сертификаты",
       nameru: "Сертификат физического лица",
@@ -1912,7 +1912,7 @@ const initStages = async () => {
   ];
 
   const boardRector = boardMembers.find(member => member.role === "rector");
-  const boardMembersList = boardMembers.filter(member => member.role === "boardMember");
+ const boardMembersList = boardMembers.filter(member => member.role === "boardMember");
   const boardSecretary = boardMembers.find(member => member.role === "boardSecretary");
   
 
@@ -1973,9 +1973,9 @@ const approval_user_secretary = ref([
   {
     stage: 1,
     users: [],
-    titleKz: "Кеңес хатшысы",
-    titleRu: "Секретарь Правления",
-    titleEn: "Secretary of the Board",
+    titleKz: "Басқарма хатшысы - Ғалым хатшы",
+    titleRu: "Секретарь Правления - Учёный секретарь",
+    titleEn: "Executive Secretary - Scientific Secretary",
     certificate: {
       namekz: "Жеке тұлғаның сертификаты",
       nameru: "Сертификат физического лица",

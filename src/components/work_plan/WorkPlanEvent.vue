@@ -1020,22 +1020,9 @@ export default {
                 nameen: 'Certificate of an individual',
                 value: 'individual',
               },
-              titleRu: 'Члены Правления',
-              titleKz: 'Басқарма мүшелері',
-              titleEn: 'Board members',
-            },
-            {
-              stage: 2,
-              users: null,
-              titleRu: 'Председатель',
-              titleKz: 'Төраға',
-              titleEn: 'Chairman',
-              certificate: {
-                namekz: 'Жеке тұлғаның сертификаты',
-                nameru: 'Сертификат физического лица',
-                nameen: 'Certificate of an individual',
-                value: 'individual',
-              },
+              titleKz: "Басқарма хатшысы - Ғалым хатшы",
+              titleRu: "Секретарь Правления - Учёный секретарь",
+              titleEn: "Executive Secretary - Scientific Secretary",
             },
           ];
           let data = {
@@ -1774,13 +1761,13 @@ export default {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
           color: this.isFinish ? '' : 'green',
-          // disabled: (this.isMastersPlan || this.isDoctorsPlan || this.isDirectorsPlan) && (!this.data || this.data.length === 0 || !this.additinalInfoFilled),
-          // visible:
-          //   ((this.isMastersPlan || this.isDoctorsPlan || this.isDirectorsPlan) &&
-          //     (!this.isFinish || this.isApproval)) ||
-          //   (this.isFinish &&
-          //     this.planDoc &&
-          //     !(this.isCreatedPlan || this.isPlanUnderRevision)),
+          disabled: (this.isMastersPlan || this.isDoctorsPlan) && (!this.data || this.data.length === 0 || !this.additinalInfoFilled),
+          visible:
+            ((this.isMastersPlan || this.isDoctorsPlan || this.isDirectorsPlan) &&
+              (!this.isFinish || this.isApproval)) ||
+            (this.isFinish &&
+              this.planDoc &&
+              !(this.isCreatedPlan || this.isPlanUnderRevision)),
           command: () => {
             if (this.isFinish) {
               this.showDialog(this.dialog.planView);
