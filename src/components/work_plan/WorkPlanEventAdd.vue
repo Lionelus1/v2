@@ -16,11 +16,11 @@
           $t('workPlan.errors.eventNameError')
         }}</small>
       </div>
-      <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan)">
+      <div class="field" v-if="isSciencePlan">
         <label>{{ $t('common.startDate') }}</label>
         <PrimeCalendar v-model="start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field" v-if="isSciencePlan || (!isMastersPlan && !isDoctorsPlan)">
+      <div class="field" v-if="isSciencePlan">
         <label>{{ $t('common.endDate') }}</label>
         <PrimeCalendar v-model="end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
