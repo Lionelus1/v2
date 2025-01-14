@@ -1518,7 +1518,7 @@ export default {
             eventStatus: "По статусу",
             universityAnalysis: "Общий анализ по Вузу",
             analysisResult: "Анализ",
-            executionLevel: "Процент завершения",
+            executionLevel: "Процент выполнения",
             executionStatus: "Статус выполнения",
             nonExecutionRisk: "Риск недостижения",
             filterTitle: "Применить фильтр",

@@ -1507,7 +1507,7 @@ export default {
             eventStatus: "By Status",
             universityAnalysis: "General analysis of the university",
             analysisResult: "Analysis",
-            executionLevel: "Completion percentage",
+            executionLevel: "Percentage of completion",
             executionStatus: "Execution status",
             nonExecutionRisk: "Failure risk",
             filterTitle: "Apply a filter",
