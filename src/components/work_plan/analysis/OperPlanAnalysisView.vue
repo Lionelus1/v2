@@ -82,7 +82,10 @@
                   headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
                   style="border:1px solid #ddd;">
             <template #body="{data}">
-              {{ data?.department?.name }}
+              <span v-if="$i18n.locale === 'kz' && data?.department?.name_kz">{{ data.department.name_kz }}</span>
+              <span v-else-if="$i18n.locale === 'ru' && data?.department?.name_ru">{{ data.department.name_ru }}</span>
+              <span v-else-if="data?.department?.name">{{ data.department.name }}</span>
+              <span v-else>{{"-"}}</span>
             </template>
           </Column>
           <Column field="totalLevelNumber" :header="$t('workPlan.analyzer.totalLevelNumber')"
@@ -140,10 +143,11 @@ import {WorkPlanService} from "@/service/work.plan.service";
 import {FilterMatchMode} from 'primevue/api';
 
 const workPlanService = new WorkPlanService();
-const {t} = useI18n();
+const {t, locale} = useI18n();
 const store = useStore();
 const toast = useToast();
 const route = useRoute();
+
 
 const workPlanID = route.params.id;
 const quarter = ref(null);
@@ -280,13 +284,28 @@ const setChartDataFilteredDepartment = () => {
         (entry) => Number(entry.executionLevel.toFixed(2))
     );
     chartData.push(completed)
-    chartLabels.push('Орындалған жұмыстар: '+completed+'%')
+    const achievedLabels = {
+      kz: 'Орындалған көрсеткіштер',
+      en: 'Achieved indicators',
+      ru: 'Выполненные показатели',
+      default: '',
+    };
+    const achievedLabel = achievedLabels[locale.value] || achievedLabels.default;
+    chartLabels.push(`${achievedLabel}: ${completed}%`);
     const notCompleted = computedSingleDepartmentAnalysisData.value.map(
         (entry) => 100 - Number(entry.executionLevel.toFixed(2))
     );
 
     chartData.push(notCompleted)
-    chartLabels.push('Орындалмаған жұмыстар: '+notCompleted+'%')
+    const unachievedLabels = {
+      kz: 'Орындалмаған көрсеткіштер',
+      en: 'Unachieved indicators',
+      ru: 'Невыполненные показатели',
+      default: '',
+    };
+    const unachievedLabel = unachievedLabels[locale.value] || unachievedLabels.default;
+    chartLabels.push(`${unachievedLabel}: ${notCompleted}%`);
+
     return {
         labels: chartLabels,
         datasets: [
@@ -520,6 +539,8 @@ async function getEventsTree(parent, isClickEvent) {
         for (const e of data.value) {
           if (e.parent_id === null) {
             const descendants = await getEventDescendants(e.work_plan_event_id);
+            console.log("descendants:::", descendants);
+            
 
             let newstrategicDirectionData = {
               direction: {
@@ -535,18 +556,23 @@ async function getEventsTree(parent, isClickEvent) {
             };
             if (descendants && descendants.items) {
               descendants.items.forEach((item) => {
-                if (item.status.work_plan_event_status_id === 2) {
-                  newstrategicDirectionData.result_status.completed.push(item.status.work_plan_event_status_id)
+                console.log("item status: ", item.status.work_plan_event_status_id);
+                  if(item && !item.is_deleted){
+                    if (item.status.work_plan_event_status_id === 2) {
+                    newstrategicDirectionData.result_status.completed.push(item.status.work_plan_event_status_id)
+                  }
+                  if (item.status.work_plan_event_status_id === 3) {
+                    newstrategicDirectionData.result_status.notcompleted.push(item.status.work_plan_event_status_id)
+                  }
+                  if (item.status.work_plan_event_status_id === 4) {
+                    newstrategicDirectionData.result_status.partially_completed.push(item.status.work_plan_event_status_id)
+                  }
+                  if (item.status.work_plan_event_status_id === 1) {
+                    newstrategicDirectionData.result_status.created.push(item.status.work_plan_event_status_id)
+                  }
                 }
-                if (item.status.work_plan_event_status_id === 3) {
-                  newstrategicDirectionData.result_status.notcompleted.push(item.status.work_plan_event_status_id)
-                }
-                if (item.status.work_plan_event_status_id === 4) {
-                  newstrategicDirectionData.result_status.partially_completed.push(item.status.work_plan_event_status_id)
-                }
-                if (item.status.work_plan_event_status_id === 1) {
-                  newstrategicDirectionData.result_status.created.push(item.status.work_plan_event_status_id)
-                }
+                
+               
               });
             }
             strategicDirectionData.value.push(newstrategicDirectionData);
@@ -601,7 +627,7 @@ watch(data, (newValue) => {
       if (descendants?.items && Array.isArray(descendants.items)) {
         descendants?.items?.forEach((items) => {
           items?.user?.forEach((item) => {
-            if (item.is_summary_department) {
+            if (item && item.is_summary_department && !item.is_deleted) {
             let departmentId = item?.user?.mainPosition?.department?.id;
             let existingDepartment = tableAnalysisData.value.find(
                 (entry) => entry.department.id === departmentId

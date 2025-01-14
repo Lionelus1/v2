@@ -1516,8 +1516,8 @@ export default {
             totalLevelNumber:"Number of indicators",
             done:"Done",
             notDone:"Not done",
-            strategicDirectionExecutionLevel:"Annual percentage of completion of strategic directions",
-            structuralDivisionExecutionLevel:"Annual percentage of completion of structural divisions",
+            strategicDirectionExecutionLevel:"Percentage of completion of strategic directions",
+            structuralDivisionExecutionLevel:"Percentage of completion of structural units",
             selectQuarter:"Select quarter"
         }
     },
