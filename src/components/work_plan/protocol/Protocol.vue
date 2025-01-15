@@ -693,8 +693,6 @@ const getSelectedAgendaData = () => {
     const foundEvent = data.value[0].protocol_issues.find(issue => issue.event_id === parseInt(data?.value[0]?.protocol_number));
     if (foundEvent && foundEvent.protocol_agenda) {
       selectedAgenda.value = foundEvent.protocol_agenda;
-      selectedAgenda.value.agenda_extract = foundEvent.protocol_agenda.agenda_extract
-      
     }
 
   }
@@ -1756,9 +1754,9 @@ const initStages = async () => {
     { name: "Галиакбарова Гузаль Газинуровна", role: "boardSecretary" }
   ];
 
-  const boardRector = boardMembers.find(member => member.role === "rector");
- const boardMembersList = boardMembers.filter(member => member.role === "boardMember");
-  const boardSecretary = boardMembers.find(member => member.role === "boardSecretary");
+    const boardRector = boardMembers.find(member => member.role === "rector");
+    const boardMembersList = boardMembers.filter(member => member.role === "boardMember");
+    const boardSecretary = boardMembers.find(member => member.role === "boardSecretary");
   
 
   try {
