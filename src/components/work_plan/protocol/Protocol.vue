@@ -243,7 +243,7 @@
               <label for="listened" class="block mb-1">{{ $t('workPlan.protocol.listened') }}{{ "*" }}</label>
               <FindUser class="mt-2" v-model="boardDecisionSpeaker" :editMode="true" :user-type="3"
                         :disabled="isInApprove || isApproved || extractEditDisabled"/>
-              <Textarea id="agendas" v-model="selectedAgenda.agenda_extract" class="mt-2" rows="5"
+              <Textarea id="agendas_extract" v-model="selectedAgenda.agenda_extract" class="mt-2" rows="5"
                         :disabled="isInApprove || isApproved || extractEditDisabled"/>
             </div>
             <div class="p-fluid mt-3">
@@ -1172,9 +1172,14 @@ const generatePdf = async (isNotification) => {
         }
       }
     }
+ 
+    if (data?.value[0]?.protocol_number){
+      const foundEvent = data.value[0].protocol_issues.find(issue => issue.event_id === parseInt(data?.value[0]?.protocol_number));
+      data.value[0].protocol_issues[0] = foundEvent
+      data.value[0].protocol_issues[0].agenda = selectedAgenda.value
+      
 
-
-
+    }
   }
   data.value[0].lang = docLang.value
 
@@ -1561,6 +1566,10 @@ const open = (name) => {
 const saveProtocolData = async () => {
   try {
     generatePdf();
+    if (isProtocolExtractDoc.value) {
+      extractEditDisabled.value = true;
+    }
+
   } catch (error) {
     showMessage('error', t(common.error), error);
     toast.add({
