@@ -178,172 +178,18 @@
     />
   </Sidebar>
 
-  <!--  Диалог информация о проекте-->
-  <Dialog v-if="dialog.projectInfo.state" v-model:visible="dialog.projectInfo.state"
-      :style="{ width: '90%' }" :header="$t('common.sciProject')" :modal="true" class="p-fluid">
-    <TabView>
-      <TabPanel :header="$t('common.mainInfo')">
-        <div v-if="planDoc && planDoc.params" class="flex flex-column p-4">
-          <DataTable :rows="20" class="table_no_header mt-4" :value="filteredParamsMainInfo">
-            <Column>
-              <template #body="s">
-                {{ $t(s.data.description) }}
-              </template>
-            </Column>
-            <Column>
-              <template #body="s">
-                <div v-if="isMultiLanguage(s.data.value)" class="horizontal-fields full-width">
-                  <div class="field-group">
-                    <label for="kz">{{ $t('common.language.kz') }}</label>
-                    <textarea id="kz" v-model="s.data.value.kz" class="resizable-textarea"></textarea>
-                  </div>
-                  <div class="field-group">
-                    <label for="ru">{{ $t('common.language.ru') }}</label>
-                    <textarea id="ru" v-model="s.data.value.ru" class="resizable-textarea"></textarea>
-                  </div>
-                  <div class="field-group">
-                    <label for="en">{{ $t('common.language.en') }}</label>
-                    <textarea id="en" v-model="s.data.value.en" class="resizable-textarea"></textarea>
-                  </div>
-                </div>
-                <!--Вид исследования-->
-                <div class="field" v-else-if="s.data.name === 'projectTypeOfResearch'">
-                  <textarea id="en" v-model="s.data.value" class="resizable-textarea"></textarea>
-                </div>
-                <!--Наименование приоритетного направления-->
-                <div class="field" v-else-if="s.data.name === 'nameOfPriorityArea'">
-                  <textarea id="en" v-model="s.data.value" class="resizable-textarea"></textarea>
-                </div>
-                <!--Документы-->
-                <div v-else-if="s.data.name === 'projectContract'">
-                  <Button icon="fa-solid fa-download" @click="downloadContract('contract')" :label="$t('contracts.contract')" />
-                </div>
-                <div v-else-if="s.data.name === 'projectPlan'">
-                  <Button icon="fa-solid fa-download" @click="downloadContract('additional')" :label="$t('common.additionalInfo')" />
-                </div>
-                <div v-else>
-                  <InputText v-model="s.data.value" />
-                </div>
-              </template>
-            </Column>
-          </DataTable>
-        </div>
-      </TabPanel>
-      <TabPanel :header="$t('common.fundInfo')">
-        <div v-if="planDoc && planDoc.params" class="flex flex-column">
-          <DataTable :rows="10" class="table_no_header mt-4" :value="filteredParamsFundingInfo">
-            <Column>
-              <template #body="s">
-                {{ $t(s.data.description) }}
-              </template>
-            </Column>
-            <Column>
-              <template #body="s">
-                <div v-if="isMultiLanguage(s.data.value)" class="horizontal-fields full-width">
-                  <div class="field-group">
-                    <label for="kz">{{ $t('common.language.kz') }}</label>
-                    <textarea id="kz" v-model="s.data.value.kz" class="resizable-textarea"></textarea>
-                  </div>
-                  <div class="field-group">
-                    <label for="ru">{{ $t('common.language.ru') }}</label>
-                    <textarea id="ru" v-model="s.data.value.ru" class="resizable-textarea"></textarea>
-                  </div>
-                  <div class="field-group">
-                    <label for="en">{{ $t('common.language.en') }}</label>
-                    <textarea id="en" v-model="s.data.value.en" class="resizable-textarea"></textarea>
-                  </div>
-                </div>
-                <!--Дата договора-->
-                <div v-else-if="s.data.name === 'projectContractDate'">
-                  <PrimeCalendar v-model="s.data.value" dateFormat="dd.mm.yy" showIcon :showButtonBar="true" :manualInput="false"/>
-                </div>
-                <!--Источник финансирования-->
-                <div class="field" v-else-if="s.data.name === 'projectFundingType'">
-                  <textarea id="en" v-model="s.data.value" class="resizable-textarea"></textarea>
-                </div>
-                <!--Период реализации-->
-                <div v-else-if="s.data.name === 'projectYears'">
-                  <PrimeCalendar v-model="s.data.value" dateFormat="yy" selectionMode="range" view="year" showIcon :manualInput="false" />
-                </div>
-                <div v-else>
-                  <InputText v-model="s.data.value" />
-                </div>
-              </template>
-            </Column>
-          </DataTable>
-        </div>
-      </TabPanel>
-      <TabPanel :header="$t('common.resultInfo')">
-        <div v-if="planDoc && planDoc.params" class="flex flex-column position-relative">
-          <div class="button-container">
-            <Button :label="$t('common.add') + ' ' + $t('common.projectRes')" icon="pi pi-plus" @click="addToProjectRes"/>
-          </div>
-          <DataTable class="table_no_header mt-4" :value="filteredParamsResultInfo">
-            <Column>
-              <template #body="s">
-                <div v-if="s.data.name === 'projectRes'" class="horizontal-fields full-width">
-                  <table>
-                    <thead>
-                    <tr>
-                      <th></th>
-                      <th>{{ $t('common.projectYear') }}</th>
-                      <th>{{ $t('common.projectRes') }} {{ $t('common.language.kz') }}</th>
-                      <th>{{ $t('common.projectRes') }} {{ $t('common.language.ru') }}</th>
-                      <th>{{ $t('common.projectRes') }} {{ $t('common.language.en') }}</th>
-                      <th>{{ $t('common.projectPulish') }}</th>
-                      <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="(item, index) in s.data.value" :key="index">
-                      <td>
-                        <!-- Кнопка удаления РЕЗУЛЬТАТ -->
-                        <Button icon="pi pi-trash" class="p-button-danger p-button-sm" @click="removeFromProjectRes(index, s.data.value)"/>
-                      </td>
-                      <td>
-                        <PrimeCalendar v-model="item.year" view="year" dateFormat="yy" showIcon :manualInput="false" ></PrimeCalendar>
-                      </td>
-                      <td>
-                        <textarea id="kz" v-model="item.resKz" class="resizable-textarea"></textarea>
-                      </td>
-                      <td>
-                        <textarea id="kz" v-model="item.resRu" class="resizable-textarea"></textarea>
-                      </td>
-                      <td>
-                        <textarea id="kz" v-model="item.resEn" class="resizable-textarea"></textarea>
-                      </td>
-                      <td>
-                        <div v-for="(pub, pubIndex) in item.publish" :key="pubIndex" class="publication">
-                          <Button icon="pi pi-times" @click="removeResult(pubIndex, item.publish)" class="p-button-danger p-button-sm" />
-                          {{ pubIndex + 1 }} {{ pub.pubName }}
-                        </div>
-                      </td>
-                      <td>
-                        <Button :label="$t('common.projectPublishAdd')" icon="pi pi-plus" @click="addPublication(item.publish)" />
-                      </td>
-                    </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </template>
-            </Column>
-          </DataTable>
-        </div>
-      </TabPanel>
-
-    </TabView>
-    <template #footer>
-      <div class="dialog-footer">
-        <Button
-            :label="$t('common.save')"
-            icon="pi pi-check"
-            class="p-button-primary"
-            :loading="loadingProject"
-            @click="saveParams"
-        />
-      </div>
-    </template>
-  </Dialog>
+  <sci-plan-project-info
+      :dialogVisible="dialog.projectInfo.state"
+      :planDoc="planDoc"
+      :filteredParamsMainInfo="filteredParamsMainInfo"
+      :filteredParamsFundingInfo="filteredParamsFundingInfo"
+      :filteredParamsResultInfo="filteredParamsResultInfo"
+      :loadingProject="loadingProject"
+      @save-project-params="saveParams"
+      @add-pub="addPublication"
+      @download-contract="downloadContract"
+      @update:dialogVisible="dialog.projectInfo.state = $event"
+  />
 
   <Dialog v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" :closable="false" v-model:visible="respPersonDialog" modal :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
     <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
@@ -452,10 +298,12 @@ import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import RolesByName from "@/components/smartenu/RolesByName.vue";
 import {format} from "date-fns";
 import ScienceWorks from "@/components/documents/catalog/ScienceWorks.vue";
+import SciPlanProjectInfo from "@/components/work_plan/SciPlanProjectInfo.vue";
 
 export default {
   name: "WorkPlanEvent",
   components: {
+    SciPlanProjectInfo,
     ScienceWorks,
     ToolbarMenu,
     CustomFileUpload,
@@ -778,8 +626,6 @@ export default {
 
     handleSelect(item) {
       // Обрабатываем данные, полученные из ScienceWorks
-      console.log("Полученные данные:", item);
-
       if(item){
         this.selectedItem.push({
           pubName:
@@ -793,43 +639,7 @@ export default {
       this.dialog.addPublish.state = false;
       this.selectedItem = null;
     },
-    addToProjectRes() {
-      // Новый объект для добавления
-      const newObject = {
-        publish: [],
-        resEn: "",
-        resKz: "",
-        resRu: "",
-        year: "",
-      };
 
-      // Находим элемент projectRes
-      const projectRes = this.filteredParamsResultInfo.find(
-          (item) => item.name === "projectRes"
-      );
-
-      // Добавляем новый объект в value
-      if (projectRes && Array.isArray(projectRes.value)) {
-        projectRes.value.push(newObject);
-      }
-    },
-    //удалить результат
-    removeFromProjectRes(index, array) {
-      array.splice(index, 1); // Удаляем элемент по индексу
-    },
-    //удалить публикацию
-    removeResult(index, array) {
-      array.splice(index, 1);
-    },
-    //добавить публикацию
-    addPublication(resultData) {
-      this.dialog.addPublish.state = true;
-      this.selectedItem = resultData;
-    },
-    // Проверяем, содержит ли value языковые ключи
-    isMultiLanguage(value) {
-      return typeof value === 'object' && value !== null && ('kz' in value || 'ru' in value || 'en' in value);
-    },
     findRole: findRole,
     updateResponsivePersons() {
       this.submitted = true;
@@ -1702,6 +1512,12 @@ export default {
       }
     },
 
+    //добавить публикацию
+    addPublication(resultData) {
+      this.dialog.addPublish.state = true;
+      this.selectedItem = resultData;
+    },
+
     saveParams() {
       this.planDoc.newParams = {};
       for (let i = 0; i < this.planDoc.params.length; i++) {
@@ -1991,61 +1807,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.dialog-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem; /* Расстояние между кнопками */
-}
-
-.full-width {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px; /* Расстояние между полями */
-  width: 100%; /* Растягивает контейнер по всей ширине */
-}
-
-.field-group {
-  flex: 1; /* Устанавливает равную ширину для всех полей */
-  display: flex;
-  flex-direction: column;
-}
-
-.field-group label {
-  margin-bottom: 4px; /* Отступ между меткой и полем */
-}
-
-InputText {
-  width: 100%; /* Поля ввода заполняют доступное пространство */
-}
-.resizable-textarea {
-  width: 100%; /* Растягиваем поле по ширине родительского контейнера */
-  min-height: 50px; /* Минимальная высота (примерно 2 строки текста) */
-  resize: vertical; /* Разрешаем изменение размера по вертикали */
-  padding: 8px; /* Отступ внутри текстового поля */
-  font-size: 14px; /* Размер текста */
-  border: 1px solid #ccc; /* Стандартная рамка */
-  border-radius: 4px; /* Скругленные углы */
-  box-sizing: border-box; /* Включаем отступы и границы в общую ширину */
-}
-.resizable-textarea:focus {
-  border-color: #007bff; /* Цвет рамки при фокусе */
-  outline: none; /* Убираем стандартный фокус браузера */
-}
-
-.button-container {
-  position: absolute;
-  top: 10px; /* Отступ сверху */
-  left: 10px; /* Отступ слева */
-  z-index: 10; /* Поверх остальных элементов */
-}
-
-.position-relative {
-  position: relative; /* Для корректного позиционирования дочерних элементов */
-}
-
-.multi-data-table {
-  margin-top: 40px; /* Учитывает место для кнопки */
-}
 
 .p-button-text {
   background: transparent;
