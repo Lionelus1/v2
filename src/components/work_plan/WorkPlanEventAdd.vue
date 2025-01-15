@@ -51,12 +51,10 @@
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('workPlan.summaryDepartment') }}</label>
         <FindUser v-model="summaryDepartment" :max="1" :user-type="3" editMode="true" />
-        <!-- <small class="p-error" v-if="submitted && formValid.summaryUser">{{ $t("common.requiredField") }}</small> -->
         <small class="p-error" v-if="submitted && formValid.summaryUser">{{
           $t('workPlan.errors.approvalUserError')
         }}</small>
       </div>
-      <!-- directors plan -->
       <div class="field" 
       v-if="isDirectorsPlan">
         <label>{{ $t('workPlan.issueTitle') }}</label>
@@ -363,7 +361,6 @@ export default {
       if (this.plan && this.plan.plan_type && (this.plan.plan_type.code === this.Enum.WorkPlanTypes.Directors)) {
         data.start_date = this.start_date
       }
-      //plan?.doc_info?.docHistory?.stateId
       if (this.plan && this.plan.plan_type && (this.plan.plan_type.code === this.Enum.WorkPlanTypes.Directors) && (this.plan?.doc_info?.docHistory?.stateId === 3)) {
         data.fact = "Внеплановый вопрос";
       }

@@ -1008,7 +1008,6 @@ export default {
             },
           ];
         }
-        //Add Directors: Start
         if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Directors) {
           this.planApprovalStage = [
             {
@@ -1034,7 +1033,6 @@ export default {
 
           this.getWorkPlanApprovalUsersFunc(data)
         }
-        //END
 
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -1787,8 +1785,6 @@ export default {
           },
         },
         {
-          // Protocol Quru
-          //Enter
           label: this.$t('workPlan.protocol.createProtocols'),
           disabled: this.SelectedEventParamsLength <= 0 || !this.isPlanApproved,
           visible: this.isPlanCreator && this.isDirectorsPlan,
@@ -1797,8 +1793,6 @@ export default {
           },
         },
         {
-          // Qattama registeri
-          //Enter
           label: this.$t('contracts.menu.registerProtocols'),
           visible: this.isPlanCreator && this.isDirectorsPlan && this.isPlanApproved,
           command: () => {
@@ -1809,7 +1803,6 @@ export default {
           },
         },
         {
-          // Tandau
           label: this.$t('common.choose'),
           disabled: !this.isPlanApproved,
           visible: this.isPlanCreator && this.isDirectorsPlan,
@@ -1818,8 +1811,6 @@ export default {
           },
         },
         {
-          //Suraq qosu
-          //Entercd   
           label: this.$t('workPlan.protocol.addQuestion'),
           disabled: !this.isPlanApproved,
           visible: this.isPlanCreator && this.isDirectorsPlan,

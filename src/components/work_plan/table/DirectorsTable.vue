@@ -7,10 +7,6 @@
       <template #empty>{{ $t('common.noData') }}</template>
       <template #loading>{{ $t('common.loading') }}</template>
       <Column field="content" v-if="planStatus === DocState.APPROVED.Value && checkBoxVisiblity">
-        <!-- <template #header>
-            <Checkbox v-model="selectAll" :checked="selectAll" @click="toggleSelectAll" @change="onCheckedChange" label="Select All" />
-        </template>
-        {{ selectAll }} -->
         <template #body="{ node }">
           <Checkbox
               :id="node.work_plan_event_id"
@@ -80,11 +76,7 @@
   <Dialog :header="$t('workPlan.protocol.createProtocols')" v-model:visible="childProtocolModalVisible"
           :style="{ width: '600px' }"
           :close-on-escape="true" @hide="handleHide">
-    <!-- <div class="flex justify-center">
-        <ProgressSpinner style="width: 50px; height: 50px" class="progress-spinner" strokeWidth="5" />
-    </div> -->
     <div class="p-fluid">
-      <!-- <label>{{ $t('common.select') }}</label> -->
       <Dropdown v-model="formData.plan_protocol_type" :options="protocolTypes" :optionLabel="locale === 'kz' ? 'name_kz' : locale === 'ru' ? 'name_ru' :
             'name_en'" :placeholder="$t('common.select')"/>
     </div>
@@ -247,7 +239,6 @@ const paramData = ref({
   quorum_info: '',
   invited_persons: [],
   protocol_issues: [],
-  //voting_results: votingResults.value,
   session_closed_time: null,
   lang: parseInt(props.planData.lang),
   board_members: []

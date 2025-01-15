@@ -8,7 +8,7 @@ export class WorkPlanService {
     }
 
     getWorkPlanApprovalUsers(work_plan_id) {
-        return api.get(`/workPlan/getApprovalUsers/${work_plan_id}`);
+        return api.get(`/workPlan/getApprovalUsers/${work_plan_id}`, {headers: getHeader()});
     }
 
     getPlanById(planId) {
@@ -28,9 +28,6 @@ export class WorkPlanService {
     }
 
     getWorkPlanData(data) {
-        // if ((data.is_protocol_event === undefined || data.is_protocol_event === null) && data.is_protocol_event === false) {
-        //     data.is_protocol_event = true;
-        // }
         return api.post(`/workPlan/getWorkPlanReportData`, data, {headers: getHeader()});
     }
 
@@ -53,10 +50,6 @@ export class WorkPlanService {
     savePlanFile(fd) {
         return api.post(`/workPlan/savePlanFile`, fd, {headers: getMultipartHeader()});
     }
-
-    // generatePdf(pdfContent) {
-    //     return api.post(`/workPlan/generatePdf`, {text: pdfContent}, {headers: getHeader()});
-    // }
 
     createEvent(data) {
         return api.post(`/workPlan/addEvent`, data, {headers: getHeader()})
@@ -153,13 +146,6 @@ export class WorkPlanService {
     getReportApprovalUsers(id) {
         return api.get(`/workPlan/getReportApprovalUsers/${id}`, {headers: getHeader()});
     }
-
-    // getSignatures(data) {
-    //     return api.post(`/workPlan/getSignatures`, data, {headers: getHeader()});
-    // }
-    // signPlanReport(data) {
-    //     return api.post('/workPlan/reportSignature', data, {headers: getHeader()});
-    // }
 
     rejectReport(data) {
         return api.post('/workPlan/rejectReport', data, {headers: getHeader()});

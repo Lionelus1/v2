@@ -22,7 +22,6 @@
                   }}
                 </span>
               </div>
-              <!-- v-if="plan.reject_history.user" -->
               <div v-if="isRejected">
                 <div class="field">
                   <label>{{ $t('contracts.assigner') }}:</label>
@@ -138,9 +137,7 @@
               <label for="quorumInfo" class="block mb-1 mt-1">{{ $t('workPlan.protocol.quorumInfo') }}</label>
               <Dropdown v-model="data[0].quorum_info" :options="localizedQuorumData" optionLabel="label"
                         optionValue="value" :placeholder="$t('common.select')" class=""/>
-              <!-- <Textarea id="quorumInfo" v-model="data[0].quorum_info" class="mt-2" rows="3"
-                        :disabled="isInApprove || isApproved"/> -->
-
+             
             </div>
             <div class="p-fluid mt-3">
               <label for="invitedPersons" class="block mb-1">{{ $t('workPlan.protocol.invitedPersons') }}{{
@@ -179,95 +176,6 @@
                       }}</a>
                   </p>
                 </div>
-
-                <!-- <div class="p-fluid mt-3 surface-ground pt-3 pb-1 pl-3 pr-3 rounded">
-                  <label for="votingResults" class="block mb-1">{{ $t('workPlan.protocol.votingResults') }}{{
-                      "*"
-                    }}</label>
-
-                  <div class="grid mt-3">
-                    <div class="col-6">
-                      <div class="grid">
-                        <div class="col-6">
-                          <div class=""><label for="aye" class="w-5">{{ $t('workPlan.protocol.aye') }}{{
-                              " - "
-                            }}</label></div>
-                        </div>
-                        <div class="col-4">
-                          <div class="">
-                            <InputNumber id="aye" :min="0" v-model="votingResults.vote_aye" class="w-9"
-                                         :disabled="isInApprove || isApproved" showButtons/>
-                            <small class="p-error" v-if="validation.vote_aye && votingResults.vote_aye === null">{{
-                                $t("common.requiredField")
-                              }}</small>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="grid">
-                        <div class="col-6">
-                          <div class=""><label for="abstained" class="w-5">{{
-                              $t('workPlan.protocol.abstained')
-                            }}{{ " - " }}</label></div>
-                        </div>
-                        <div class="col-4">
-                          <div class="">
-                            <InputNumber id="abstained" :min="0" type="number" v-model="votingResults.vote_abstained"
-                                         class="w-9"
-                                         :disabled="isInApprove || isApproved" showButtons/>
-                            <small class="p-error"
-                                   v-if="validation.vote_abstained && votingResults.vote_abstained === null">{{
-                                $t("common.requiredField")
-                              }}</small>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="grid">
-                    <div class="col-6">
-                      <div class="grid">
-                        <div class="col-6">
-                          <div class=""><label for="con" class="w-5">{{ $t('workPlan.protocol.con') }}{{
-                              " - "
-                            }}</label></div>
-                        </div>
-                        <div class="col-4">
-                          <div class="">
-                            <InputNumber id="con" :min="0" type="number" v-model="votingResults.vote_con" class="w-9"
-                                         :disabled="isInApprove || isApproved" showButtons/>
-                            <small class="p-error" v-if="validation.vote_con && votingResults.vote_con === null">{{
-                                $t("common.requiredField")
-                              }}</small>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-6">
-                      <div class="grid">
-                        <div class="col-6">
-                          <div class=""><label for="decisionAccepted" class="w-5">{{
-                              $t('workPlan.protocol.decisionAccepted')
-                            }}{{
-                              " - "
-                            }}</label></div>
-                        </div>
-                        <div class="col-4">
-                          <div class="">
-                            <InputNumber id="decisionAccepted" :min="0" type="number"
-                                         v-model="votingResults.vote_total_decisions"
-                                         class="w-9" :disabled="isInApprove || isApproved" showButtons/>
-                            <small class="p-error"
-                                   v-if="validation.vote_total_decisions && votingResults.vote_total_decisions === null">{{
-                                $t("common.requiredField")
-                              }}</small>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> -->
 
                 <div class="p-fluid mt-3">
                   <label for="closingTimeMeeting" class="block mb-1">{{
@@ -666,10 +574,6 @@ const validation = ref({
   participated_members: false,
   protocol_secretary: false,
   invited_persons: false,
-  // vote_aye: false,
-  // vote_con: false,
-  // vote_abstained: false,
-  // vote_total_decisions: false,
   agenda: false,
   speaker: false,
   agenda_vote_aye: false,
@@ -680,13 +584,6 @@ const validation = ref({
   inner_rule: false,
 
 })
-
-// const votingResults = ref({
-//   vote_aye: null,
-//   vote_con: null,
-//   vote_abstained: null,
-//   vote_total_decisions: null,
-// });
 
 const agendaVotingResults = ref({
   vote_aye: null,
@@ -731,13 +628,6 @@ const docLang = computed(() => {
   }
 });
 
-// const parsedVotingResults = computed(() => ({
-//   vote_aye: !isNaN(parseInt(votingResults.value.vote_aye, 10)) ? parseInt(votingResults.value.vote_aye, 10) : null,
-//   vote_con: !isNaN(parseInt(votingResults.value.vote_con, 10)) ? parseInt(votingResults.value.vote_con, 10) : null,
-//   vote_abstained: !isNaN(parseInt(votingResults.value.vote_abstained, 10)) ? parseInt(votingResults.value.vote_abstained, 10) : null,
-//   vote_total_decisions: !isNaN(parseInt(votingResults.value.vote_total_decisions, 10)) ? parseInt(votingResults.value.vote_total_decisions, 10) : null,
-// }));
-
 
 const data = ref([{
   protocol_id: protocolNumber,
@@ -752,30 +642,10 @@ const data = ref([{
   quorum_info: selectedQuorum.value.label,
   invited_persons: [],
   protocol_issues: [],
-  //voting_results: parsedVotingResults.value,
   session_closed_time: null,
   lang: docLang.value,
   board_members: []
 }]);
-
-function formatToCustomDateTime(inputDate) {
-  if (!inputDate) return null;
-
-  // Parse input into a Date object
-  const date = typeof inputDate === "string" ? new Date(inputDate) : inputDate;
-
-  if (isNaN(date)) return null; // Handle invalid date
-
-  // Format date components
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const year = date.getFullYear();
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-
-  // Return formatted string
-  return `${month}-${day}-${year} ${hours}:${minutes}`;
-}
 
 
 const validateAgendas = () => {
@@ -786,7 +656,6 @@ const validateAgendas = () => {
     const invalidFields = [
       protocol_agenda.agenda,
       protocol_agenda.board_decisions,
-      //protocol_agenda.inner_rule,
       protocol_agenda.speaker,
       protocol_agenda.voting_result,
     ];
@@ -868,21 +737,12 @@ const validateForm = () => {
   validation.value.participated_members = !data.value[0].participated_board_members || data.value[0].participated_board_members == "" || data.value[0].participated_board_members.length <= 0;
   validation.value.protocol_secretary = !data.value[0].protocol_secretary_member || data.value[0].protocol_secretary_member == "" || data.value[0].protocol_secretary_member.length <= 0;
   validation.value.invited_persons = !data.value[0].invited_persons || data.value[0].invited_persons == "" || data.value[0].invited_persons.length <= 0;
-  // validation.value.vote_aye = data.value[0].voting_results.vote_aye === null || data.value[0].voting_results.vote_aye === undefined;
-  // validation.value.vote_con = data.value[0].voting_results.vote_con === null || data.value[0].voting_results.vote_con === undefined;
-  // validation.value.vote_abstained = data.value[0].voting_results.vote_abstained === null || data.value[0].voting_results.vote_abstained === undefined;
-  // validation.value.vote_total_decisions = data.value[0].voting_results.vote_total_decisions === null || data.value[0].voting_results.vote_total_decisions === undefined;
-
   return (
       !validation.value.meeting_date &&
       !validation.value.meeting_venue &&
       !validation.value.participated_members &&
       !validation.value.protocol_secretary &&
       !validation.value.invited_persons
-      // !validation.value.vote_aye &&
-      // !validation.value.vote_con &&
-      // !validation.value.vote_abstained &&
-      // !validation.value.vote_total_decisions
   )
 }
 
@@ -900,15 +760,6 @@ const selectedAbsentMember = ref([
     reason: null,
   }
 ])
-
-// watch(votingResults, (newValue) => {
-//   data.value[0].voting_results = {
-//     vote_aye: !isNaN(parseInt(newValue.vote_aye, 10)) ? parseInt(newValue.vote_aye, 10) : null,
-//     vote_con: !isNaN(parseInt(newValue.vote_con, 10)) ? parseInt(newValue.vote_con, 10) : null,
-//     vote_abstained: !isNaN(parseInt(newValue.vote_abstained, 10)) ? parseInt(newValue.vote_abstained, 10) : null,
-//     vote_total_decisions: !isNaN(parseInt(newValue.vote_total_decisions, 10)) ? parseInt(newValue.vote_total_decisions, 10) : null,
-//   };
-// }, {deep: true});
 
 watch(agendaVotingResults, (newValue) => {
   agendaData.value.voting_result = {
@@ -1111,7 +962,6 @@ onMounted(async () => {
 
 });
 
-//AddMembers
 const addMembers = (source, target, key) => {
   const newMembers = source.value
       .filter(member =>
@@ -1129,7 +979,6 @@ const addMembers = (source, target, key) => {
   target[key].push(...newMembers);
 };
 
-//RemoveMembers
 const removeMembers = (source, target, key) => {
   target[key] = target[key].filter(existingMember =>
       source.value.some(member => member.userID === existingMember.user_id)
@@ -1366,19 +1215,6 @@ const generatePdf = async (isNotification) => {
       data.value[0].protocol_issues = res?.data?.protocol_doc?.params[0]?.value?.protocol_issues || [];
       data.value[0].session_closed_time = res?.data?.protocol_doc?.params[0]?.value?.session_closed_time || null;
 
-      // if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_aye !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_aye !== null) {
-      //   votingResults.value.vote_aye = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_aye;
-      // }
-
-      // if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_con !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_con !== null) {
-      //   votingResults.value.vote_con = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_con;
-      // }
-      // if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_abstained !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_abstained !== null) {
-      //   votingResults.value.vote_abstained = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_abstained;
-      // }
-      // if (res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_total_decisions !== undefined && res?.data?.protocol_doc?.params[0]?.value?.voting_results?.vote_total_decisions !== null) {
-      //   votingResults.value.vote_total_decisions = res?.data?.protocol_doc?.params[0]?.value?.voting_results.vote_total_decisions;
-      // }
       let lang = (locale === "ru") ? 1 : 0;
       data.value[0].lang = lang;
 
