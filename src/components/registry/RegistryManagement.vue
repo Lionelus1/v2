@@ -1,9 +1,8 @@
 <template>
   <div class="col-12">
   <h3>{{$t('registry.menuTitle')}}</h3>
-  <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)"/>
+  <ToolbarMenu :data="toolbarMenus" @filter="toggle($event)"/>
   <div class="card">
-
     <DataTable :lazy="true" :rowsPerPageOptions="[10, 25, 50]" :value="data" dataKey="id" :rowHover="true"
                :loading="loading" :paginatorTemplate="paginatorTemplate"
                :currentPageReportTemplate="currentPageReportTemplate" responsiveLayout="scroll" :paginator="true"
@@ -113,7 +112,7 @@
                     :optionLabel="['name_' + $i18n.locale]" optionValue="id" :placeholder="$t('workPlan.planType')"
           />
           <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
-          <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter()"
+          <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter"
                   :label="$t('common.clear')"/>
         </div>
       </div>
@@ -133,7 +132,7 @@ import {formatDate} from "@/helpers/HelperUtil";
 
 export default {
   name: 'RegistryManagement',
-  components: {},
+  components: {ToolbarMenu},
   data() {
     return {
       registryService: new RegistryService(),
@@ -145,10 +144,7 @@ export default {
         first: 0
       },
       total: null,
-      filter: {
-        plan_type: null,
-        filtered: false
-      },
+      filter: null,
       data: null,
       dataSourceId: null,
       showAddPlanDialog: false,
@@ -193,11 +189,8 @@ export default {
     closeBasic() {
       this.showAddPlanDialog = false
     },
-    toggle(ref, event, node) {
-      if (node) {
-        this.selectedEvent = node;
-      }
-      this.$refs[ref].toggle(event);
+    toggle(event) {
+     this.filter.toggle(event)
     },
     initFilter() {
       this.filter.filtered = true;
@@ -273,14 +266,14 @@ export default {
             this.open('newPublicationDialog')
           },
         },
-        {
-          label: this.$t('registry.import'),
-          icon: "pi pi-file-import",
-          disabled: true,
-          // command: () => {
-          //   this.openBasic()
-          // },
-        },
+        // {
+        //   label: this.$t('registry.import'),
+        //   icon: "pi pi-file-import",
+        //   disabled: true,
+        //   // command: () => {
+        //   //   this.openBasic()
+        //   // },
+        // },
       ]
     },
   },

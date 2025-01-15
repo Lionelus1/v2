@@ -240,7 +240,6 @@ export default {
     },
 
     onPageChange: (event) => {
-      console.log(event.page)
       this.page = event.page
       this.getRegisterParamterApplaction()
     },
@@ -273,12 +272,12 @@ export default {
       const formattedRows = []; // Создаем массив для всех строк
       data.forEach(row => {
         const formattedRow = {
-          label_kz: "Атауы",
-          value_kz: row["Атауы"],
-          label_ru: "Наименование",
-          value_ru: row["Наименование"],
-          label_en: "Name",
-          value_en: row["Name"],
+          label_kz: `Объект: ${row["Название объекта"]}`,
+          value_kz: row["Описание"] || "Описание отсутствует",
+          label_ru: `Тип: ${row["Тип объекта"]}`,
+          value_ru: row["Местоположение"],
+          label_en: `Capacity: ${row["Вместимость"]}`,
+          value_en: row["Площадь"],
         };
         formattedRows.push(formattedRow);
       });
@@ -305,6 +304,9 @@ export default {
 
       })
     },
+    registryInformation() {
+      this.$router.push({ name: 'Registry', params: { id: res.data } })
+    }
   },
   computed: {
     toolbarMenus() {
@@ -338,6 +340,14 @@ export default {
           disabled: this.selectedApplication === null,
           command: () => {
             this.delete()
+          },
+        },
+        {
+          label: this.$t('registry.basicInformation'),
+          icon: "pi pi-info-circle",
+          disabled: this.selectedApplication === null,
+          command: () => {
+            this.$router.push({ name: 'RegistryTicket', params: { id1: parseInt(this.$route.params.id), id2: this.selectedApplication.id} });
           },
         },
       ]
@@ -407,13 +417,5 @@ export default {
   flex-direction: column;
   padding: 1rem;
   margin-bottom: 0px;
-}
-
-.lang {
-  margin-left: 20px;
-}
-
-.buttonLanguag {
-  margin-bottom: 20px;
 }
 </style>

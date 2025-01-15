@@ -2271,7 +2271,11 @@ export default {
         objectPassport: 'Object Passport',
         img: 'Image',
         field: 'Field',
-        meaning: 'Value'
+        meaning: 'Value',
+        inputNumber: 'Input Number',
+        reservationTicketData: 'Reservation Ticket Date',
+        bookingStartTime: 'Booking Start Time',
+        bookingEndTime: 'Booking End Time',
     },
     status_resume: "Status of filling out the resume",
     people_special_needs: "People with special needs"

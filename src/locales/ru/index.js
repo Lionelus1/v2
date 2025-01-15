@@ -241,6 +241,7 @@ export default {
             deleted: "Удален",
             replied: "Ответили",
             pending: "На рассмотрении",
+            reserved: "Занят"
         },
         message: {
             title: {
@@ -2201,7 +2202,11 @@ export default {
         objectPassport: 'Паспорт объекта',
         img: 'Изображение',
         field: 'Поле',
-        meaning: 'Значение'
+        meaning: 'Значение',
+        inputNumber: 'Ввод номера',
+        reservationTicketData: 'Дата бронирования',
+        bookingStartTime: 'Время начала бронирования',
+        bookingEndTime: 'Время окончания бронирования'
     },
     status_resume: "Статус заполнения резюме",
     people_special_needs: "Люди с особыми потребностями"

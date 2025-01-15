@@ -2245,7 +2245,11 @@ export default {
     objectPassport: 'Объект паспорты',
     img: 'Сурет',
     field: 'Өріс',
-    meaning: 'Мәні'
+    meaning: 'Мәні',
+    inputNumber: 'Нөмірді енгізу',
+    reservationTicketData: 'Брондау күні',
+    bookingStartTime: 'Брондауды бастау уақыты',
+    bookingEndTime: 'Брондауды аяқтау уақыты',
   },
   status_resume: 'Түйіндемені толтыру статусы',
   people_special_needs: 'Ерекше қажеттіліктері бар адамдар',

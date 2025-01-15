@@ -975,6 +975,12 @@ const routes = [
                         component: load('registry/RegistryPage'),
                         // beforeEnter: ifAuthenticated,
                     },
+                    {
+                        path: '/registry/RegistryTicket/:id1/:id2',
+                        name: 'RegistryTicket',
+                        component: load('registry/RegistryTicket'),
+                        // beforeEnter: ifAuthenticated,
+                    },
                 ]
             },
     //         {

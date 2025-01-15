@@ -56,6 +56,11 @@
               <InputText style="width: 295px; margin-left: 15px" v-model="field.value_ru" :type="field.type" :placeholder="field.label_ru" />
               <InputText style="width: 295px; margin-left: 15px" v-model="field.value_en" :type="field.type" :placeholder="field.label_en"/>
             </div>
+            <div v-if="field.type === 7">
+              <InputNumber style="width: 295px;" v-model="field.value_kz" :type="field.type" :placeholder="field.label_kz"/>
+              <InputNumber style="width: 295px; margin-left: 15px" v-model="field.value_ru" :type="field.type" :placeholder="field.label_ru" />
+              <InputNumber style="width: 295px; margin-left: 15px" v-model="field.value_en" :type="field.type" :placeholder="field.label_en"/>
+            </div>
             <div v-if="field.type === 2">
               <Textarea v-model="field.value_kz" autoResize rows="5" cols="30" :placeholder="field.label_kz"/>
               <Textarea style="margin-left: 15px" v-model="field.value_ru" autoResize rows="5" cols="30" :placeholder="field.label_ru"/>
@@ -195,6 +200,7 @@ const fieldTypes = [
   { label: t('common.user'), value: 4 },
   { label: t('mailing.time'), value: 5 },
   { label: t('registry.file'), value: 6 },
+  { label: t('registry.fileType'), value: 7 },
 ];
 
 const newAttribute = reactive({
@@ -446,6 +452,25 @@ const save = () => {
           ? String(field.applicant[0].fullName)
           : field.value_ru || '',
     })),
+    reservation: [
+      {
+        id: 146,
+        application: {
+          id: 5,
+          registry: {
+            id: parseInt(route.params.id)
+          },
+          status: 0,
+          created_at: "2025-01-14T10:00:00Z"
+        },
+        reserved_from: "2025-01-17T10:00:00Z",
+        reserved_until: "2025-01-18T10:00:00Z",
+        created_by: 67894,
+        status: 2,
+        created_date: "2025-01-14T10:00:00Z",
+        uuid: "7F4A4838D19711EFBBBD0242AC120003"
+      }
+    ],
   };
   loading.value = true;
   if (selectedApplication.value && selectedApplication.value.length > 0) {
