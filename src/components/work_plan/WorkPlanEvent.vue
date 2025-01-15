@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)"  :filter="true" :filtered="filtered" :analyze="isOperPlan" @analyze="analyzeClick"/>
+    <ToolbarMenu v-if="plan && planDoc" :data="toolbarMenus" @filter="toggle('global-filter', $event)"  :filter="true" :filtered="filtered"/>
     <div class="card" v-if="plan && planDoc">
       <TreeTable ref="workplantreetable" class="p-treetable-sm" :rowsPerPageOptions="[10, 25, 50]" v-model:selectionKeys="selectedWorkPlanEvent" selectionMode="single" :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows" :total-records="total" :rowHover="true" :paginatorTemplate="paginatorTemplate"
@@ -1550,6 +1550,15 @@ export default {
           icon: 'fa-solid fa-eye',
           command: () => {
             this.showDialog(this.dialog.uploadAdditionalFile)
+          }
+        },
+        {
+          icon: "fa-solid fa-chart-pie",
+          right: true,
+          color: "blue",
+          visible: !!this.isOperPlan,
+          command: () => {
+            this.analyzeClick()
           }
         }
       ]

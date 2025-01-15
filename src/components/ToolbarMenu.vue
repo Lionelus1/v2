@@ -1,17 +1,32 @@
 <template>
-  <div class="toolbar_menu card mb-3" ref="containerRef" :class="{ 'scrollable':!search || !filter || !analyze,'toolbar_border': border }">
-    <Button v-if="isScrollable && (!search || !filter || !analyze)" :class="['scroll-left']" icon="pi pi-angle-left" @click="scrollLeft"/>
-    <div :class="['justify-content-between', {'flex': search || filter || analyze},{'inline-flex': isScrollable && (!search || !filter || !analyze)}]">
-      <div class="toolbar_bars" v-if="(search || filter || analyze)">
-        <Button
-            class="p-button-text p-button-secondary"
-            icon="pi pi-bars"
-            @click="onClick($event)"
-            aria-haspopup="true"
-            aria-controls="overlay_menu"/>
+  <div class="toolbar_menu card mb-3" ref="containerRef" :class="{ 'scrollable':!search || !filter,'toolbar_border': border }">
+    <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-left']" icon="pi pi-angle-left" @click="scrollLeft"/>
+    <div :class="['justify-content-between', {'flex': search || filter},{'inline-flex': isScrollable && (!search || !filter)}]">
+      <div class="toolbar_bars" v-if="(search || filter) && data && visibleCount > 0">
+        <div v-if="data && data.length <= 1">
+          <template v-for="(i,index) of data" :key="i">
+            <Button
+                :class="['p-button-outlined', 'btn_right',
+                {'button_green': i.color},
+                {'button_blue': i.color === 'blue'},
+                {'button_purple': i.color === 'purple'},
+                {'button_yellow': i.color === 'yellow'},
+                {'button_red': i.color === 'red'}]"
+                :icon="i.icon"
+                :label="label(i.label)"
+                :disabled="i.disabled"
+                @click="i.command(index)"/>
+          </template>
+        </div>
+        <Button v-else
+                class="p-button-text p-button-secondary"
+                icon="pi pi-bars"
+                @click="onClick($event)"
+                aria-haspopup="true"
+                aria-controls="overlay_menu"/>
         <Menu ref="mobilemenu" id="overlay_menu" :model="actionList" :popup="true"/>
       </div>
-      <div :class="{'button_list': (search || filter || analyze)}">
+      <div :class="{'button_list': (search || filter)}">
         <template v-for="(i,index) of data" :key="i">
           <Button
               v-if="i.visible !== false && !i.right && !i.items"
@@ -29,7 +44,12 @@
           <template v-if="i.right">
             <Button
                 v-if="i.visible !== false && i.right"
-                :class="['p-button-outlined', 'float_right']"
+                :class="['p-button-outlined', 'btn_right',
+                {'button_green': i.color},
+                {'button_blue': i.color === 'blue'},
+                {'button_purple': i.color === 'purple'},
+                {'button_yellow': i.color === 'yellow'},
+                {'button_red': i.color === 'red'}]"
                 :icon="i.icon"
                 :label="label(i.label)"
                 :disabled="i.disabled"
@@ -46,21 +66,13 @@
           <Menu v-if="i?.items" :ref="(el) => (subMenu[index] = el)" :model="i?.items" :popup="true"/>
         </template>
       </div>
-      <div class="flex" v-if="search || filter || analyze">
+      <div class="flex" v-if="search || filter">
         <Button v-if="filter"
                 :label="filterLabel ? $t('common.filter') : ''"
                 :style="{color: filtered ? '#2196f3':'#495057', padding: '4px'}"
                 class="p-button-text p-button-secondary"
                 icon="fa-solid fa-filter"
                 @click="filterClick($event)"/>
-               
-        <template v-if="analyze">
-          <Button 
-              class="p-button-text p-button-primary hover:bg-blue-700 hover:text-white focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-300 ease-in-out"
-              icon="fa-solid fa-chart-pie"
-              :title="$t('workPlan.analyzer.analyzerButtonTitle')"
-              @click="analyzeClick()"/>
-        </template>
         <template v-if="rightBtn">
           <Button
               v-tooltip.bottom="$t('common.specialNeedsJobs')"
@@ -82,18 +94,18 @@
         </template>
       </div>
     </div>
-    <Button v-if="isScrollable && (!search || !filter || !analyze)" :class="['scroll-right']" icon="pi pi-angle-right" @click="scrollRight"/>
+    <Button v-if="isScrollable && (!search || !filter)" :class="['scroll-right']" icon="pi pi-angle-right" @click="scrollRight"/>
   </div>
 </template>
 
 <script setup>
 import {computed, onBeforeUnmount, onMounted, ref} from "vue";
 
-const props = defineProps(['data', 'notShowLabel', 'search', 'filter', 'filtered', 'border', 'filterLabel', 'change', 'rightBtn', 'analyze'])
+const props = defineProps(['data', 'notShowLabel', 'search', 'filter', 'filtered', 'border', 'filterLabel', 'change', 'rightBtn'])
 const containerRef = ref(null);
 const scrollStep = 50;
 const isScrollable = ref(false);
-const emit = defineEmits(['search', 'filter', 'analyze'])
+const emit = defineEmits(['search', 'filter'])
 const searchModel = defineModel('searchModel')
 const mobilemenu = ref()
 const subMenu = ref({})
@@ -123,16 +135,16 @@ const searchClick = () => {
 const filterClick = (event) => {
   emit('filter', event)
 }
-const analyzeClick = () => {
-  emit('analyze')
-}
-
 const rightBtnClick = (event) => {
   emit('rightBtn', event)
 }
 const toggleSubMenu = (event, index) => {
   subMenu?.value[index].toggle(event)
 }
+
+const visibleCount = computed(() => {
+  return actionList.value.filter(item => item.visible === undefined || item.visible).length;
+})
 
 onMounted(() => {
   checkScroll();
@@ -173,8 +185,8 @@ onBeforeUnmount(() => {
   display: none;
 }
 
-.float_right {
-  float: right;
+.btn_right {
+  margin-left: auto;
 }
 
 .vertical_line {
@@ -266,7 +278,10 @@ onBeforeUnmount(() => {
 .button_red:hover {
   background: rgba(255, 0, 0, 0.30) !important;
 }
-
+.button_list {
+  display: flex;
+  width: 100%;
+}
 @media (max-width: 960px) {
   .toolbar_bars {
     display: block;
