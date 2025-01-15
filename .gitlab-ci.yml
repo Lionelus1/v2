@@ -50,34 +50,42 @@ build_stage:
       - dist_prod/
       - dist_test/
 
-deploy_stage:
+deploy_production:
   stage: deploy
   image: node:lts
+  dependencies:
+    - build_stage
   before_script:
-    - apt-get update -y
-    - apt-get install -y openssh-client
+    - apk --no-cache add openssh-client
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | ssh-add -
     - mkdir -p ~/.ssh
-    - touch ~/.ssh/config
-    - touch ~/.ssh/known_hosts
-    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - chmod -R 400 ~/.ssh
-    - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H $SMARTENU_IP >> ~/.ssh/known_hosts
   script:
     - echo "$SSH_AUTH_URL"
-    - if [ "$CI_COMMIT_BRANCH" == "master" ]; then
-      ssh $SSH_AUTH_URL "rm -rf /local/prohtml/*";
-      scp -r dist_prod/* $SSH_AUTH_URL:/local/prohtml;
-      elif [ "$CI_COMMIT_BRANCH" == "test" ]; then
-      ssh $SSH_AUTH_URL "rm -rf /local/testhtml/*";
-      scp -r dist_test/* $SSH_AUTH_URL:/local/testhtml;
-      fi
-  dependencies:
-    - build_stage
+    - ssh $SSH_AUTH_URL "rm -rf /local/prohtml/*";
+    - scp -r dist_prod/* $SSH_AUTH_URL:/local/prohtml;
   only:
     - master
+  tags:
+    - front
+
+deploy_test:
+  stage: deploy
+  image: node:lts
+  dependencies:
+    - build_stage
+  before_script:
+    - apk --no-cache add openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY_TEST" | ssh-add -
+    - mkdir -p ~/.ssh
+    - ssh-keyscan -p 22106 -H $SMARTENU_TEST_IP >> ~/.ssh/known_hosts
+  script:
+    - echo "$SSH_AUTH_URL"
+    - ssh $SSH_AUTH_URL "rm -rf /local/testhtml/*";
+    - scp -r dist_test/* $SSH_AUTH_URL:/local/testhtml;
+  only:
     - test
   tags:
     - front
