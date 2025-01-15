@@ -95,8 +95,8 @@ deploy_test:
     - ssh-keyscan -p 22106 -H $SMARTENU_TEST_IP >> ~/.ssh/known_hosts
   script:
     - echo "$SMARTENU_TEST_IP"
-    - ssh -p 22106 $SSH_AUTH_URL_TEST "rm -rf /local/testhtml/*";
-    - scp -r -P 22106 dist_test/* SSH_AUTH_URL_TEST:/local/testhtml;
+    - ssh -p 22106 $SSH_AUTH_URL_TEST "rm -rf /root/project/public/*";
+    - scp -r -P 22106 dist_test/* SSH_AUTH_URL_TEST:/root/project/public;
   only:
     - test
   tags:
