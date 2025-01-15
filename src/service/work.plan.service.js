@@ -8,7 +8,7 @@ export class WorkPlanService {
     }
 
     getWorkPlanApprovalUsers(work_plan_id) {
-        return api.get(`/workPlan/getApprovalUsers/${work_plan_id}`, {headers: getHeader()});
+        return api.post(`/workPlan/getApprovalUsers`, work_plan_data, {headers: getHeader()});
     }
 
     getPlanById(planId) {
