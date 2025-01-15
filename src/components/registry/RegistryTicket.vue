@@ -25,7 +25,7 @@
             {{ data.reserved_data }}
           </template>
         </Column>
-        <Column field="bookingStartTime" sortable :header="$t('registry.bookingStartTime')">
+        <Column field="bookingStartTime" :header="$t('registry.bookingStartTime')">
           <template #body="{ data }">
             {{ data.reserved_from }}
           </template>
