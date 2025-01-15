@@ -167,7 +167,7 @@ const clearFilter = () => {
 const getReservation = () => {
   const req = {
     registry_id: parseInt(route.params.id1),
-    application_id: 5,
+    application_id: parseInt(route.params.id2),
     page: 0,
     rows: 10,
     status: filterReservation.value.status,

@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
   <h3>{{$t('registry.menuTitle')}}</h3>
-  <ToolbarMenu :data="toolbarMenus" @filter="toggle($event)"/>
+  <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)"/>
   <div class="card">
     <DataTable :lazy="true" :rowsPerPageOptions="[10, 25, 50]" :value="data" dataKey="id" :rowHover="true"
                :loading="loading" :paginatorTemplate="paginatorTemplate"
@@ -132,7 +132,7 @@ import {formatDate} from "@/helpers/HelperUtil";
 
 export default {
   name: 'RegistryManagement',
-  components: {ToolbarMenu},
+  components: {},
   data() {
     return {
       registryService: new RegistryService(),
@@ -190,7 +190,10 @@ export default {
       this.showAddPlanDialog = false
     },
     toggle(event) {
-     this.filter.toggle(event)
+      if (node) {
+        this.selectedEvent = node;
+      }
+      this.$refs[ref].toggle(event);
     },
     initFilter() {
       this.filter.filtered = true;
@@ -266,14 +269,14 @@ export default {
             this.open('newPublicationDialog')
           },
         },
-        // {
-        //   label: this.$t('registry.import'),
-        //   icon: "pi pi-file-import",
-        //   disabled: true,
-        //   // command: () => {
-        //   //   this.openBasic()
-        //   // },
-        // },
+        {
+          label: this.$t('registry.import'),
+          icon: "pi pi-file-import",
+          disabled: true,
+          // command: () => {
+          //   this.openBasic()
+          // },
+        },
       ]
     },
   },
