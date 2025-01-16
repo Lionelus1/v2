@@ -1529,7 +1529,7 @@ export default {
             executionStatus: "Орындалу мәртебесі",
             nonExecutionRisk: "Орындамау тәуекелі",
             filterTitle: "Сүзгіні қолдану",
-            strategicDirectionTab:"Стратегиялық бағыт",
+            strategicDirectionTab:"Стратегиялық бағыттар",
             structuralDivisionTab:"Құрылымдық бөлімдер",
             totalLevelNumber:"Көрсеткіш саны",
             done:"Орындалды",
