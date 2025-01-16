@@ -1532,6 +1532,7 @@ export default {
             listened: "Тыңдады",
             previewDocument: 'Алдын ала қарау',
             createProtocolExtract: "Хаттама көшірмесін жасау",
+            viewProtocolExtractTemplate: "Хаттама көшірмесінің үлгісін қарау",
             messages: {
                 decisionAddedSuccess: "Шешім сәтті қосылды",
                 personAlreadyExists: "Жауапты тұлға қосылған",

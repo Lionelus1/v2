@@ -1507,6 +1507,7 @@ export default {
             listened: "Listened",
             previewDocument: 'Preview',
             createProtocolExtract: "Create Extract",
+            viewProtocolExtractTemplate: "View the template of the extract",
             messages: {
                 decisionAddedSuccess: "Decision added successfully",
                 personAlreadyExists: "Responsive person already exists",

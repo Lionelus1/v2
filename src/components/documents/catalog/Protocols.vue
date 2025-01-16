@@ -769,6 +769,15 @@
             },
           },
           {
+            label: this.$t('workPlan.protocol.viewProtocolExtractTemplate'),
+            icon: "pi pi-file-check",
+            visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID && this.docType === Enum.DocType.WorkPlanProtocolExtract,
+            command: () => {
+              const node = this.actionsNode
+              this.protocolEditLink(node)
+            },
+          },
+          {
             label: this.$t('common.correction'),
             icon: "pi pi-pencil",
             visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.REVISION.ID,

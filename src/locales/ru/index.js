@@ -1523,6 +1523,7 @@ export default {
             listened: "Слушали",
             previewDocument: 'Просмотр',
             createProtocolExtract: "Сформировать выписку",
+            viewProtocolExtractTemplate: "Посмотреть шаблон выписки",
             messages: {
                 decisionAddedSuccess: "Решение успешно добавлено",
                 personAlreadyExists: "Отзывчивый человек уже существует",
