@@ -539,9 +539,6 @@ async function getEventsTree(parent, isClickEvent) {
         for (const e of data.value) {
           if (e.parent_id === null) {
             const descendants = await getEventDescendants(e.work_plan_event_id);
-            console.log("descendants:::", descendants);
-            
-
             let newstrategicDirectionData = {
               direction: {
                 id: e.work_plan_event_id,
@@ -556,7 +553,6 @@ async function getEventsTree(parent, isClickEvent) {
             };
             if (descendants && descendants.items) {
               descendants.items.forEach((item) => {
-                console.log("item status: ", item.status.work_plan_event_status_id);
                   if(item && !item.is_deleted){
                     if (item.status.work_plan_event_status_id === 2) {
                     newstrategicDirectionData.result_status.completed.push(item.status.work_plan_event_status_id)
