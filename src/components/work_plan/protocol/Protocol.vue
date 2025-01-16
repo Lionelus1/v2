@@ -1171,12 +1171,12 @@ const generatePdf = async (isNotification) => {
       }
     }
  
-    if (data?.value[0]?.protocol_number){
+    if (data?.value?.length > 0 && data?.value[0]?.protocol_number){
       const foundEvent = data.value[0].protocol_issues.find(issue => issue.event_id === parseInt(data?.value[0]?.protocol_number));
-      data.value[0].protocol_issues[0] = foundEvent
-      data.value[0].protocol_issues[0].agenda = selectedAgenda.value
-      
-
+      if (foundEvent) {
+        foundEvent.protocol_agenda = selectedAgenda.value
+        data.value[0].protocol_issues[0] = foundEvent
+      }
     }
   }
   data.value[0].lang = docLang.value
