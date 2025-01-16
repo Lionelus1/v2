@@ -420,7 +420,7 @@
                   :disabled="isInApprove"/>
       </div>
       <div class="p-fluid mt-3">
-        <label for="deadline" class="block mb-1">{{ $t('workPlan.protocol.deadline') }}{{ "*" }}</label>
+        <label for="deadline" class="block mb-1">{{ $t('workPlan.protocol.deadline') }}</label>
         <PrimeCalendar v-model="addDecision.deadline" showIcon :showOnFocus="false" inputId="buttondisplay"
                        dateFormat="mm-dd-yy"
                        :disabled="isInApprove"/>
