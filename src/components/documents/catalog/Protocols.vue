@@ -762,7 +762,7 @@
           {
             label: this.$t('workPlan.protocol.createProtocolExtract'),
             icon: "pi pi-clone",
-            visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID,
+            visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID && this.docType === Enum.DocType.WorkPlanProtocol,
             command: () => {
               const node = this.actionsNode
               this.protocolEditLink(node)
