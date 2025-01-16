@@ -1495,7 +1495,7 @@ export default {
         semester: "Семестр",
         doctorsThesisInfo: "Докторлық диссертация туралы мәлімет",
         issueTitle: "Қарастырылып отырған мәселе",
-        implementationDate: "Жүзеге асыру күні",
+        implementationDate: "Жүзеге асыру уақыты",
         protocol: {
             createProtocols: "Хаттама құру",
             createdDate: "Хаттаманың құрылған күні",

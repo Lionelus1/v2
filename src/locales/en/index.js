@@ -1470,7 +1470,7 @@ export default {
         semester: "Semester",
         doctorsThesisInfo: "Information about the doctoral dissertation",
         issueTitle: "The issue under consideration",
-        implementationDate: "Implementation date",
+        implementationDate: "Time of the event",
         protocol: {
             createProtocols: "Create protocol",
             createdDate: "Created date of the protocol",

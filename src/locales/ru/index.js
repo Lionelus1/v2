@@ -1486,7 +1486,7 @@ export default {
         semester: "Семестр",
         doctorsThesisInfo: "Информация о докторской диссертации",
         issueTitle: "Рассматриваемый вопрос",
-        implementationDate: "Дата проведения",
+        implementationDate: "Время проведения",
         protocol: {
             createProtocols: "Составить протокол",
             createdDate: "Дата создания протокола",
