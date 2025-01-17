@@ -1642,8 +1642,6 @@ const onToggle = (event) => {
 const showSendToApproveDialog = async () => {
   saveLoading.value = true
   try {
-    //await addingBoardMembers()
-    //await initStages()
     await saveProtocolData()
     validatedAgendaFields.value = true
     if (!validateForm()) {
@@ -1786,76 +1784,6 @@ const approval_users = ref([
 ])
 
 
-// const initStages = async () => {
-//   const boardMembers = [
-//     { name: "Сыдыков Ерлан Батташевич", role: "rector" },
-//     { name: "Бейсенбай Ардақ Бақытұлы", role: "boardMember" },
-//     { name: "Айтмагамбетов Думан Рамазанович", role: "boardMember" },
-//     { name: "Курмангалиева Жанна Дулатовна", role: "boardMember" },
-//     { name: "Айдаргалиева Назгуль Газизоллаевна", role: "boardMember" },
-//     { name: "Төлегенқызы Ляззат", role: "boardMember" },
-//     { name: "Бекманова Гульмира Тылеубердиевна", role: "boardMember" },
-//     { name: "Галиакбарова Гузаль Газинуровна", role: "boardSecretary" }
-//   ];
-
-//     const boardRector = boardMembers.find(member => member.role === "rector");
-//     const boardMembersList = boardMembers.filter(member => member.role === "boardMember");
-//     const boardSecretary = boardMembers.find(member => member.role === "boardSecretary");
-  
-
-//   try {
-//     const res_secretary = await contragentService.getPersons({ filter: { name: boardSecretary.name } });
-//     const secretary = res_secretary.data.foundUsers || [];
-
-//     const stage1 = approval_users.value.find(stage => stage.stage === 1);
-//     if (stage1) {
-//       secretary.forEach(user => {
-//         if (!stage1.users.some(existingUser => existingUser.name === user.name)) {
-//           stage1.users.push(user); 
-//         }
-//       });
-//     }
-
-//     const stageExtract = approval_user_secretary.value.find(stage => stage.stage === 1);
-//     if (stageExtract) {
-//       secretary.forEach(user => {
-//         if (!stageExtract.users.some(existingUser => existingUser.name === user.name)) {
-//           stageExtract.users.push(user); 
-//         }
-//       });
-//     }
-
-//     const allMemberPromises = boardMembersList.map(member =>
-//       contragentService.getPersons({ filter: { name: member.name } })
-//         .then(res => res.data.foundUsers)
-//     );
-//     const membersData = await Promise.all(allMemberPromises);
-//     const allBoardMembers = membersData.flat() || [];
-
-//     const stage2 = approval_users.value.find(stage => stage.stage === 2);
-//     if (stage2) {
-//       stage2.users = []
-//       stage2.users = [...new Set([...stage2.users, ...allBoardMembers])]; 
-//     }
-
-//     const res_rector = await contragentService.getPersons({ filter: { name: boardRector.name } });
-//     const rector = res_rector.data.foundUsers;
-
-//     const stage3 = approval_users.value.find(stage => stage.stage === 3);
-//     if (stage3) {
-//       rector.forEach(user => {
-//         if (!stage3.users.some(existingUser => existingUser.name === user.name)) {
-//           stage3.users.push(user);
-//         }
-//       });
-//     }
-
-
-//   } catch (error) {
-//     showMessage('error', t('common.error'), error);
-//   }
-// };
-
 const approval_user_secretary = ref([
   {
     stage: 1,
@@ -1871,46 +1799,6 @@ const approval_user_secretary = ref([
     }
   }
 ])
-
-// const addingBoardMembers = async() => {
-//   //await initStages()
-//   if (approval_users?.value?.length >  0){
-//     let users = []
-//     approval_users?.value.forEach(items =>{
-//       if (!users.some(user => user.userID === items.users[0].userID)) {
-//           users.push(items.users[0]);
-//       }
-//       if (items.stage == 2){
-//         items.users.forEach(sub_user =>{
-//           if (!users.some(user => user.userID === sub_user.userID)) {
-//               users.push(sub_user);
-//           }
-          
-//         })
-        
-//       }
-//     });
-
-//     if (users.length > 0){
-//       users.forEach(user =>{
-//         const newUser = {
-//           user_id: user.userID,
-//           full_name: user.fullName,
-//           main_position: {
-//             name_kz: user.mainPosition?.namekz || '',
-//             name_ru: user.mainPosition?.nameru || ''
-//           }
-//         }
-//         const exists = boardMembersList.value.some(issue => user.user_id === user.userID)
-//         if (!exists) {
-//           boardMembersList.value.push(newUser);
-//         }
-//       });
-//       data.value[0].board_members = boardMembersList.value
-//     }
-//   }
-
-// }
 
 const protocolMenu = computed(() => [
   {
