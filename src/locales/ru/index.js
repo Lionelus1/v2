@@ -1519,7 +1519,7 @@ export default {
             innerRule: "Внутренние правила",
             briefDesc: "Краткое описание",
             generateDocStatement: "Сформировать выписку",
-            presentDateTime: "Присутствовали",
+            presentDateTime: "Сегодняшняя дата",
             listened: "Слушали",
             previewDocument: 'Просмотр',
             createProtocolExtract: "Сформировать выписку",

@@ -258,11 +258,11 @@
             </div>
             <div class="p-fluid mt-3">
               <label for="listened" class="block mb-1">{{ $t('workPlan.protocol.responsivePerson') }}{{ "*" }}</label>
-              <FindUser class="mt-2" v-model="responsivePerson" :max="1" :editMode="true" :user-type="3"
+              <FindUser class="mt-2" v-model="responsivePersonExtract" :editMode="true" :user-type="3"
                         :disabled="isInApprove || isApproved || extractEditDisabled"/>
             </div>
             <div class="p-fluid mt-3">
-              <label for="listened" class="block mb-1">{{ $t('workPlan.protocol.deadline') }}{{ "*" }}</label>
+              <label for="listened" class="block mb-1">{{ $t('workPlan.protocol.deadline') }}</label>
               <PrimeCalendar v-model="selectedAgenda.board_decisions[0].deadline" showIcon :showOnFocus="false"
                              inputId="buttondisplay" showTime hourFormat="24"
                              :disabled="isInApprove || isApproved || extractEditDisabled"/>
@@ -558,6 +558,7 @@ const isRejected = ref(false)
 const extractEditDisabled = ref(true)
 const revisionSetterFullName = ref(null)
 const responsivePerson = ref([])
+const responsivePersonExtract = ref([])
 const boardDecisionSpeaker = ref([])
 const validatedAgendaFields = ref(true)
 const boardMembersList = ref([])
@@ -957,6 +958,7 @@ onMounted(async () => {
   GetSpeakerUser();
   await generatePdf();
   getSelectedAgendaData();
+  GetResponsiveUser();
 
 });
 
@@ -1175,6 +1177,19 @@ const generatePdf = async (isNotification) => {
       const foundEvent = data.value[0].protocol_issues.find(issue => issue.event_id === parseInt(data?.value[0]?.protocol_number));
       if (foundEvent) {
         foundEvent.protocol_agenda = selectedAgenda.value
+        if (responsivePersonExtract.value.length > 0){
+            const users = responsivePersonExtract.value
+            const respUsers = users.map(user => ({
+            user_id: user.userID,
+            full_name: user.fullName,
+            main_position: {
+              name_kz: user.mainPosition?.namekz || '',
+              name_ru: user.mainPosition?.nameru || '',
+            },
+          }));
+          foundEvent.protocol_agenda.board_decisions[0].responsive_person = respUsers
+        }
+        
         data.value[0].protocol_issues[0] = foundEvent
       }
     }
@@ -1297,7 +1312,6 @@ const generatePdf = async (isNotification) => {
           });
         })
       }
-
       if (res.data.protocol_doc?.params[0]?.value?.invited_persons) {
         invitedBoardMembers.value = []
         res.data.protocol_doc?.params[0]?.value?.invited_persons.forEach(member => {
@@ -1370,6 +1384,37 @@ const GetSpeakerUser = () => {
       })
       .catch(err => showMessage('error', t(common.error), err));
   }
+};
+
+const GetResponsiveUser = () => {
+  if (isProtocolExtractDoc.value && data?.value && data?.value[0]?.protocol_number) {
+        const foundEvent = data?.value[0]?.protocol_issues.find(issue => issue.event_id === parseInt(data?.value[0]?.protocol_number));
+        if (foundEvent){
+          responsivePersonExtract.value = []
+          foundEvent.protocol_agenda.board_decisions[0].responsive_person.forEach(member => {
+          contragentService.getPersons({
+            "filter": {
+              "userIDs": [member.user_id],
+            }
+          }).then(res => {
+            if (res.data.foundUsers && res.data.foundUsers.length > 0) {
+              const foundUser = res.data.foundUsers[0];
+
+              const exists = responsivePersonExtract.value.some(existingMember =>
+                  existingMember.userID === member.user_id
+              );
+
+              if (!exists) {
+                responsivePersonExtract.value.push(foundUser);
+              }
+            }
+          }).catch(err => {
+            showMessage('error', t(common.error), err)
+          });
+        })
+        }
+        
+      }
 };
 
 const GetUser = () => {
