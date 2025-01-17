@@ -140,9 +140,7 @@
              
             </div>
             <div class="p-fluid mt-3">
-              <label for="invitedPersons" class="block mb-1">{{ $t('workPlan.protocol.invitedPersons') }}{{
-                  "*"
-                }}</label>
+              <label for="invitedPersons" class="block mb-1">{{ $t('workPlan.protocol.invitedPersons') }}</label>
               <FindUser class="mt-2" v-model="invitedBoardMembers" :editMode="true" :user-type="3"
                         :disabled="isInApprove || isApproved"/>
               <small class="p-error" v-if="validation.invited_persons">{{ $t("common.requiredField") }}</small>
@@ -492,7 +490,6 @@
 
 <script setup>
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
-import {AlignAction} from "quill-blot-formatter";
 import {useRoute, useRouter} from "vue-router";
 import {ref, computed, onMounted, watch} from 'vue';
 import {useI18n} from "vue-i18n";
@@ -503,15 +500,12 @@ import {DocService} from "@/service/doc.service";
 import moment from "moment";
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
-import api from '@/service/api';
 import {ContragentService} from "@/service/contragent.service";
 import docState from "@/enum/docstates/index";
-import {getHeader} from "@/config/config";
 import Enum from "@/enum/docstates/index";
 import {useConfirm} from 'primevue/useconfirm';
 
 const workPlanService = new WorkPlanService();
-const docService = new DocService();
 const contragentService = new ContragentService();
 
 const route = useRoute();
@@ -574,7 +568,6 @@ const validation = ref({
   meeting_venue: false,
   participated_members: false,
   protocol_secretary: false,
-  invited_persons: false,
   agenda: false,
   speaker: false,
   agenda_vote_aye: false,
@@ -735,13 +728,11 @@ const validateForm = () => {
   validation.value.meeting_venue = !data.value[0].meeting_place || data.value[0].meeting_place == "";
   validation.value.participated_members = !data.value[0].participated_board_members || data.value[0].participated_board_members == "" || data.value[0].participated_board_members.length <= 0;
   validation.value.protocol_secretary = !data.value[0].protocol_secretary_member || data.value[0].protocol_secretary_member == "" || data.value[0].protocol_secretary_member.length <= 0;
-  validation.value.invited_persons = !data.value[0].invited_persons || data.value[0].invited_persons == "" || data.value[0].invited_persons.length <= 0;
   return (
       !validation.value.meeting_date &&
       !validation.value.meeting_venue &&
       !validation.value.participated_members &&
-      !validation.value.protocol_secretary &&
-      !validation.value.invited_persons
+      !validation.value.protocol_secretary
   )
 }
 
