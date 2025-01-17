@@ -70,8 +70,8 @@
         <Textarea v-model="editData.result" rows="3" style="resize: vertical" />
       </div>
     </div>
-    <div v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || Enum.WorkPlanTypes.Doctors">
-      <div class="field">
+    <div v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors">
+    <div class="field">
         <label>{{$t("educationalPrograms.semester")}}</label>
         <Dropdown v-model="editData.semester" :options="semesters" optionLabel="name" optionValue="id" :placeholder="$t('educationalPrograms.semester')" />
       </div>
