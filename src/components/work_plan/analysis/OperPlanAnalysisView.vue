@@ -141,6 +141,10 @@ import {useToast} from 'primevue/usetoast';
 import {useRoute} from "vue-router";
 import {WorkPlanService} from "@/service/work.plan.service";
 import {FilterMatchMode} from 'primevue/api';
+import { Chart as ChartJS, registerables } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+ChartJS.register(...registerables, ChartDataLabels);
 
 const workPlanService = new WorkPlanService();
 const {t, locale} = useI18n();
@@ -202,7 +206,6 @@ const strategicDirectionData = ref([
   }
 ])
 const departments = ref([]);
-const resultData = ref(null)
 const total = ref(0);
 const loading = ref(false);
 const isCreator = ref(false);
@@ -250,7 +253,6 @@ onMounted(async () => {
 
   chartDataDepartment.value = setChartDataDepartments();
   chartOptionsDepartment.value = setChartOptions();
-
 })
 
 const chartData = ref();
@@ -329,6 +331,16 @@ const setChartOptionsFilteredDepartment = () => {
                     cutout: '60%',
                     color: textColor
                 }
+            },
+            datalabels: {
+                color: textColor,
+                anchor: 'end',
+                align: 'top',
+                font: {
+                    weight: 'bold',
+                    size: 12
+                },
+                formatter: (value) => `${value}%`
             }
         }
     };
@@ -411,6 +423,16 @@ const setChartOptions = () => {
                 labels: {
                     color: textColor
                 }
+            },
+            datalabels: {
+                color: textColor,
+                anchor: 'end',
+                align: 'top',
+                font: {
+                    weight: 'bold',
+                    size: 12
+                },
+                formatter: (value) => `${value}%`
             }
         },
         scales: {
