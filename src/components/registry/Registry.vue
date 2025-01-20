@@ -33,10 +33,16 @@
               {{ getValue(slotProps, column.id) }}
             </div>
             <div v-else>
-              <Button
-                  icon="pi pi-qrcode"
-                  class="p-button"
-                  @click="openDocGeneration(slotProps)"/>
+              <div class="button-container">
+                <Button
+                    icon="pi pi-question-circle"
+                    class="p-button p-button-info"
+                    @click="openEditForm(slotProps)"/>
+                <Button
+                    icon="pi pi-qrcode"
+                    class="p-button"
+                    @click="openDocGeneration(slotProps)"/>
+              </div>
             </div>
           </template>
 
@@ -127,6 +133,9 @@ export default {
         this.qrUrl = smartEnuApi + "/registry/Registry/" + parseInt(this.$route.params.id) + "/" + slotProps.data.id;
 
         this.qrVisible = true;
+    },
+    openEditForm(slotProps) {
+      this.$router.push({ name: 'RegistryPage', params: { id1: this.$route.params.id, id2: slotProps.data.id }})
     },
     close(){
       this.showAddPlanDialog = false;
@@ -294,19 +303,9 @@ export default {
       reader.readAsBinaryString(file);
     },
     processExcelData(data) {
-      console.log(data);
-
-      const formattedData = data.map(item => ({
-        "Наименование": item["Наименование"],
-        "Тип объекта": item["Тип объекта"],
-        "Местоположение": item["Местоположение"],
-        "Вместимость": item["Вместимость"],
-        "Описание": item["Описание"],
-        "Площадь": item["Площадь"],
-      }));
-
       const req = {
-        data: formattedData,
+        data: data,
+        registry_id: parseInt(this.$route.params.id),
       }
 
       this.registryService.importRegistry(req)
@@ -430,5 +429,11 @@ export default {
   flex-direction: column;
   padding: 1rem;
   margin-bottom: 0px;
+}
+
+.button-container {
+  display: flex;
+  gap: 10px; /* Расстояние между кнопками */
+  align-items: center; /* Выравнивание кнопок по центру */
 }
 </style>
