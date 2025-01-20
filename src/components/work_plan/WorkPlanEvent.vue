@@ -955,7 +955,7 @@ export default {
 
           for (const param of this.planDoc.params) {
             if (param.name === "projectContractDate") { //Дата договора
-              param.value = param.value ? format(new Date(param.value), 'dd.MM.yyyy') : null;
+              param.value = new Date(param.value);
             }
             else if (param.name === "projectYears") { //Период реализации
               if (param.value) {

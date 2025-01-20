@@ -1,12 +1,12 @@
 <template>
   <Dialog v-if="dialogVisible"
           :visible="dialogVisible"
-          :style="{ width: '90%' }"
+          :style="{ width: '90%'}"
           :header="$t('common.sciProject')"
           :modal="true"
           :closable="false"
           class="p-fluid">
-
+<div class="content_sci">
   <TabView>
       <TabPanel :header="$t('common.mainInfo')">
         <!-- Main Info Tab -->
@@ -159,6 +159,7 @@
         </div>
       </TabPanel>
     </TabView>
+</div>
     <template #footer>
       <div class="dialog-footer">
         <Button
@@ -245,6 +246,9 @@ export default {
 </script>
 
 <style scoped>
+.content_sci{
+  min-height: 75vh;
+}
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
@@ -301,8 +305,6 @@ InputText {
   margin-top: 40px; /* Учитывает место для кнопки */
 }
 
-
-
 .flex {
   display: flex;
 }
@@ -310,7 +312,10 @@ InputText {
   flex-direction: column;
 }
 .p-fluid {
-  width: 100%;
+  height: 100%; /* Диалог занимает всю доступную высоту */
+  display: flex;
+  flex-direction: column; /* Содержимое размещается вертикально */
+  box-sizing: border-box;
 }
 .resizable-textarea {
   width: 100%;
@@ -325,7 +330,6 @@ InputText {
   margin-bottom: 10px;
 }
 .dialog-footer {
-  display: flex;
-  justify-content: flex-end;
+  margin-top: auto; /* Футер остаётся внизу */
 }
 </style>
