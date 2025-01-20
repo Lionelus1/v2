@@ -9,7 +9,20 @@
     <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)"/>
     <div class="card">
       <input type="file" ref="fileInput" @change="onFileChange" style="display: none;" />
-      <DataTable  :loading="loading" :value="applications"  @page="onPageChange" :paginator="true"  :page="0" :rows="10"  :totalRecords="totalRecords" v-model:selection="selectedApplication" selectionMode="single">
+      <DataTable
+          :loading="loading"
+          :value="applications"
+          :paginatorTemplate="paginatorTemplate"
+          :currentPageReportTemplate="currentPageReportTemplate"
+          @page="onPageChange"
+          :paginator="true"
+          :page="0"
+          :first="lazyParams.first || 0"
+          :rows="lazyParams.rows"
+          stripedRows
+          :totalRecords="totalRecords"
+          v-model:selection="selectedApplication"
+          selectionMode="single">
         <Column
             v-for="column in columns"
             :key="column.id"
@@ -56,11 +69,21 @@ export default {
       registryService: new RegistryService(),
       filtered: false,
       loading: false,
-      lazyParams: null,
+      lazyParams: {
+        page: 0,
+        rows: 10,
+        first: 0
+      },
       filter: {
         plan_type: null,
         filtered: false
       },
+      paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
+      currentPageReportTemplate: this.$t('common.showingRecordsCount', {
+        first: '{first}',
+        last: '{last}',
+        totalRecords: '{totalRecords}',
+      }),
       data: [],
       columns: [],
       showAddPlanDialog: false,
@@ -212,13 +235,12 @@ export default {
     this.loading = true;
 
       const req = {
-        page: this.page,
-        rows: this.rows,
+        page: this.lazyParams.page,
+        rows: this.lazyParams.rows,
         registry_id: parseInt(this.$route.params.id),
       };
       this.registryService.getApplication(req).then((res) => {
         this.applications = res.data.applications
-        this.totalRecords = res.data.total
       });
     },
     getValue (slotProps, id) {
@@ -239,9 +261,12 @@ export default {
       return '';
     },
 
-    onPageChange: (event) => {
-      this.page = event.page
-      this.getRegisterParamterApplaction()
+    onPageChange(event){
+      this.lazyParams.first = event?.first
+      this.lazyParams.page = event?.page
+      this.lazyParams.rows = event?.rows
+      // this.getRegisterParamterApplaction()
+      // this.getRegisterParameter()
     },
     getQR: (uuid) => {
       this.qrUrl = smartEnuApi + "/document?qrcode=" + uuid;
@@ -269,40 +294,28 @@ export default {
       reader.readAsBinaryString(file);
     },
     processExcelData(data) {
-      const formattedRows = []; // Создаем массив для всех строк
-      data.forEach(row => {
-        const formattedRow = {
-          label_kz: `Объект: ${row["Название объекта"]}`,
-          value_kz: row["Описание"] || "Описание отсутствует",
-          label_ru: `Тип: ${row["Тип объекта"]}`,
-          value_ru: row["Местоположение"],
-          label_en: `Capacity: ${row["Вместимость"]}`,
-          value_en: row["Площадь"],
-        };
-        formattedRows.push(formattedRow);
-      });
-      const req = {
-        status: 0,
-        registry: {
-          id: parseInt(this.$route.params.id),
-        },
-        parameters: formattedRows.map(field => ({
-          parameter: {
-            id: this.columns[0].id,
-            label_kz: field.label_kz,
-            label_ru: field.label_ru,
-            label_en: field.label_en,
-            type: 1,
-            registry_id: parseInt(this.$route.params.id),
-          },
-          value_en: field.value_en,
-          value_kz:  field.value_kz,
-          value_ru: field.value_ru,
-        })),
-      };
-      this.registryService.createApplication(req).then((res) => {
+      console.log(data);
 
-      })
+      const formattedData = data.map(item => ({
+        "Наименование": item["Наименование"],
+        "Тип объекта": item["Тип объекта"],
+        "Местоположение": item["Местоположение"],
+        "Вместимость": item["Вместимость"],
+        "Описание": item["Описание"],
+        "Площадь": item["Площадь"],
+      }));
+
+      const req = {
+        data: formattedData,
+      }
+
+      this.registryService.importRegistry(req)
+          .then(res => {
+            console.log("Импорт успешен", res);
+          })
+          .catch(error => {
+            console.error("Ошибка импорта", error);
+          });
     },
     registryInformation() {
       this.$router.push({ name: 'Registry', params: { id: res.data } })

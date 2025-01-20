@@ -40,4 +40,7 @@ export default class RegistryService {
   getReservation(data){
     return api.post(`/registry/reservation`, data, { headers: getHeader() });
   }
+  importRegistry(data) {
+    return api.post(`/registry/import`, data, { headers: getHeader() });
+  }
 }

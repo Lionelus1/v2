@@ -258,7 +258,9 @@ const addNewAttribute = () => {
   loading.value = true;
   registryService.createRegistryParameter(reqFormFields.value[0]).then((res) => {
     loading.value = false;
+    reqFormFields.value = []
   }).catch((err) => {
+
     console.log(err);
   })
 };
@@ -454,7 +456,7 @@ const save = () => {
     })),
     reservation: [
       {
-        id: 146,
+        id: null,
         application: {
           id: 5,
           registry: {
@@ -468,7 +470,7 @@ const save = () => {
         created_by: 67894,
         status: 2,
         created_date: "2025-01-14T10:00:00Z",
-        uuid: "7F4A4838D19711EFBBBD0242AC120003"
+        uuid: "7F4A4838D19711EFBBBD0242AC12000"
       }
     ],
   };
