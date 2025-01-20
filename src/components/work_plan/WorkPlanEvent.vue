@@ -953,9 +953,11 @@ export default {
           this.getRelatedFiles()
           this.getWorkPlanApprovalUsers(this.work_plan_id)
 
+
+
           for (const param of this.planDoc.params) {
             if (param.name === "projectContractDate") { //Дата договора
-              param.value = new Date(param.value);
+              param.value = this.formatDateMoment(param.value, false);
             }
             else if (param.name === "projectYears") { //Период реализации
               if (param.value) {
@@ -1488,7 +1490,7 @@ export default {
           { name: "projectContractNum", description: "common.projectContractNum", multi: conNum },
           { name: "projectContractDate", description: "common.projectContractDate", multi: conDate },
           { name: "projectClient", description: "common.projectClient", multi: {"kz": "", "ru": "", "en": ""} },
-          { name: "projectFundingType", description: "common.projectFundingType" },
+          { name: "projectFundingType", description: "common.projectFundingType", multi: {"kz": "", "ru": "", "en": ""} },
           { name: "projectYears", description: "common.projectYears" },
           { name: "projectRes", description: "common.projectRes", multi:
                 [

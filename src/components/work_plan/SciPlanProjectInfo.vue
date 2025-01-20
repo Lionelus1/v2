@@ -35,7 +35,17 @@
                 </div>
                 <!-- Project Type -->
                 <div class="field" v-else-if="s.data.name === 'projectTypeOfResearch'">
-                  <textarea id="en" v-model="s.data.value" class="resizable-textarea"></textarea>
+                  <Dropdown v-model="s.data.value" :options="fundingTypes" optionLabel="nameKz" class="p-column-filter" :showClear="true">
+                    <template #value="slotProps">
+                      <span v-if="slotProps.value">
+                        {{
+                          $i18n.locale === 'kz' ? slotProps.value.nameKz :
+                              $i18n.locale === 'ru' ? slotProps.value.nameRu :
+                                  slotProps.value.nameEn
+                        }}
+                      </span>
+                    </template>
+                  </Dropdown>
                 </div>
                 <!-- Priority Area -->
                 <div class="field" v-else-if="s.data.name === 'nameOfPriorityArea'">
@@ -88,6 +98,7 @@
                 <!-- Funding Source -->
                 <div class="field" v-else-if="s.data.name === 'projectFundingType'">
                   <textarea id="en" v-model="s.data.value" class="resizable-textarea"></textarea>
+
                 </div>
                 <!-- Implementation Period -->
                 <div v-else-if="s.data.name === 'projectYears'">
@@ -193,6 +204,22 @@ export default {
     filteredParamsFundingInfo: Array,
     filteredParamsResultInfo: Array,
     loadingProject: Boolean,
+  },
+  data(){
+    return {
+      fundingTypes: [
+        {
+          nameKz: 'Іргелі',
+          nameRu: 'Фундаментальное',
+          nameEn: 'Fundamental',
+        },
+        {
+          nameKz: 'Қолданбалы',
+          nameRu: 'Прикладное',
+          nameEn: 'Applied',
+        }
+      ],
+    }
   },
   methods: {
     closeDialog() {
