@@ -2,7 +2,7 @@
   <div class="col-12">
     <TitleBlock :title="$t('workPlan.analyzer.analysisResult')" :show-back-button="true"/>
     <ProgressBar v-if="loading" class="mb-3" mode="indeterminate" style="height: .5em"/>
-    <TabView @tab-change="onTabChange">
+    <TabView>
       <TabPanel :header="$t('workPlan.analyzer.strategicDirectionTab')">
         <DataTable :value="computedStrategicAnalysisData"
                    tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;">
@@ -46,7 +46,7 @@
         <br/>
         <br/>
         <div class="card" v-if="strategicDirectionData?.length > 0">
-          <Chart type="line" :data="chartData" :options="chartOptions" class="h-30rem" />
+          <Chart ref="chartRef" type="line" :data="chartData" :options="chartOptions" class="h-30rem" />
         </div>
       </TabPanel>
       <TabPanel :header="$t('workPlan.analyzer.structuralDivisionTab')">
@@ -71,6 +71,7 @@
             <template #end>
               <Button :label="$t('workPlan.analyzer.filterTitle')" class="mr-2"  @click="getDepartmentById(selectedDepartment)"></Button>
               <Button icon="pi pi-trash"  severity="secondary" @click="clearFilter()"/>
+              <Button icon="pi pi-file-pdf" class="ml-2"  severity="success" @click="downloadOperPlanAnalysisFile()"/>
             </template>
 
           </Toolbar>
@@ -121,10 +122,10 @@
         <br/>
         <br/>
         <div class="card" v-if="isGeneralStructuralDivisionChart && tableAnalysisData?.length > 0 && selectedQuarter === null">
-          <Chart type="bar" :data="chartDataDepartment" :options="chartOptionsDepartment" class="h-30rem"  />
+          <Chart ref="chartDepartmentRef" type="bar" :data="chartDataDepartment" :options="chartOptionsDepartment" class="h-30rem"  />
         </div>
         <div class="card flex justify-content-center" v-if="isFiltered">
-          <Chart type="doughnut" :data="chartDataFilteredDepartment" :options="chartOptionsFilteredDepartment" class="w-full md:w-30rem" />
+          <Chart ref="chartSingleDepartmentRef" type="doughnut" :data="chartDataFilteredDepartment" :options="chartOptionsFilteredDepartment" class="w-full md:w-30rem" />
         </div>
       </TabPanel>
     </TabView>
@@ -134,7 +135,7 @@
 </template>
 
 <script setup>
-import {ref, computed, onMounted, watch, reactive} from 'vue';
+import {ref, computed, onMounted, watch, reactive, nextTick} from 'vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from 'vuex';
 import {useToast} from 'primevue/usetoast';
@@ -143,6 +144,8 @@ import {WorkPlanService} from "@/service/work.plan.service";
 import {FilterMatchMode} from 'primevue/api';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import * as jsPDF from "jspdf";
+import {segoe} from '@/assets/layout/fonts/SegoeUI-Light-normal'
 
 ChartJS.register(...registerables, ChartDataLabels);
 
@@ -464,11 +467,11 @@ const clearFilter = () =>{
   getEventsTree();
 }
 
-const onTabChange = (event) => {
-  if (event.index === 0) {
-    //clearFilter()
-  }
-}
+// const onTabChange = (event) => {
+//   if (event.index === 0) {
+//     //clearFilter()
+//   }
+// }
 
 const getEventDescendants = async (parentId) => {
   loading.value = true;
@@ -780,6 +783,338 @@ const computedSingleDepartmentAnalysisData = computed(() =>
       };
     })
 );
+
+//PDF Generator
+const chartRef = ref(null);
+const chartDepartmentRef = ref(null);
+const chartSingleDepartmentRef = ref(null);
+
+const getLocalizedTitle = (titles, defvalue) => {
+  return titles[locale.value] || defvalue;
+};
+
+const getReportTitle = () =>
+  getLocalizedTitle(
+    {
+      kz: "Стратегиялық бағыттар бойынша операциялық жоспардың орындалу нәтижелері",
+      ru: "Результаты выполнения операционного плана по стратегическим направлениям",
+      en: "Results of the operational plan implementation by strategic directions",
+    },
+    "Стратегиялық бағыттар бойынша операциялық жоспардың орындалу нәтижелері"
+  );
+
+const getReportDepartmentTitle = () =>
+  getLocalizedTitle(
+    {
+      kz: "Департаменттер мен басқа құрылымдық бөлімшелердің операциялық жоспарды орындау нәтижелері",
+      ru: "Результаты выполнения операционного плана департаментами и другими структурными подразделениями",
+      en: "Results of the operational plan implementation by departments and other structural units",
+    },
+    "Департаменттер мен басқа құрылымдық бөлімшелердің операциялық жоспарды орындау нәтижелері"
+  );
+
+const downloadOperPlanAnalysisFile = () => {
+  chartData.value = setChartData();
+  chartOptions.value = setChartOptions();
+  chartDataDepartment.value = setChartDataDepartments();
+  chartOptionsDepartment.value = setChartOptions();
+  try {
+    const pdf = new jsPDF('landscape', 'mm', 'a4');
+    pdf.addFileToVFS("SegoeUI-Light.ttf", segoe);
+    pdf.addFont("SegoeUI-Light.ttf", "Segoe UI Light", "normal");
+    pdf.setFont("Segoe UI Light");
+   
+    let reportTitle = "";
+
+    switch (locale.value) {
+      case 'kz':
+        reportTitle = "Стратегиялық бағыттар бойынша операциялық жоспардың орындалу нәтижелері";
+        break;
+      case 'ru':
+        reportTitle = "Результаты выполнения операционного плана по стратегическим направлениям";
+        break;
+      case 'en':
+        reportTitle = "Results of the operational plan implementation by strategic directions";
+        break;
+      default:
+        reportTitle = "Стратегиялық бағыттар бойынша операциялық жоспардың орындалу нәтижелері";
+    }
+
+    pdf.setFontSize(18);
+    pdf.text(getReportTitle(), 40, 10);
+    pdf.setFontSize(12);
+    const headers = [
+      { title: t("workPlan.analyzer.strategicDirectionTab"), width: 75 },
+      { title: t('workPlan.analyzer.totalLevelNumber'), width: 60 },
+      { title: t('workPlan.analyzer.done'), width: 30 },
+      { title: t('workPlan.analyzer.notDone'), width: 35 },
+      { title: t('workPlan.analyzer.executionLevel'), width: 55 },
+    ];
+    const tableData = strategicDirectionData.value.map((item) => {
+    const formattedStrategicDirectionName = item.direction.event_name
+    .split(" ")
+    .reduce((acc, word, index) => {
+      if (index % 2 === 0 && index > 0) acc.push("\n");
+      acc.push(word);
+      return acc;
+    }, [])
+    .join(" ");
+    const strategicDirectionName =  formattedStrategicDirectionName || "-";
+    const totalLabel =
+      item.result_status.created.length +
+      item.result_status.completed.length +
+      item.result_status.notcompleted.length;
+    const completedLabel = item.result_status.completed.length;
+    const notCompletedLabel = item.result_status.notcompleted.length;
+    const completedPercentage = ((completedLabel * 100) / totalLabel).toFixed(2);
+
+    return [
+        strategicDirectionName,
+        totalLabel.toString(),
+        completedLabel.toString(),
+        notCompletedLabel.toString(),
+        `${completedPercentage}%`,
+      ];
+    });
+
+    const startX = 20;
+    const startY = 20;
+    const rowHeight = 10;
+
+    addTableToPdf(pdf, headers, tableData, startX, startY, rowHeight);
+
+    const strategicImage = convertStrategicDirectionChartToImage();
+    const departmentImage = convertDepartmentChartToImage();
+
+    if (strategicImage) {
+      pdf.addPage("a4", "landscape");
+      addImageToPdf(pdf, strategicImage, 10, 10, 270, 130);
+    }
+    pdf.addPage("a4", "p");
+    pdf.setFontSize(14);
+    const formattedReportDepartmentTitle = getReportDepartmentTitle()
+    .split(" ")
+    .reduce((acc, word, index) => {
+      if ((locale.value === "kz" || locale.value === "ru") && index % 5 === 0 && index > 0) acc.push("\n");
+      if (locale.value === "en" && index % 7 === 0 && index > 0) acc.push("\n");
+      acc.push(word);
+      return acc;
+    }, [])
+    .join(" ");
+    pdf.text(formattedReportDepartmentTitle, 50, 15)
+    pdf.setFontSize(12);
+
+    const departmentNameColumn = t('workPlan.summary')
+    .split(" ")
+    .reduce((acc, word, index) => {
+      if (index % 2 === 0 && index > 0) acc.push("\n");
+      acc.push(word);
+      return acc;
+    }, [])
+    .join(" ");
+
+    const departmentIndicator = t('workPlan.analyzer.totalLevelNumber')
+    .split(" ")
+    .reduce((acc, word, index) => {
+      if ((locale.value === "kz" || locale.value === "ru") && index % 1 === 0 && index > 0) acc.push("\n");
+      if (locale.value === "en" && index % 2 === 0 && index > 0) acc.push("\n");
+      acc.push(word);
+      return acc;
+    }, [])
+    .join(" ");
+
+    const departmentExecutionLevel = t('workPlan.analyzer.executionLevel')
+    .split(" ")
+    .reduce((acc, word, index) => {
+      if ((locale.value === "kz" || locale.value === "ru") && index % 1 === 0 && index > 0) acc.push("\n");
+      if (locale.value === "en" && index % 2 === 0 && index > 0) acc.push("\n");
+      acc.push(word);
+      return acc;
+    }, [])
+    .join(" ");
+
+    const departmentHeaders = [
+      { title: departmentNameColumn, width: 62 },
+      { title: departmentIndicator, width: 30 },
+      { title: t('workPlan.analyzer.done'), width: 28 },
+      { title: t('workPlan.analyzer.notDone'), width: 33 },
+      { title: departmentExecutionLevel, width: 33 },
+    ];
+    const tableDataDepartment = tableAnalysisData.value.map((item) => {
+      const formattedDepartmentName = item.department.name
+      .split(" ")
+      .reduce((acc, word, index) => {
+        if (index % 2 === 0 && index > 0) acc.push("\n");
+        acc.push(word);
+        return acc;
+      }, [])
+      .join(" ");
+      const departmentName =  formattedDepartmentName || "-";
+      const totalLabel =
+        item.result_status.created.length +
+        item.result_status.completed.length +
+        item.result_status.notcompleted.length;
+      const completedLabel = item.result_status.completed.length;
+      const notCompletedLabel = item.result_status.notcompleted.length;
+      const completedPercentage = ((completedLabel * 100) / totalLabel).toFixed(2);
+
+      return [
+          departmentName,
+          totalLabel.toString(),
+          completedLabel.toString(),
+          notCompletedLabel.toString(),
+          `${completedPercentage}%`,
+        ];
+    });
+
+    const startDX = 10;
+    const startDY = 30;
+    const rowDHeight = 10;
+
+    addTableToPdf(pdf, departmentHeaders, tableDataDepartment, startDX, startDY, rowDHeight);
+
+
+    if (departmentImage) {
+      pdf.addPage("a4", "landscape");
+      addImageToPdf(pdf, departmentImage, 10, 20, 270, 120);
+    }
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    const fileName = `operational-plan-analysis-${year}-${month}-${day}.pdf`;
+
+    pdf.save(fileName);
+  } catch (error) {
+    toast.add({
+        severity: 'warn',
+        summary: t('workPlan.analyzer.departmentNotFound'),
+        life: 3000,
+      });
+  }
+};
+
+const addTableToPdf = (pdf, headers, data, startX, startY, baseRowHeight) => {
+  const totalWidth = headers.reduce((sum, header) => sum + header.width, 0);
+  let currentX = startX;
+  let currentY = startY;
+  const pageHeight = 297;
+  const marginBottom = 0;
+  const rowSpacing = 0;
+  const isOverflowing = (yPosition, heightRequired) => yPosition + heightRequired > pageHeight - marginBottom;
+  let skippedRows = [];
+  const drawHeaders = () => {
+    currentX = startX;
+    pdf.setFont("Segoe UI Light");
+    pdf.setFontSize(12);
+    headers.forEach((header) => {
+      pdf.rect(currentX, currentY-5, header.width, baseRowHeight);
+      const lines = pdf.splitTextToSize(header.title, header.width - 4); 
+      const textHeight = lines.length * pdf.getTextDimensions(lines[0]).h;
+      
+      lines.forEach((line, index) => {
+        pdf.text(line, currentX + 2, currentY + index * pdf.getTextDimensions(line).h);
+      });
+
+      currentX += header.width;
+    });
+  };
+
+  drawHeaders();
+
+  currentY += baseRowHeight-5;
+  data.forEach((row, rowIndex) => {
+    currentX = startX;
+    let maxRowHeight = baseRowHeight;
+
+    const cellHeights = row.map((cell, colIndex) => {
+      const columnWidth = headers[colIndex].width;
+      const lines = pdf.splitTextToSize(cell.toString(), columnWidth - 4);
+      return lines.length * 5 + 4;
+    });
+    maxRowHeight = Math.max(...cellHeights);
+    if (isOverflowing(currentY, maxRowHeight)) {
+      skippedRows.push(row);
+
+      pdf.addPage("a4", "p");
+      currentY = 20;
+      drawHeaders();
+      currentY += baseRowHeight - 5;
+    }
+
+    if (skippedRows.includes(row)) {
+      return;
+    }
+    row.forEach((cell, colIndex) => {
+      const columnWidth = headers[colIndex].width;
+      const lines = pdf.splitTextToSize(cell.toString(), columnWidth - 4);
+
+      pdf.rect(currentX, currentY, columnWidth, maxRowHeight);
+      pdf.setFont("Segoe UI Light");
+
+      pdf.text(lines, currentX + 2, currentY + 5);
+
+      currentX += columnWidth;
+    });
+    currentY += maxRowHeight + rowSpacing;
+  });
+  skippedRows.forEach((row) => {
+    currentX = startX;
+    let maxRowHeight = baseRowHeight;
+    const cellHeights = row.map((cell, colIndex) => {
+      const columnWidth = headers[colIndex].width;
+      const lines = pdf.splitTextToSize(cell.toString(), columnWidth - 4);
+      return lines.length * 5 + 4;
+    });
+
+    maxRowHeight = Math.max(...cellHeights);
+    row.forEach((cell, colIndex) => {
+      const columnWidth = headers[colIndex].width;
+      const lines = pdf.splitTextToSize(cell.toString(), columnWidth - 4);
+      pdf.rect(currentX, currentY, columnWidth, maxRowHeight);
+      pdf.setFont("Segoe UI Light");
+      pdf.text(lines, currentX + 2, currentY + 5);
+      currentX += columnWidth;
+    });
+    currentY += maxRowHeight + rowSpacing; 
+  });
+  pdf.line(startX, currentY, startX + totalWidth, currentY);
+};
+
+const convertStrategicDirectionChartToImage = () => {
+  const chartCanvas = chartRef.value?.$el.querySelector("canvas");
+  if (!chartCanvas) {
+    return null; 
+  }
+  const imgData = chartCanvas.toDataURL("image/png", 3.0);
+  if (imgData.startsWith("data:image/png;base64,")) {
+    return imgData;
+  } else {
+    return null; 
+  }
+};
+
+const convertDepartmentChartToImage = () => {
+  const chartCanvas = chartDepartmentRef.value?.$el.querySelector("canvas");
+  if (!chartCanvas) {
+    return null; 
+  }
+  const imgData = chartCanvas.toDataURL("image/png", 3.0);
+  if (imgData.startsWith("data:image/png;base64,")) {
+    return imgData;
+  } else {
+    return null; 
+  }
+};
+
+const addImageToPdf = (pdf, imageData, x, y, width, height) => {
+  if (imageData !== null && imageData) {
+    pdf.addImage(imageData, "PNG", x, y, width, height);
+  }
+};
+
+//PDF Generator end
+
 
 </script>
 
