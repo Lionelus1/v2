@@ -941,7 +941,14 @@ const downloadOperPlanAnalysisFile = () => {
       { title: departmentExecutionLevel, width: 33 },
     ];
     const tableDataDepartment = tableAnalysisData.value.map((item) => {
-      const formattedDepartmentName = item.department.name
+      const localeMap = {
+        kz: 'name_kz',
+        ru: 'name_ru',
+        en: 'name_en'
+      };
+
+      const departmentNameByLocale = item.department[localeMap[locale.value]] || item.department.name;
+      const formattedDepartmentName = departmentNameByLocale
       .split(" ")
       .reduce((acc, word, index) => {
         if (index % 2 === 0 && index > 0) acc.push("\n");
