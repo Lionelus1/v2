@@ -24,8 +24,10 @@
             </thead>
             <tbody>
             <tr v-for="(param, index) in extractedDataNot4" :key="index">
-              <td>{{ param.label_ru }}</td>
-              <td>{{ param.value_ru }}</td>
+              <td>{{  $i18n.locale === "kz" ? param.label_kz : $i18n.locale === "ru" ? param.label_ru :
+                  param.label_en  }}</td>
+              <td>{{ $i18n.locale === "kz" ? param.value_kz : $i18n.locale === "ru" ? param.value_ru :
+                  param.value_en }}</td>
             </tr>
             </tbody>
           </table>
