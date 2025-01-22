@@ -899,8 +899,13 @@ const downloadOperPlanAnalysisFile = () => {
       item.result_status.notcompleted.length;
     const completedLabel = item.result_status.completed.length;
     const notCompletedLabel = item.result_status.notcompleted.length;
-    const completedPercentage = ((completedLabel * 100) / totalLabel).toFixed(2);
-
+    let completedPercentage = "0.00";
+    if (totalLabel > 0) {
+      const diff = (completedLabel * 100) / totalLabel;
+      if (!Number.isNaN(diff)) {
+        completedPercentage = diff.toFixed(2);
+      }
+    }
     return [
         strategicDirectionName,
         totalLabel.toString(),
@@ -996,7 +1001,13 @@ const downloadOperPlanAnalysisFile = () => {
         item.result_status.notcompleted.length;
       const completedLabel = item.result_status.completed.length;
       const notCompletedLabel = item.result_status.notcompleted.length;
-      const completedPercentage = ((completedLabel * 100) / totalLabel).toFixed(2);
+      let completedPercentage = "0.00";
+      if (totalLabel > 0) {
+        const diff = (completedLabel * 100) / totalLabel;
+        if (!Number.isNaN(diff)) {
+          completedPercentage = diff.toFixed(2);
+        }
+      }
 
       return [
           departmentName,
