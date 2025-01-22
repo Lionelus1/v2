@@ -36,8 +36,8 @@
         <!-- Изображение -->
         <div class="image-section">
           <div v-for="(param, index) in extractedDataType4" :key="index">
-            <h3 v-if="param.value_ru" style="margin-top: 20px">{{ t('registry.img') }}</h3>
-            <img :src="'http://smart.enu.kz:8090/serve?path=' + param.value_ru" alt="Изображение объекта" />
+            <h3 style="margin-top: 20px">{{ t('registry.img') }}</h3>
+            <img :src="'http://testsmart.enu.kz/api/serve?path=' + param.value_ru" alt="Изображение объекта" />
           </div>
         </div>
       </div>
