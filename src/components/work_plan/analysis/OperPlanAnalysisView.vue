@@ -71,7 +71,7 @@
             <template #end>
               <Button :label="$t('workPlan.analyzer.filterTitle')" class="mr-2"  @click="getDepartmentById(selectedDepartment)"></Button>
               <Button icon="pi pi-trash"  severity="secondary" @click="clearFilter()"/>
-              <Button icon="pi pi-file-pdf" class="ml-2"  severity="success" @click="downloadOperPlanAnalysisFile()"/>
+              <Button icon="pi pi-file-pdf" class="ml-2" :disabled="!isPdfDownloadButtonActive" severity="success" @click="downloadOperPlanAnalysisFile()"/>
             </template>
 
           </Toolbar>
@@ -85,6 +85,7 @@
             <template #body="{data}">
               <span v-if="$i18n.locale === 'kz' && data?.department?.name_kz">{{ data.department.name_kz }}</span>
               <span v-else-if="$i18n.locale === 'ru' && data?.department?.name_ru">{{ data.department.name_ru }}</span>
+              <span v-else-if="$i18n.locale === 'en' && data?.department?.name_en">{{ data.department.name_en }}</span>
               <span v-else-if="data?.department?.name">{{ data.department.name }}</span>
               <span v-else>{{"-"}}</span>
             </template>
@@ -215,6 +216,7 @@ const isCreator = ref(false);
 const isGeneralStructuralDivisionChart = ref(true)
 const isFilteredStructuralDivisionChart = ref(false)
 const isFiltered = ref(false)
+const isPdfDownloadButtonActive = ref(false)
 
 const lazyParams = reactive({
   page: 0,
@@ -508,6 +510,7 @@ const getDepartmentById = async (departmentID) => {
         life: 3000,
       });
       loading.value = false;
+      isPdfDownloadButtonActive.value = true
       }
     } else {
       toast.add({
@@ -606,6 +609,7 @@ async function getEventsTree(parent, isClickEvent) {
             e.result_short = `${e.result.substring(0, 100)}...`;
           }
         }
+        
       }
     } else {
       parent.children = res.data.items;
@@ -624,6 +628,7 @@ async function getEventsTree(parent, isClickEvent) {
     }
 
     loading.value = false;
+    isPdfDownloadButtonActive.value = true
   } catch (error) {
     if (error.response && error.response.status === 401) {
       store.dispatch("logOut");
