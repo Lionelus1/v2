@@ -439,7 +439,6 @@ const createTechSec = () => {
 
   docService.saveDocumentV2(tbDoc.value).then(res => {
     tbDoc.value = res.data
-    toast.add({severity: "success", summary: t('common.success'), life: 3000});
     tbLoading.value = false;
   }).catch(error => {
     toast.add({ severity: 'error', summary: error.message, life: 3000 });
@@ -464,7 +463,6 @@ const getContrData = () => {
           contrData.value = res.data.newParams.contragent.value.data.chief
         }
       }
-      toast.add({severity: "success", summary: t('common.success'), life: 3000});
     }else{
       toast.add({ severity: 'error', summary: 'getSignInfo - NO RES DATA', life: 3000 });
     }
@@ -650,22 +648,6 @@ const downloadDiaryRep = async () => {
     // Сообщаем об успешной операции
     toast.add({ severity: "success", summary: t('common.success'), life: 3000 });
     loading.value = false;
-    // const zip = new JSZip();
-    //
-    // // Fetch the remote file
-    // const fetchFile = async (url) => {
-    //   const response = await fetch(url);
-    //   if (!response.ok) throw new Error('Failed to fetch the file');
-    //   return await response.blob();  // Or use response.arrayBuffer() if needed
-    // };
-    //
-    // // Add files to the zip
-    // const pdfBlob = await fetchFile('http://smart.enu.kz:8090/serve?path=work_plan/report/42613653-59a3-4d3b-8ee3-783ca65795f0.pdf');
-    // zip.file('report.pdf', pdfBlob);  // Add the fetched PDF as 'report.pdf' in the zip
-    //
-    // // Generate the zip and trigger the download
-    // const content = await zip.generateAsync({ type: "blob" });
-    // saveAs(content, "resumes.zip");
   } catch (error) {
     loading.value = false;
     toast.add({ severity: 'error', summary: error.message, life: 3000 });
@@ -839,10 +821,15 @@ const openModal = async () => {
 
 
   if(active.value === 0) {
-    if(contrData.value){
-      approval_users.value[0].users.push(contrData.value);
+    //Проверяет, заполнены ли все результаты этим студентом для задач плана
+    if(dReports.value[0].is_completed){
+      if(contrData.value){
+        approval_users.value[0].users.push(contrData.value);
+      }
+      showModal0.value = true;
+    } else {
+      toast.add({ severity: 'info', summary: t('common.checkTaskCompletion'), life: 3000 });
     }
-    showModal0.value = true;
   }
   else if(active.value === 1) {
     if(contrData.value){

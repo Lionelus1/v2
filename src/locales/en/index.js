@@ -1,5 +1,6 @@
 export default {
     common: {
+        checkTaskCompletion: "Before submitting for approval, all tasks must be completed with results",
         accessDenied: "Access Denied",
         agreement: "By logging in to the website, you confirm your consent to the collection and processing of your personal data, and you also accept responsibility for all actions performed by you on the website",
         tasks: "Tasks",
