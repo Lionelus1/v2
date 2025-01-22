@@ -110,6 +110,6 @@ export class DissertationService {
     }
 
     updateDissertation(params) {
-        return api.post(`/dissertation/updateDissertation`, params, { header: getHeader() })
+        return api.post(`/dissertation/updateDissertation`, params, { headers: getHeader() })
     }
 }
