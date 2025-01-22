@@ -37,7 +37,7 @@
           </Column>
           <Column field="eventUnit" :header="$t('workPlan.analyzer.executionLevel')"
                   headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
-                  style="border:1px solid #ddd;">
+                  sortable style="border:1px solid #ddd;">
             <template #body="{ data }">
               {{ Number(data.executionLevel).toFixed(2) }}%
             </template>
@@ -76,10 +76,10 @@
 
           </Toolbar>
         </div>
-        <DataTable :value="isFiltered ? computedSingleDepartmentAnalysisData : computedAnalysisData" removableSort
-                   tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;">
+        <DataTable :value="isFiltered ? computedSingleDepartmentAnalysisData : computedAnalysisData"
+                   tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;" @sort="onSort">
           <template #empty> {{ $t('common.noData') }}</template>
-          <Column sortable field="eventSummaryDepartment" :header="$t('workPlan.summary')"
+          <Column field="eventSummaryDepartment" :header="$t('workPlan.summary')"
                   headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
                   style="border:1px solid #ddd;">
             <template #body="{data}">
@@ -111,9 +111,9 @@
               {{ data.totalNotCompletedItems }}
             </template>
           </Column>
-          <Column sortable field="execution" :header="$t('workPlan.analyzer.executionLevel')"
+          <Column field="executionLevel" :header="$t('workPlan.analyzer.executionLevel')"
                   headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
-                  style="border:1px solid #ddd;">
+                  style="border:1px solid #ddd;" sortable>
             <template #body="{ data }">
               {{ Number(data.executionLevel).toFixed(2) }}%
             </template>
@@ -745,27 +745,48 @@ const computedStrategicAnalysisData = computed(() =>
     })
 );
 
-const computedAnalysisData = computed(() =>
-    tableAnalysisData.value.map((entry) => {
-      const totalStatuses =
-          entry.result_status.completed.length +
-          entry.result_status.notcompleted.length +
-          entry.result_status.partially_completed.length +
-          entry.result_status.created.length;
-      const totalCompletedStatuses = entry.result_status.completed.length;
-      const totalNotCompletedStatuses = entry.result_status.notcompleted.length;
 
-      return {
-        ...entry,
-        totalItems: totalStatuses,
-        totalCompletedItems: totalCompletedStatuses,
-        totalNotCompletedItems: totalNotCompletedStatuses,
-        executionLevel: totalStatuses
-            ? (entry.result_status.completed.length / totalStatuses) * 100
-            : 0,
-      };
-    })
-);
+const sortField = ref('executionLevel');
+const isAscending = ref(true);
+
+const computedAnalysisData = computed(() => {
+  const sortedData = [...tableAnalysisData.value].map((entry) => {
+    const totalStatuses =
+      entry.result_status.completed.length +
+      entry.result_status.notcompleted.length +
+      entry.result_status.partially_completed.length +
+      entry.result_status.created.length;
+    const totalCompletedStatuses = entry.result_status.completed.length;
+    const totalNotCompletedStatuses = entry.result_status.notcompleted.length;
+
+    return {
+      ...entry,
+      totalItems: totalStatuses,
+      totalCompletedItems: totalCompletedStatuses,
+      totalNotCompletedItems: totalNotCompletedStatuses,
+      executionLevel: totalStatuses
+        ? (entry.result_status.completed.length / totalStatuses) * 100
+        : 0,
+    };
+  });
+
+  return sortedData.sort((a, b) => 
+    isAscending.value
+      ? a[sortField.value] - b[sortField.value]
+      : b[sortField.value] - a[sortField.value]
+  );
+});
+
+const onSort = (field) => {
+  console.log(field.sortField);
+  
+  if (field.sortField  === sortField.value) {
+    isAscending.value = !isAscending.value;
+  } else {
+    sortField.value = field;
+    isAscending.value = true;
+  }
+};
 
 const computedSingleDepartmentAnalysisData = computed(() =>
     analysisDataOfSingeDepartment.value.map((entry) => {
