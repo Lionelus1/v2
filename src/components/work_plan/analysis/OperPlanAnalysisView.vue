@@ -79,7 +79,7 @@
         <DataTable :value="isFiltered ? computedSingleDepartmentAnalysisData : computedAnalysisData"
                    tableStyle="min-width: 50rem; border:1px solid #ddd;border-radius:5px; border-collapse: collapse;" @sort="onSort">
           <template #empty> {{ $t('common.noData') }}</template>
-          <Column field="eventSummaryDepartment" :header="$t('workPlan.summary')"
+          <Column sortable field="eventSummaryDepartment" :header="$t('workPlan.summary')"
                   headerStyle="background-color: #f4f4f4; color: black; font-weight: bold;"
                   style="border:1px solid #ddd;">
             <template #body="{data}">
@@ -745,7 +745,6 @@ const computedStrategicAnalysisData = computed(() =>
     })
 );
 
-
 const sortField = ref('executionLevel');
 const isAscending = ref(true);
 
@@ -770,18 +769,26 @@ const computedAnalysisData = computed(() => {
     };
   });
 
-  return sortedData.sort((a, b) => 
-    isAscending.value
-      ? a[sortField.value] - b[sortField.value]
-      : b[sortField.value] - a[sortField.value]
-  );
+  return sortedData.sort((a, b) => {
+    if (sortField.value === 'eventSummaryDepartment') {
+      const deptA = a.department[`name_${locale.value}`] || '';
+      const deptB = b.department[`name_${locale.value}`] || '';
+      return isAscending.value
+        ? deptA.localeCompare(deptB)
+        : deptB.localeCompare(deptA);
+    } else {
+      return isAscending.value
+        ? a[sortField.value] - b[sortField.value]
+        : b[sortField.value] - a[sortField.value];
+    }
+  });
 });
 
 const onSort = (field) => {
-  console.log(field.sortField);
-  
   if (field.sortField  === sortField.value) {
     isAscending.value = !isAscending.value;
+  }else if (field.sortField  === "eventSummaryDepartment") {
+    sortField.value = "eventSummaryDepartment"
   } else {
     sortField.value = field;
     isAscending.value = true;
