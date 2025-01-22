@@ -58,6 +58,7 @@
 		"@splidejs/vue-splide": "^0.6.12",
 		"@tinymce/tinymce-vue": "^4.0.7",
 		"@vue/babel-preset-app": "^5.0.8",
+		"chartjs-plugin-datalabels": "^2.2.0",
 		"crypto-browserify": "^3.12.0",
 		"crypto-js": "^4.2.0",
 		"generate-password": "^1.7.1",

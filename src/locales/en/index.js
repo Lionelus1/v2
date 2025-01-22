@@ -123,6 +123,7 @@ export default {
         comment: "Comment",
         contacts: "Contacts",
         filter: "Filter",
+        analysis: "Analysis",
         yes: "Yes",
         no: "No",
         select: "Select",
@@ -1585,7 +1586,26 @@ export default {
         semester: "Semester",
         doctorsThesisInfo: "Information about the doctoral dissertation",
         downloadProtocol: "Download protocol",
-        uploadProtocol: "Upload protocol"
+        uploadProtocol: "Upload protocol",
+        analyzer: {
+            createAnalysis: "Analyze",
+            analyzerButtonTitle: "Analyze data based on selected filters",
+            eventStatus: "By Status",
+            universityAnalysis: "General analysis of the university",
+            analysisResult: "Analysis",
+            executionLevel: "Percentage of completion",
+            executionStatus: "Execution status",
+            nonExecutionRisk: "Failure risk",
+            filterTitle: "Apply a filter",
+            strategicDirectionTab: "Strategic directions",
+            structuralDivisionTab: "Structural units",
+            totalLevelNumber: "Number of indicators",
+            done: "Done",
+            notDone: "Not done",
+            strategicDirectionExecutionLevel: "Percentage of completion of strategic directions",
+            structuralDivisionExecutionLevel: "Percentage of completion of structural units",
+            selectQuarter: "Select quarter"
+        }
     },
     queue: {
         title: "Queue",

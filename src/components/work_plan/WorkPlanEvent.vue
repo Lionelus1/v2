@@ -106,7 +106,6 @@
               <p v-for="item in node.user" :key="item.id">{{ item.user.fullName }}</p>
             </div>
             <!-- <Button v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" icon="pi pi-pencil" severity="info" text rounded @click="openRespPersonDialog(node)" /> -->
-
           </template>
         </Column>
         <Column field="supporting_docs" v-if="plan && isOperPlan" :header="$t('common.suppDocs')">
@@ -377,6 +376,7 @@ import ToolbarMenu from '@/components/ToolbarMenu.vue';
 import DoctorsMastersTable from './table/DoctorsMastersTable.vue';
 import RolesByName from "@/components/smartenu/RolesByName.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import {ContragentService} from "@/service/contragent.service";
 
 export default {
   name: 'WorkPlanEvent',
@@ -457,6 +457,7 @@ export default {
         status: {value: null, matchMode: FilterMatchMode.EQUALS},
         author: {value: null, matchMode: FilterMatchMode.EQUALS},
       },
+      selectedAnalyzeStatuses: [],
       statuses: [
         {
           id: 1,
@@ -534,6 +535,7 @@ export default {
       oldPlan: false,
       documentFiles: null,
       service: new DocService(),
+      contragentService: new ContragentService(),
       DocState: DocState,
       filtered: false,
       stages: [],
@@ -550,15 +552,25 @@ export default {
       editRespUser: false,
       additionalInfo: null,
       additinalInfoFilled: true,
-    };
+      departments: [],
+      loginedUser: JSON.parse(localStorage.getItem("loginedUser")),
+      selectedDepartment: this.loginedUser?.mainPosition?.department?.id || null,
+      analyzerModalView: false,
+      chartData: null,
+      chartOptions: null
+    }
   },
   created() {
     this.isAdmin = this.findRole(null, 'main_administrator');
     this.getPlan();
     this.getEventsTree(null);
-    this.getWorkPlanApprovalUsers(this.work_plan_id);
+    this.getWorkPlanApprovalUsers(this.work_plan_id)
+    this.getDepartments();
+
   },
   mounted() {
+    this.chartData = this.setChartData();
+    this.chartOptions = this.setChartOptions();
     this.emitter.on('workPlanEventIsAdded', (data) => {
       if (data.is_success && !data.is_main) {
         this.getEventsTree(this.parentNode);
@@ -632,6 +644,57 @@ export default {
   },
   methods: {
     findRole: findRole,
+    setChartData() {
+      const documentStyle = getComputedStyle(document.body);
+
+      return {
+        labels: ['Ректорат', 'Департамент цифрового развития', 'Басқасы'],
+        datasets: [
+          {
+            data: [540, 325, 702],
+            backgroundColor: [documentStyle.getPropertyValue('--cyan-500'), documentStyle.getPropertyValue('--orange-500'), documentStyle.getPropertyValue('--gray-500')],
+            hoverBackgroundColor: [documentStyle.getPropertyValue('--cyan-400'), documentStyle.getPropertyValue('--orange-400'), documentStyle.getPropertyValue('--gray-400')]
+          }
+        ]
+      };
+    },
+    setChartOptions() {
+      const documentStyle = getComputedStyle(document.documentElement);
+      const textColor = documentStyle.getPropertyValue('--text-color');
+
+      return {
+        plugins: {
+          legend: {
+            labels: {
+              usePointStyle: true,
+              color: textColor
+            }
+          }
+        }
+      };
+    },
+
+    analyzeClick() {
+      this.$router.push({name: 'WorkPlanAnalysisView', params: {id: this.work_plan_id}});
+    },
+    async getDepartments() {
+      this.departments = [];
+      await this.planService.getDepartments(parseInt(this.work_plan_id)).then(res => {
+        if (res.data) {
+          this.departments = res.data
+        }
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
     updateResponsivePersons() {
       this.submitted = true;
 
@@ -1816,6 +1879,15 @@ export default {
             this.showDialog(this.dialog.info);
           },
         },
+        {
+          icon: "fa-solid fa-chart-pie",
+          right: true,
+          color: "blue",
+          visible: !!this.isOperPlan,
+          command: () => {
+            this.analyzeClick()
+          }
+        }
       ];
     },
     isFinshButtonDisabled() {
@@ -1876,6 +1948,19 @@ export default {
     align-items: center;
     gap: 10px;
   }
+
+  .hdrStyle {
+    background-color: #d3d3d3;
+    color: black;
+    font-weight: bold;
+    border: 1px solid #999999;
+  }
+
+  .custom-table {
+    border: 1px solid #ddd;
+    padding: 5px;
+  }
+
 
 }
 </style>

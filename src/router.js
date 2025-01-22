@@ -558,6 +558,12 @@ const routes = [
                         component: load('work_plan/WorkPlanView'),
                         beforeEnter: ifAuthenticated
                     },
+                    {
+                        path: 'analysis/:id',
+                        name: 'WorkPlanAnalysisView',
+                        component: load('work_plan/analysis/OperPlanAnalysisView'),
+                        beforeEnter: ifAuthenticated,
+                    },
                 ]
             },
             {
