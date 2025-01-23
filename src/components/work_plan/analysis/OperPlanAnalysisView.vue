@@ -896,6 +896,7 @@ const downloadOperPlanAnalysisFile = () => {
     const totalLabel =
       item.result_status.created.length +
       item.result_status.completed.length +
+      item.result_status.partially_completed.length +
       item.result_status.notcompleted.length;
     const completedLabel = item.result_status.completed.length;
     const notCompletedLabel = item.result_status.notcompleted.length;
@@ -998,6 +999,7 @@ const downloadOperPlanAnalysisFile = () => {
       const totalLabel =
         item.result_status.created.length +
         item.result_status.completed.length +
+        item.result_status.partially_completed.length +
         item.result_status.notcompleted.length;
       const completedLabel = item.result_status.completed.length;
       const notCompletedLabel = item.result_status.notcompleted.length;
