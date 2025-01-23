@@ -92,11 +92,11 @@ deploy_test:
     - echo "$SSH_PRIVATE_KEY_TEST" > ~/.ssh/id_rsa
     - chmod -R 400 ~/.ssh
     - chmod 600 ~/.ssh/id_rsa
-    - ssh-keyscan -p 22106 -H $SMARTENU_TEST_IP >> ~/.ssh/known_hosts
+    - ssh-keyscan -p $SSH_AUTH_PORT_TEST -H $SMARTENU_TEST_IP >> ~/.ssh/known_hosts
   script:
     - echo "$SSH_AUTH_URL_TEST"
-    - ssh -p 22106 $SSH_AUTH_URL_TEST "rm -rf /root/project/public/*";
-    - scp -r -P 22106 dist_test/* $SSH_AUTH_URL_TEST:/root/project/public;
+    - ssh -p $SSH_AUTH_PORT_TEST $SSH_AUTH_URL_TEST "rm -rf /root/project/public/*";
+    - scp -r -P $SSH_AUTH_PORT_TEST dist_test/* $SSH_AUTH_URL_TEST:/root/project/public;
   only:
     - test
   tags:
