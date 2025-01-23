@@ -2179,6 +2179,7 @@ export default {
         menuTitle: 'Управление реестрами',
         import: 'Импортировать',
         addNewAttribute: 'Добавить новый атрибут',
+        deleteAttribute: 'Удалить атрибут',
         responsible: 'Ответственные',
         addNewRegistry: 'Добавить новый реестр',
         description:'Описание',
@@ -2206,7 +2207,10 @@ export default {
         inputNumber: 'Ввод номера',
         reservationTicketData: 'Дата бронирования',
         bookingStartTime: 'Время начала бронирования',
-        bookingEndTime: 'Время окончания бронирования'
+        bookingEndTime: 'Время окончания бронирования',
+        cannotDeleteAttribute: 'Вы не можете удалить этот атрибут',
+        managingTableView: 'Управление видом таблицы',
+        actionsReferenceBooks: 'Действия со справочниками'
     },
     status_resume: "Статус заполнения резюме",
     people_special_needs: "Люди с особыми потребностями"

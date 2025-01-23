@@ -46,63 +46,70 @@
             </template>
           </Dialog>
 
-          <div v-for="field in formFields" :key="field.key" class="field" style="margin-top: 10px;">
-            <label>{{
-                $i18n.locale === "kz" ? field.label_kz : $i18n.locale === "ru" ? field.label_ru :
-                    field.label_en
-              }}</label>
-            <div v-if="field.type === 1">
-              <InputText style="width: 295px;" v-model="field.value_kz" :type="field.type" :placeholder="field.label_kz"/>
-              <InputText style="width: 295px; margin-left: 15px" v-model="field.value_ru" :type="field.type" :placeholder="field.label_ru" />
-              <InputText style="width: 295px; margin-left: 15px" v-model="field.value_en" :type="field.type" :placeholder="field.label_en"/>
-            </div>
-            <div v-if="field.type === 7">
-              <InputNumber style="width: 295px;" v-model="field.value_kz" :type="field.type" :placeholder="field.label_kz"/>
-              <InputNumber style="width: 295px; margin-left: 15px" v-model="field.value_ru" :type="field.type" :placeholder="field.label_ru" />
-              <InputNumber style="width: 295px; margin-left: 15px" v-model="field.value_en" :type="field.type" :placeholder="field.label_en"/>
-            </div>
-            <div v-if="field.type === 2">
-              <Textarea v-model="field.value_kz" autoResize rows="5" cols="30" :placeholder="field.label_kz"/>
-              <Textarea style="margin-left: 15px" v-model="field.value_ru" autoResize rows="5" cols="30" :placeholder="field.label_ru"/>
-              <Textarea style="margin-left: 15px" v-model="field.value_en" autoResize rows="5" cols="30" :placeholder="field.label_en"/>
-            </div>
-            <div class="p-field" v-if="field.type === 3" >
-              <Dropdown
-                  v-model="field.value_ru"
-                  :options="field.additionalSelect ? field.additionalSelect : null"
-                  autoResize
-                  :optionLabel="$i18n.locale === 'kz' ? 'value_kz' : $i18n.locale === 'ru' ? 'value_ru' :
-              'value_en' "
-                  :optionValue="$i18n.locale === 'kz' ? 'value_kz' : $i18n.locale === 'ru' ? 'value_ru' :
-              'value_en' "
-                  style="width: 295px;"
-                  @change="updateValues(field, field.additionalSelect)"
-              />
-            </div>
-            <div class="field" v-if="field.type === 4" style="width: 295px;">
-              <FindUser v-model="field.applicant" :max="1"/>
-            </div>
-            <div class="field" v-if="field.type === 5" style="width: 295px;">
-              <PrimeCalendar
-                  style="width: 340px"
-                  dateFormat="dd.mm.yy"
-                  selectionMode="single"
-                  v-model="field.value_ru"
-                  @input="(value) => updateDate(value, field)"
-                  :placeholder="$t('common.date')"
-                  :showIcon="true"
-              />
-            </div>
-            <div class="field" v-if="field.type === 6" style="width: 295px;">
-              <div class="col">
-                <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="event => uploadPosterImageKk(event, field)"
-                            :auto="true" v-bind:chooseLabel="$t('registry.photo')" accept="image/*"/>
-                <div class="mt-3" v-if="poster.imageKkUrl">
-                  <img :src="poster.imageKkUrl" style="width: 50%; height: 50%"/>
-                </div>
+      <div v-for="field in formFields" :key="field.key" class="field" style="margin-top: 10px;">
+        <label>{{
+            $i18n.locale === "kz" ? field.label_kz : $i18n.locale === "ru" ? field.label_ru :
+                field.label_en
+          }}</label>
+        <div style="display: flex; align-items: center;">
+          <div v-if="field.type === 1" style="display: flex; gap: 15px;">
+            <InputText style="width: 295px;" v-model="field.value_kz" :type="field.type" :placeholder="field.label_kz"/>
+            <InputText style="width: 295px;" v-model="field.value_ru" :type="field.type" :placeholder="field.label_ru" />
+            <InputText style="width: 295px;" v-model="field.value_en" :type="field.type" :placeholder="field.label_en"/>
+          </div>
+          <div v-if="field.type === 7" style="display: flex; gap: 15px;">
+            <InputNumber style="width: 295px;" v-model="field.value_kz" :type="field.type" :placeholder="field.label_kz"/>
+            <InputNumber style="width: 295px;" v-model="field.value_ru" :type="field.type" :placeholder="field.label_ru" />
+            <InputNumber style="width: 295px;" v-model="field.value_en" :type="field.type" :placeholder="field.label_en"/>
+          </div>
+          <div v-if="field.type === 2" style="display: flex; gap: 15px;">
+            <Textarea v-model="field.value_kz" autoResize rows="5" cols="30" :placeholder="field.label_kz"/>
+            <Textarea v-model="field.value_ru" autoResize rows="5" cols="30" :placeholder="field.label_ru"/>
+            <Textarea v-model="field.value_en" autoResize rows="5" cols="30" :placeholder="field.label_en"/>
+          </div>
+          <div class="p-field" v-if="field.type === 3" style="display: flex; gap: 15px;">
+            <Dropdown
+                v-model="field.value_ru"
+                :options="field.additionalSelect ? field.additionalSelect : null"
+                autoResize
+                :optionLabel="$i18n.locale === 'kz' ? 'value_kz' : $i18n.locale === 'ru' ? 'value_ru' :
+      'value_en' "
+                :optionValue="$i18n.locale === 'kz' ? 'value_kz' : $i18n.locale === 'ru' ? 'value_ru' :
+      'value_en' "
+                style="width: 295px;"
+                @change="updateValues(field, field.additionalSelect)"
+            />
+          </div>
+          <div class="field" v-if="field.type === 4" style="display: flex; gap: 15px; width: 295px;">
+            <FindUser v-model="field.applicant" :max="1"/>
+          </div>
+          <div class="field" v-if="field.type === 5" style="display: flex; gap: 15px; width: 295px;">
+            <PrimeCalendar
+                style="width: 340px"
+                dateFormat="dd.mm.yy"
+                selectionMode="single"
+                v-model="field.value_ru"
+                @input="(value) => updateDate(value, field)"
+                :placeholder="$t('common.date')"
+                :showIcon="true"
+            />
+          </div>
+          <div class="field" v-if="field.type === 6" style="display: flex; gap: 15px; width: 295px;">
+            <div class="col">
+              <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="event => uploadPosterImageKk(event, field)"
+                          :auto="true" v-bind:chooseLabel="$t('registry.photo')" accept="image/*"/>
+              <div class="mt-3" v-if="poster.imageKkUrl">
+                <img :src="poster.imageKkUrl" style="width: 50%; height: 50%"/>
               </div>
             </div>
           </div>
+          <Button v-if="field.registry_id != null" class="p-button-text p-button-danger " style="width: 50px; margin-left: 15px;" @click="deleteAttribute(field)">
+            <i class="fa-solid fa-trash-can fa-xl"></i>
+          </Button>
+        </div>
+      </div>
+
+
       <Button class="toggle-button" @click="open('addAttributeDialog')">{{
           t('registry.addNewAttribute')
         }}
@@ -253,15 +260,18 @@ const addNewAttribute = () => {
 
   formFields.value.push({ ...newAttribute, model: '', code: newAttribute.name_en });
   reqFormFields.value.push({ ...newAttribute, registry_id: parseInt(route.params.id) });
-  toast.add({ severity: 'success', summary: t('common.success'), detail: t('common.attributeAdded'), life: 3000 });
   close('addAttributeDialog');
   loading.value = true;
   registryService.createRegistryParameter(reqFormFields.value[0]).then((res) => {
+    toast.add({
+      severity: "success",
+      summary: t('common.added'),
+      life: 3000,
+    });
     loading.value = false;
     reqFormFields.value = []
-  }).catch((err) => {
-
-    console.log(err);
+  }).catch(error => {
+    toast.add({severity: "error", summary: error, life: 3000});
   })
 };
 
@@ -282,6 +292,36 @@ const open = (name) => {
 // const close = (name) => {
 //   visibility.value[name] = false;
 // };
+
+const deleteAttribute = (data) => {
+
+  if (data.id === 11 || data.id === 15) {
+    toast.add({
+      severity: "error",
+      summary: t('registry.cannotDeleteAttribute'),
+      life: 3000,
+    });
+    return;
+  }
+
+  const req = {
+    id: data.id,
+  };
+
+  registryService
+      .deleteRegistryParameters(req)
+      .then((res) => {
+        toast.add({
+          severity: "success",
+          summary: t('mailing.deletedSuccessfully'),
+          life: 3000,
+        });
+        getRegisterParameter()
+      })
+      .catch(error => {
+        toast.add({severity: "error", summary: error, life: 3000});
+      })
+};
 
 const menu = computed(() => [
   {
@@ -308,7 +348,7 @@ const getRegisterParameterApplication = () => {
 
   registryService.getApplication(req)
       .then((res) => {
-        if (res.data.applications.length === 1) {
+        if (res.data?.applications?.length === 1) {
 
           const application = res.data.applications[0];
 
@@ -351,10 +391,8 @@ const getRegisterParameterApplication = () => {
         loading.value = false;
       })
       .catch(error => {
-        if (error) {
-          console.log(error);
-        }
-      });
+        toast.add({severity: "error", summary: error, life: 3000});
+      })
 
 };
 
@@ -370,23 +408,25 @@ const getRegisterParameterApplicationSelect = () => {
         };
 
         registryService.getApplication(req).then((res) => {
-
-          const application = res.data.applications
-          field.additionalSelect = application.flatMap((app) => {
-            return app.parameters
-                .filter(
-                    (param) => param.parameter?.label_kz === "Атауы"
-                )
-                .map((param) => ({
-                  value_kz: param.value_kz || "",
-                  value_ru: param.value_ru || "",
-                  value_en: param.value_en || "",
-                }));
-          });
+          if (res.data.applications) {
+            const application = res.data.applications
+            field.additionalSelect = application.flatMap((app) => {
+              return app.parameters
+                  .filter(
+                      (param) => param.parameter?.label_kz === "Атауы"
+                  )
+                  .map((param) => ({
+                    value_kz: param.value_kz || "",
+                    value_ru: param.value_ru || "",
+                    value_en: param.value_en || "",
+                  }));
+            });
+          }
           loading.value = false;
-        }).catch((error) => {
-          console.error(`Error fetching application for index ${index}:`, error);
-        });
+        }).catch(error => {
+          toast.add({severity: "error", summary: error, life: 3000});
+          loading.value = false;
+        })
       }
     }
   });
@@ -410,10 +450,8 @@ const getRegistries = () => {
       name_en: registry.name_en
     }));
   }).catch(error => {
-    if (error) {
-      toast.add({severity: "error", summary: error.message, life: 3000});
-    }
-  });
+    toast.add({severity: "error", summary: error, life: 3000});
+  })
 };
 
 
@@ -463,10 +501,10 @@ const save = () => {
     //         id: parseInt(route.params.id)
     //       },
     //       status: 0,
-    //       created_at: "2025-01-14T10:00:00Z"
+    //       created_at: "2025-01-21T10:00:00Z"
     //     },
-    //     reserved_from: "2025-01-17T10:00:00Z",
-    //     reserved_until: "2025-01-18T10:00:00Z",
+    //     reserved_from: "2025-01-25T10:00:00Z",
+    //     reserved_until: "2025-01-26T10:00:00Z",
     //     created_by: 67894,
     //     status: 2,
     //     created_date: "2025-01-14T10:00:00Z",
@@ -481,12 +519,8 @@ const save = () => {
           router.back()
         })
         .catch(error => {
-          if (error) {
-            loading.value = false;
-            toast.add({severity: "error", summary: error, life: 3000});
-          }
-
-        });
+          toast.add({severity: "error", summary: error, life: 3000});
+        })
   } else {
     registryService.createApplication(req)
         .then(response => {
@@ -494,11 +528,8 @@ const save = () => {
           loading.value = false;
         })
         .catch(error => {
-          if (error) {
-            loading.value = false;
-            toast.add({severity: "error", summary: error, life: 3000});
-          }
-        });
+          toast.add({severity: "error", summary: error, life: 3000});
+        })
   }
 }
 
@@ -514,11 +545,8 @@ const getRegisterParameter = () => {
       getRegisterParameterApplicationSelect()
 
   }).catch(error => {
-    if (error) {
-      toast.add({severity: "error", summary: error, life: 3000});
-    }
-    loading.value = false;
-  });
+    toast.add({severity: "error", summary: error, life: 3000});
+  })
 };
 
 onMounted(() => {

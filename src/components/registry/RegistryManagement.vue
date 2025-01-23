@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
   <h3>{{$t('registry.menuTitle')}}</h3>
-  <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)"/>
+  <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)" @search="search" :filter="true" :filtered="filtered" :search="true"/>
   <div class="card">
     <DataTable :lazy="true" :rowsPerPageOptions="[10, 25, 50]" :value="data" dataKey="id" :rowHover="true"
                :loading="loading" :paginatorTemplate="paginatorTemplate"
@@ -35,6 +35,11 @@
       <Column field="description" :header="$t('registry.description')">
         <template #body="{ data }">
           {{ data.description_ru }}
+        </template>
+      </Column>
+      <Column field="numberOfEntries" :header="$t('registry.numberOfEntries')">
+        <template #body="{ data }">
+          {{ data.count_applications }}
         </template>
       </Column>
 <!--      <Column field="numberOfEntries" :header="$t('registry.numberOfEntries')">-->
@@ -98,19 +103,21 @@
       </Dialog>
     <OverlayPanel ref="global-filter">
       <div class="p-fluid">
-        <div class="field" style="width: 320px">
-          <label>{{ $t('contracts.filter.status') }}</label>
-          <Dropdown class="lang p-link mb-2" v-model="filter.plan_type" :options="types"
-                    :optionLabel="['name_' + $i18n.locale]" optionValue="id" :placeholder="$t('workPlan.planType')"
-          />
-          <label>{{ $t('registry.responsible') }}</label>
-          <Dropdown class="lang p-link mb-2" v-model="filter.plan_type" :options="types"
-                    :optionLabel="['name_' + $i18n.locale]" optionValue="id" :placeholder="$t('contracts.filter.status')"
-          />
-          <label>{{ $t('contracts.filter.status') }}</label>
-          <Dropdown class="lang p-link mb-2" v-model="filter.plan_type" :options="types"
-                    :optionLabel="['name_' + $i18n.locale]" optionValue="id" :placeholder="$t('workPlan.planType')"
-          />
+        <div class="field">
+          <label>{{ $t('common.user') }}</label>
+          <FindUser v-model="userNameSearch" :max="1" :user-type="3" :editMode="false" class="mb-2"
+                    :placeholder="$t('common.searchByUsername')"/>
+        </div>
+        <div class="field">
+          <label>{{ $t('ref.referenceStatus') }}</label>
+          <Dropdown v-model="filter.status" :options="fieldStatus"  optionLabel="label"
+                    optionValue="value" placeholder="Тип статуса" />
+        </div>
+        <div class="field">
+          <label>{{ $t('contracts.filter.createdFrom') }}</label>
+          <PrimeCalendar v-model="filter.createdAt" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+        </div>
+        <div class="field">
           <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
           <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter"
                   :label="$t('common.clear')"/>
@@ -125,14 +132,14 @@
 // import RegistryAdd from "./RegistryAdd.vue";
 
 import RegistryService from "../../service/registry_service";
-
+import ToolbarMenu from "../../components/ToolbarMenu";
 import {registry} from "chart.js";
 import FindUser from "../../helpers/FindUser.vue";
 import {formatDate} from "@/helpers/HelperUtil";
 
 export default {
   name: 'RegistryManagement',
-  components: {},
+  components: {ToolbarMenu, FindUser},
   data() {
     return {
       registryService: new RegistryService(),
@@ -144,7 +151,12 @@ export default {
         first: 0
       },
       total: null,
-      filter: null,
+      filter: {
+        createdAt: null,
+        search: null,
+        user_id: null,
+      },
+      userNameSearch: null,
       data: null,
       dataSourceId: null,
       showAddPlanDialog: false,
@@ -167,6 +179,7 @@ export default {
         last: '{last}',
         totalRecords: '{totalRecords}',
       }),
+      types: null
     }
   },
   methods: {
@@ -189,7 +202,7 @@ export default {
     closeBasic() {
       this.showAddPlanDialog = false
     },
-    toggle(event) {
+    toggle(ref, event, node) {
       if (node) {
         this.selectedEvent = node;
       }
@@ -202,18 +215,19 @@ export default {
       }else{
         this.filter.user_id = null
       }
+      this.getRegistries()
       localStorage.setItem("registryFilter", JSON.stringify(this.filter));
+    },
+    search(data) {
+     this.filter.search = data;
+     this.getRegistries()
     },
     clearFilter() {
       localStorage.removeItem("registryFilter");
-      this.filter.doc_status = null
-      this.filter.plan_type = null
       this.filter.user_id = null
-      this.selectedPlanType = null;
-      this.filter.filtered = false;
-      this.filter.searchText = null
-      this.userNameSearch = null
-      this.getPlans();
+      this.filter.status = null
+      this.filter.createdAt = null
+      this.getRegistries();
     },
     createRegistry() {
       if (!this.isFormValid()) {
@@ -250,6 +264,9 @@ export default {
         id: null,
         page: this.lazyParams.page,
         rows: this.lazyParams.rows,
+        search_text: this.filter.search,
+        status: this.filter.status,
+        created_at: this.filter.createdAt,
       }
       this.registryService.getRegistry(req).then(res => {
         this.loading = false;
@@ -270,8 +287,8 @@ export default {
           },
         },
         {
-          label: this.$t('registry.import'),
-          icon: "pi pi-file-import",
+          label: this.$t('registry.actionsReferenceBooks'),
+          icon: "pi pi-asterisk",
           disabled: true,
           // command: () => {
           //   this.openBasic()

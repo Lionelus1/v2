@@ -2276,6 +2276,9 @@ export default {
         reservationTicketData: 'Reservation Ticket Date',
         bookingStartTime: 'Booking Start Time',
         bookingEndTime: 'Booking End Time',
+        noDataAvailable: 'No data available',
+        search: 'Search',
+        export: 'Export',
     },
     status_resume: "Status of filling out the resume",
     people_special_needs: "People with special needs"
