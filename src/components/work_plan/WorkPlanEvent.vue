@@ -37,7 +37,7 @@
                  :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows"
                  :total-records="total" :rowHover="true" :paginatorTemplate="paginatorTemplate"
-                 @page="onPage($event)" v-if="(!isMastersPlan && !isDoctorsPlan)">
+                 @page="onPage($event)" v-if="(!isMastersPlan && !isDoctorsPlan && !isWorkSchedule)">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
         <Column field="event_name" :expander="true" :header="$t('workPlan.eventName')" style="min-width:300px;width: 30%;">
@@ -154,6 +154,27 @@
           :loading="loading"
       />
 
+      <WorkPlanScheduleEventTree
+          v-if="isWorkSchedule"
+          :menus="initItems"
+          :isPlanCreator="isPlanCreator"
+          :isApproval="plan.doc_info.docHistory.stateId === 3"
+
+          :data="data"
+          :total="total"
+          @onPage="onPage"
+          @expand="onExpand"
+          :loading="loading"
+
+          :members="members"
+          :totalMembers="totalMembers"
+          @onPageMembers="onPageMembers"
+          :loadingMembers="loadingMembers"
+
+          @onToggle="actionsToggle"
+          @updateActive="handleActive"
+          @updateSelect="handleSelected"
+      />
     </div>
   </div>
 
@@ -204,6 +225,46 @@
           @click="uploadRelatedDocs"
       />
     </template>
+  </Dialog>
+
+  <Dialog v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" :closable="false" v-model:visible="respPersonDialog" modal
+          :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
+    <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+      <label>{{ $t('workPlan.summaryDepartment') }}</label>
+      <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
+      <small class="p-error" v-if="submitted && !summaryDepartment?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+    </div>
+    <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
+      <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
+      <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
+      <small class="p-error" v-if="submitted && !selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+    </div>
+    <template v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science && inputSets">
+      <div v-for="(inputSet, index) in inputSets" :key="index">
+        <div class="field">
+          <label>{{ $t('workPlan.scienceParticipants') }}</label>
+          <FindUser class="select_wp" v-model="inputSet.selectedUsers" :editMode="true" searchMode="local" :user-type="3" :max="1"></FindUser>
+          <small class="p-error" v-if="submitted && !inputSet.selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+        </div>
+        <div class="field">
+          <label for="name">{{ $t('common.role') }}</label>
+          <RolesByName class="select_wp" v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
+          <small class="p-error" v-if="submitted && !inputSet?.selectedRole">{{ $t('workPlan.errors.approvalUserError') }}</small>
+        </div>
+        <p style="text-align: right;" class="mb-3">
+          <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined" @click="removeInputSet(index)"
+                  outlined/>
+        </p>
+      </div>
+    </template>
+    <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
+      <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5 select_wp" @click="addNewUser"/>
+    </div>
+
+    <div class="flex justify-content-end gap-2">
+      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeRespPersonDialog"></Button>
+      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="updateResponsivePersons"></Button>
+    </div>
   </Dialog>
 
   <Dialog v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" :closable="false" v-model:visible="respPersonDialog" modal
@@ -304,11 +365,7 @@
         />
       </div>
       <div class="field">
-        <Button
-            :label="$t('common.clear')"
-            @click="clearFilter"
-            class="mb-2 p-button-outlined"
-        />
+        <Button :label="$t('common.clear')" @click="clearFilter" class="mb-2 p-button-outlined"/>
         <Button :label="$t('common.search')" @click="initFilter" class="mt-2"/>
       </div>
     </div>
@@ -319,6 +376,14 @@
       @hide="hideDialog(dialog.info)"
       :plan="plan"
       :info="additionalInfo"
+  />
+
+  <WorkPlanEventAddMember
+      v-if="dialog.addMember.state"
+      :visible="dialog.addMember.state"
+      @hide="hideDialog(dialog.addMember)"
+      :data="selectedMembers"
+      :isAddMember="isAddMem"
   />
 
   <work-plan-event-add
@@ -334,7 +399,10 @@
       v-if="dialog.edit.state"
       :visible="dialog.edit.state"
       :planData="plan"
-      :isEditResponsiveUsers="editRespUser" :event="selectedEvent" :copiedEvent="selectedEvent" @hide="hideDialog(dialog.edit)"
+      :isEditResponsiveUsers="editRespUser"
+      :event="selectedEvent"
+      :copiedEvent="selectedEvent"
+      @hide="hideDialog(dialog.edit)"
   />
   <WorkPlanReportApprove
       v-if="showReportModal && scienceReport && plan"
@@ -358,6 +426,7 @@
 
 <script>
 import WorkPlanEventAdd from '@/components/work_plan/WorkPlanEventAdd';
+import WorkPlanEventAddMember from "@/components/work_plan/WorkPlanEventAddMember";
 import {fileRoute, findRole, smartEnuApi} from '@/config/config';
 import WorkPlanApprove from '@/components/work_plan/WorkPlanApprove';
 import WorkPlanEventEditModal from '@/components/work_plan/WorkPlanEventEditModal';
@@ -374,13 +443,17 @@ import {DocService} from '@/service/doc.service';
 import CustomFileUpload from '@/components/CustomFileUpload.vue';
 import ToolbarMenu from '@/components/ToolbarMenu.vue';
 import DoctorsMastersTable from './table/DoctorsMastersTable.vue';
+import WorkPlanScheduleEventTree from "@/components/work_plan/table/WorkPlanScheduleEventTree.vue";
 import RolesByName from "@/components/smartenu/RolesByName.vue";
 import ActionButton from "@/components/ActionButton.vue";
 import {ContragentService} from "@/service/contragent.service";
+import FindUser from "../../helpers/FindUser.vue";
 
 export default {
-  name: 'WorkPlanEvent',
+  name: "WorkPlanEvent",
   components: {
+    FindUser,
+    WorkPlanScheduleEventTree,
     ToolbarMenu,
     CustomFileUpload,
     WorkPlanReportApprove,
@@ -392,11 +465,13 @@ export default {
     ActionButton,
     RolesByName,
     DoctorsMastersTable,
+    WorkPlanEventAddMember
   },
   props: ['isEditResponsiveUsers'],
   data() {
     return {
-      data: [],
+      active: 0,
+      data: null,
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
       Enum: Enum,
       DocEnum: DocEnum,
@@ -426,12 +501,18 @@ export default {
         },
       ],
       total: 0,
+      totalMembers: 0,
       quarter: null,
       loading: false,
+      loadingMembers: false,
       showReportModal: false,
       parent: null,
       parentNode: null,
       plan: null,
+      members: null,
+      searchQuery: "",
+      filteredMembers: null,
+      selectedMembers: [],
       planDoc: null,
       approval_users: null,
       loginedUserId: JSON.parse(localStorage.getItem('loginedUser')).userID,
@@ -461,39 +542,39 @@ export default {
       statuses: [
         {
           id: 1,
-          nameRu: 'Жоспарланды',
-          nameKz: 'Запланировано',
-          nameEn: 'Planned',
-          value: 'planned',
+          nameRu: "Жоспарланды",
+          nameKz: "Запланировано",
+          nameEn: "Planned",
+          value: "planned"
         },
         {
           id: 2,
-          nameRu: 'Орындалды',
-          nameKz: 'Выполнено',
-          nameEn: 'Done',
-          value: 'done',
+          nameRu: "Орындалды",
+          nameKz: "Выполнено",
+          nameEn: "Done",
+          value: "done"
         },
         {
           id: 4,
-          nameRu: 'Жартылай орындалды',
-          nameKz: 'Частично выполнено',
-          nameEn: 'Partially completed',
-          value: 'partially',
+          nameRu: "Жартылай орындалды",
+          nameKz: "Частично выполнено",
+          nameEn: "Partially completed",
+          value: "partially"
         },
         {
           id: 5,
-          nameRu: 'Тексерілуде',
-          nameKz: 'На проверке',
-          nameEn: 'On inspection',
-          value: 'inspection',
+          nameRu: "Тексерілуде",
+          nameKz: "На проверке",
+          nameEn: "On inspection",
+          value: "inspection"
         },
         {
           id: 6,
-          nameRu: 'Түзетуде',
-          nameKz: 'На доработке',
-          nameEn: 'Under revision',
-          value: 'revision',
-        },
+          nameRu: "Түзетуде",
+          nameKz: "На доработке",
+          nameEn: "Under revision",
+          value: "revision"
+        }
       ],
       numMatches: [{value: 'lt'}, {value: 'gt'}, {value: 'equals'}],
       planService: new WorkPlanService(),
@@ -505,6 +586,9 @@ export default {
       dialog: {
         add: {
           state: false,
+        },
+        addMember: {
+          state: false
         },
         edit: {
           state: false,
@@ -557,8 +641,9 @@ export default {
       selectedDepartment: this.loginedUser?.mainPosition?.department?.id || null,
       analyzerModalView: false,
       chartData: null,
-      chartOptions: null
-    }
+      chartOptions: null,
+      loginedStudentData: null,
+    };
   },
   created() {
     this.isAdmin = this.findRole(null, 'main_administrator');
@@ -571,6 +656,7 @@ export default {
   mounted() {
     this.chartData = this.setChartData();
     this.chartOptions = this.setChartOptions();
+    this.filteredMembers = this.members;
     this.emitter.on('workPlanEventIsAdded', (data) => {
       if (data.is_success && !data.is_main) {
         this.getEventsTree(this.parentNode);
@@ -643,6 +729,21 @@ export default {
     },
   },
   methods: {
+    addMemberButton() {
+      this.showDialog(this.dialog.addMember);
+    },
+    handleActive(event) {
+      this.active = event
+    },
+    handleSelected(event) {
+      this.selectedMembers = event
+    },
+    filterData() {
+      const query = this.searchQuery.toLowerCase();
+      this.filteredMembers = this.members.filter(member => {
+        return member.user.fullName.toLowerCase().includes(query);
+      });
+    },
     findRole: findRole,
     setChartData() {
       const documentStyle = getComputedStyle(document.body);
@@ -925,6 +1026,44 @@ export default {
     onResize() {
       this.windowHeight = window.innerHeight - 270;
     },
+    getWorkPlanApprovalUsersFunc(data) {
+      this.loadingMembers = true;
+
+      this.planService.getWorkPlanApprovalUsers(
+          data).then(res => {
+
+        if (res.data && res.data.work_plan_users) {
+          this.members = res.data.work_plan_users;
+
+          if (findRole(null, 'student')) {
+            this.loginedStudentData = this.members.filter(user => user.id === this.loginedUserId);
+          }
+
+          this.filteredMembers = res.data.work_plan_users;
+          this.totalMembers = res.data.total;
+          res?.data?.work_plan_users?.forEach(e => {
+            if (this.loginedUserId === e.id) {
+              this.isApproval = true;
+            }
+          });
+        } else {
+          this.isApproval = false;
+        }
+        this.loadingMembers = false;
+
+      }).catch(error => {
+        this.loadingMembers = false;
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+      });
+    },
     getAdditionalInfo() {
       this.docService.getAdditionalInfo(this.work_plan_id).then(res => {
         if (res.data?.description !== null) {
@@ -948,20 +1087,6 @@ export default {
         });
       });
     },
-    getWorkPlanApprovalUsers() {
-      this.planService.getWorkPlanApprovalUsers(parseInt(this.work_plan_id)).then(res => {
-        if (res.data) {
-          res?.data?.forEach(e => {
-            if (this.loginedUserId === e.id) {
-              this.isApproval = true;
-            }
-          });
-        } else {
-          this.isApproval = false;
-        }
-      }).catch(error => {
-      });
-    },
     getPlan() {
       this.planService
           .getPlanById(this.work_plan_id)
@@ -973,12 +1098,9 @@ export default {
                 new Date().getFullYear();
             this.isFinish = this.plan.is_finish != null;
             if (this.planDoc && this.planDoc.docHistory) {
-              this.isRejected =
-                  this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value;
+              this.isRejected = this.planDoc.docHistory.stateEn === this.DocState.REVISION.Value;
             }
-            this.isPlanCreator = !!(
-                this.plan && this.plan.user.id === this.loginedUserId
-            );
+            this.isPlanCreator = !!(this.plan && this.plan.user.id === this.loginedUserId);
 
             if (this.isSciencePlan) {
               this.planApprovalStage = [
@@ -1035,8 +1157,16 @@ export default {
                   },
                 },
               ];
+
+              let data = {
+
+                work_plan_id: parseInt(this.work_plan_id),
+                page: 0,
+                rows: 0,
+                is_contract: false
+              };
               this.getRelatedFiles();
-              this.getWorkPlanApprovalUsers(this.work_plan_id);
+              this.getWorkPlanApprovalUsersFunc(data);
             }
             if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
               this.planApprovalStage = [
@@ -1098,6 +1228,68 @@ export default {
             }
             if ((this.isMastersPlan || this.isDoctorsPlan) && !this.isFinish && !this.isApproval) {
               this.getAdditionalInfo()
+            }
+
+            if (this.isWorkSchedule) {
+              this.planApprovalStage = [
+                {
+                  stage: 1,
+                  users: [],
+                  titleRu: "Руководитель практики на кафедре",
+                  titleKz: "Кафедрадан практика жетекшісі",
+                  titleEn: "Head of practice at the department",
+                  certificate: {
+                    namekz: "Жеке тұлғаның сертификаты",
+                    nameru: "Сертификат физического лица",
+                    nameen: "Certificate of an individual",
+                    value: "individual"
+                  }
+                },
+                {
+                  stage: 2,
+                  users: [],
+                  titleRu: "Заведующий кафедрой",
+                  titleKz: "Кафедра меңгерушісі",
+                  titleEn: "Head of the department",
+                  certificate: {
+                    namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                    nameru: "Для внутреннего документооборота (ГОСТ)",
+                    nameen: "For internal document management (GOST)",
+                    value: "internal"
+                  },
+                },
+                {
+                  stage: 3,
+                  users: [],
+                  titleRu: "Декан",
+                  titleKz: "Декан",
+                  titleEn: "Dean",
+                  certificate: {
+                    namekz: "Ішкі құжат айналымы үшін (ГОСТ)",
+                    nameru: "Для внутреннего документооборота (ГОСТ)",
+                    nameen: "For internal document management (GOST)",
+                    value: "internal"
+                  },
+                },
+              ];
+              this.getRelatedFiles()
+              let data = {
+                work_plan_id: parseInt(this.work_plan_id),
+                page: 0,
+                rows: 10,
+                is_contract: true
+              };
+
+              if (findRole(null, 'student')) {
+
+                data = {
+                  work_plan_id: parseInt(this.work_plan_id),
+                  page: 0,
+                  rows: 0,
+                  is_contract: true
+                };
+              }
+              this.getWorkPlanApprovalUsersFunc(data)
             }
           })
           .catch((error) => {
@@ -1218,6 +1410,12 @@ export default {
         params: {id: this.work_plan_id},
       });
     },
+    navigateToJournalReports() {
+      this.$router.push({
+        name: 'WorkPlanJournalReport',
+        params: {id: this.work_plan_id, userId: this.loginedUserId, uuId: this.loginedStudentData[0].doc_uuid, doc: this.loginedStudentData[0].contract_name_ru}
+      });
+    },
     isUserApproval(data) {
       let userApproval = false;
       data.user.forEach((e) => {
@@ -1281,6 +1479,23 @@ export default {
       this.lazyParams.rows = event.rows;
       this.getEventsTree();
     },
+
+    onPageMembers(event) {
+
+      this.selectedMembers = []
+
+      let data = {
+
+        work_plan_id: parseInt(this.work_plan_id),
+        page: event.page,
+        rows: event.rows,
+        is_contract: true
+
+      };
+      this.getWorkPlanApprovalUsersFunc(
+          data)
+    },
+
     planSentToApprove(data) {
       this.getPlan();
       this.getEventsTree(null);
@@ -1513,15 +1728,15 @@ export default {
       URL.revokeObjectURL(link.href);
     },
     actionsToggle(node) {
-      this.isCreator = node.creator_id === this.loginedUserId;
-      this.selectedEvent = node;
+      this.isCreator = node.creator_id === this.loginedUserId
+      this.selectedEvent = node
     },
     showDialog(dialog, isEditPerson) {
       dialog.state = true
       this.editRespUser = isEditPerson
     },
     hideDialog(dialog) {
-      this.selectedEvent = null;
+      this.selectedMembers = [];
       dialog.state = false;
       this.showReportModal = false;
       this.getPlan();
@@ -1534,7 +1749,6 @@ export default {
       const isStatusValid = [1, 4, 5, 6, 8].includes(
           this.selectedEvent.status.work_plan_event_status_id
       );
-      console.log('Hello this is execute event!');
       return (
           (this.isPlanCreator || this.isUserApproval(this.selectedEvent)) &&
           isStatusValid
@@ -1653,16 +1867,25 @@ export default {
                 this.isCreator ||
                 (this.isUserResp(this.selectedEvent?.user) && !this.isFinish)
             ),
-            visible: !this.isFinish && !this.isMastersPlan && !this.isDoctorsPlan,
+            visible: !this.isFinish && !this.isMastersPlan && !this.isDoctorsPlan && !this.isWorkSchedule,
             command: () => {
               this.showDialog(this.dialog.add);
             },
           },
           {
+            label: this.$t('common.addMember'),
+            icon: 'fa-solid fa-plus',
+            disabled: !(this.isPlanCreator || this.isCreator || this.isUserResp(this.selectedEvent?.user) && !this.isFinish),
+            visible: !this.isFinish && !this.isWorkSchedule && !this.isMastersPlan && !this.isDoctorsPlan,
+            command: () => {
+              this.showDialog(this.dialog.addMember)
+            }
+          },
+          {
             label: this.$t('common.edit'),
             icon: 'fa-solid fa-pen',
             disabled: !((this.isPlanCreator || this.isCreator) && !this.isFinish),
-            visible: !this.isFinish,
+            visible: this.isWorkSchedule ? !this.isFinish && (!findRole(null, 'student') && this.isWorkSchedule) : !this.isFinish,
             command: () => {
               this.showDialog(this.dialog.edit, false)
             }
@@ -1671,7 +1894,7 @@ export default {
             label: this.$t('workPlan.editRespUser'),
             icon: 'fa-solid fa-pen',
             disabled: !((this.isPlanCreator || this.isAdmin) && this.isPlanApproved),
-            visible: this.isPlanApproved && (this.isPlanCreator || this.isAdmin),
+            visible: this.isPlanApproved && (this.isPlanCreator || this.isAdmin) && !this.isWorkSchedule,
             command: () => {
               this.showDialog(this.dialog.edit, true);
             },
@@ -1694,6 +1917,12 @@ export default {
           this.plan.plan_type &&
           this.plan.plan_type.code === Enum.WorkPlanTypes.Science
       );
+    },
+    isWorkSchedule() {
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule
+    },
+    isAddMem() {
+      return !(this.selectedMembers.length > 0);
     },
     isOperPlan() {
       return (
@@ -1741,9 +1970,21 @@ export default {
     toolbarMenus() {
       return [
         {
+          label: this.isAddMem ? this.$t('common.addMember') : (this.$t('common.selectContr') + " (" + this.selectedMembers.length + ")"),
+          icon: 'pi pi-plus',
+          visible: this.active === 1 && !findRole(null, 'student') && this.isWorkSchedule,
+          badge: 0,
+          color: 'blue',
+          command: () => {
+            this.showDialog(this.dialog.addMember)
+          }
+        },
+        {
           label: this.$t('common.add'),
           icon: 'pi pi-plus',
-          visible: (this.isPlanCreator || this.isEventsNull) && !this.isFinish,
+          visible: this.isWorkSchedule ?
+              ((this.isPlanCreator || this.isEventsNull) && !this.isFinish) && (this.active === 0 && this.isWorkSchedule && !findRole(null, 'student')) :
+              ((this.isPlanCreator || this.isEventsNull) && !this.isFinish),
           color: 'blue',
           command: () => {
             this.showDialog(this.dialog.add);
@@ -1752,12 +1993,10 @@ export default {
         {
           label: this.$t('common.action.sendToApprove'),
           icon: 'pi pi-send',
-          visible:
-              this.plan &&
-              this.planDoc &&
-              (this.isCreatedPlan || this.isPlanUnderRevision) &&
-              this.isPlanCreator &&
-              this.isFinish,
+          visible: this.isWorkSchedule ?
+              this.plan && this.planDoc && (this.isCreatedPlan || this.isPlanUnderRevision) && this.isPlanCreator && this.isFinish &&
+              (!findRole(null, 'student') && this.isWorkSchedule) :
+              this.plan && this.planDoc && (this.isCreatedPlan || this.isPlanUnderRevision) && this.isPlanCreator && this.isFinish,
           command: () => {
             this.showDialog(this.dialog.planApprove);
           },
@@ -1766,7 +2005,9 @@ export default {
           label: this.$t('common.complete'),
           icon: 'pi pi-check',
           disabled: !this.data || this.data.length === 0 || !this.additinalInfoFilled,
-          visible: this.plan && this.isPlanCreator && !this.isFinish,
+          visible: this.isWorkSchedule ?
+              (this.plan && this.isPlanCreator && !this.isFinish) && (this.isWorkSchedule && this.active === 0 && !findRole(null, 'student'))
+              : this.plan && this.isPlanCreator && !this.isFinish,
           color: 'yellow',
           command: () => {
             this.confirmFinish();
@@ -1778,10 +2019,7 @@ export default {
           color: this.isFinish ? '' : 'green',
           disabled: (this.isMastersPlan || this.isDoctorsPlan) && (!this.data || this.data.length === 0 || !this.additinalInfoFilled),
           visible:
-              ((this.isMastersPlan || this.isDoctorsPlan) &&
-                  (!this.isFinish || this.isApproval)) ||
-              (this.isFinish &&
-                  this.planDoc &&
+              ((this.isMastersPlan || this.isDoctorsPlan) && (!this.isFinish || this.isApproval)) || (this.isFinish && this.planDoc &&
                   !(this.isCreatedPlan || this.isPlanUnderRevision)),
           command: () => {
             if (this.isFinish) {
@@ -1804,7 +2042,7 @@ export default {
         {
           label: this.$t('workPlan.reports'),
           visible:
-              this.isFinish &&
+              this.isFinish && !this.isWorkSchedule &&
               !this.isSciencePlan &&
               (this.isApproval || this.isPlanCreator || this.isAdmin || this.isRespUser) &&
               (!(this.isMastersPlan || this.isDoctorsPlan) ||
@@ -1823,6 +2061,16 @@ export default {
           command: () => {
             this.confirmGenerateScienceReport();
           },
+        },
+        {
+          label: this.$t('workPlan.journalReports'),
+          // icon: 'pi pi-plus',
+          visible: this.isFinish && this.isWorkSchedule && this.isPlanApproved && findRole(null, 'student'),
+          command: () => {
+            if (this.loginedStudentData) {
+              this.navigateToJournalReports()
+            }
+          }
         },
         {
           label: this.$t('contracts.contract'),

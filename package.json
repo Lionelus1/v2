@@ -61,6 +61,7 @@
 		"chartjs-plugin-datalabels": "^2.2.0",
 		"crypto-browserify": "^3.12.0",
 		"crypto-js": "^4.2.0",
+		"file-saver": "^2.0.5",
 		"generate-password": "^1.7.1",
 		"howler": "^2.2.3",
 		"html2pdf.js": "^0.9.3",

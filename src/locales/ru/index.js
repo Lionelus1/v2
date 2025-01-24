@@ -1,7 +1,10 @@
 export default {
     common: {
+        checkTaskCompletion: "Перед отправкой на согласование все задачи должны содержать заполненные результаты",
         accessDenied: "Доступ запрещен",
         agreement: "Авторизуясь на сайте, Вы подтверждаете согласие на сбор и обработку Ваших персональных данных, а также принимаете на себя ответственность за все действия, совершаемые Вами на сайте",
+        tasks: "Задачи",
+        members: "Участники",
         attention: "Внимание",
         welcome: "Добро пожаловать",
         loginWelcome: "Добро пожаловать в систему smart.enu",
@@ -55,9 +58,7 @@ export default {
         mgovBusiness: "Подписать в eGov Business как юридическое лицо",
         logout: "Выход",
         letterSpacing: {
-            expanded: "Разреженный",
-            condensed: "Уплотненный",
-            normal: "Обычный",
+            expanded: "Разреженный", condensed: "Уплотненный", normal: "Обычный",
         },
         enter: "Наберите",
         enterEmail: "Введите почту",
@@ -66,6 +67,8 @@ export default {
         export: "Экспорт",
         error: "Ошибка",
         add: "Добавить",
+        addMember: "Добавить участника",
+        selectContr: "Указать договор",
         edit: "Редактировать",
         print: "Печать",
         orgname: "Евразийский национальный университет имени Л.Н. Гумилева",
@@ -94,6 +97,8 @@ export default {
         created: "Создан",
         createdBy: "Автор",
         fullName: "ФИО",
+        fullNameNote: "ФИО обучающегося",
+        existingPracticeAgreementsMessage: "У этого студента уже есть активные договоры на практику",
         hei: "ВУЗ",
         updated: "Изменен",
         type: "Тип",
@@ -317,12 +322,7 @@ export default {
             mustChooseProtocol: "Пожалуйста, сначала загрузите протокол!"
         },
         language: {
-            kz: "на казахском",
-            ru: "на русском",
-            en: "на английском",
-            ln1: "на казахском",
-            ln2: "на русском",
-            ln3: "на английском"
+            kz: "на казахском", ru: "на русском", en: "на английском", ln1: "на казахском", ln2: "на русском", ln3: "на английском"
         },
         result: "Результат",
         complete: "Завершить",
@@ -332,6 +332,7 @@ export default {
         successDone: "Успешно выполнено",
         success: "Успешно",
         downloadSignaturesPdf: "Скачать подписи",
+        downloadAllDocument: "Скачать все одним архивом",
         downloadCms: "Скачать подпись в формате CMS",
         signatures: "Подписи",
         unit: "Единица измерения",
@@ -407,20 +408,10 @@ export default {
         fillRequiredFields: "Не все обязательные поля заполнены"
     },
     positions: {
-        menuTitle: 'Поменять позицию',
-        beginText: 'Вы зашли как: ',
-        individual: 'физическое лицо',
-        changePosition: 'Сменить',
-        continue: 'Продолжить без смены',
+        menuTitle: 'Поменять позицию', beginText: 'Вы зашли как: ', individual: 'физическое лицо', changePosition: 'Сменить', continue: 'Продолжить без смены',
     },
     bank: {
-        title: "Банки",
-        title2: "Банк",
-        card: "Карточка",
-        swift: "БИК",
-        account: "Корреспондентский счет",
-        requisite: "Банковские реквизиты",
-        accnumber: "Номер счета"
+        title: "Банки", title2: "Банк", card: "Карточка", swift: "БИК", account: "Корреспондентский счет", requisite: "Банковские реквизиты", accnumber: "Номер счета"
     },
     contact: {
         title: "Контактная информация",
@@ -442,10 +433,7 @@ export default {
         position: "Должность",
         gender: "Пол",
         idcard: {
-            requisite: "Реквизиты документа",
-            givenorg: "Орган выдачи",
-            givendate: "Дата выдачи",
-            expire: "Годен до",
+            requisite: "Реквизиты документа", givenorg: "Орган выдачи", givendate: "Дата выдачи", expire: "Годен до",
         },
         message: {
             validEmail: "Введите корректный email адрес",
@@ -454,10 +442,7 @@ export default {
         officePhone: "Внутренний телефон"
     },
     cafedra: {
-        practiceResponsibles: "Ответственные за практику",
-        practiceManager: "Руководитель практики",
-        title: "Кафедра {name}",
-        responsible: "Ответственный"
+        practiceResponsibles: "Ответственные за практику", practiceManager: "Руководитель практики", title: "Кафедра {name}", responsible: "Ответственный"
     },
     contragent: {
         form: "Форма организации",
@@ -473,8 +458,7 @@ export default {
             select: "Выбрать",
         },
         columns: {
-            name: "Имя",
-            bin: "БИН",
+            name: "Имя", bin: "БИН",
         },
         orgEmployees: "Сотрудники {org}",
         domesticPartners: 'Отечественные партнеры',
@@ -593,9 +577,7 @@ export default {
             createdFrom: "Дата создания с",
             createdTo: "Дата создания до",
             contractType: {
-                label: "Тип договора",
-                byTemplate: "Из шаблона",
-                fromReadyDoc: "Из готового документа",
+                label: "Тип договора", byTemplate: "Из шаблона", fromReadyDoc: "Из готового документа",
             },
             templateType: "Тип шаблона",
             documentName: "Наименование договора",
@@ -616,9 +598,7 @@ export default {
             mnvoDate: "Дата договора с МНВО",
             contractSum: "Сумма договора",
             documentsNotSigned: {
-                label: "Документы, не подписанные мной",
-                signedByMe: "Подписанные мной",
-                notSignedByMe: "Не подписанные мной"
+                label: "Документы, не подписанные мной", signedByMe: "Подписанные мной", notSignedByMe: "Не подписанные мной"
             }
         },
         title: "Договоры",
@@ -710,10 +690,7 @@ export default {
         statusGPC: "Статус актов ГПХ",
         statusGPCFull: "Акты ГПХ: информация о статусах и исполнении договора ГПХ",
         financingTypes: {
-            government: "Государственное задание",
-            program_targeted: "Программно-целевое финансирование",
-            grant: "Грантовое финансирование",
-            company: "Договора с преприятиями",
+            government: "Государственное задание", program_targeted: "Программно-целевое финансирование", grant: "Грантовое финансирование", company: "Договора с преприятиями",
         },
         projectPositions: {
             researcher: "Научный сотрудник",
@@ -795,10 +772,8 @@ export default {
         certTemplate: "Шаблон сертификата: ",
         IIN: "ИИН",
         certType: "Тип подписи: ",
-        exportCMS: "Экспортировать подпись в файл",
-        //
-        signNotFoundById: "Не удалось найти подпись по данному ID!",
-        //
+        exportCMS: "Экспортировать подпись в файл", //
+        signNotFoundById: "Не удалось найти подпись по данному ID!", //
         successSentToSign: "Отправлено на подписание",
         successSignTitle: "Файл успешно подписан! Для завершения процесса подписания документа необходимо поставить метку времени.",
         successSignContentFirstRow: "Ваша подпись прошла проверку и была зарегистрирована в SIGNAPP",
@@ -808,10 +783,8 @@ export default {
         goToDoc: "Перейти к документу",
         successCopy: "Успешно скопировано в буфер обмена!",
         failCopy: "Копирование удалось",
-        findDocTitle: "Поиск документа",
-        //
-        chosenFile: "Выбранный файл: {fn}",
-        //
+        findDocTitle: "Поиск документа", //
+        chosenFile: "Выбранный файл: {fn}", //
         find: "Найти",
         tsp: "Поставить метку времени",
         tspDescription: "Проверка метки времени осуществляется для электронных документов долговременного хранения. Метка времени формируется в момент подписания электронного документа при определении положительного результата проверки ЭЦП, тем самым являясь доказательством подписания документа в указанный момент времени.",
@@ -820,8 +793,7 @@ export default {
             header: "Проверки всех зарегистрированных в системе подписей успешно завершены!",
             subHeader: "Это говорит о том, что:",
             firstRow: "все зарегистрированные в системе подписи корректны;",
-            secondRow: "подписан был именно тот документ, который был только что предоставлен на проверку, никто не вносил в него изменений.",
-            //
+            secondRow: "подписан был именно тот документ, который был только что предоставлен на проверку, никто не вносил в него изменений.", //
             signSuccess: "Документ успешно подписан!"
         },
         error: {
@@ -837,21 +809,18 @@ export default {
                 fileServerNoResponse: 'Ошибка при получении файла из сервера хранилища. Пустой ответ.',
                 failedFileUploading: 'Ошибка загрузки файла на сервер хранилище.',
                 unzip: 'Ошибка распаковки ZIP файла.'
-            },
-            signature: {
+            }, signature: {
                 cms: {
                     notVerified: "Произошла ошибка при проверке CMS подписи.",
                     process: "Произошла ошибка при обработке CMS подписи.",
                     emptyData: "Исходные данные для проверки CMS подписи отсутствуют.",
                     multipleSigning: 'Ошибка во время вычисления хэша документа.'
                 },
-            },
-            tsp: {
+            }, tsp: {
                 process: "Произошла ошибка при проверке метки времени электронной подписи.",
                 notFound: "Метка времени на электронной подписи не найдена.",
                 notVerified: "Метка времени электронной подписи не прошла проверку.",
-            },
-            certificate: {
+            }, certificate: {
                 notFound: 'Сертификат не найдет',
                 process: "Произошла ошибка во время обработки сертификата, который был получен из CMS подписи.",
                 extract: "Не удалось получить сертификат пользователя из CMS подписи.",
@@ -869,10 +838,8 @@ export default {
                 signRightsNotFound: "Сертификат не имеет права на подпись документов (необходимы алгоритм: ГОСТ)",
                 mismatchBin: "БИН полученный из сертификата не равен БИН-у который указан в запросе.",
                 requiredBin: "Пустое значение БИН-а организации в запросе на подписание документа."
-            },
-            revocation: {
-                process: "Произошла ошибка при проверки сертификата на отозванность.",
-                revoked: "Используемый Вами сертификат для подписи был отозван.",
+            }, revocation: {
+                process: "Произошла ошибка при проверки сертификата на отозванность.", revoked: "Используемый Вами сертификат для подписи был отозван.",
             }
 
         },
@@ -984,7 +951,8 @@ export default {
         posterImageKkInvalid: "Постер на казахском не выбрана",
         posterImageRuInvalid: "Постер на русском не выбрана",
         posterImageEnInvalid: "Постер на английском не выбрана",
-        hiddenNews: "Скрыть новость"
+        hiddenNews: "Скрыть новость",
+        notValid: "Некоторые поля не заполнены",
     },
     mailing: {
         title: "Наименование",
@@ -1018,12 +986,7 @@ export default {
         fillVacTitle: "Введите наименование вакцины",
         clinic: "Клиника",
         status: {
-            firstcomponent: "первый компонент",
-            vaccinated: "вакцинирован(а)",
-            planned: "планируется",
-            rejected: "медотвод",
-            noData: "Нет данных",
-            minor: "до 18 лет",
+            firstcomponent: "первый компонент", vaccinated: "вакцинирован(а)", planned: "планируется", rejected: "медотвод", noData: "Нет данных", minor: "до 18 лет",
         },
         error: {
             list: "не удалость загрузить список вакцин"
@@ -1182,6 +1145,7 @@ export default {
         selectLanguage: 'Выберите язык',
         selectQuarter: 'Выберите квартал',
         generateReport: 'Создать отчет',
+        generateDiaryReport: 'Дневник-отчет',
         addDissertationReport: 'Добавление отчета о диссертации',
         dissReportLanguage: 'Язык',
         dissReportActions: 'Действия',
@@ -1217,8 +1181,7 @@ export default {
         noAnswer: "Ответ не получен",
         answerConfirm: "Ответ будет отправлен на почту отправителю вопроса. Сохранить и отправить ответ?",
         rejected: "Отменили выполнение действия"
-    },
-    // ENU New WebPaga
+    }, // ENU New WebPaga
     web: {
         mainMenuTitle: "ЕНУ Сайт",
         menuPage: "Меню",
@@ -1330,8 +1293,7 @@ export default {
     },
 
     student: {
-        clubs: "Студенческие клубы",
-        pageTitle: "Университетские клубы"
+        clubs: "Студенческие клубы", pageTitle: "Университетские клубы"
 
     },
     hr: {
@@ -1355,11 +1317,9 @@ export default {
         sp: {
             header: 'Процесс отбора на вакантные должности проходит в несколько этапов',
             label1: '– рассмотрение резюме кандидатов на замещение вакантных должностей ППС, АУП и НР;',
-            label2: '– собеседование с HR специалистом и руководителем структурного подразделения,\n' +
-                '                подавшим заявку на подбор персонала;',
+            label2: '– собеседование с HR специалистом и руководителем структурного подразделения,\n' + '                подавшим заявку на подбор персонала;',
             label3: '– собеседование с членами Конкурсной комиссии и подведение итогов конкурса.',
-            agreement: 'Ознакомлен и подтверждаю, что данные в моем персональном резюме корректные.\n' +
-                '                  Даю согласие на проверку предоставленных данных.',
+            agreement: 'Ознакомлен и подтверждаю, что данные в моем персональном резюме корректные.\n' + '                  Даю согласие на проверку предоставленных данных.',
             request: 'Подать заявку'
         },
         vacancies: "Вакансии",
@@ -1387,29 +1347,20 @@ export default {
             refresherCourse: 'Курсы повышения квалификации, семинары и стажировки'
         },
         resume: {
-            loading: 'Резюме загружается. Пожалуйста, подождите...',
-            create: 'Создать резюме',
-            delete: 'Удалить резюме',
+            loading: 'Резюме загружается. Пожалуйста, подождите...', create: 'Создать резюме', delete: 'Удалить резюме',
         },
         resumeNorFound: 'Ваше резюме не найдено. Желаете создать?',
         ad: {
-            defensePlace: 'Место защиты',
-            defenseDate: 'Дата защиты',
-            diplomaNumber: 'Номер диплома',
+            defensePlace: 'Место защиты', defenseDate: 'Дата защиты', diplomaNumber: 'Номер диплома',
         },
         edu: {
-            institution: 'Учебное заведение',
-            institutionAddress: 'Адрес учебного заведения',
-            receiptDate: 'Год поступления',
-            expirationDate: 'Год окончания',
+            institution: 'Учебное заведение', institutionAddress: 'Адрес учебного заведения', receiptDate: 'Год поступления', expirationDate: 'Год окончания',
         },
         we: {
-            responsibilities: 'Должностные обязанности',
-            untilNow: 'До настоящего времени'
+            responsibilities: 'Должностные обязанности', untilNow: 'До настоящего времени'
         },
         id: {
-            startDate: 'Дата выдачи',
-            issuedBy: 'Кем выдан',
+            startDate: 'Дата выдачи', issuedBy: 'Кем выдан',
         },
         lang: {
             pl: 'Уровень владения',
@@ -1500,22 +1451,35 @@ export default {
     },
     workPlan: {
         plans: "Планы",
+        planCheckApprove: "Данный план еще не согласован, у вас нет доступа",
         planName: "Название плана",
         addPlan: "Добавить план",
         addEvent: "Добавить мероприятие",
+        addTask: "Добавить задание",
+        worksByWeek: "Перечень работ по неделям",
+        week: "неделя",
+        monthAndDate: "Месяц и число",
+        textCS: "Содержание темы по технике безопасности",
         eventName: "Название мероприятия",
         approvalUsers: "Ответственные лица",
         quarter: "Квартал",
         executionResult: "Результат выполнения",
         attachments: "Прикрепленные файлы",
         viewPlan: "Посмотреть план",
+        viewDoc: "Посмотреть документ",
         reports: "Отчеты",
+        journalReports: "Дневник отчет",
+        safetyPrecautions: "Техника безопасности",
+        conclusionCounterparty: "Заключение контрагента",
+        conclusionHeadDepartment: "Заключение руководителя на кафедре",
+        practiceAssessment: "Оценивание практики",
         events: "Мероприятия",
         performEvent: "Выполнить мероприятие",
         reportName: "Наименование отчета",
         createReport: "Создать отчет",
         toCorrect: "Отправить на корректировку",
         editEvent: "Редактировать мероприятие",
+        editTask: "Редактировать задание",
         errors: {
             eventNameError: "Введите название мероприятия",
             approvalUserError: "Выберите ответственных лиц",
@@ -1535,9 +1499,7 @@ export default {
             noRespPersonChanged: "Ответственное лицо не изменено",
         },
         reportTypes: {
-            year: "Годовой",
-            quarter: "Квартальный",
-            halfYear: "Полугодовой"
+            year: "Годовой", quarter: "Квартальный", halfYear: "Полугодовой"
         },
         quarterYear: "Весь год",
         resultIndicator: "Показатель прямых результатов",
@@ -1575,7 +1537,6 @@ export default {
         mastersThesisInfo: "Информация о магистерской диссертации",
         mastersThesisGeneralPlan: "Общий план работы над магистерской диссертацией",
         content: "Содержание",
-        viewDoc: "Просмотр документа",
         expectingResults: "Ожидаемые результаты",
         relevance: "Актуальность",
         goal: "Цель",
@@ -1637,27 +1598,13 @@ export default {
             delete: "Удалить документ",
         },
         folder: {
-            add: "Добавить папку",
-            edit: "Редактировать папку",
-            delete: "Удалить папку",
-            hide: "Скрыть папку",
-            show: "Показать папку",
+            add: "Добавить папку", edit: "Редактировать папку", delete: "Удалить папку", hide: "Скрыть папку", show: "Показать папку",
         },
         file: {
-            add: "Добавить файл",
-            edit: "Редактировать файл",
-            delete: "Удалить файл",
-            hide: "Скрыть файл",
-            show: "Показать файл",
-            download: "Скачать файл",
+            add: "Добавить файл", edit: "Редактировать файл", delete: "Удалить файл", hide: "Скрыть файл", show: "Показать файл", download: "Скачать файл",
         },
         columns: {
-            faculties: "Факультеты",
-            cafedras: "Кафедры {faculty}",
-            name: "Имя",
-            author: "Разработчик",
-            year: "Год",
-            state: "Состояние",
+            faculties: "Факультеты", cafedras: "Кафедры {faculty}", name: "Имя", author: "Разработчик", year: "Год", state: "Состояние",
         },
     },
     postaccmonrep: {
@@ -1709,9 +1656,7 @@ export default {
         sendRequest: 'Отправить запрос',
         commentary: 'Комментарий от инициатора запроса',
         types: {
-            reference_error_correction: 'На исправление ошибок',
-            reference_info_request: 'Дополнительная информация',
-            reference_salary_request: 'Зарплата',
+            reference_error_correction: 'На исправление ошибок', reference_info_request: 'Дополнительная информация', reference_salary_request: 'Зарплата',
         },
         params: {
             full_name: 'ФИО',
@@ -1834,7 +1779,9 @@ export default {
         unauthorized: 'Пользователь не авторизован.',
         importAlreadyOnProcess: 'Процесс импорта уже запущен. Пожалуйста, дождитесь результатов.',
         notFound: 'Запрашиваемый ресурс не найден',
-        attempts: 'Вы пробовали войти %d раз.'
+        attempts: 'Вы пробовали войти %d раз.',
+        userDetailInvalid: 'Вы ввели пользователя, который не относится к данной образовательной программе. Пожалуйста, проверьте данные пользователя.',
+        existingPracticeAgreementsMessage: "У этого студента уже есть активные договоры на практику",
     },
     blog: {
         title: 'Блог',
@@ -1875,8 +1822,7 @@ export default {
         internal: 'Сотрудник организации',
     },
     visuallyImpaired: {
-        fontSize: "Размер шрифта",
-        siteColors: "Цвета сайта",
+        fontSize: "Размер шрифта", siteColors: "Цвета сайта",
     },
     mgov: {
         inApp: "Необходимое приложение: ",
@@ -1887,8 +1833,7 @@ export default {
         mobileAppNotInstalled: "Если у Вас нет приложения eGov Mobile/Business, то установите его сканируя QR",
     },
     integration: {
-        title: 'Интеграции',
-        updateNow: 'Обновить сейчас'
+        title: 'Интеграции', updateNow: 'Обновить сейчас'
     },
     science: {
         activity: 'Научная деятельность',
@@ -1965,14 +1910,9 @@ export default {
     personalData: 'Персональные сведения',
     yearPeriod: 'Период годов',
     scienceWorks: {
-        title: "Научные работы",
-        titleList: "Список научных работ",
-        publicationType: "Вид научной работы",
-        editionTypes: {
-            digital: "Электронный",
-            printed: "Печатный",
-        },
-        publicationCategories: {
+        title: "Научные работы", titleList: "Список научных работ", publicationType: "Вид научной работы", editionTypes: {
+            digital: "Электронный", printed: "Печатный",
+        }, publicationCategories: {
             beforeMastersThesis: "Научные труды, опубликованные до защиты магистерской диссертации",
             afterMastersThesis: "Научные труды, опубликованные после защиты магистерской диссертации",
             afterScientificWorks: "Научные труды опубликованные после получения ученого звания “ассоциированный профессор (доцент)”, “профессор”",
@@ -1980,8 +1920,7 @@ export default {
             beforeDoctoralDissertation: "Научные труды, опубликованные до защиты докторской диссертации",
             afterDoctoralDissertation: "Научные труды, опубликованные после защиты докторской диссертации"
 
-        },
-        buttons: {
+        }, buttons: {
             card: "Карта",
             newPublication: "Добавить публикацию",
             generateListDialog: "Список научных работ",
@@ -1990,8 +1929,7 @@ export default {
             search: "Поиск",
             koksnvo: "КОКСНВО",
             newList: "Новый список",
-        },
-        menu: {
+        }, menu: {
             newArticle: "Создать новую",
             importFromPlatonus: "Platonus",
             importFromScopus: "Scopus",
@@ -1999,21 +1937,11 @@ export default {
             publicationsKoksnvo: "Издания, рекомендуемых КОКСНВО",
             myRequests: "Мои запросы",
             import: "Импорт",
-        },
-        columns: {
-            name: "Название публикации",
-            type: "Тип публикации",
-            author: "Автор",
-            year: "Год",
-            status: "Статус",
-        },
-        filter: {
-            documentName: "Название публикации",
-            author: "Автор",
-            status: "Статус",
-            years: "Годы",
-        },
-        types: {
+        }, columns: {
+            name: "Название публикации", type: "Тип публикации", author: "Автор", year: "Год", status: "Статус",
+        }, filter: {
+            documentName: "Название публикации", author: "Автор", status: "Статус", years: "Годы",
+        }, types: {
             article: "Статьи в международном рецензируемом журнале Web of Science Core Collection",
             monograph: "Монография",
             scopus_article: "Публикации в Scopus",
@@ -2027,13 +1955,11 @@ export default {
             conference_proceedings: "В сборниках международных научно-практических конференций",
             authorized_body_publications: "В изданиях, рекомендуемых уполномоченным органом"
 
-        },
-        messages: {
+        }, messages: {
             successImport: "Запрос на импорт успешно отправлен",
             successPlatonus: "Импортируются научные труды с Platonus. Результаты будут позже!",
             successScopus: "Импортируются научные труды с Scopus. Результаты будут позже!",
-        },
-        labels: {
+        }, labels: {
             publicationName: "Наименование публикации",
             publicationDate: "Дата публикации",
             editionType: "Тип издания",
@@ -2163,11 +2089,7 @@ export default {
         ep: 'Специализация/ОП'
     },
     finance: {
-        title: 'Каталог услуг',
-        getService: 'Получить услугу',
-        chooseService: 'Выберите услугу',
-        choosePayment: 'Выберите способ оплаты',
-        kaspiApp: 'В приложении Kaspi.kz',
+        title: 'Каталог услуг', getService: 'Получить услугу', chooseService: 'Выберите услугу', choosePayment: 'Выберите способ оплаты', kaspiApp: 'В приложении Kaspi.kz',
     },
     helpDesk: {
         instructionNumber: "Язык обучения",

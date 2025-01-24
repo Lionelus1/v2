@@ -1,5 +1,5 @@
 import Enum from "../enum/docstates";
-import { useStore } from "vuex";
+import {useStore} from "vuex";
 
 export class MenuService {
     getGlobalMenu($t) {
@@ -26,8 +26,8 @@ export class MenuService {
                         to: '/documents/catalog/normdoc'
                     },
                     {
-                        label: $t('educomplex.title'), 
-                        icon: 'pi pi-fw pi-folder', 
+                        label: $t('educomplex.title'),
+                        icon: 'pi pi-fw pi-folder',
                         to: '/documents/catalog/educomplex/' + Enum.DocType.EduComplex
                     },
                     {
@@ -108,9 +108,9 @@ export class MenuService {
                         visible: this.findRole('student') || this.findRole('personal'),
                     },
                     {
-                      label: $t('common.individualEntrepreneur'),
-                      icon: 'pi pi-fw pi-briefcase',
-                      to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
+                        label: $t('common.individualEntrepreneur'),
+                        icon: 'pi pi-fw pi-briefcase',
+                        to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
                     },
                     {
                         label: $t('common.personal'),
@@ -202,7 +202,8 @@ export class MenuService {
                             }
                         ]
                     },
-                ]},
+                ]
+            },
             {
                 label: $t('workPlan.plans'),
                 icon: 'fa-solid fa-list-check',
@@ -251,7 +252,7 @@ export class MenuService {
                 label: $t('web.mainMenuTitle'),
                 icon: 'pi pi-fw pi-box ',
                 visible: (this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_page_admin')),
-                items:  [
+                items: [
                     {
                         label: $t('web.menuPage'),
                         icon: 'pi pi-fw pi-bars',
@@ -259,14 +260,14 @@ export class MenuService {
                         visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_menu_admin')
                     },
                     {
-                        label: $t('web.pageLink'), 
-                        icon: 'pi pi-fw pi-external-link', 
+                        label: $t('web.pageLink'),
+                        icon: 'pi pi-fw pi-external-link',
                         to: '/enu/pages',
                         visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_page_admin') || this.findRole('enu_web_menu_admin')
                     },
                     {
-                        label: $t('web.blocks'), 
-                        icon: 'fa-solid fa-cube', 
+                        label: $t('web.blocks'),
+                        icon: 'fa-solid fa-cube',
                         to: '/enu/blocks',
                         visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')
                     },
@@ -360,69 +361,68 @@ export class MenuService {
         ]
     }
 
-  getLoginedUser() {
-    let user = window.localStorage.getItem("loginedUser");
-    if (user) {
-      return JSON.parse(user);
+    getLoginedUser() {
+        let user = window.localStorage.getItem("loginedUser");
+        if (user) {
+            return JSON.parse(user);
+        }
+
+        return null;
     }
 
-    return null;
-  }
-
-  findRole(roleName) {
-    let loginedUser = this.getLoginedUser();
-    if (!loginedUser || !loginedUser.roles) {
-      return false;
-    }
-    for (let i = 0; i < loginedUser.roles.length; i++) {
-      if (loginedUser.roles[i].name === roleName) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  isVacancyRightsValidity() {
-    let role =
-      this.findRole("hr_administrator") ||
-      this.findRole("career_administrator") ||
-      this.findRole("hr_moderator") ||
-      this.findRole("career_moderator") ||
-      this.findRole("vacancy_initial_approve") ||
-      this.findRole("vacancy_final_approve");
-    return role;
-  }
-
-  isRoleGroupMember(groupPrefix) {
-    let loginedUser = this.getLoginedUser();
-    if (!loginedUser || !loginedUser.roles) {
-      return false;
-    }
-    for (let i = 0; i < loginedUser.roles.length; i++) {
-      if (loginedUser.roles[i].name.includes(groupPrefix)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  isEnuWorker() {
-    let loginedUser = this.getLoginedUser();
-    if (
-      !loginedUser ||
-      !loginedUser.roles ||
-      !loginedUser.mainPosition ||
-      loginedUser.mainPosition.organization.id !== 1
-    ) {
-      return false;
-    }
-
-    for (let i = 0; i < loginedUser.roles.length; i++) {
-      if (loginedUser.roles[i].name === "student") {
+    findRole(roleName) {
+        let loginedUser = this.getLoginedUser();
+        if (!loginedUser || !loginedUser.roles) {
+            return false;
+        }
+        for (let i = 0; i < loginedUser.roles.length; i++) {
+            if (loginedUser.roles[i].name === roleName) {
+                return true;
+            }
+        }
         return false;
-      }
     }
 
-    return true;
-  }
+    isVacancyRightsValidity() {
+        let role = this.findRole('hr_administrator') ||
+            this.findRole('career_administrator') ||
+            this.findRole('hr_moderator') ||
+            this.findRole('career_moderator') ||
+            this.findRole('vacancy_initial_approve') ||
+            this.findRole('vacancy_final_approve');
+        return role;
+    }
+
+    isRoleGroupMember(groupPrefix) {
+        let loginedUser = this.getLoginedUser();
+        if (!loginedUser || !loginedUser.roles) {
+            return false;
+        }
+        for (let i = 0; i < loginedUser.roles.length; i++) {
+            if (loginedUser.roles[i].name.includes(groupPrefix)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    isEnuWorker() {
+        let loginedUser = this.getLoginedUser();
+        if (
+            !loginedUser ||
+            !loginedUser.roles ||
+            !loginedUser.mainPosition ||
+            loginedUser.mainPosition.organization.id !== 1
+        ) {
+            return false;
+        }
+
+        for (let i = 0; i < loginedUser.roles.length; i++) {
+            if (loginedUser.roles[i].name === "student") {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

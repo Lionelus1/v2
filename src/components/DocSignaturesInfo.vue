@@ -40,8 +40,7 @@
         </div>
       </TabPanel>
       <TabPanel v-if="docInfo && docInfo.docHistory.stateId == 2 && !checkingNoSignature() &&  !(docInfo.folder && docInfo.folder.type === Enum.FolderType.Agreement
-      && docInfo.docType === Enum.DocType.Contract) || docInfo && docInfo.docHistory.stateId == 6"
-                :disabled="hideDocSign" :header="$t('ncasigner.sign')">
+      && docInfo.docType === Enum.DocType.Contract) || docInfo && docInfo.docHistory.stateId == 6" :disabled="hideDocSign" :header="$t('ncasigner.sign')">
         <div class="mt-2">
           <Panel v-if="!$isMobile">
             <template #header>
@@ -141,19 +140,33 @@
           {{ docInfo.docHistory.comment }}
         </div>
       </TabPanel>
+      <TabPanel v-if="showStudents" :header="$t('common.members')">
+        <DataTable
+            :value="memberList"
+            tableStyle="min-width: 50rem"
+            dataKey="id"
+            :lazy="true"
+            :loading="loadingMem"
+            paginator
+            :rows="10"
+            :total-records="totalMembers"
+            :rowsPerPageOptions="[10, 20, 50]"
+            @page="onPage($event)"
+            :first="first"
+        >
+          <Column field="fullName" :header="$t('common.fullName')"/>
+        </DataTable>
+      </TabPanel>
     </TabView>
   </div>
 </template>
 
 <script>
 import SignatureQrPdf from "@/components/ncasigner/SignatureQrPdf";
-import {
-  runNCaLayer,
-  makeTimestampForSignature,
-} from "@/helpers/SignDocFunctions";
+import {runNCaLayer,} from "@/helpers/SignDocFunctions";
 
 import api from "@/service/api";
-import {getHeader, smartEnuApi, socketApi, b64toBlob, findRole, fileRoute} from "@/config/config";
+import {b64toBlob, findRole, getHeader, smartEnuApi, socketApi} from "@/config/config";
 import html2pdf from "html2pdf.js";
 import DocInfo from "@/components/ncasigner/DocInfo";
 import QrcodeVue from "qrcode.vue";
@@ -188,6 +201,14 @@ export default {
       type: Boolean,
       default: false,
     },
+    docIdInt: {
+      type: Number,
+      default: null,
+    },
+    showStudents: {
+      type: Boolean,
+      default: false,
+    }
   },
   // emits: ['sentToRevision'],
   data() {
@@ -201,6 +222,10 @@ export default {
       isTspRequired: Boolean,
       signerIin: null,
       docInfo: null,
+      memberList: [],
+      totalMembers: 0,
+      first: 0,
+      loadingMem: false,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser"))
           ? JSON.parse(localStorage.getItem("loginedUser")).userID
           : null,
@@ -265,6 +290,9 @@ export default {
     this.signerIin = this.signerIinParam;
     this.showAllSigns = this.showAllSignsParam;
     this.getData();
+    if (this.showStudents) {
+      this.getConrtactUsersForSchedulePlan({doc_id: this.docIdInt, page: 0, rows: 10})
+    }
   },
   mounted() {
     this.wsconnect();
@@ -328,38 +356,58 @@ export default {
       if (this.active == 1 && this.files.length < 1) {
         // showFileTab
         if (this.docInfo.isManifest === true) {
-          api.post(
-              "/downloadManifestFiles", {
-                docId: this.docInfo.id
-              }, {
-                headers: getHeader()
-              }
-          )
-              .then(response => {
-                let filesBase64Array = response.data
-                for (let i = 0; i < filesBase64Array.length; i++) {
-                  this.files.push(this.b64toBlob(filesBase64Array[i]))
-                }
-              })
+          api.post("/downloadManifestFiles", {docId: this.docInfo.id,},
+              {headers: getHeader(),}).then((response) => {
+            let filesBase64Array = response.data;
+            for (let i = 0; i < filesBase64Array.length; i++) {
+              this.files.push(this.b64toBlob(filesBase64Array[i]));
+            }
+          });
         } else {
-          api
-              .post(
-                  "/downloadFile",
-                  {
-                    filePath: this.docInfo.filePath,
-                  },
-                  {
-                    headers: getHeader(),
-                  }
-              )
-              .then((response) => {
-                this.files.push(this.b64toBlob(response.data.file));
-              });
+          api.post("/downloadFile", {filePath: this.docInfo.filePath,},
+              {headers: getHeader()}).then((response) => {
+            this.files.push(this.b64toBlob(response.data.file));
+          });
         }
       } else if (this.active == 2 && this.loginedUserId === null) {
         this.$store.dispatch("solveAttemptedUrl", this.$route);
         this.$router.push({path: "/login"});
       }
+    },
+    onPage(event) {
+      this.first = event.first;
+      let data = {
+        doc_id: this.docIdInt,
+        page: event.page,
+        rows: event.rows,
+      };
+      this.getConrtactUsersForSchedulePlan(data);
+    },
+    getConrtactUsersForSchedulePlan(data) {
+      this.loadingMem = true;
+      api.post(`/document/users`, data,
+          {headers: getHeader(),}
+      ).then((res) => {
+        if (res.data && res.data.users) {
+          this.memberList = res.data.users;
+          this.totalMembers = res.data.total;
+        }
+        this.loadingMem = false;
+      }).catch(error => {
+        if (error.response && error.response.status === 401) {
+          this.$store.dispatch("logLout");
+        } else if (error.response && error.response.status === 403) {
+          this.$store.dispatch("solveAttemptedUrl", this.$route)
+          this.$router.push({path: '/login'});
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: error,
+            life: 3000,
+          });
+        }
+        this.loadingMem = false;
+      });
     },
     getData() {
       this.loading = true;
@@ -389,7 +437,9 @@ export default {
                 (this.findRole(null, RolesEnum.roles.OnlineCourseAdministrator) &&
                     this.docInfo.docType === Enum.DocType.DT_Request) ||
                 this.docInfo.docHistory.setterId === this.loginedUserId ||
-                this.docInfo.creatorID === this.loginedUserId;
+                this.docInfo.creatorID === this.loginedUserId ||
+                (this.findRole(null, RolesEnum.roles.Student) && this.docInfo.docType === Enum.DocType.WorkPlan) ||
+                (this.findRole(null, RolesEnum.roles.Teacher) && this.docInfo.docType === Enum.DocType.RequestList);
           }
 
           if (this.signatures) {
@@ -527,42 +577,22 @@ export default {
         return
       }
       this.signing = true;
-      api
-          .post(
-              "/downloadFile",
-              {
-                filePath: this.docInfo.filePath,
-              },
-              {
-                headers: getHeader(),
-              }
-          )
-          .then((response) => {
-            runNCaLayer(
-                this.$t,
-                this.$toast,
-                response.data.file,
-                "cms",
-                this.signerType,
-                this.isTspRequired,
-                this.$i18n.locale
-            )
-                .then((sign) => {
-                  if (sign && sign.length > 0) {
-                    this.sendRequest(sign[0]);
-                  }
-                  this.signing = false;
-                })
-                .catch((e) => {
-                  this.signing = false;
-                });
-          })
-          .catch((error) => {
-            this.signing = false;
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            }
-          });
+      api.post("/downloadFile", {filePath: this.docInfo.filePath},
+          {headers: getHeader()}).then((response) => {
+        runNCaLayer(this.$t, this.$toast, response.data.file, "cms", this.signerType, this.isTspRequired, this.$i18n.locale).then((sign) => {
+          if (sign && sign.length > 0) {
+            this.sendRequest(sign[0]);
+          }
+          this.signing = false;
+        }).catch((e) => {
+          this.signing = false;
+        });
+      }).catch((error) => {
+        this.signing = false;
+        if (error.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
+      });
     },
     sendRequest(signature) {
       var req = {
@@ -681,37 +711,29 @@ export default {
         return;
       }
 
-      this.loading = true;
-      api
-          .post(
-              `/doc/sendtorevision`,
-              {
-                comment: this.revisionComment,
-                docID: this.docInfo.id,
-              },
-              {
-                headers: getHeader(),
-              }
-          )
-          .then((res) => {
-            this.loading = false;
-            // this.$emit('sentToRevision', this.revisionComment)
-            // location.reload();
-            this.getData();
-          })
-          .catch((err) => {
-            if (err.response.status == 401) {
-              this.$store.dispatch("logLout");
-            }
+      this.loading = true
+      api.post(`/doc/sendtorevision`, {
+        comment: this.revisionComment,
+        docID: this.docInfo.id,
+      }, {
+        headers: getHeader()
+      }).then(res => {
+        this.loading = false
+        // this.$emit('sentToRevision', this.revisionComment)
+        location.reload()
+      }).catch(err => {
+        if (err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        }
 
-            this.$toast.add({
-              severity: "error",
-              detail: this.$t("common.message.saveError"),
-              life: 3000,
-            });
+        this.$toast.add({
+          severity: "error",
+          detail: this.$t("common.message.saveError"),
+          life: 3000,
+        });
 
-            this.loading = false;
-          });
+        this.loading = false;
+      });
     },
     getDocNew() {
       this.loading = true;
@@ -782,18 +804,17 @@ export default {
         }
 
         this.loading = false;
-      })
-          .catch((err) => {
-            this.loading = false;
+      }).catch((err) => {
+        this.loading = false;
 
-            if (err.response && err.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else if (err.response && err.response.data && err.response.data.localized) {
-              this.showMessage('error', this.$t(err.response.data.localizedPath));
-            } else {
-              this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
-            }
-          });
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath));
+        } else {
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      });
     },
     approve() {
       this.$confirm.require({
@@ -869,6 +890,38 @@ export default {
         }
       }
       return false
+    },
+    changeApprovals() {
+      if (this.currentApprovalUsers.length < 1) {
+        return
+      }
+
+      let users = [];
+      for (let i = 0; i < this.currentApprovalUsers.length; i++) {
+        users.push(this.currentApprovalUsers[i].userID)
+      }
+
+      this.loading = true;
+
+      this.service.changeCurrentStageApprovals({
+        uuid: this.docInfo.uuid,
+        stage: this.currentApprovalStage,
+        users: users,
+      }).then(res => {
+        this.loading = false;
+
+        location.reload();
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath));
+        } else {
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      });
     },
     checkingNoSignature() {
       const userId = this.loginedUserId;

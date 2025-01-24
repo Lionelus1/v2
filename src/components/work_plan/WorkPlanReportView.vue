@@ -5,16 +5,14 @@
     <div class="col-12" v-if="report && plan">
       <div class="card" v-if="report && report?.doc_info">
         <div>
-          <TitleBlock :title="report.report_name" :show-back-button="true"/>
+          <TitleBlock :title="report.doc_info.docType === 15 ? $t(report.report_name) : report.report_name" :show-back-button="true"/>
           <span v-if="report" :class="'ml-3 customer-badge status-' + report?.doc_info.docHistory.stateEn">
             {{ $t('common.states.' + report?.doc_info.docHistory.stateEn) }}
           </span>
         </div>
       </div>
-      <div class="card"
-           v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4)">
-        <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')"
-                @click="openDoc"></Button>
+      <div class="card" v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4)">
+        <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc"/>
       </div>
       <div class="card" v-if="visibleSendToApprove">
         <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')"
@@ -24,7 +22,26 @@
                                :report="report" :plan="plan" @sent-to-approve="getReport" @closed="closeApproveModal"/>
 
       </div>
-      <div class="card" v-if="blobSource">
+      <div v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4) && report.report_type === 5">
+        <vue-element-loading :active="contrConcLoading" color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
+        <span :class="'ml-3'">
+          <br/>
+
+          {{ report?.doc_info.owner.fullName }}
+          <br/>
+          {{ report?.doc_info.owner.mainPosition.name }}
+          <br/>
+          {{ report?.doc_info.owner.mainPosition.department.name }} {{ report?.doc_info.owner.mainPosition.department.cafedra.name }}
+
+        </span>
+        <div style="height: 10px;"/>
+        <div class="field">
+          <TinyEditor v-model="contrConcModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
+          <div style="height: 10px;"/>
+          <Button :label="$t('common.save')" icon="pi pi-save" class="p-button-success mr-2" @click="saveContr"/>
+        </div>
+      </div>
+      <div class="card" v-else-if="blobSource">
         <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf"/>
       </div>
     </div>
@@ -44,10 +61,8 @@
     </Dialog>
   </div>
 
-  <Sidebar v-model:visible="showReportDocInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll"
-           @hide="closeSideModal">
-    <DocSignaturesInfo :docIdParam="report.doc_id" :isInsideSidebar="true"
-                       @sentToRevision="rejectPlanReport($event)"></DocSignaturesInfo>
+  <Sidebar v-model:visible="showReportDocInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal">
+    <DocSignaturesInfo :docIdParam="report.doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event)"/>
   </Sidebar>
 </template>
 
@@ -57,7 +72,8 @@ import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove"
 import {WorkPlanService} from "@/service/work.plan.service";
 import Enum from "@/enum/workplan";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
-import {log} from "qrcode/lib/core/galois-field";
+import {findRole} from "../../config/config";
+import {DocService} from "../../service/doc.service";
 
 export default {
   name: "WorkPlanReportView",
@@ -66,6 +82,8 @@ export default {
   data() {
     const loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
     return {
+      contrConcModel: null,
+      contrConcLoading: false,
       loginedUser: loginedUser,
       source: null,
       showModal: false,
@@ -121,6 +139,7 @@ export default {
       fd: new FormData(),
       isSciencePlan: false,
       reportPath: null,
+      docService: new DocService(),
     }
   },
   mounted() {
@@ -143,6 +162,7 @@ export default {
   },
 
   methods: {
+    findRole,
     closeSideModal() {
       this.showReportDocInfo = false;
       this.$emit('closed', true)
@@ -169,6 +189,8 @@ export default {
     getReport() {
       this.planService.getPlanReportById(this.report_id).then(res => {
         this.report = res.data;
+        if (this.report.report_type && this.report.report_type === 5)
+          this.calcCC(); //для заключения контрагента
         this.getPlan();
         this.getFile();
         // this.getReportApprovalUsers();
@@ -276,6 +298,23 @@ export default {
     },
     closeModal() {
       this.showRejectPlan = false;
+    },
+    saveContr() {
+      this.contrConcLoading = true;
+      this.report.doc_info.params?.forEach((param) => {
+        if (param.name === "content") {
+          if (!param.value) param.value = "";
+          param.value = this.contrConcModel;
+        }
+      })
+      this.docService.saveDocumentV2(this.report.doc_info).then(res => {
+        this.report.doc_info = res.data
+        this.$toast.add({severity: "success", summary: this.$t('common.success'), life: 3000});
+        this.contrConcLoading = false;
+      }).catch(error => {
+        this.$toast.add({severity: 'error', summary: error.message, life: 3000});
+        this.contrConcLoading = false;
+      });
     },
     openModal() {
       this.showModal = true;
@@ -391,6 +430,14 @@ export default {
     },
     closeApproveModal() {
       this.showModal = false
+    },
+    calcCC() {
+      if (this.report && this.report.doc_info && this.report.doc_info.params) {
+        const temp = this.report.doc_info.params.filter(item => item.name.includes("content"));
+        if (temp.length <= 1) {
+          this.contrConcModel = temp[0].value;
+        }
+      }
     }
   }
 }

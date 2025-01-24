@@ -12,15 +12,15 @@
                  class="flex-grow-1" @page="onPage">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
-        <Column field="content" :header="$t('workPlan.planName')" sortable>
-          <template #body="{ data }">
-            <router-link
-                :to="{ name: 'WorkPlanEvent', params: { id: data.work_plan_id }, query: {first: lazyParams.first, page: lazyParams.page, rows: lazyParams.rows} }"
-                tag="a">
-              {{ data.work_plan_name }}
-            </router-link>
-          </template>
-        </Column>
+        <template>
+          <Column field="content" :header="$t('workPlan.planName')" sortable>
+            <template #body="slotProps">
+              <a href="#" @click.prevent="handleClick(slotProps.data, slotProps.data.doc_info.docHistory.stateEn)">
+                {{ slotProps.data.work_plan_name }}
+              </a>
+            </template>
+          </Column>
+        </template>
         <Column field="sing" :header="$t('ncasigner.sign')">
           <template #body="{ data }">
             <div v-if="showMySign(data.doc_info.approvalStages)">
@@ -84,12 +84,12 @@
     <OverlayPanel ref="global-filter">
       <div class="p-fluid">
         <div class="field" style="width: 320px">
-         <div class="field">
-           <label>{{ $t('workPlan.planType') }}</label>
-           <Dropdown class="lang p-link mb-2" v-model="filter.plan_type" :options="types"
-                     :optionLabel="['name_' + $i18n.locale]" optionValue="id" :placeholder="$t('workPlan.planType')"
-           />
-         </div>
+          <div class="field">
+            <label>{{ $t('workPlan.planType') }}</label>
+            <Dropdown class="lang p-link mb-2" v-model="filter.plan_type" :options="types"
+                      :optionLabel="['name_' + $i18n.locale]" optionValue="id" :placeholder="$t('workPlan.planType')"
+            />
+          </div>
           <div class="field">
             <label>{{ $t('common.search') }}</label>
             <InputText type="search" class="search_toolbar mb-2" v-model="filter.searchText" :placeholder="$t('common.search')"/>
@@ -117,7 +117,6 @@ import {WorkPlanService} from "@/service/work.plan.service";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import Enum from "@/enum/docstates";
 import WPEnum from "@/enum/workplan"
-import moment from "moment";
 import {formatDate} from "@/helpers/HelperUtil";
 import DocState from "@/enum/docstates/index";
 
@@ -422,6 +421,44 @@ export default {
       this.userNameSearch = null
       this.getPlans();
     },
+    handleClick(data, code) {
+      // Проверка, что параметр id существует
+      if (!data.work_plan_id) {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t('common.error'),
+          detail: this.$t('workPlan.missingIdError'),
+          life: 3000
+        });
+        return; // Прерываем выполнение, если нет id
+      }
+
+      // Выполняем проверку если студент и согласованный ли план
+      if (this.isStudent() &&
+          code !== "approved" &&
+          (data && data.plan_type && data.plan_type.code === "work")) {
+        // Обработка ошибки planCheckApprove
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t('workPlan.planCheckApprove'),
+          life: 3000
+        });
+      } else {
+        // Переход по маршруту
+        this.$router.push({
+          name: 'WorkPlanEvent',
+          params: {id: data.work_plan_id}, // Здесь проверяем, что id не пустой
+          query: {
+            first: this.lazyParams.first,
+            page: this.lazyParams.page,
+            rows: this.lazyParams.rows
+          }
+        });
+      }
+    },
+    isStudent() {
+      return this.findRole(null, 'student');
+    },
     getDocStatus(code) {
       const foundStatus = this.docStatus.find(status => status.code === code);
 
@@ -460,7 +497,7 @@ export default {
       this.filter.filtered = true;
       if (this.userNameSearch?.length > 0) {
         this.filter.user_id = this.userNameSearch[0].userID
-      }else{
+      } else {
         this.filter.user_id = null
       }
       localStorage.setItem("workPlanFilter", JSON.stringify(this.filter));
