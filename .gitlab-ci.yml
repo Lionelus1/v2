@@ -17,7 +17,7 @@ install_stage:
   stage: install
   image: node:18
   script:
-    - npm ci
+    - npm i
   only:
     - master
     - test
