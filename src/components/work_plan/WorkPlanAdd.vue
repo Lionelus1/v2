@@ -162,6 +162,6 @@ watch(() => formData.plan_type, () => {
   }).catch(error => {
     params.value = null
   })
-}
+})
 
 </script>

@@ -106,7 +106,6 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {fas} from '@fortawesome/free-solid-svg-icons'
 import {fab} from '@fortawesome/free-brands-svg-icons';
 import {far} from '@fortawesome/free-regular-svg-icons';
-import ScrollPanel from "primevue/scrollpanel";
 import WorkPlanEventResult from "./components/work_plan/WorkPlanEventResult";
 import TitleBlock from "./components/TitleBlock";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
@@ -115,10 +114,8 @@ import AddInfo from "@/components/AddInfo.vue";
 
 import {isMobile} from "@/helpers/HelperUtil";
 import {VueReCaptcha} from "vue-recaptcha-v3";
-import {useToast} from "primevue/usetoast";
-import AddInfo from "@/components/AddInfo.vue";
 
-Date.prototype.toJSON = function(){
+Date.prototype.toJSON = function () {
     const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
     this.setHours(hoursDiff);
     return this.toISOString();
@@ -126,7 +123,7 @@ Date.prototype.toJSON = function(){
 
 library.add(fas, far, fab)
 dom.watch();
-router.beforeEach(function(to, from, next) {
+router.beforeEach(function (to, from, next) {
     window.scrollTo(0, 0);
     next();
 });
