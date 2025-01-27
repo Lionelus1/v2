@@ -13,12 +13,12 @@
     </div>
     <div class="field">
       <label>{{ $t('workPlan.planType') }}</label>
-      <Dropdown v-model="plan_type" :options="types" :optionLabel="'name_' + $i18n.locale" @change="planChange"
+      <Dropdown v-model="formData.plan_type" :options="types" :optionLabel="'name_' + $i18n.locale" optionValue="id"
                 :placeholder="$t('common.select')"/>
       <small class="p-error" v-if="submitted && !formData.plan_type">{{ $t('common.requiredField') }}</small>
     </div>
 
-<!--    {{ params }}-->
+    <!--    {{ params }}-->
 
     <DocParams :params="params"></DocParams>
 
@@ -75,7 +75,6 @@ const planService = new WorkPlanService()
 const docService = new DocService()
 const types = ref([])
 const params = ref(null)
-const plan_type = ref(null)
 
 const closeBasic = () => {
   emit('hide')
@@ -89,7 +88,6 @@ const createPlan = () => {
   const fd = new FormData()
   formData.params = params.value?.filter(param => param.component != "file")
   fd.append("workplan", JSON.stringify(formData))
-
   params.value?.forEach((param) => {
     if (param.component == "file" && param.value?.length > 0) {
       for (let file of param.value) {
@@ -142,16 +140,25 @@ onMounted(() => {
   getWorkPlanTypes();
 })
 
-const planChange = (event) => {
-  formData.plan_type = event.value?.id
-
-  const id = event.value?.dic_document_types
-  if (id == null) {
+watch(() => formData.plan_type, () => {
+  let id = null
+  types.value.forEach((type) => {
+    if (type.id === formData.plan_type) {
+      id = type.dic_document_types
+    }
+  })
+  if (id === null) {
     params.value = null
     return
   }
   docService.getDocParams(id).then(res => {
-    params.value = JSON.parse(res.data)
+    params.value = JSON.parse(res.data);
+    if (formData.plan_type === 9) {
+      let user = JSON.parse(localStorage.getItem("loginedUser"))
+      if (user?.mainPosition?.id === 37290) {
+        params.value = params.value.filter(item => item.name !== 'foreign_consultant');
+      }
+    }
   }).catch(error => {
     params.value = null
   })

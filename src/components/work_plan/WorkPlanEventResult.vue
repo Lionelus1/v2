@@ -54,7 +54,7 @@
           </div>
 
           <div
-              v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5 && !isMastersPlan && !isDoctorsPlan">
+              v-if="isPlanCreator && event && event.status.work_plan_event_status_id === 5 && !isMastersPlan && !isDoctorsPlan && !isInternshipPlan">
             <Menubar :model="verifyMenu" :key="active"
                      style="height: 36px;margin-top: -7px;margin-left: -14px;margin-right: -14px;"></Menubar>
           </div>
@@ -104,7 +104,7 @@
             </div>
           </div>
           <div class="grid mt-3" v-else>
-            <div class="p-fluid" v-if="(isMastersPlan || isDoctorsPlan) || (!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
+            <div class="p-fluid" v-if="isInternshipPlan || (isMastersPlan || isDoctorsPlan) || (!isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
               event.status.work_plan_event_status_id !== 5 &&
               event.status.work_plan_event_status_id !== 2 && event.status.work_plan_event_status_id !== 6) || (isRespUser && isPlanCreator && (isPlanCreatorApproval || !isPlanCreator) &&
               event.status.work_plan_event_status_id !== 5 &&
@@ -281,7 +281,7 @@
                       :label="$t('common.send')" icon="fa-regular fa-paper-plane" class="p-button p-button-primary" @click="sendResultConfirmItem($event, item, 'send')"
                       style="float: left; margin-right: 10px;"></Button>
                   <div style="margin-left: -12px;"
-                       v-if="(!isMastersPlan && !isDoctorsPlan && isPlanCreator || findRole(null, 'main_administrator')) || ((isMastersPlan || isDoctorsPlan) && isAdviser) ">
+                       v-if="(!isInternshipPlan && !isMastersPlan && !isDoctorsPlan && isPlanCreator || findRole(null, 'main_administrator')) || ((isMastersPlan || isDoctorsPlan || isInternshipPlan) && isAdviser) ">
                     <Button v-if="(item.plan_event_result_history[0].state_id === 5)" icon="pi pi-fw pi-check"
                             class="p-button-rounded p-button-text"
                             @click="confirmToInspected(isInspected, item.user.userID, item.event_result_id)"
@@ -296,7 +296,7 @@
                   </div>
                   <div v-else class="p-0">
                     <span style="float:right;margin-top: -7px;"
-                          v-if="isPlanCreator && (!isMastersPlan && !isDoctorsPlan) ">
+                          v-if="isPlanCreator && (!isMastersPlan && !isDoctorsPlan && !isInternshipPlan) ">
                       <Button icon="pi pi-fw pi-check" class="p-button-rounded p-button-text" @click="verify(true)"
                               :label="$t('common.action.accept')"></Button>
                       <Button icon="pi pi-fw pi-times" class="p-button-rounded p-button-text"
@@ -679,6 +679,9 @@ export default {
     isDoctorsPlan() {
       return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors
     },
+    isInternshipPlan() {
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Internship
+    },
     isStandartPlan() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Standart
     },
@@ -692,7 +695,6 @@ export default {
           res = e.value[0].userID === this.loginedUserId
         }
       })
-
       return res
     },
     isSummaryDepartmentUser() {
@@ -710,7 +712,7 @@ export default {
       if (this.isPlanCreator) {
         userResults = this.resultData.filter(x => x.user_id === this.loginedUserId)
       }
-      let userData = !userResults.some(x => x.plan_event_result_history?.every(x => x.modi_user_id === this.loginedUserId && (x.state_id === 1 || x.state_id === 5 || x.state_id === 6)))
+      let userData = !userResults.some(x => x.plan_event_result_history?.every(x => (x.state_id === 1 || x.state_id === 5 || x.state_id === 6)))
       return userData
     },
     shouldShowRejectSidebar() {
@@ -823,7 +825,7 @@ export default {
       this.inputWordCount = count
     },
     respUserExists(id) {
-      if (this.isMastersPlan || this.isDoctorsPlan) {
+      if (this.isMastersPlan || this.isDoctorsPlan || this.isInternshipPlan) {
         return this.event?.summary_department_id === id || this.event?.creator_id == id
       }
       return this.event?.user?.some(user => user.id === id)
@@ -1021,7 +1023,7 @@ export default {
       if (this.isOperPlan) {
         this.wordLimit = 0
       }
-      if (!this.isStandartPlan && !this.isMastersPlan && !this.isDoctorsPlan && (this.inputWordCount > this.wordMaxLimit || this.inputWordCount < this.wordLimit)) {
+      if (!this.isStandartPlan && !this.isMastersPlan && !this.isDoctorsPlan && !this.isInternshipPlan && (this.inputWordCount > this.wordMaxLimit || this.inputWordCount < this.wordLimit)) {
         this.$toast.add({severity: 'warn', detail: this.$t('workPlan.maxWordCount', this.wordMaxLimit), life: 3000})
         this.isBlockUI = false;
         return;
@@ -1163,7 +1165,7 @@ export default {
     verifyHistory(isInspected, userId, resultId) {
       let comment = "";
       comment = this.rejectComment
-      this.planService.verifyEventResultHistory(this.isInspected, comment, this.user_id, this.user_id, this.eventResultId, this.event_id).then(res => {
+      this.planService.verifyEventResultHistory(this.isInspected, comment, this.resultUserId, this.user_id, this.eventResultId, this.event_id).then(res => {
         if (res.data) {
           this.$toast.add({
             severity: 'success',

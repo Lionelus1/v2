@@ -34,10 +34,15 @@
               }}</a>
           </template>
         </Column>
+        <Column v-if="isInternshipPlan" :header="$t('dissertation.disstitle')">
+          <template #body="{ data }">
+            {{ data.disstitle }}
+          </template>
+        </Column>
         <Column
             field="department"
             :header="$t('common.department')"
-            v-if="!isMastersPlan && !isDoctorsPlan"
+            v-if="!isMastersPlan && !isDoctorsPlan && !isInternshipPlan"
         >
           <template #body="{ data }">
             <span v-if="data.department">
@@ -53,38 +58,24 @@
         </Column>
         <Column field="status" :header="$t('common.status')">
           <template #body="slotProps">
-            <span
-                v-if="
-                slotProps.data.doc_info && slotProps.data.doc_info.docHistory
-              "
-                :class="
-                'customer-badge status-' +
-                slotProps.data.doc_info.docHistory.stateEn
-              "
-            >
-              {{
-                $t(
-                    'common.states.' + slotProps.data.doc_info?.docHistory.stateEn
-                )
-              }}
+            <span v-if="slotProps.data.doc_info && slotProps.data.doc_info.docHistory"
+                  :class="'customer-badge status-' + slotProps.data.doc_info.docHistory.stateEn">
+              {{ $t('common.states.' + slotProps.data.doc_info?.docHistory.stateEn) }}
             </span>
           </template>
         </Column>
-        <Column :header="$t('common.type')" v-if="!isMastersPlan && !isDoctorsPlan">
+        <Column :header="$t('common.type')" v-if="!isMastersPlan && !isDoctorsPlan && !isInternshipPlan">
           <template #body="{ data }">
             {{ initReportType(data.report_type, data.halfYearType) }}
           </template>
         </Column>
-        <Column
-            :header="
-            isMastersPlan  || isDoctorsPlan ? $t('workPlan.semester') : $t('workPlan.quarter')
-          "
-        >
+        <Column :header="
+            isMastersPlan  || isDoctorsPlan ? $t('workPlan.semester') : isInternshipPlan ? $t('workPlan.protocolNumber') : $t('workPlan.quarter')">
           <template #body="{ data }">
-            {{ isMastersPlan || isDoctorsPlan ? data.quarter : initQuarter(data.quarter) }}
+            {{ isMastersPlan || isDoctorsPlan || isInternshipPlan ? data.quarter : initQuarter(data.quarter) }}
           </template>
         </Column>
-        <Column :header="$t('common.comment')" v-if="!isMastersPlan && !isDoctorsPlan">
+        <Column :header="$t('common.comment')" v-if="!isMastersPlan && !isDoctorsPlan && !isInternshipPlan">
           <template #body="{ data }">
             <p v-if="data.reject_history">{{ data.reject_history.message }}</p>
           </template>
@@ -96,20 +87,19 @@
             </p>
           </template>
         </Column>
+        <Column v-if="isInternshipPlan" :header="$t('workPlan.protocolApprovedDate')">
+          <template #body="{ data }">
+            <p v-if="data.approved_date">
+              {{ formatDateMoment(data.approved_date) }}
+            </p>
+          </template>
+        </Column>
         <Column>
           <template #body="{ data }">
-            <Button
-                type="button"
-                v-if="
-                data.creator_id === loginedUserId &&
-                data.doc_info &&
-                data.doc_info.docHistory.stateId === 1
-              "
-                icon="pi pi-trash"
-                class="p-button-danger mr-2"
-                label=""
-                @click="deleteConfirm(data)"
-            ></Button>
+            <Button type="button" v-if="data.creator_id === loginedUserId &&
+                data.doc_info && data.doc_info.docHistory.stateId === 1"
+                    icon="pi pi-trash" class="p-button-danger mr-2"
+                    label="" @click="deleteConfirm(data)"></Button>
           </template>
         </Column>
       </DataTable>
@@ -119,7 +109,6 @@
 
 <script>
 import WorkPlanReportModal from '@/components/work_plan/WorkPlanReportModal';
-import {getHeader, smartEnuApi} from '@/config/config';
 import moment from 'moment/moment';
 import {WorkPlanService} from '@/service/work.plan.service';
 import Enum from '@/enum/workplan';
@@ -152,6 +141,9 @@ export default {
     },
     isDoctorsPlan() {
       return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors;
+    },
+    isInternshipPlan() {
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Internship;
     },
     showCreateReportButton() {
       return this.plan && (this.isPlanCreator || this.getResponsiveUser());
@@ -260,7 +252,7 @@ export default {
           });
     },
     formatDateMoment(date) {
-      return moment(new Date(date)).utc().format('DD.MM.YYYY HH:mm:ss');
+      return moment(new Date(date)).utc().format("DD.MM.YYYY")
     },
     initReportType(type, halfYearType) {
       let result = '';
@@ -278,9 +270,7 @@ export default {
       return result;
     },
     getResponsiveUser() {
-      return this.plan?.responsive_users?.some(
-          (user) => user.id === this.loginedUser.userID
-      );
+      return this.plan?.responsive_users?.some(user => user.id === this.loginedUser.userID)
     },
     initQuarter(quarter) {
       let res = '';

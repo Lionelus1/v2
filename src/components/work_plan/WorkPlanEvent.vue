@@ -37,10 +37,11 @@
                  :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows"
                  :total-records="total" :rowHover="true" :paginatorTemplate="paginatorTemplate"
-                 @page="onPage($event)" v-if="(!isMastersPlan && !isDoctorsPlan && !isWorkSchedule)">
+                 @page="onPage($event)" v-if="(!isMastersPlan && !isDoctorsPlan && !isWorkSchedule && !isInternshipPlan)">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
-        <Column field="event_name" :expander="true" :header="$t('workPlan.eventName')" style="min-width:300px;width: 30%;">
+        <Column field="event_name" :expander="true" :header="$t('workPlan.eventName')"
+                style="min-width:300px;width: 30%;">
           <template #body="{ node }">
             <span><i class="fa-solid fa-folder" style="margin-left: 30px;"></i>&nbsp;{{ node.event_name }}</span>
           </template>
@@ -69,7 +70,9 @@
           <template #body="{ node }">
             <span v-if="node.fact && isFactVisible" style="float: left;">{{ node.fact + " " }}</span>
             <div v-if="node.resp_person_id === loginedUserId">
-              <div v-if="isFactInputVisible && parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id'])" style="min-width: 150px;">
+              <div
+                  v-if="isFactInputVisible && parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id'])"
+                  style="min-width: 150px;">
                 <div class="inline-container">
                   <InputText type="text" v-model="factValue"/>
                   <Button @click="updateFact(node.work_plan_event_id, factValue)" icon="pi pi-check" text rounded aria-label="Update"/>
@@ -77,8 +80,10 @@
                 </div>
               </div>
               <span v-if="selectedWorkPlanEvent && Object.keys(selectedWorkPlanEvent)[0] && node">
-              <a v-if="parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id']) && isFactVisible" href="javascript:void(0)"
-                 @click="factValue=node.fact ;factVisiblity()">&nbsp;&nbsp;<i class="pi pi-pencil" style="margin-top: 5px;"></i></a>
+              <a v-if="parseInt(Object.keys(selectedWorkPlanEvent)[0]) === parseInt(node['work_plan_event_id']) && isFactVisible"
+                 href="javascript:void(0)"
+                 @click="factValue=node.fact ;factVisiblity()">&nbsp;&nbsp;<i
+                  class="pi pi-pencil" style="margin-top: 5px;"></i></a>
             </span>
             </div>
           </template>
@@ -97,7 +102,8 @@
         <Column field="fullName" :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
           <template #body="{ node }">
             <div v-if="node.user && node.user.length > 2">
-              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text" icon="fa-solid fa-people-group fa-xl" label=""/>
+              <Button type="button" @click="showRespUsers($event, node)" class="p-button-text"
+                      icon="fa-solid fa-people-group fa-xl" label=""/>
               <OverlayPanel ref="op" @hide="closeOverlay">
                 <p v-for="item in selectedEvent.user" :key="item.id">{{ item.user.fullName }}</p>
               </OverlayPanel>
@@ -113,12 +119,15 @@
             {{ node.supporting_docs }}
           </template>
         </Column>
-        <Column field="result" :header="isOperPlan ? $t('common.additionalInfo') : $t('common.result')" style="width: 15%;">
+        <Column field="result" :header="isOperPlan ? $t('common.additionalInfo') : $t('common.result')"
+                style="width: 15%;">
           <template #body="{ node }">
             <div v-if="node.result && node.result.length > 100">
               {{ node.result_short }}
-              <a href="javascript:void(0);" @click="toggle('event-final-result', $event, node)">{{ $t('common.showMore').toLowerCase() }}</a>
-              <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px" :breakpoints="{ '960px': '75vw' }" @hide="closeOverlay">
+              <a href="javascript:void(0);"
+                 @click="toggle('event-final-result', $event, node)">{{ $t('common.showMore').toLowerCase() }}</a>
+              <OverlayPanel ref="event-final-result" :showCloseIcon="true" style="width: 450px"
+                            :breakpoints="{ '960px': '75vw' }" @hide="closeOverlay">
                 <div>{{ selectedEvent.result }}</div>
               </OverlayPanel>
             </div>
@@ -176,9 +185,13 @@
           @updateSelect="handleSelected"
       />
     </div>
+    <InternshipPlanTable v-if="plan && planDoc && isInternshipPlan" :data="data" :items="initItems" @onPage="onPage"
+                         @onExpand="onExpand" @onToggle="actionsToggle" :total="total" :loading="loading"
+                         @showDialog="internshipDialogShow" :dialog="dialog" :isFinsih="isFinish"/>
   </div>
 
-  <Sidebar v-model:visible="dialog.planView.state" position="right" class="w-6" style="overflow-y: scroll" @hide="hideDialog(dialog.planView)">
+  <Sidebar v-model:visible="dialog.planView.state" position="right" class="w-6" style="overflow-y: scroll"
+           @hide="hideDialog(dialog.planView)">
     <DocSignaturesInfo :docIdParam="plan.doc_id" :isInsideSidebar="true"></DocSignaturesInfo>
   </Sidebar>
 
@@ -272,38 +285,52 @@
     <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
       <label>{{ $t('workPlan.summaryDepartment') }}</label>
       <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
-      <small class="p-error" v-if="submitted && !summaryDepartment?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+      <small class="p-error"
+             v-if="submitted && !summaryDepartment?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
     </div>
     <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science">
-      <label>{{ plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
+      <label>{{
+          plan && (plan.is_oper || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers')
+        }}</label>
       <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
-      <small class="p-error" v-if="submitted && !selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+      <small class="p-error" v-if="submitted && !selectedUsers?.length > 0">{{
+          $t('workPlan.errors.approvalUserError')
+        }}</small>
     </div>
     <template v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science && inputSets">
       <div v-for="(inputSet, index) in inputSets" :key="index">
         <div class="field">
           <label>{{ $t('workPlan.scienceParticipants') }}</label>
-          <FindUser class="select_wp" v-model="inputSet.selectedUsers" :editMode="true" searchMode="local" :user-type="3" :max="1"></FindUser>
-          <small class="p-error" v-if="submitted && !inputSet.selectedUsers?.length > 0">{{ $t('workPlan.errors.approvalUserError') }}</small>
+          <FindUser class="select_wp" v-model="inputSet.selectedUsers" :editMode="true" searchMode="local"
+                    :user-type="3" :max="1"></FindUser>
+          <small class="p-error" v-if="submitted && !inputSet.selectedUsers?.length > 0">{{
+              $t('workPlan.errors.approvalUserError')
+            }}</small>
         </div>
         <div class="field">
           <label for="name">{{ $t('common.role') }}</label>
           <RolesByName class="select_wp" v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
-          <small class="p-error" v-if="submitted && !inputSet?.selectedRole">{{ $t('workPlan.errors.approvalUserError') }}</small>
+          <small class="p-error" v-if="submitted && !inputSet?.selectedRole">{{
+              $t('workPlan.errors.approvalUserError')
+            }}</small>
         </div>
         <p style="text-align: right;" class="mb-3">
-          <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined" @click="removeInputSet(index)"
+          <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times"
+                  class="p-button-danger p-button-sm p-button-outlined" @click="removeInputSet(index)"
                   outlined/>
         </p>
       </div>
     </template>
     <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
-      <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5 select_wp" @click="addNewUser"/>
+      <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5 select_wp"
+              @click="addNewUser"/>
     </div>
 
     <div class="flex justify-content-end gap-2">
-      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeRespPersonDialog"></Button>
-      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="updateResponsivePersons"></Button>
+      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
+              @click="closeRespPersonDialog"></Button>
+      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
+              @click="updateResponsivePersons"></Button>
     </div>
   </Dialog>
 
@@ -448,6 +475,7 @@ import RolesByName from "@/components/smartenu/RolesByName.vue";
 import ActionButton from "@/components/ActionButton.vue";
 import {ContragentService} from "@/service/contragent.service";
 import FindUser from "../../helpers/FindUser.vue";
+import InternshipPlanTable from './table/InternshipPlanTable.vue';
 
 export default {
   name: "WorkPlanEvent",
@@ -465,7 +493,8 @@ export default {
     ActionButton,
     RolesByName,
     DoctorsMastersTable,
-    WorkPlanEventAddMember
+    WorkPlanEventAddMember,
+    InternshipPlanTable
   },
   props: ['isEditResponsiveUsers'],
   data() {
@@ -1226,7 +1255,69 @@ export default {
                 },
               },)
             }
-            if ((this.isMastersPlan || this.isDoctorsPlan) && !this.isFinish && !this.isApproval) {
+
+            if (this.isInternshipPlan) {
+              this.planApprovalStage = [
+                {
+                  stage: 1,
+                  users: null,
+                  certificate: {
+                    namekz: 'Жеке тұлғаның сертификаты',
+                    nameru: 'Сертификат физического лица',
+                    nameen: 'Certificate of an individual',
+                    value: 'individual',
+                  },
+                  titleRu: 'Cтудент',
+                  titleKz: 'Cтудент',
+                  titleEn: 'Student',
+                },
+                {
+                  stage: 2,
+                  users: null,
+                  titleRu: 'Научный руководитель',
+                  titleKz: 'Ғылыми жетекші',
+                  titleEn: 'Scientific adviser',
+                  certificate: {
+                    namekz: 'Жеке тұлғаның сертификаты',
+                    nameru: 'Сертификат физического лица',
+                    nameen: 'Certificate of an individual',
+                    value: 'individual',
+                  },
+                },
+                {
+                  stage: 3,
+                  users: null,
+                  titleRu: 'Заведующий кафедры',
+                  titleKz: 'Кафедра меңгерушісі',
+                  titleEn: 'Head of Department',
+                  certificate: {
+                    namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
+                    nameru: 'Для внутреннего документооборота (ГОСТ)',
+                    nameen: 'For internal document management (GOST)',
+                    value: 'internal',
+                  },
+                },
+                {
+                  stage: 4,
+                  users: null,
+                  titleRu: 'Декан факультета',
+                  titleKz: 'Факультет деканы',
+                  titleEn: 'Dean of the Faculty',
+                  certificate: {
+                    namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
+                    nameru: 'Для внутреннего документооборота (ГОСТ)',
+                    nameen: 'For internal document management (GOST)',
+                    value: 'internal',
+                  },
+                }
+              ];
+              let user = JSON.parse(localStorage.getItem("loginedUser"))
+              if (user?.mainPosition?.id === 37290) {
+                this.planApprovalStage.pop();
+              }
+            }
+
+            if ((this.isMastersPlan || this.isDoctorsPlan || this.isInternshipPlan) && !this.isFinish && !this.isApproval) {
               this.getAdditionalInfo()
             }
 
@@ -1735,6 +1826,10 @@ export default {
       dialog.state = true
       this.editRespUser = isEditPerson
     },
+    internshipDialogShow(data) {
+      data.dialog.state = true;
+      this.selectedEvent = {...this.selectedEvent, semester: data.section}
+    },
     hideDialog(dialog) {
       this.selectedMembers = [];
       dialog.state = false;
@@ -1867,7 +1962,7 @@ export default {
                 this.isCreator ||
                 (this.isUserResp(this.selectedEvent?.user) && !this.isFinish)
             ),
-            visible: !this.isFinish && !this.isMastersPlan && !this.isDoctorsPlan && !this.isWorkSchedule,
+            visible: !this.isFinish && !this.isMastersPlan && !this.isDoctorsPlan && !this.isWorkSchedule && !this.isInternshipPlan,
             command: () => {
               this.showDialog(this.dialog.add);
             },
@@ -1967,6 +2062,9 @@ export default {
           this.plan.plan_type.code === Enum.WorkPlanTypes.Doctors
       );
     },
+    isInternshipPlan() {
+      return (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Internship);
+    },
     toolbarMenus() {
       return [
         {
@@ -1984,7 +2082,7 @@ export default {
           icon: 'pi pi-plus',
           visible: this.isWorkSchedule ?
               ((this.isPlanCreator || this.isEventsNull) && !this.isFinish) && (this.active === 0 && this.isWorkSchedule && !findRole(null, 'student')) :
-              ((this.isPlanCreator || this.isEventsNull) && !this.isFinish),
+              ((this.isPlanCreator || this.isEventsNull) && !this.isFinish && !this.isInternshipPlan),
           color: 'blue',
           command: () => {
             this.showDialog(this.dialog.add);
@@ -2017,9 +2115,9 @@ export default {
           label: this.$t('workPlan.viewPlan'),
           icon: 'pi pi-eye',
           color: this.isFinish ? '' : 'green',
-          disabled: (this.isMastersPlan || this.isDoctorsPlan) && (!this.data || this.data.length === 0 || !this.additinalInfoFilled),
+          disabled: (this.isMastersPlan || this.isDoctorsPlan || this.isInternshipPlan) && (!this.data || this.data.length === 0 || !this.additinalInfoFilled),
           visible:
-              ((this.isMastersPlan || this.isDoctorsPlan) && (!this.isFinish || this.isApproval)) || (this.isFinish && this.planDoc &&
+              ((this.isMastersPlan || this.isDoctorsPlan || this.isInternshipPlan) && (!this.isFinish || this.isApproval)) || (this.isFinish && this.planDoc &&
                   !(this.isCreatedPlan || this.isPlanUnderRevision)),
           command: () => {
             if (this.isFinish) {
@@ -2046,7 +2144,7 @@ export default {
               !this.isSciencePlan &&
               (this.isApproval || this.isPlanCreator || this.isAdmin || this.isRespUser) &&
               (!(this.isMastersPlan || this.isDoctorsPlan) ||
-                  this.isPlanApproved),
+                  this.isPlanApproved) && (!(this.isMastersPlan || this.isDoctorsPlan || this.isInternshipPlan) || this.isPlanApproved),
           command: () => {
             this.navigateToReports();
           },
@@ -2135,7 +2233,16 @@ export default {
           command: () => {
             this.analyzeClick()
           }
-        }
+        },
+        {
+          label: this.$t('workPlan.researchWork'),
+          icon: 'pi pi-plus',
+          visible: !this.isFinish && this.isInternshipPlan,
+          color: 'grey',
+          command: () => {
+            this.showDialog(this.dialog.info);
+          }
+        },
       ];
     },
     isFinshButtonDisabled() {

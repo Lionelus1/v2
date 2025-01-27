@@ -1539,7 +1539,9 @@ export default {
             approvalUserError: "Select the responsible persons",
             quarterError: "Select a quarter",
             langError: "Choose language",
-            pleaseChoose: "Choose"
+            pleaseChoose: "Choose",
+            contentError: "Content is required",
+            startDateError: "Start date is required",
         },
         message: {
             eventCreated: "Event created successfully",
@@ -1627,7 +1629,18 @@ export default {
             strategicDirectionExecutionLevel: "Percentage of completion of strategic directions",
             structuralDivisionExecutionLevel: "Percentage of completion of structural units",
             selectQuarter: "Select quarter"
-        }
+        },
+        placeOfInternship: "Place of internship",
+        numberOfDays: "Number of days",
+        academiCWork: "Academic work",
+        participationInSeminars: "Participation in scientific seminars",
+        additionalTypesOfWork: "Additional types of work",
+        feedbackFromDoctorsStudent: "Feedback from a doctoral student on the effectiveness and efficiency of a research internship",
+        researchWork: "Research work",
+        contentsOfPlannedWork: "Contents of the planned work within the framework of the scientific internship",
+        numberAndApprovedDate: "Number and Date of Approval of the Protocol",
+        protocolNumber: "Protocol number",
+        protocolApprovedDate: "Date of approval of the protocol"
     },
     queue: {
         title: "Queue",

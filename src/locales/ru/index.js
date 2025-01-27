@@ -1485,7 +1485,9 @@ export default {
             approvalUserError: "Выберите ответственных лиц",
             quarterError: "Выберите квартал",
             langError: "Выберите язык",
-            pleaseChoose: "Выберите"
+            pleaseChoose: "Выберите",
+            contentError: "Содержание обязательно",
+            startDateError: "Дата начала обязательна",
         },
         message: {
             eventCreated: "Мероприятие успешно создано",
@@ -1572,7 +1574,18 @@ export default {
             structuralDivisionExecutionLevel: "Процент выполнения структурных подразделений",
             selectQuarter: "Выбрать квартал",
             departmentNotFound: "Структурный раздел не найден",
-        }
+        },
+        placeOfInternship: "Место прохождения стажировки",
+        numberOfDays: "Количество дней",
+        academiCWork: "Учебная работа",
+        participationInSeminars: "Участие в научных семинарах",
+        additionalTypesOfWork: "Дополнительные виды работы",
+        feedbackFromDoctorsStudent: "Отзыв докторанта о результативности и эффективности научной стажировки",
+        researchWork: "Научно-исследовательская работа",
+        contentsOfPlannedWork: "Содержание планируемых работ в рамках научной стажировки",
+        numberAndApprovedDate: "Номер и Дата утверждения протокола",
+        protocolNumber: "Номер протокола",
+        protocolApprovedDate: "Дата утверждения протокола",
     },
     educomplex: {
         title: "Учебно-методический комплекс дисциплины",

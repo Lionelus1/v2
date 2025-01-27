@@ -3,7 +3,12 @@
 
       :header="isShedulePlan ? $t('workPlan.addTask') : $t('workPlan.addEvent')"
       v-model:visible="showWorkPlanEventModal" :style="{width: '600px'}" @hide="closeBasic" :close-on-escape="true">
-    <div class="p-fluid">
+    <div class="p-fluid" v-if="isInternshipPlan">
+      <!-- internship -->
+      <InternshipAddEvent :plan="plan" @update-data="updateData" :form-valid="formValid"/>
+    </div>
+
+    <div class="p-fluid" v-if="!isInternshipPlan">
       <!-- mastersplan -->
       <DoctorsMastersAddEvent :plan="plan" @update-data="updateData" :form-valid="formValid" v-if="isMastersPlan || isDoctorsPlan"/>
       <!-- mastersplan -->
@@ -98,8 +103,7 @@
       <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5"
               @click="addNewUser"/>
     </div>
-    <div class="p-fluid" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan">
-
+    <div class="p-fluid" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan && !isInternshipPlan">
       <div class="field" v-if="
         (plan &&
           plan.plan_type.code !== Enum.WorkPlanTypes.Science &&
@@ -117,8 +121,7 @@
         <label>{{ $t('common.suppDocs') }}</label>
         <Textarea v-model="supporting_docs" rows="3" style="resize: vertical"/>
       </div>
-      <div class="field" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan">
-
+      <div class="field">
         <label>{{
             isOperPlan ? $t('common.additionalInfo') : $t('common.result')
           }}</label>
@@ -140,13 +143,14 @@ import {WorkPlanService} from '@/service/work.plan.service';
 import Enum from '@/enum/workplan/index';
 import RolesByName from '@/components/smartenu/RolesByName.vue';
 import DoctorsMastersAddEvent from './event_add/DoctorsMastersAddEvent.vue';
-import {ref} from 'vue';
 import FindUser from "../../helpers/FindUser.vue";
+import InternshipAddEvent from './event_add/InternshipAddEvent.vue';
+import {ref} from "vue";
 
 export default {
   name: 'WorkPlanEventAdd',
   props: ['visible', 'data', 'isMain', 'items', 'planData'],
-  components: {FindUser, RolesByName, DoctorsMastersAddEvent},
+  components: {FindUser, RolesByName, DoctorsMastersAddEvent, InternshipAddEvent},
   emits: ['hide'],
 
   data() {
@@ -193,6 +197,9 @@ export default {
         users: false,
         quarter: false,
         semester: false,
+        startDate: false,
+        content: false,
+        responsible_executor: false,
       },
       submitted: false,
       newQuarters: [],
@@ -208,7 +215,7 @@ export default {
       start_date: new Date(),
       end_date: new Date(),
       comingData: ref(),
-    };
+    }
   },
 
   mounted() {
@@ -268,6 +275,9 @@ export default {
     },
     isDoctorsPlan() {
       return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors;
+    },
+    isInternshipPlan() {
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Internship;
     },
   },
   methods: {
@@ -360,31 +370,32 @@ export default {
         data = {...data, ...this.comingData};
       }
 
-      this.planService
-          .createEvent(data)
-          .then((res) => {
-            this.emitter.emit('workPlanEventIsAdded', {
-              is_success: true,
-              is_main: this.isMain,
-            });
-            this.$toast.add({
-              severity: 'success',
-              detail: this.$t('workPlan.message.eventCreated'),
-              life: 3000,
-            });
-            this.showWorkPlanEventModal = false;
-            this.clearModel();
-            //this.addToArray(res.data);
-          })
-          .catch((error) => {
-            if (error && error.error === 'summaryuseradded') {
-              this.$toast.add({
-                severity: 'warn',
-                summary: this.$t('workPlan.warnAddingSummaryUser'),
-                life: 4000,
-              });
-            }
+      if (this.isInternshipPlan) {
+        data = {...data, ...this.comingData, semester: this.data?.semester, parent_id: null};
+      }
+
+      this.planService.createEvent(data).then((res) => {
+        this.emitter.emit('workPlanEventIsAdded', {
+          is_success: true,
+          is_main: this.isMain,
+        });
+        this.$toast.add({
+          severity: 'success',
+          detail: this.$t('workPlan.message.eventCreated'),
+          life: 3000,
+        });
+        this.showWorkPlanEventModal = false;
+        this.clearModel();
+        //this.addToArray(res.data);
+      }).catch((error) => {
+        if (error && error.error === 'summaryuseradded') {
+          this.$toast.add({
+            severity: 'warn',
+            summary: this.$t('workPlan.warnAddingSummaryUser'),
+            life: 4000,
           });
+        }
+      });
     },
     addToArray(data) {
       data.user = this.respUsers;
@@ -402,6 +413,14 @@ export default {
         this.formValid.users = this.comingData?.resp_person_id === null;
         return !this.formValid.users
       }
+
+      if (this.isInternshipPlan) {
+        this.formValid.startDate = !this.comingData?.start_date;
+        this.formValid.content = !this.comingData?.event_name;
+        this.formValid.responsible_executor = !this.comingData?.resp_person_id;
+        return !this.formValid.startDate && !this.formValid.content && !this.formValid.responsible_executor;
+      }
+
       this.formValid.event_name = !this.event_name;
       this.formValid.summaryUser = !this.summaryDepartment.length === 0;
       // this.formValid.users = this.selectedUsers.length === 0;

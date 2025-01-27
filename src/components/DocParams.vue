@@ -42,7 +42,7 @@
 <script setup>
 import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import {WorkPlanService} from "@/service/work.plan.service";
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 
 const planService = new WorkPlanService()
 const props = defineProps(['params'])
@@ -77,4 +77,24 @@ onMounted(() => {
   getPracticeTypes();
   getEduProgByManagerId();
 })
+
+watch(() => props.params, () => {
+  let startDate, endDate;
+  props.params.forEach((param) => {
+    if (param.name === "start_date") {
+      startDate = param.value
+    }
+    if (param.name === "end_date") {
+      endDate = param.value
+    }
+    if (param.name === "number_of_days") {
+      if (startDate === null || endDate === null) {
+        param.value = null
+      } else {
+        param.value = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24))
+      }
+    }
+  })
+}, {deep: true})
+
 </script>

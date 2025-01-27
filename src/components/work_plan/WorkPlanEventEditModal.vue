@@ -1,6 +1,7 @@
 <template>
   <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
-    <div v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters && plan?.plan_type?.code !==  Enum.WorkPlanTypes.Doctors">
+    <div
+        v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters && plan?.plan_type?.code !==  Enum.WorkPlanTypes.Doctors && plan?.plan_type?.code !== Enum.WorkPlanTypes.Internship">
       <div class="field">
         <label>{{
             plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
@@ -47,9 +48,9 @@
       </div>
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
         <label>{{ $t('workPlan.summaryDepartment') }}</label>
-        <FindUser v-model="resp_person" :max="1" editMode="true" :user-type="3"/>
+        <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
       </div>
-      <div class="field" v-if="(plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science) && !isShedulePlan">
+      <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science && !isShedulePlan">
         <label>{{ plan && (plan.plan_type || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
         <FindUser v-model="selectedUsers" :editMode="true" :user-type="3"></FindUser>
         <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
@@ -88,10 +89,23 @@
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
         <Textarea v-model="editData.result" rows="3" style="resize: vertical"/>
       </div>
+      <div class="field" v-if="isEditResponsiveUsers">
+        <label>{{
+            plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.comment') : $t('common.comment')
+          }}</label>
+        <Textarea v-model="editorComment" rows="3" style="resize: vertical"/>
+        <small class="p-error" v-if="submitted && isEditResponsiveUsers && !editorComment?.length > 0">{{
+            $t('common.requiredField')
+          }}</small>
+      </div>
     </div>
     <div
-        v-if="(plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors)">
-      <div class="field">
+        v-if="(plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors || plan?.plan_type?.code === Enum.WorkPlanTypes.Internship)">
+      <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Internship">
+        <label style="text-transform: capitalize">{{ $t('workPlan.week') }}</label>
+        <InputNumber v-model="editData.quarter"/>
+      </div>
+      <div class="field" v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Internship">
         <label>{{ $t("educationalPrograms.semester") }}</label>
         <Dropdown v-model="editData.semester" :options="semesters" optionLabel="name" optionValue="id" :placeholder="$t('educationalPrograms.semester')"/>
       </div>
@@ -101,19 +115,33 @@
         <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
       </div>
       <div class="field">
-        <label>{{ $t("workPlan.content") }}</label>
+        <label>{{
+            plan?.plan_type?.code === Enum.WorkPlanTypes.Internship ?
+                $t("workPlan.contentsOfPlannedWork") :
+                $t("workPlan.content")
+          }}</label>
         <Textarea v-model="editData.event_name" rows="3" style="resize: vertical"/>
+        <small class="p-error" v-if="submitted && formValid?.content">{{ $t('workPlan.errors.contentError') }}</small>
       </div>
       <div class="field">
         <label>{{ $t('common.startDate') }}</label>
         <PrimeCalendar v-model="editData.start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+        <small class="p-error" v-if="submitted && formValid?.startDate">{{ $t('workPlan.errors.startDateError') }}</small>
       </div>
       <div class="field">
         <label>{{ $t('common.endDate') }}</label>
         <PrimeCalendar v-model="editData.end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
       <div class="field">
-        <label>{{ $t("workPlan.expectingResults") }}</label>
+        <label>{{ $t('workPlan.approvalUsers') }}</label>
+        <FindUser v-model="resp_person" :editMode="true" :user-type="3"></FindUser>
+        <small class="p-error" v-if="submitted && formValid.responsible_executor">{{ $t('workPlan.errors.approvalUserError') }}</small>
+      </div>
+      <div class="field">
+        <label>{{
+            plan?.plan_type?.code === Enum.WorkPlanTypes.Internship ? $t("web.note") :
+                $t("workPlan.expectingResults")
+          }}</label>
         <Textarea v-model="editData.result" rows="3" style="resize: vertical"/>
       </div>
     </div>
@@ -178,6 +206,9 @@ export default {
         event_name: false,
         users: false,
         quarter: false,
+        startDate: false,
+        content: false,
+        responsible_executor: false,
       },
       sheduleFormValid: {
         workName: false,
@@ -213,7 +244,7 @@ export default {
           name: '4'
         },
       ],
-      resp_person: []
+      resp_person: [],
     }
   },
   mounted() {
@@ -296,6 +327,9 @@ export default {
           this.plan.plan_type.code === Enum.WorkPlanTypes.WorkSchedule
       );
     },
+    isInternshipPlan() {
+      return (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Internship);
+    },
   },
   unmounted() {
     this.showWorkPlanEventEditModal = false
@@ -339,7 +373,7 @@ export default {
       }
       this.editData.resp_person_id = resp_person_id;
 
-      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters || this.Enum.WorkPlanTypes.Doctors) {
+      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Doctors || this.isInternshipPlan) {
         if (this.resp_person.length !== 0) {
           this.editData.resp_person_id = this.resp_person[0].userID
           this.editData.responsible_executor = this.resp_person[0].fullName
@@ -655,6 +689,12 @@ export default {
     notValid() {
       let validation = this.formValid;
       let errors = [];
+      if (this.isInternshipPlan) {
+        this.formValid.startDate = !this.editData?.start_date;
+        this.formValid.content = !this.editData?.event_name;
+        this.formValid.responsible_executor = !this.resp_person || this.resp_person?.length === 0;
+        return !(!this.formValid.startDate && !this.formValid.content && !this.formValid.responsible_executor);
+      }
       if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
         this.formValid.users = this.resp_person.length === 0;
         Object.keys(this.formValid).forEach(function (k) {

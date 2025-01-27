@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
+import {createRouter, createWebHashHistory} from 'vue-router';
 import Full from './components/Full.vue';
 import store from '@/store/store';
 
@@ -326,7 +326,7 @@ const routes = [
                 name: 'OrganizationList',
                 component: load('contragent/v2/OrganizationList'),
                 beforeEnter: ifUserRoles,
-                meta: { roles: ['student', 'personal'] }
+                meta: {roles: ['student', 'personal']}
             },
             {
                 path: '/contragent/organization/:id?',
@@ -334,7 +334,7 @@ const routes = [
                 component: load('contragent/v2/OrganizationPage'),
                 props: true,
                 beforeEnter: ifUserRoles,
-                meta: { roles: ['student', 'personal'] }
+                meta: {roles: ['student', 'personal']}
             },
             {
                 path: '/user/cv/:uuid',
@@ -347,7 +347,7 @@ const routes = [
                 name: 'PersonsList',
                 component: load('contragent/v2/PersonsList'),
                 beforeEnter: ifUserRoles,
-                meta: { roles: ['personal'] }
+                meta: {roles: ['personal']}
             },
             {
                 path: '/hdfs/hdfsmain',
@@ -712,14 +712,14 @@ const routes = [
                 path: '/telegram',
                 name: 'TelegramComponent',
                 component: load('telegram/Questions'),
-                meta: { roles: ['telegram', 'main_administrator'] },
+                meta: {roles: ['telegram', 'main_administrator']},
                 beforeEnter: ifUserRoles,
             },
             {
                 path: '/showcase',
                 name: 'ShowcaseComponent',
                 component: load('showcase/Showcase'),
-                meta: { roles: ['showcase'] },
+                meta: {roles: ['showcase']},
                 beforeEnter: ifUserRoles,
 
             },
@@ -727,21 +727,21 @@ const routes = [
                 path: '/hikvision',
                 name: 'HikvisionTemplate',
                 component: load('hikvision/Hikvision'),
-                meta: { roles: ['personal'] },
+                meta: {roles: ['personal']},
                 beforeEnter: ifUserRoles,
             },
             {
                 path: '/reports',
                 name: 'ReportsTemplate',
                 component: load('reports/Reports'),
-                meta: { roles: ['personal'] },
+                meta: {roles: ['personal']},
                 beforeEnter: ifUserRoles,
             },
             {
                 path: '/report-preview',
                 name: 'ReportPreview',
                 component: load('reports/ReportPreview'),
-                meta: { roles: ['personal'] },
+                meta: {roles: ['personal']},
                 beforeEnter: ifUserRoles,
             },
             {
@@ -749,7 +749,7 @@ const routes = [
                 name: 'ReportView',
                 component: load('reports/ReportView'),
                 props: true,
-                meta: { roles: ['personal'] },
+                meta: {roles: ['personal']},
                 beforeEnter: ifUserRoles,
             },
             {

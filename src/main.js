@@ -116,6 +116,7 @@ import AddInfo from "@/components/AddInfo.vue";
 import {isMobile} from "@/helpers/HelperUtil";
 import {VueReCaptcha} from "vue-recaptcha-v3";
 import {useToast} from "primevue/usetoast";
+import AddInfo from "@/components/AddInfo.vue";
 
 Date.prototype.toJSON = function(){
     const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;

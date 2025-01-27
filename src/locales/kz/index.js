@@ -1557,7 +1557,9 @@ export default {
             approvalUserError: "Жауапты тұлғаларды таңдаңыз",
             quarterError: "Тоқсан таңдаңыз",
             langError: "Тіл таңдаңыз",
-            pleaseChoose: "Таңдаңыз"
+            pleaseChoose: "Таңдаңыз",
+            contentError: "Мазмұн қажет",
+            startDateError: "Басталу күні қажет",
         },
         message: {
             eventCreated: "Іс-шара сәтті құрылды",
@@ -1646,7 +1648,18 @@ export default {
             structuralDivisionExecutionLevel: "Құрылымдық бөлімдердің орындалу пайызы",
             selectQuarter: "Тоқсанды таңдаңыз",
             departmentNotFound: "Құрылымдық бөлім табылмады",
-        }
+        },
+        placeOfInternship: "Место прохождения стажировки",
+        numberOfDays: "Күндер саны",
+        academiCWork: "Оқу жұмысы",
+        participationInSeminars: "Ғылыми семинарларға қатысу",
+        additionalTypesOfWork: "Қосымша жұмыс түрлері",
+        feedbackFromDoctorsStudent: "Ғылыми тағылымдамадан өтудің тиімділігі мен тиімділігі туралы докторанттың кері байланысы",
+        researchWork: "Зерттеу жұмысы",
+        contentsOfPlannedWork: "Ғылыми тағылымдама аясындағы жоспарлы жұмыстардың мазмұны",
+        numberAndApprovedDate: "Хаттаманың нөмірі мен бекітілген күні",
+        protocolNumber: "Протокол нөмірі",
+        protocolApprovedDate: "Протоколдың бекітілген күні",
     },
     educomplex: {
         title: "Пәннің оқу-әдістемелік кешені",
