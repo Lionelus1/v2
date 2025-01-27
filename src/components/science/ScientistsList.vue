@@ -38,8 +38,8 @@
           <template v-for="(item, index) in slotProps.items" :key="index">
             <div class="col-12 sm:col-6 md:col-4 lg:col-2 p-2">
               <div @click="selectScientist(item)" class="card shadow-1 m-0 h-full" v-ripple style="text-align: center;">
-                <img class="card_img round" v-if="item.photo != null && item.photo !=''"
-                     :src="'data:image/jpeg;base64,' + item.photo "/>
+                <img class="card_img round" v-if="item.photo_v2 != null && item.photo_v2 !=''"
+                     :src="'data:image/jpeg;base64,' + item.photo_v2 "/>
                 <img class="card_img round" v-else src="assets/layout/images/default-user.jpg"/>
                 <p style="margin-top: 2mm; margin-bottom: 2mm;">{{ getFullName(item) }}</p>
               </div>

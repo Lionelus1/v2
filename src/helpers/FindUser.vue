@@ -22,8 +22,8 @@
           <template #option="slotProps">
             <div class="user-item grid">
               <div class="image-container lg:col-2  md:col-3 p-sm-12">
-                <img class="round" v-if="slotProps.option.photo != null && slotProps.option.photo !==''"
-                     :src="'data:image/jpeg;base64,' + slotProps.option.photo "/>
+                <img class="round" v-if="slotProps.option.photo_v2 != null && slotProps.option.photo_v2 !==''"
+                     :src="'data:image/jpeg;base64,' + slotProps.option.photo_v2 "/>
                 <img class="round" v-else
                      src="assets/layout/images/default-user.jpg"/>
               </div>
