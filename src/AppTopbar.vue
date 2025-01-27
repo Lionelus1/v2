@@ -44,8 +44,8 @@
         <div v-else v-for="(n,ni) in notifications" :key="ni" class="notific_item">
           <div class="flex">
             <img class="notification_img round mr-3"
-                 v-if="n.senderObject.photo != null && n.senderObject.photo !=''"
-                 :src="'data:image/jpeg;base64,' + n.senderObject.photo " rounded/>
+                 v-if="n.senderObject.photo_v2 != null && n.senderObject.photo_v2 !=''"
+                 :src="'data:image/jpeg;base64,' + n.senderObject.photo_v2 " rounded/>
             <div v-else class="ava_user flex justify-content-center align-items-center notification_img round mr-3"><i class="pi pi-user"></i></div>
             <div class="flex flex-column gap-1" style="width: 75%;word-wrap: break-word;">
               <h6 :style="{margin:0,marginBottom:'2px',fontWeight : n.isSeen==0 ? 'bolder' : '400'}">

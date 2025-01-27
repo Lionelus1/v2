@@ -1,8 +1,8 @@
 <template>
   <div class="layout-profile">
     <div>
-      <img class="round" v-if="loginedUser.photo != null && loginedUser.photo !=''"
-           :src="'data:image/jpeg;base64,' + loginedUser.photo "/>
+      <img class="round" v-if="loginedUser.photo_v2 != null && loginedUser.photo_v2 !=''"
+           :src="'data:image/jpeg;base64,' + loginedUser.photo_v2 "/>
       <img class="round" v-else src="assets/layout/images/default-user.jpg"/>
     </div>
     <button class="p-link layout-profile-link align-items-center px-3 justify-content-between" @click="onClick">
