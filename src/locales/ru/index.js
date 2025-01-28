@@ -2185,7 +2185,7 @@ export default {
         description:'Описание',
         dataSource:'Источник данных',
         numberOfEntries:'Количество записей',
-        accessControl:'управление доступом',
+        accessControl:'Управление доступом',
         createDate: "Дата создания",
         historyOfChanges: "История изменений",
         active:'Активный',
@@ -2210,7 +2210,13 @@ export default {
         bookingEndTime: 'Время окончания бронирования',
         cannotDeleteAttribute: 'Вы не можете удалить этот атрибут',
         managingTableView: 'Управление видом таблицы',
-        actionsReferenceBooks: 'Действия со справочниками'
+        actionsReferenceBooks: 'Действия со справочниками',
+        superAdministrator: 'Супер Администратор',
+        administrator: 'Администратор',
+        editor:'Редактор',
+        reader: 'Читатель',
+        addNewRole: 'Добавить новый роль',
+        roleAdded: 'Добавлена роль',
     },
     status_resume: "Статус заполнения резюме",
     people_special_needs: "Люди с особыми потребностями"

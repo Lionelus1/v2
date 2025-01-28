@@ -4,23 +4,24 @@
       <div class="arrow-icon" @click="$router.back()">
         <i class="fas fa-arrow-left"></i>
       </div>
-      <h4 class="m-0">{{$t('registry.registry')}}</h4>
+      <h4 class="m-0">{{ $i18n.locale === 'kz' ? registry.name_kz : $i18n.locale === 'ru' ? registry.name_ru : registry.name_en}}</h4>
     </div>
-    <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)"/>
+    <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)" @search="search" :filter="true" :filtered="filtered" :search="true"/>
     <div class="card">
       <input type="file" ref="fileInput" @change="onFileChange" style="display: none;" />
       <DataTable
+          :lazy="true" :rowsPerPageOptions="[10, 25, 50]" dataKey="id" :rowHover="true"
+          class="flex-grow-1"
           :loading="loading"
           :value="applications"
           :paginatorTemplate="paginatorTemplate"
           :currentPageReportTemplate="currentPageReportTemplate"
           @page="onPageChange"
           :paginator="true"
-          :page="0"
           :first="lazyParams.first || 0"
           :rows="lazyParams.rows"
           stripedRows
-          :totalRecords="totalRecords"
+          :totalRecords="total"
           v-model:selection="selectedApplication"
           selectionMode="single">
         <Column
@@ -55,6 +56,19 @@
         <QrGenerator :data="qrUrl" :showBackButton="false"/>
       </Sidebar>
     </div>
+    <OverlayPanel ref="global-filter">
+      <div class="p-fluid">
+        <div class="field">
+          <label>{{ $t('contracts.filter.createdFrom') }}</label>
+          <PrimeCalendar v-model="filter.createdFrom" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+        </div>
+        <div class="field">
+          <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
+          <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter"
+                  :label="$t('common.clear')"/>
+        </div>
+      </div>
+    </OverlayPanel>
   </div>
 </template>
 
@@ -65,11 +79,12 @@ import {smartEnuApi, findRole, fileRoute} from "@/config/config";
 import {registry} from "chart.js";
 import QrGenerator from "@/components/QrGenerator.vue";
 import * as XLSX from 'xlsx';
+import ToolbarMenu from "../ToolbarMenu.vue";
 
 
 export default {
   name: 'Registry',
-  components: {QrGenerator},
+  components: {ToolbarMenu, QrGenerator},
   data() {
     return {
       registryService: new RegistryService(),
@@ -80,9 +95,11 @@ export default {
         rows: 10,
         first: 0
       },
+      user: JSON.parse(window.localStorage.getItem('loginedUser')),
       filter: {
         plan_type: null,
-        filtered: false
+        filtered: false,
+        search: null,
       },
       paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
       currentPageReportTemplate: this.$t('common.showingRecordsCount', {
@@ -90,7 +107,8 @@ export default {
         last: '{last}',
         totalRecords: '{totalRecords}',
       }),
-      data: [],
+      roleId: null,
+      registry: [],
       columns: [],
       showAddPlanDialog: false,
       formData: {
@@ -105,7 +123,7 @@ export default {
         { label: this.$t('registry.inactive'), value: "inactive" },
       ],
       applications: [],
-      totalRecords:0,
+      total:0,
       page: 0,
       rows: 10,
       selectedApplication: null,
@@ -152,6 +170,9 @@ export default {
         this.selectedEvent = node;
       }
       this.$refs[ref].toggle(event);
+    },
+    search(data) {
+      this.filter.search = data;
     },
     initFilter() {
       this.filter.filtered = true;
@@ -201,7 +222,17 @@ export default {
       }
       this.registryService.getRegistry(req).then(res => {
         this.loading = false;
-        this.data = res.data.registries;
+        this.registry = res.data.registries[0];
+      })
+    },
+    getUserRole(){
+      const req = {
+        registry_id: parseInt(this.$route.params.id),
+      }
+      this.registryService.getUserRole(req).then(res => {
+        this.roleId = res.data
+      }).catch(error => {
+        this.$toast.add({severity: "error", summary: error, life: 3000});
       })
     },
     getRegisterParameter() {
@@ -250,6 +281,8 @@ export default {
       };
       this.registryService.getApplication(req).then((res) => {
         this.applications = res.data.applications
+        this.total = res.data.total
+      this.loading = false;
       });
     },
     getValue (slotProps, id) {
@@ -274,7 +307,7 @@ export default {
       this.lazyParams.first = event?.first
       this.lazyParams.page = event?.page
       this.lazyParams.rows = event?.rows
-      // this.getRegisterParamterApplaction()
+      this.getRegisterParamterApplaction()
       // this.getRegisterParameter()
     },
     getQR: (uuid) => {
@@ -316,6 +349,27 @@ export default {
             console.error("Ошибка импорта", error);
           });
     },
+    registryExportData() {
+      // Извлечение данных из Proxy и создание таблицы
+      const formattedData = this.applications.map((application) => {
+        return application.parameters.reduce((row, param) => {
+          const columnName = param.parameter.label_ru || `Column_${param.id}`; // Название колонки
+          row[columnName] = param.value_ru || ''; // Значение для строки
+          return row;
+        }, {});
+      });
+
+
+      const worksheet = XLSX.utils.json_to_sheet(formattedData);
+
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Applications');
+
+
+      const excelFileName = 'document.xlsx';
+      XLSX.writeFile(workbook, excelFileName);
+    },
     registryInformation() {
       this.$router.push({ name: 'Registry', params: { id: res.data } })
     }
@@ -339,9 +393,17 @@ export default {
           },
         },
         {
+          label: this.$t('common.export'),
+          icon: "pi pi-cloud-upload",
+          disabled: !(this.roleId === 1 || this.roleId === 2 || this.roleId === 3) || this.registry.data_source_id !== this.user.userID ,
+          command: () => {
+            this.registryExportData()
+          },
+        },
+        {
           label: this.$t('workPlan.modifiedPerson'),
           icon: "pi pi-pencil",
-          disabled: this.selectedApplication === null,
+          disabled: (this.selectedApplication === null || !(this.roleId === 1 || this.roleId === 2 || this.roleId === 3) || this.registry.data_source_id !== this.user.userID),
           command: () => {
             this.update()
           },
@@ -349,7 +411,7 @@ export default {
         {
           label: this.$t('common.delete'),
           icon: "pi pi-trash",
-          disabled: this.selectedApplication === null,
+          disabled: (this.selectedApplication === null || !(this.roleId === 1 || this.roleId === 2 || this.roleId === 3) || this.registry.data_source_id !== this.user.userID),
           command: () => {
             this.delete()
           },
@@ -369,6 +431,7 @@ export default {
     this.getRegisterParameter()
     this.getRegistry()
     this.getRegisterParamterApplaction()
+    this.getUserRole()
   }
 }
 </script>

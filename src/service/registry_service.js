@@ -43,4 +43,19 @@ export default class RegistryService {
   importRegistry(data) {
     return api.post(`/registry/import`, data, { headers: getHeader() });
   }
+  addNewRole(data) {
+    return api.post(`/registry/role/create`, data, { headers: getHeader() });
+  }
+  updateRole(data){
+    return api.post(`/registry/role/update`, data, { headers: getHeader() });
+  }
+  deleteRole(data) {
+    return api.post(`/registry/role/delete`, data, { headers: getHeader() });
+  }
+  getUserRole(data) {
+    return api.post(`/registry/role/getUserRole`, data, { headers: getHeader() });
+  }
+  getUsers(data){
+    return api.post(`/registry/user`, data, { headers: getHeader() });
+  }
 }
