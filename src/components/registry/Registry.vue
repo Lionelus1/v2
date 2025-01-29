@@ -425,7 +425,7 @@ export default {
             {
               label: this.$t('common.delete'),
               icon: "pi pi-trash",
-              disabled: this.selectedApplication === null || (this.roleId !== 1 && this.roleId !== 2 && this.roleId !== 3 && this.registry.data_source_id !== this.user.userID),
+              disabled: this.selectedApplication === null || (this.roleId !== 1 && this.roleId !== 2 && this.registry.data_source_id !== this.user.userID),
               command: () => {
                 this.delete()
               },

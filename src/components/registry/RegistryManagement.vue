@@ -162,11 +162,11 @@
     </Dialog>
     <OverlayPanel ref="global-filter">
       <div class="p-fluid">
-        <div class="field">
-          <label>{{ $t('common.user') }}</label>
-          <FindUser v-model="userNameSearch" :max="1" :user-type="3" :editMode="false" class="mb-2"
-                    :placeholder="$t('common.searchByUsername')"/>
-        </div>
+<!--        <div class="field">-->
+<!--          <label>{{ $t('common.user') }}</label>-->
+<!--          <FindUser v-model="userNameSearch" :max="1" :user-type="3" :editMode="false" class="mb-2"-->
+<!--                    :placeholder="$t('common.searchByUsername')"/>-->
+<!--        </div>-->
         <div class="field">
           <label>{{ $t('ref.referenceStatus') }}</label>
           <Dropdown v-model="filter.status" :options="fieldStatus"  optionLabel="label"
@@ -175,6 +175,10 @@
         <div class="field">
           <label>{{ $t('contracts.filter.createdFrom') }}</label>
           <PrimeCalendar v-model="filter.createdAt" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+        </div>
+        <div class="field">
+          <label>{{ $t('contracts.filter.createdTo') }}</label>
+          <PrimeCalendar v-model="filter.createdTo" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
         </div>
         <div class="field">
           <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
@@ -214,6 +218,7 @@ export default {
       total: null,
       filter: {
         createdAt: null,
+        createdTo: null,
         search: null,
         created_by: null,
       },
@@ -452,6 +457,7 @@ export default {
         search_text: this.filter.search,
         status: this.filter.status,
         created_at: this.filter.createdAt,
+        created_to: this.filter.createdTo,
         created_by: this.filter.created_by
       }
       this.registryService.getRegistry(req).then(res => {
@@ -501,11 +507,11 @@ export default {
     },
     accessControlMenus() {
       return [
-        {
-          label: this.$t('scienceWorks.menu.newArticle'),
-          icon: "pi pi-plus",
-          command: () => { this.giveRoles() }
-        },
+        // {
+        //   label: this.$t('scienceWorks.menu.newArticle'),
+        //   icon: "pi pi-plus",
+        //   command: () => { this.giveRoles() }
+        // },
       ]
     },
   },
