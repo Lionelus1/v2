@@ -218,6 +218,7 @@ export default {
         created_by: null,
       },
       user: JSON.parse(window.localStorage.getItem('loginedUser')),
+      hasRegistryAdminRole: false,
       accessControlUser: null,
       accessControlOpen: false,
       selectedRegistry: null,
@@ -242,7 +243,6 @@ export default {
         { label: this.$t('registry.inactive'), value: 1 },
       ],
       fieldRole: [
-        { label: this.$t('registry.superAdministrator'), value: 1 },
         { label: this.$t('registry.administrator'), value: 2 },
         { label: this.$t('registry.editor'), value: 3 },
         { label: this.$t('registry.reader'), value: 4 },
@@ -443,6 +443,7 @@ export default {
           this.formData.description_ru;
     },
     getRegistries(){
+      this.hasRegistryAdminRole = this.user.roles.some(role => role.name === "registry_administration");
       this.loading = true;
       let req = {
         id: null,
@@ -468,6 +469,7 @@ export default {
     },
     giveRoles(){
       this.showGiveRoleDialog = true;
+      console.log(this.selectedRegistry.data_source_id)
     }
   },
   computed: {
@@ -476,6 +478,7 @@ export default {
         {
           label: this.$t('scienceWorks.menu.newArticle'),
           icon: "pi pi-plus",
+          disabled: !this.hasRegistryAdminRole ,
           command: () => {
             this.open('newPublicationDialog')
           },
@@ -483,7 +486,7 @@ export default {
         {
           label: this.$t('registry.actionsReferenceBooks'),
           icon: "pi pi-asterisk",
-          disabled: this.selectedRegistry === null,
+          disabled: this.selectedRegistry === null || !this.hasRegistryAdminRole,
           // command: () => {
           //   this.openBasic()
           // },
@@ -502,19 +505,6 @@ export default {
           label: this.$t('scienceWorks.menu.newArticle'),
           icon: "pi pi-plus",
           command: () => { this.giveRoles() }
-        },
-        {
-          label: this.$t('registry.actionsReferenceBooks'),
-          icon: "pi pi-asterisk",
-          disabled: this.selectedRegistry === null,
-          // command: () => {
-          //   this.openBasic()
-          // },
-          items: [
-            {
-              label: this.$t('roleControl.giveRole'),
-            },
-          ]
         },
       ]
     },

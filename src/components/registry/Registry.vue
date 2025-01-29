@@ -6,7 +6,7 @@
       </div>
       <h4 class="m-0">{{ $i18n.locale === 'kz' ? registry.name_kz : $i18n.locale === 'ru' ? registry.name_ru : registry.name_en}}</h4>
     </div>
-    <ToolbarMenu :data="toolbarMenus" @filter="toggle('global-filter', $event)" @search="search" :filter="true" :filtered="filtered" :search="true"/>
+    <ToolbarMenu :data="toolbarMenus" @search="search" :search="true"/>
     <div class="card">
       <input type="file" ref="fileInput" @change="onFileChange" style="display: none;" />
       <DataTable
@@ -377,6 +377,7 @@ export default {
         {
           label: this.$t('common.add'),
           icon: "pi pi-plus",
+          disabled: this.registry.data_source_id !== this.user.userID && (this.roleId !== 1 && this.roleId !== 2 && this.roleId !== 3),
           command: () => {
             this.open()
           },
@@ -384,7 +385,7 @@ export default {
         {
           label: this.$t('registry.import'),
           icon: "pi pi-file-import",
-          // disabled: true,
+          disabled: this.registry.data_source_id !== this.user.userID && (this.roleId !== 1 && this.roleId !== 2 && this.roleId !== 3),
           command: () => {
             this.triggerFileInput()
           },
@@ -392,25 +393,9 @@ export default {
         {
           label: this.$t('common.export'),
           icon: "pi pi-cloud-upload",
-          disabled: !(this.roleId === 1 || this.roleId === 2 || this.roleId === 3) || this.registry.data_source_id !== this.user.userID ,
+          // disabled: this.registry.data_source_id !== this.user.userID && (this.roleId !== 1 && this.roleId !== 2 && this.roleId !== 3) ,
           command: () => {
             this.registryExportData()
-          },
-        },
-        {
-          label: this.$t('workPlan.modifiedPerson'),
-          icon: "pi pi-pencil",
-          disabled: (this.selectedApplication === null || !(this.roleId === 1 || this.roleId === 2 || this.roleId === 3) || this.registry.data_source_id !== this.user.userID),
-          command: () => {
-            this.update()
-          },
-        },
-        {
-          label: this.$t('common.delete'),
-          icon: "pi pi-trash",
-          disabled: (this.selectedApplication === null || !(this.roleId === 1 || this.roleId === 2 || this.roleId === 3) || this.registry.data_source_id !== this.user.userID),
-          command: () => {
-            this.delete()
           },
         },
         {
@@ -420,6 +405,32 @@ export default {
           command: () => {
             this.$router.push({ name: 'RegistryTicket', params: { id1: parseInt(this.$route.params.id), id2: this.selectedApplication.id} });
           },
+        },
+        {
+          label: this.$t('registry.actionsReferenceBooks'),
+          icon: "pi pi-asterisk",
+          disabled:  this.selectedApplication === null || (this.roleId !== 1 && this.roleId !== 2 && this.roleId !== 3 && this.registry.data_source_id !== this.user.userID),
+          // command: () => {
+          //   this.openBasic()
+          // },
+          items: [
+            {
+              label: this.$t('workPlan.modifiedPerson'),
+              icon: "pi pi-pencil",
+              disabled: this.selectedApplication === null || (this.roleId !== 1 && this.roleId !== 2 && this.roleId !== 3 && this.registry.data_source_id !== this.user.userID),
+              command: () => {
+                this.update()
+              },
+            },
+            {
+              label: this.$t('common.delete'),
+              icon: "pi pi-trash",
+              disabled: this.selectedApplication === null || (this.roleId !== 1 && this.roleId !== 2 && this.roleId !== 3 && this.registry.data_source_id !== this.user.userID),
+              command: () => {
+                this.delete()
+              },
+            },
+          ]
         },
       ]
     },

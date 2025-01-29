@@ -516,6 +516,7 @@ const save = () => {
   if (selectedApplication.value && selectedApplication.value.length > 0) {
     registryService.updateApplication(req)
         .then(response => {
+          formFields.value = null
           router.back()
         })
         .catch(error => {
@@ -524,6 +525,7 @@ const save = () => {
   } else {
     registryService.createApplication(req)
         .then(response => {
+          formFields.value = null
           router.back()
           loading.value = false;
         })
