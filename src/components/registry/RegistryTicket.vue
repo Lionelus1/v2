@@ -215,18 +215,18 @@ const getReservation = () => {
       loading.value = false
     }
   }).catch((err) => {
-    console.log(err);
+    toast.add({severity: "error", summary: error, life: 3000});
     loading.value = false
   })
 }
 
 
 const openReservationTicket = (slotProps) => {
-  const baseUrl = "http://10.123.255.246:8080/#/request/v2/";
-  const uuid = slotProps.data.uuid; // Получаем uuid из данных
-  const fullUrl = `${baseUrl}${uuid}`; // Формируем полный URL
+  const baseUrl = "http://10.123.255.246:9999/#/request/v2/";
+  const uuid = slotProps.data.uuid;
+  const fullUrl = `${baseUrl}${uuid}`;
 
-  window.location.href = fullUrl; // Переходим на новый URL
+  window.location.href = fullUrl;
 };
 
 onMounted(() => {

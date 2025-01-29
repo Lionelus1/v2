@@ -312,7 +312,11 @@ export default {
           };
         });
       }).catch((err) => {
-        console.log(err);
+        this.$toast.add({
+          severity: "error",
+          summary: err.message || err,
+          life: 3000
+        });
       });
     },
     deleteRole(slotProps) {

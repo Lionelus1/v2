@@ -341,20 +341,17 @@ export default {
         registry_id: parseInt(this.$route.params.id),
       }
 
-      this.registryService.importRegistry(req)
-          .then(res => {
-            console.log("Импорт успешен", res);
-          })
-          .catch(error => {
-            console.error("Ошибка импорта", error);
-          });
+      this.registryService.importRegistry(req).then((res) => {
+          this.$toast.add({severity: "success", summary: res.message});
+          }).catch(error => {
+            this.$toast.add({severity: "error", summary: error, life: 3000});
+      })
     },
     registryExportData() {
-      // Извлечение данных из Proxy и создание таблицы
       const formattedData = this.applications.map((application) => {
         return application.parameters.reduce((row, param) => {
-          const columnName = param.parameter.label_ru || `Column_${param.id}`; // Название колонки
-          row[columnName] = param.value_ru || ''; // Значение для строки
+          const columnName = param.parameter.label_ru || `Column_${param.id}`;
+          row[columnName] = param.value_ru || '';
           return row;
         }, {});
       });
