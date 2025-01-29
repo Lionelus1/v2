@@ -720,7 +720,7 @@ export default {
       }).then(res => {
         this.loading = false
         // this.$emit('sentToRevision', this.revisionComment)
-        location.reload()
+        // location.reload()
       }).catch(err => {
         if (err.response.status == 401) {
           this.$store.dispatch("logLout");
