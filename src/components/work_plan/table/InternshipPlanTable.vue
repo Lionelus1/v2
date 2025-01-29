@@ -1,5 +1,5 @@
 <template>
-  <div class="card container-for-table">
+  <div class="container-for-table">
     <div class="flex justify-center">
       <!--      <ProgressSpinner v-if="!data" style="width: 50px;" strokeWidth="5" fill="transparent"/>-->
     </div>
