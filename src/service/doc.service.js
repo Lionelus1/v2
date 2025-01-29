@@ -254,4 +254,7 @@ export class DocService {
     downloadFile(url) {
         return api.get(url, {headers: getHeader(), responseType: 'blob'});
     }
+    // getDocParamInfo(data){
+    //     return api.post(`/doc/docParamInfo`, data, {headers: getHeader()});
+    // }
 }

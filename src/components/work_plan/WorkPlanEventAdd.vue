@@ -12,7 +12,7 @@
       <!-- mastersplan -->
       <DoctorsMastersAddEvent :plan="plan" @update-data="updateData" :form-valid="formValid" v-if="isMastersPlan || isDoctorsPlan"/>
       <!-- mastersplan -->
-      <div class="field" v-if="!isMastersPlan && !isDoctorsPlan">
+      <div class="field" v-if="!isMastersPlan && !isDoctorsPlan && !isDirectorsPlan">
         <label>{{
             plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
 
@@ -68,7 +68,16 @@
             $t('workPlan.errors.approvalUserError')
           }}</small>
       </div>
-
+      <div class="field"
+           v-if="isDirectorsPlan">
+        <label>{{ $t('workPlan.issueTitle') }}</label>
+        <InputText v-model="event_name" />
+      </div>
+      <div class="field"
+           v-if="isDirectorsPlan">
+        <label>{{ $t('workPlan.implementationDate') }}</label>
+        <PrimeCalendar v-model="start_date" view="month" dateFormat="mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
       <div class="field" v-if="!isSciencePlan && !isMastersPlan && !isDoctorsPlan && !isShedulePlan">
 
         <label>{{
@@ -103,7 +112,7 @@
       <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5"
               @click="addNewUser"/>
     </div>
-    <div class="p-fluid" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan && !isInternshipPlan">
+    <div class="p-fluid" v-if="!isMastersPlan && !isDoctorsPlan && !isShedulePlan && !isInternshipPlan && !isDirectorsPlan">
       <div class="field" v-if="
         (plan &&
           plan.plan_type.code !== Enum.WorkPlanTypes.Science &&
@@ -279,6 +288,9 @@ export default {
     isInternshipPlan() {
       return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Internship;
     },
+    isDirectorsPlan(){
+      return this.plan?.plan_type?.code === Enum.WorkPlanTypes.Directors;
+    }
   },
   methods: {
     getFullname(user) {
@@ -363,6 +375,13 @@ export default {
         data.start_date = this.start_date
         data.end_date = this.end_date
       }
+      if (this.plan && this.plan.plan_type && (this.plan.plan_type.code === this.Enum.WorkPlanTypes.Directors)) {
+        data.start_date = this.start_date
+      }
+      if (this.plan && this.plan.plan_type && (this.plan.plan_type.code === this.Enum.WorkPlanTypes.Directors) && (this.plan?.doc_info?.docHistory?.stateId === 3)) {
+        data.fact = "Внеплановый вопрос";
+      }
+
       if (
           this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters ||
           this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Doctors

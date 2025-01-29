@@ -685,6 +685,9 @@ export default {
     isStandartPlan() {
       return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Standart
     },
+    isDirectorsPlan() {
+      return this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Directors
+    },
     isRespUser() {
       return this.event && this.respUserExists(this.loginedUserId)
     },
@@ -974,7 +977,7 @@ export default {
         {
           label: this.$t('common.action.accept'),
           icon: 'pi pi-check',
-          visible: this.isPlanCreator && (this.isOperPlan || this.isStandartPlan),
+          visible: this.isPlanCreator && (this.isOperPlan || this.isStandartPlan || this.isDirectorsPlan),
           items: [
             {
               label: this.$t("common.done"),
@@ -1023,7 +1026,7 @@ export default {
       if (this.isOperPlan) {
         this.wordLimit = 0
       }
-      if (!this.isStandartPlan && !this.isMastersPlan && !this.isDoctorsPlan && !this.isInternshipPlan && (this.inputWordCount > this.wordMaxLimit || this.inputWordCount < this.wordLimit)) {
+      if (!this.isDirectorsPlan && !this.isStandartPlan && !this.isMastersPlan && !this.isDoctorsPlan && !this.isInternshipPlan && (this.inputWordCount > this.wordMaxLimit || this.inputWordCount < this.wordLimit)) {
         this.$toast.add({severity: 'warn', detail: this.$t('workPlan.maxWordCount', this.wordMaxLimit), life: 3000})
         this.isBlockUI = false;
         return;

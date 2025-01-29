@@ -761,7 +761,7 @@ const getData = async (index) => {
     eventUserId: student_id.value,
     halfYearType: null,
     department_id: null,
-    report_id: dReports.value[index].id
+    report_id: dReports.value[index].id,
   };
   planService.getWorkPlanData(data).then(async res => {
     loading.value = false;
