@@ -184,10 +184,11 @@
           @updateActive="handleActive"
           @updateSelect="handleSelected"
       />
+
+      <InternshipPlanTable v-if="plan && planDoc && isInternshipPlan" :data="data" :items="initItems" @onPage="onPage"
+                           @onExpand="onExpand" @onToggle="actionsToggle" :total="total" :loading="loading"
+                           @showDialog="internshipDialogShow" :dialog="dialog" :isFinsih="isFinish"/>
     </div>
-    <InternshipPlanTable v-if="plan && planDoc && isInternshipPlan" :data="data" :items="initItems" @onPage="onPage"
-                         @onExpand="onExpand" @onToggle="actionsToggle" :total="total" :loading="loading"
-                         @showDialog="internshipDialogShow" :dialog="dialog" :isFinsih="isFinish"/>
   </div>
 
   <Sidebar v-model:visible="dialog.planView.state" position="right" class="w-6" style="overflow-y: scroll"
