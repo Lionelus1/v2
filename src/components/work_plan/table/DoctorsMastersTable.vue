@@ -1,5 +1,4 @@
 <template>
-  <div class="card">
     <TreeTable ref="workplantreetable" class="p-treetable-sm" :value="data" :lazy="true" :loading="loading" @nodeExpand="emit('onExpand')" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :rows="10" :total-records="total"
                  @page="emit('onPage')">
@@ -52,7 +51,6 @@
           </template>
         </Column>
       </TreeTable>
-  </div>
 
 </template>
 

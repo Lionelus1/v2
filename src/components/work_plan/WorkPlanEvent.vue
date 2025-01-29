@@ -679,7 +679,6 @@ export default {
     this.isAdmin = this.findRole(null, 'main_administrator');
     this.getPlan();
     this.getEventsTree(null);
-    // this.getWorkPlanApprovalUsersFunc(this.work_plan_id)
     this.getDepartments();
 
   },

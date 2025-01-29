@@ -1,7 +1,7 @@
 <template>
   <div v-if="candidate" class="resume-container">
     <div class="header">
-      <img class="card_img round" v-if="candidate?.user?.photo" :src="'data:image/jpeg;base64,' + candidate?.user?.photo"/>
+      <img class="card_img round" v-if="candidate?.user?.photo_v2" :src="'data:image/jpeg;base64,' + candidate?.user?.photo_v2"/>
       <img class="card_img round" v-else src="assets/layout/images/default-user.jpg"/>
 
       <div class="resume-data">
