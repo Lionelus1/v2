@@ -6,40 +6,40 @@
       </BlockUI>
     </ProgressBar>
     <hr>
-    <div class="flex items-center justify-end mb-2">
-      <a class="ml-auto" id="profile-link" href="#/cabinet">Мой профиль</a>
-    </div>
+    <div class="flex justify-content-between align-items-center mb-2">
+      <a class="" id="profile-link" href="#/cabinet">Мой профиль</a>
 
     <div class="flex items-center justify-end">
       <Button
-          class="align-items-center mr-1 ml-auto"
-          :class="{'p-button-success': filter.applied, 'p-button-info': !filter.applied} "
+          class="align-items-center mr-2 ml-auto"
+          :class="{'p-button-success': filter.applied, 'active': !filter.applied} "
           style="padding: 0.25rem 1rem;"
           @click="toggleFilter">
         <i class="fa-solid fa-filter"/> &nbsp;{{ $t("contracts.filter.button") }}
       </Button>
 
+      <div class="p-button-group">
+        <Button @click="toggleGrid" icon="pi pi-th-large" :class="showGrid?'active':''" class="p-button-text"/>
+        <Tooltip target=".grid-button" :show="showGrid" :position="'bottom'">
+        </Tooltip>
 
-      <Button @click="toggleGrid" icon="pi pi-th-large" class="p-button-rounded p-button-text mr-1"/>
-      <Tooltip target=".grid-button" :show="showGrid" :position="'bottom'">
-      </Tooltip>
-
-      <Button @click="toggleList" icon="pi pi-list" class="p-button-rounded p-button-text mr-1"/>
-      <Tooltip target=".list-button" :show="showList" :position="'bottom'">
-      </Tooltip>
-
+        <Button @click="toggleList" icon="pi pi-list" :class="showList?'active':''" class="p-button-text"/>
+        <Tooltip target=".list-button" :show="showList" :position="'bottom'">
+        </Tooltip>
+      </div>
+    </div>
     </div>
     <!-- <div class="surface-card p-4 shadow-2 border-round"> -->
-    <DataView v-if="showGrid" class="xl:ml-10 xl:mr-10" :loading="loading" :lazy="true" :value="list" :layout="layout" :paginator="true"
+    <DataView v-if="showGrid" class="xl:ml-10 xl:mr-10 mt-2" :loading="loading" :lazy="true" :value="list" :layout="layout" :paginator="true"
               :rows="lazyParams.rows" @page="onPage($event)" :totalRecords="total" :first="first" scrollable scrollHeight="flex"
               selectionMode="single" :rowHover="true" stripedRows>
       <template #grid="slotProps" v-if="showGrid">
         <div class="grid">
           <template v-for="(item, index) in slotProps.items" :key="index">
             <div class="col-12 sm:col-6 md:col-4 lg:col-2 p-2">
-              <div @click="selectScientist(item)" class="card shadow-1 m-0" v-ripple style="text-align: center;">
-                <img class="card_img round" v-if="item.photo != null && item.photo !=''"
-                     :src="'data:image/jpeg;base64,' + item.photo "/>
+              <div @click="selectScientist(item)" class="card shadow-1 m-0 h-full" v-ripple style="text-align: center;">
+                <img class="card_img round" v-if="item.photo_v2 != null && item.photo_v2 !=''"
+                     :src="'data:image/jpeg;base64,' + item.photo_v2 "/>
                 <img class="card_img round" v-else src="assets/layout/images/default-user.jpg"/>
                 <p style="margin-top: 2mm; margin-bottom: 2mm;">{{ getFullName(item) }}</p>
               </div>
@@ -165,9 +165,8 @@ const getScientists = () => {
     list.value = res.data.scientists
     total.value = res.data.total
     loading.value = false
-  }).catch(error => {
+  }).catch(_ => {
     loading.value = false;
-    toast.add({severity: 'error', summary: t('common.error'), life: 3000})
   }).finally(() => {
     const query = {
       first: first.value,
@@ -279,7 +278,18 @@ const applyFilters = () => {
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.p-button-group{
+  button{
+    border: 1px solid #dfdfdf;
+    background: #fff;
+  }
+  .active{
+    background: #2196F3;
+    border-color: #2196F3;
+    color: #ffffff;
+  }
+}
 .tooltip {
   font-size: 12px;
   margin-left: 5px;
@@ -303,7 +313,13 @@ const applyFilters = () => {
   max-height: 150px;
   height: auto;
 }
-
+.round{
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #dfdfdf;
+}
 :deep(.p-dataview .p-dataview-content) {
   background: transparent;
 }

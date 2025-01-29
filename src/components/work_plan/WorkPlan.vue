@@ -1,20 +1,26 @@
 <template>
   <div class="col-12">
     <h3>{{ $t('workPlan.plans') }}</h3>
-    <ToolbarMenu v-model:search-model="filter.searchText" :data="initMenu" @search="initSearch" :search="true" @filter="toggle('global-filter', $event)" :filter="isAdmin"
+    <ToolbarMenu v-model:search-model="filter.searchText" :data="initMenu" @search="initSearch"
+                 @filter="toggle('global-filter', $event)" :filter="true"
                  :filtered="filter.filtered"/>
     <div class="card">
-      <DataTable :lazy="true" :rowsPerPageOptions="[5, 10, 20, 50]" :value="data" dataKey="id" :rowHover="true"
-                 :loading="loading" responsiveLayout="scroll" :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows" :totalRecords="total" @page="onPage">
+      <DataTable :lazy="true" :rowsPerPageOptions="[10, 25, 50]" :value="data" dataKey="id" :rowHover="true"
+                 :loading="loading" :paginatorTemplate="paginatorTemplate"
+                 :currentPageReportTemplate="currentPageReportTemplate" responsiveLayout="scroll" :paginator="true"
+                 :first="lazyParams.first || 0" :rows="lazyParams.rows" :totalRecords="total" stripedRows
+                 class="flex-grow-1" @page="onPage">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
-        <Column field="content" :header="$t('workPlan.planName')" sortable>
-          <template #body="{ data }">
-            <router-link :to="{ name: 'WorkPlanEvent', params: { id: data.work_plan_id }, query: {first: lazyParams.first, page: lazyParams.page, rows: lazyParams.rows} }" tag="a">
-              {{ data.work_plan_name }}
-            </router-link>
-          </template>
-        </Column>
+        <template>
+          <Column field="content" :header="$t('workPlan.planName')" sortable>
+            <template #body="slotProps">
+              <a href="#" @click.prevent="handleClick(slotProps.data, slotProps.data.doc_info.docHistory.stateEn)">
+                {{ slotProps.data.work_plan_name }}
+              </a>
+            </template>
+          </Column>
+        </template>
         <Column field="sing" :header="$t('ncasigner.sign')">
           <template #body="{ data }">
             <div v-if="showMySign(data.doc_info.approvalStages)">
@@ -25,8 +31,8 @@
         </Column>
         <Column field="status" :header="$t('common.status')">
           <template #body="{ data }">
-            <span :class="'customer-badge status-' + data.doc_info.docHistory.stateEn">
-              {{ getDocStatus(data.doc_info.docHistory.stateEn) }}
+            <span :class="'customer-badge status-' + data?.doc_info?.docHistory?.stateEn">
+              {{ getDocStatus(data?.doc_info?.docHistory?.stateEn) }}
           </span>
           </template>
         </Column>
@@ -35,9 +41,9 @@
             {{ data.user.fullName }}
           </template>
         </Column>
-        <Column field="status" :header="$t('workPlan.planType')" v-if="isAdmin">
+        <Column field="status" :header="$t('workPlan.planType')">
           <template #body="{ data }">
-            <span :class="'customer-badge ' + data.plan_type.code">
+            <span :class="'customer-badge ' + data?.plan_type?.code">
               {{ data.plan_type['name_' + $i18n.locale] }}
             </span>
           </template>
@@ -49,31 +55,58 @@
         </Column>
         <Column field="actions" header="">
           <template #body="{ data }">
-            <Button type="button"
+            <ActionButton :items="initItems(data)" :show-label="true" @toggle="actionsToggle(data)"/>
+            <!-- <Button type="button"
                     v-if="this.isAdmin || (data.user.id === loginedUserId && (data.doc_info?.docHistory?.stateId === Enum.REVISION.ID
                     || data.doc_info?.docHistory?.stateId === Enum.CREATED.ID || data.doc_info?.docHistory?.stateId === Enum.INAPPROVAL.ID))"
-                    icon="pi pi-trash" class="p-button-danger mr-2" label="" @click="deleteConfirm(data)"></Button>
+                    icon="pi pi-trash" class="p-button-danger mr-2" label="" @click="deleteConfirm(data)"></Button> -->
           </template>
         </Column>
 
       </DataTable>
     </div>
     <WorkPlanAdd v-if="showAddPlanDialog" :visible="showAddPlanDialog" @hide="closeBasic"/>
-
-    <OverlayPanel ref="global-filter">
-      <div v-for="(item, index) in types" :key="index" class="flex align-items-center">
-        <div class="field-radiobutton">
-          <RadioButton v-model="filter.plan_type" :value="item.id"/>
-          <label :for="item" class="ml-2">{{ item['name_' + $i18n.locale] }}</label>
-        </div>
+    <Dialog v-if="isAdmin" :closable="false" v-model:visible="changeCreator" modal
+            :header="$t('workPlan.changeCreatedPerson')">
+      <div class="field">
+        <FindUser v-model="planCreator" :max="1" editMode="true" :user-type="3"/>
+        <small class="p-error" v-if="submitted && !planCreator?.length > 0">{{
+            $t('workPlan.errors.approvalUserError')
+          }}</small>
       </div>
+      <div class="flex justify-content-end gap-2">
+        <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger"
+                @click="closeCreatorChangeDialog"></Button>
+        <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2"
+                @click="changeWorkPlanCreator"></Button>
+      </div>
+    </Dialog>
+    <OverlayPanel ref="global-filter">
       <div class="p-fluid">
-        <div class="field">
-          <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
-          <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter()" :label="$t('common.clear')"/>
+        <div class="field" style="width: 320px">
+          <div class="field">
+            <label>{{ $t('workPlan.planType') }}</label>
+            <Dropdown class="lang p-link mb-2" v-model="filter.plan_type" :options="types"
+                      :optionLabel="['name_' + $i18n.locale]" optionValue="id" :placeholder="$t('workPlan.planType')"
+            />
+          </div>
+          <div class="field">
+            <label>{{ $t('common.search') }}</label>
+            <InputText type="search" class="search_toolbar mb-2" v-model="filter.searchText" :placeholder="$t('common.search')"/>
+          </div>
+          <div class="field">
+            <label>{{ $t('hikvision.author') }}</label>
+            <FindUser v-model="userNameSearch" :max="1" :user-type="3" :editMode="false" class="mb-2" :placeholder="$t('hikvision.author')"/>
+          </div>
+          <div class="field">
+            <Button icon="pi pi-search" :label="$t('common.search')" class="button-blue p-button-sm" @click="initFilter"/>
+            <Button icon="pi pi-trash" class="p-button-outlined p-button-sm mt-1" @click="clearFilter()"
+                    :label="$t('common.clear')"/>
+          </div>
         </div>
       </div>
     </OverlayPanel>
+
   </div>
 </template>
 
@@ -83,8 +116,9 @@ import {findRole} from "@/config/config";
 import {WorkPlanService} from "@/service/work.plan.service";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import Enum from "@/enum/docstates";
-import moment from "moment";
+import WPEnum from "@/enum/workplan"
 import {formatDate} from "@/helpers/HelperUtil";
+import DocState from "@/enum/docstates/index";
 
 export default {
   components: {ToolbarMenu, WorkPlanAdd},
@@ -92,6 +126,12 @@ export default {
     return {
       data: [],
       isAdded: null,
+      paginatorTemplate: "FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink JumpToPageDropdown CurrentPageReport RowsPerPageDropdown",
+      currentPageReportTemplate: this.$t('common.showingRecordsCount', {
+        first: '{first}',
+        last: '{last}',
+        totalRecords: '{totalRecords}',
+      }),
       isCurrentUserApprove: false,
       isAcceptModal: false,
       isRejectModal: false,
@@ -99,6 +139,7 @@ export default {
       currentWorkPlanId: 0,
       loading: false,
       isAdmin: false,
+      isPlanCreator: false,
       loginedUserId: JSON.parse(localStorage.getItem("loginedUser")).userID,
       planService: new WorkPlanService(),
       lazyParams: {
@@ -136,7 +177,12 @@ export default {
         {name_kz: "қайтарылды", name_en: "rejected", name_ru: "отклонен", code: "rejected"},
         {name_kz: "қол қоюда", name_en: "signing", name_ru: "на подписи", code: "signing"},
         {name_kz: "қол қойылды", name_en: "signed", name_ru: "подписан", code: "signed"},
-        {name_kz: "қайта бекітуге жіберілді", name_en: "sent for re-approval", name_ru: "отправлен на переутверждение", code: "sent for re-approval"},
+        {
+          name_kz: "қайта бекітуге жіберілді",
+          name_en: "sent for re-approval",
+          name_ru: "отправлен на переутверждение",
+          code: "sent for re-approval"
+        },
         {name_kz: "жаңартылды", name_en: "updated", name_ru: "обновлен", code: "updated"},
         {name_kz: "берілді", name_en: "issued", name_ru: "выдан", code: "issued"},
       ],
@@ -153,6 +199,14 @@ export default {
       statuses: [Enum.StatusesArray.StatusCreated, Enum.StatusesArray.StatusInapproval, Enum.StatusesArray.StatusApproved,
         Enum.StatusesArray.StatusRevision, Enum.StatusesArray.StatusSigning, Enum.StatusesArray.StatusSigned],
       Enum: Enum,
+      WPEnum: WPEnum,
+      deleteData: null,
+      changeCreator: false,
+      planCreator: [],
+      submitted: false,
+      planDoc: null,
+      DocState: DocState,
+      userNameSearch: null,
     }
   },
   mounted() {
@@ -169,6 +223,15 @@ export default {
 
   },
   computed: {
+    isCreatedPlan() {
+      return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.CREATED.Value
+    },
+    isPlanApproved() {
+      return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.APPROVED.Value
+    },
+    isPlanUnderRevision() {
+      return this.planDoc && this.planDoc.docHistory?.stateEn === this.DocState.REVISION.Value
+    },
     initMenu() {
       return [
         {
@@ -179,7 +242,35 @@ export default {
           },
         }
       ]
-    }
+    },
+    initItems() {
+      return (data) => {
+        return [
+          {
+            label: this.$t('workPlan.changeCreatedPerson'),
+            icon: 'fa-solid fa-pen',
+            disabled: !((this.loginedUserId === data?.doc_info?.creatorID) && this.isPlanApproved),
+            visible: (this.loginedUserId === data?.doc_info?.creatorID) && !this.isSciencePlan(data),
+            command: () => {
+              this.changeCreator = true
+            }
+          },
+          {
+            label: this.$t('common.delete'),
+            icon: 'fa-solid fa-trash',
+            disabled: !(this.isAdmin ||
+                (data?.user?.id === this.loginedUserId &&
+                    (data?.doc_info?.docHistory?.stateId === Enum.REVISION.ID ||
+                        data?.doc_info?.docHistory?.stateId === Enum.CREATED.ID))),
+            visible: true,
+            command: () => {
+              this.deleteConfirm(data)
+            }
+          },
+        ];
+      };
+    },
+
   },
   created() {
     let oldPath = this.$router.options.history.state.back;
@@ -195,13 +286,62 @@ export default {
     const storageFilter = JSON.parse(localStorage.getItem("workPlanFilter"))
 
     this.filter = storageFilter || this.filter
-
+    this.filter.user_id = null
     this.getPlans();
     this.getWorkPlanTypes()
   },
   methods: {
     findRole: findRole,
     formatDate: formatDate,
+    isSciencePlan(data) {
+      return data?.plan_type?.code === WPEnum.WorkPlanTypes.Science
+    },
+    closeCreatorChangeDialog() {
+      this.planCreator = [];
+      this.deleteData = null;
+      this.changeCreator = false;
+    },
+    actionsToggle(data) {
+      this.deleteData = null;
+      this.deleteData = data;
+      this.planDoc = data?.doc_info;
+
+      if (data && data.user) {
+        this.planCreator = []
+        this.planCreator.push(data.user.user);
+      }
+    },
+    changeWorkPlanCreator() {
+      this.submitted = true;
+      if (this.planCreator?.length === 0 || this.deleteData?.length === 0) {
+        return false;
+      }
+
+      let data = {
+        plan_id: this.deleteData?.work_plan_id,
+        user_id: this.planCreator[0].userID,
+      }
+      this.planService.changePlanCreator(data).then(res => {
+        if (res.data) {
+          this.$toast.add({
+            severity: "success",
+            summary: this.$t('workPlan.message.planCreatorChanged'),
+            life: 3000,
+          });
+          this.deleteData = null;
+          this.planCreator = [];
+          this.changeCreator = false;
+          this.getPlans();
+          this.submitted = false;
+        }
+      }).catch(error => {
+        this.submitted = false;
+        if (error) {
+          toast.add({severity: "error", summary: error, life: 3000});
+        }
+
+      });
+    },
     toggle(ref, event) {
       this.$refs[ref].toggle(event);
     },
@@ -218,6 +358,7 @@ export default {
       this.planService.getPlans(this.lazyParams).then(res => {
         this.data = res.data.plans;
         this.total = res.data.total;
+        this.planCreator = [];
         this.loading = false;
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
@@ -241,6 +382,13 @@ export default {
         rejectClass: 'p-button-rounded p-button-danger',
         accept: () => {
           this.delete(event);
+          this.planCreator = [];
+          this.deleteData = null;
+        },
+        reject: () => {
+          this.planCreator = [];
+          this.deleteData = null;
+
         },
       });
     },
@@ -248,6 +396,8 @@ export default {
       this.planService.deletePlan(event.work_plan_id).then(response => {
         if (response.data.is_success) {
           this.$toast.add({severity: "success", summary: this.$t('common.success'), life: 3000});
+          this.deleteData = null;
+          this.planCreator = [];
           this.getPlans();
         }
       }).catch(error => {
@@ -267,7 +417,47 @@ export default {
       this.filter.user_id = null
       this.selectedPlanType = null;
       this.filter.filtered = false;
+      this.filter.searchText = null
+      this.userNameSearch = null
       this.getPlans();
+    },
+    handleClick(data, code) {
+      // Проверка, что параметр id существует
+      if (!data.work_plan_id) {
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t('common.error'),
+          detail: this.$t('workPlan.missingIdError'),
+          life: 3000
+        });
+        return; // Прерываем выполнение, если нет id
+      }
+
+      // Выполняем проверку если студент и согласованный ли план
+      if (this.isStudent() &&
+          code !== "approved" &&
+          (data && data.plan_type && data.plan_type.code === "work")) {
+        // Обработка ошибки planCheckApprove
+        this.$toast.add({
+          severity: "error",
+          summary: this.$t('workPlan.planCheckApprove'),
+          life: 3000
+        });
+      } else {
+        // Переход по маршруту
+        this.$router.push({
+          name: 'WorkPlanEvent',
+          params: {id: data.work_plan_id}, // Здесь проверяем, что id не пустой
+          query: {
+            first: this.lazyParams.first,
+            page: this.lazyParams.page,
+            rows: this.lazyParams.rows
+          }
+        });
+      }
+    },
+    isStudent() {
+      return this.findRole(null, 'student');
     },
     getDocStatus(code) {
       const foundStatus = this.docStatus.find(status => status.code === code);
@@ -291,7 +481,7 @@ export default {
       this.types = []
       this.planService.getWorkPlanTypes().then(res => {
         this.types = res.data
-        this.types.push({id: 4, code: 'mine', name_kz: 'Менің жоспарларым', name_ru: 'Мои планы', name_en: 'My Plans'})
+        this.types.push({id: -1, code: 'mine', name_kz: 'Менің жоспарларым', name_ru: 'Мои планы', name_en: 'My Plans'})
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
       })
@@ -305,6 +495,11 @@ export default {
     },
     initFilter() {
       this.filter.filtered = true;
+      if (this.userNameSearch?.length > 0) {
+        this.filter.user_id = this.userNameSearch[0].userID
+      } else {
+        this.filter.user_id = null
+      }
       localStorage.setItem("workPlanFilter", JSON.stringify(this.filter));
       this.lazyParams.first = 0
       this.lazyParams.page = 0
@@ -359,7 +554,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e)
         return signed
       }
 

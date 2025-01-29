@@ -82,6 +82,10 @@
           </small>
         </div>
         <div class="field-checkbox">
+          <Checkbox id="isPoster" name="isHiddenNews" v-model="newsData.isHiddenNews" :binary="true"/>
+          <label for="isPoster"> Скрыть новость </label>
+        </div>
+        <div class="field-checkbox">
           <Checkbox id="isPoster" name="isPoster" v-model="newsData.isPoster" :binary="true" @change="onChangePoster"/>
           <label for="isPoster">{{ $t("smartenu.addPoster") }}</label>
         </div>
@@ -261,7 +265,7 @@ export default {
         if (error?.response?.status === 403) {
           this.haveAccess = false
         } else {
-          this.toast.add({severity: "error", summary: error, life: 3000});
+          // this.toast.add({severity: "error", summary: error, life: 3000});
         }
       })
     },
@@ -322,7 +326,7 @@ export default {
       }
     },
     async insertNews() {
-      if (this.uploadedGalleryFiles) {
+      if (this.uploadedGalleryFiles)  {
         this.uploadedGalleryFiles.forEach(item => {
           this.newsData.files = this.newsData.files || [];
           this.newsData.files.push({file_id: item.id, file: item, is_gallery: item.is_gallery});
@@ -336,13 +340,6 @@ export default {
         if (response.data) {
           this.$router.push({name: "NewsTable"})
         }
-      }).catch((error) => {
-        console.log(error)
-        this.$toast.add({
-          severity: "error",
-          summary: this.$t("smartenu.saveNewsError") + ":\n" + error,
-          life: 3000,
-        });
       });
     },
     uploadImage1(event) {

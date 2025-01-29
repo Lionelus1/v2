@@ -81,13 +81,19 @@
                   class="customer-badge status-status_revision" style="width: min-content">
               {{ $t('contracts.expired') }}
             </span>
+            <span v-if="havePracticeLeaderRequest(slotProps.data)" class="ml-1 customer-badge status-status_inapproval" style="width: min-content">
+              {{$t('contracts.practiceLeaderRequest')}}
+            </span>
+            <span v-if="havePracticeLeaderRequestCancel(slotProps.data)" class="customer-badge status-status_revision" style="width: min-content">
+              {{$t('contracts.practiceManagerCanceld')}}
+            </span>
           </div>
         </template>
       </Column>
       <Column style="min-width: 50px;">
         <template #body="slotProps">
           <div class="flex flex-wrap">
-            <ActionButton :show-label="true" :items="actions" @toggle="toggleActions(slotProps.data)" />
+            <ActionButton :show-label="true" :items="actions(slotProps.data)" @toggle="toggleActions(slotProps.data)" />
           </div>
         </template>
       </Column>
@@ -573,7 +579,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -629,6 +634,30 @@ export default {
 
       return false;
     },
+    havePracticeLeaderRequest(contract) {
+      if (contract.requests) {
+        for (let i = 0; i < contract.requests.length; i++) {
+          if (contract.requests[i].type === this.Enum.DocumentRequestType.PracticeLeaderRequest &&
+              contract.requests[i].status === 0) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
+    havePracticeLeaderRequestCancel(contract) {
+      if (contract.requests) {
+        for (let i = 0; i < contract.requests.length; i++) {
+          if (contract.requests[i].type === this.Enum.DocumentRequestType.PracticeLeaderRequest &&
+              contract.requests[i].status === 2) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    },
     agreementApprovalExpired(contract) {
       if (contract.folder && contract.folder.type === Enum.FolderType.Agreement) {
         if (contract.docHistory && contract.docHistory.stateId === Enum.INAPPROVAL.ID &&
@@ -667,7 +696,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
 
@@ -732,7 +760,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
@@ -752,7 +779,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
@@ -799,7 +825,7 @@ export default {
                         }
                       })
                       .catch((e) => {
-                        console.log(e);
+
                         this.loading = false;
                       });
                 })
@@ -870,7 +896,6 @@ export default {
             let isChecked = false;
 
             document.signatures.forEach(signature => {
-              console.log(signature)
               if (signature.userId === loggedInUserId && signature.signature.length === 0) {
                 isChecked = true;
                 this.selectedIds.push(document.id);
@@ -932,20 +957,21 @@ export default {
     },
 
     actions () {
-      return [
-        {
-          label: this.$t('common.show'),
-          icon: "fa-solid fa-eye",
-          command: () => {this.currentDocument=this.actionsNode;this.open('documentInfoSidebar')},
-        },
-        {
-          label: this.$t('common.delete'),
-          icon: "fa-solid fa-trash",
-          visible: (this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.CREATED.ID ||this.actionsNode.docHistory && this.actionsNode.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === this.actionsNode.creatorID,
-          command: () => {this.currentDocument=this.actionsNode;this.deleteFile()},
-        }
-
-      ]
+      return (data) => {
+        return [
+          {
+            label: this.$t('common.show'),
+            icon: "fa-solid fa-eye",
+            visible: data.filePath?true: false,
+            command: () => {this.currentDocument=data;this.open('documentInfoSidebar')},
+          },
+          {
+            label: this.$t('common.delete'),
+            icon: "fa-solid fa-trash",
+            visible: (data.docHistory && data.docHistory.stateId === Enum.CREATED.ID ||data.docHistory && data.docHistory.stateId === Enum.REVISION.ID) && this.loginedUser.userID === data.creatorID,
+            command: () => {this.currentDocument=data;this.deleteFile()},
+          }
+        ]}
     },
   }
 }

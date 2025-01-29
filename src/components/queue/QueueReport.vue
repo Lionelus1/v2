@@ -220,17 +220,8 @@ export default {
               }
             this.loadingTime = false
           })
-          .catch((error) => {
-            console.log(error)
+          .catch(() => {
             this.loadingTime = false;
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("smartenu.loadError") + ":\n" + error,
-              life: 3000,
-            });
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            }
           });
     },
     getQueueReport(queueID) {
@@ -273,7 +264,6 @@ export default {
       (sec < 1) ? sec='00' : void 0;
       (min.toString().length == 1) ? min = '0'+min : void 0;
       (sec.toString().length == 1) ? sec = '0'+sec : void 0;
-      console.log(hours+':'+min+':'+sec);
       return hours+':'+min+':'+Math.round(sec);
     },
     came(data){

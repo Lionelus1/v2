@@ -686,8 +686,7 @@ const arrow = ref(false)
 const getCourses = () => {
   service.getCourses(lazyParams).then(response => {
     courses.value = response.data.courses
-  }).catch(_ => {
-  });
+  })
 }
 getCourses()
 const handleFilter = (event) => {
@@ -808,7 +807,6 @@ const getModuleByEduProgId = () => {
 getModuleByEduProgId()
 
 const approve = (event) => {
-  console.log(event)
 /*  approving.value = true;
   toast.add({
     severity: "success",

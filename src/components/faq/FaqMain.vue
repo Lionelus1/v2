@@ -633,17 +633,6 @@ export default {
                 this.forwardDepartmentList.push(res)
               }
             })
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-            }
           });
     },
     createFaq() {
@@ -670,18 +659,6 @@ export default {
             this.hideDialog();
             this.getData();
           })
-          .catch((error) => {
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              console.log(error);
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-            }
-          });
     },
     getUserType() {
       api
@@ -700,13 +677,6 @@ export default {
             });
             this.isChancery = response.data.departmentName === 'Отдел документооборота и контроля';
             this.getData();
-          })
-          .catch((error) => {
-            if (error.response && error.response.status === 401) {
-              this.$store.dispatch("logLout");
-            } else {
-              console.log(error);
-            }
           });
     },
     downloadFile(fileName, fileType) {
@@ -726,13 +696,6 @@ export default {
             link.download = fileName;
             link.click();
             URL.revokeObjectURL(link.href);
-          })
-          .catch((error) => {
-            this.$toast.add({
-              severity: "error",
-              summary: "downloadFileError:\n" + error,
-              life: 3000,
-            });
           });
     },
     addAnswer() {
@@ -748,17 +711,6 @@ export default {
           .then((response) => {
             this.answerDialog = false;
             this.getData();
-          })
-          .catch((error) => {
-            if (error.response.status === 401) {
-              this.$store.dispatch("logLout")
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: error,
-                life: 3000,
-              });
-            }
           });
     },
     forwardFaq() {
@@ -773,8 +725,6 @@ export default {
           this.getData();
           this.$toast.add({severity: 'success', detail: 'Успешно', life: 3000});
         }
-      }).catch(error => {
-        console.log(error)
       });
     },
     clearData() {
@@ -855,9 +805,34 @@ export default {
     color: #c63737;
   }
 
+  &.status-negotiation {
+    background: #feedaf;
+    color: #8a5340;
+  }
+
+  &.status-1 {
+    background: #b3e5fc;
+    color: #23547b;
+  }
+
   &.status-4 {
     background: #eccfff;
     color: #694382;
+  }
+
+  &.status-proposal {
+    background: #ffd8b2;
+    color: #805b36;
+  }
+
+  &.online {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+  &.offline {
+    background: #ffcdd2;
+    color: #c63737;
   }
 }
 </style>

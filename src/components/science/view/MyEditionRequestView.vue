@@ -49,15 +49,8 @@
                 this.editionsRequest = res.data.editions
                 this.totalRequest = res.data.total
                 this.loading = false
-            }).catch(err => {
+            }).catch(_ => {
                 this.loading = false
-                if (err.response && err.response.status == 401) {
-                this.$store.dispatch("logLout");
-                } else if (err.response && err.response.data && err.response.data.localized) {
-                    this.showMessage('error', this.$t(err.response.data.localizedPath), null);
-                } else {
-                    this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'));
-                }
             })
         },
 

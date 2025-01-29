@@ -121,11 +121,6 @@ export default {
         this.loading = false;
       }).catch(error => {
         this.loading = false;
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
       });
     },
     downloadFile(filePath) {
@@ -133,7 +128,7 @@ export default {
       let data = {filePath: filePath};
       this.receptionService.downloadFile(data).then(response => {
         const link = document.createElement("a");
-        link.href = "data:application/octet-stream;base64," + response.data;
+        link.href = "data:application/octet-stream;base64," + response.data.file;
         link.setAttribute("download", filePath);
         link.download = filePath;
         link.click();
@@ -172,19 +167,6 @@ export default {
             this.loading = false;
           }).catch(error => {
             this.loading = false;
-            if (error.response && error.response.status === 405) {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("common.message.notAllowed"),
-                life: 3000,
-              });
-            } else {
-              this.$toast.add({
-                severity: "error",
-                summary: this.$t("common.message." + error),
-                life: 3000,
-              });
-            }
           });
         },
         reject: () => {
@@ -220,15 +202,6 @@ export default {
         });
       }).catch((error) => {
         this.loading = false;
-        if (error.response && error.response.status === 405) {
-          {
-            this.$toast.add({
-              severity: "error",
-              summary: this.$t("common.message.notAllowed"),
-              life: 3000,
-            });
-          }
-        }
       });
 
     },

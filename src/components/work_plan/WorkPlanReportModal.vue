@@ -112,6 +112,10 @@ export default {
           id: 2,
           name: this.$t('workPlan.reportTypes.quarter'),
         },
+        {
+          id: 3,
+          name: this.$t('workPlan.reportTypes.halfYear')
+        },
       ],
       reportQuarters: [
         {
@@ -289,14 +293,6 @@ export default {
     },
 
     create() {
-      if (
-        this.plan.plan_type.code === Enum.WorkPlanTypes.Oper ||
-        this.plan.plan_type.code === Enum.WorkPlanTypes.Masters
-      ) {
-        this.departmentId = this.selectedDepartment
-          ? this.selectedDepartment
-          : null;
-      }
       let data = {
         work_plan_id: parseInt(this.work_plan_id),
         report_name: this.report_name,
@@ -305,13 +301,12 @@ export default {
         halfYearType: this.type === 3 ? this.selectedHalfYear : null,
         department_id: this.departmentId,
       };
-      if (this.plan.plan_type.code === Enum.WorkPlanTypes.Masters) {
+      if (this.plan.plan_type.code === Enum.WorkPlanTypes.Masters ||  Enum.WorkPlanTypes.Doctors) {
         data.report_type = 8;
         data.quarter = this.quarter;
+        data.creator_id = this.loginedUser.userID;
       }
-      if (this.plan.plan_type.code === Enum.WorkPlanTypes.Doctors) {
-        data.quarter = this.quarter;
-      }
+
       if (this.plan.plan_type.code === Enum.WorkPlanTypes.Oper) {
         this.departmentId = this.selectedDepartment
           ? this.selectedDepartment

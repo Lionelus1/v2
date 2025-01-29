@@ -103,7 +103,6 @@ export default {
           haveAccess.value = false
         } else {
           loading.value = false
-          toast.add({severity: "error", summary: error, life: 3000});
         }
       });
     }
@@ -126,7 +125,6 @@ export default {
           haveAccess.value = false
         } else {
           loading.value = false
-          toast.add({severity: "error", summary: error, life: 3000});
         }
       });
     }
@@ -134,7 +132,8 @@ export default {
     const onRowReorder = (event) => {
       let data = {
         drag_id: pageBlocks.value[event.dragIndex].id,
-        drop_id: pageBlocks.value[event.dropIndex].id
+        drop_id: pageBlocks.value[event.dropIndex].id,
+        is_position: 'landing'
       }
       enuService.orderBlockIntoPage(data).then(res => {
         if (res.data && res.data.is_success) {
@@ -142,8 +141,7 @@ export default {
         } else {
           toast.add({severity: "error", summary: i18n.t('common.error'), life: 3000});
         }
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     }
 
@@ -165,8 +163,7 @@ export default {
         selectedBlock.value = {}
         op.value.hide();
         getPageData()
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     }
 
@@ -195,8 +192,7 @@ export default {
           toast.add({severity: "warn", summary: i18n.t('common.error'), life: 3000});
         }
         getPageData();
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     }
 
@@ -211,8 +207,7 @@ export default {
         if (res.data) {
           selectedBlock.value.params = res.data;
         }
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     }
 

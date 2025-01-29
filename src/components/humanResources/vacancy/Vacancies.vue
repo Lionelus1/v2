@@ -210,12 +210,6 @@ export default {
         this.view.delete = false
         this.vacancy = null
         this.getVacancies()
-      }).catch(error => {
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
       });
     },
     clearData() {
@@ -270,16 +264,7 @@ export default {
         this.vacancies = response.data.vacancies;
         this.count = response.data.total;
         this.loading = false;
-        console.log(response.data)
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
+      }).catch(() => {
         this.loading = false;
       });
     },
@@ -321,15 +306,7 @@ export default {
         } else {
           this.loading = false
         }
-      }).catch((error) => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout");
-        }
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        });
+      }).catch((_) => {
       });
     },
 
@@ -347,15 +324,8 @@ export default {
             this.report,
             {responseType: "blob", headers: getHeader()},
         ).then(response => {
-          console.log(response)
           this.reportResponse = response
-        }).catch(error => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        })
+        });
       }
 
     },
@@ -388,3 +358,51 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.customer-badge {
+  border-radius: 2px;
+  padding: 0.25em 0.5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+
+  &.status-1 {
+    background: #b3e5fc;
+    color: #23547b;
+  }
+
+  &.status-2 {
+    background: #eccfff;
+    color: #694382;
+  }
+
+  &.status-3 {
+    background: #feedaf;
+    color: #8a5340;
+  }
+
+  &.status-4 {
+    background: #ffcdd2;
+    color: #c63737;
+  }
+
+  &.status-5 {
+    background: #ffd8b2;
+    color: #805b36;
+  }
+
+  &.status-6 {
+    background: #feedaf;
+    color: #8a5340;
+  }
+
+  &.status-7 {
+    background: #c8e6c9;
+    color: #256029;
+  }
+
+
+}
+</style>

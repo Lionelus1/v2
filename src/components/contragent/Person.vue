@@ -548,7 +548,6 @@ export default {
             });
           })
           .catch((error) => {
-            console.log(error)
             if (error.response.status == 401) {
               this.$store.dispatch("logLout");
             } else if (error.response.status == 302) {
@@ -587,13 +586,7 @@ export default {
           summary:  this.$t('common.successDone'),
           life: 3000,
         });
-      }).catch((error) => {
-        this.$toast.add({
-          severity: "error",
-          summary: "Individual entrepreneur create error\n" + error,
-          life: 3000,
-        });
-      })
+      });
     },
     validateAddForm() {
       this.validationErrors.firstName =

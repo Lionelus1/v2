@@ -18,12 +18,8 @@ export async function resizeImages(content) {
                     if (i === el.getElementsByTagName('img').length - 1) {
                         content = el.innerHTML;
                     }
-                }).catch(error => {
-                    console.log("to url error", error)
-                });
-            }).catch(error => {
-                console.log("from url error", error)
-            });
+                }).catch(_ => {});
+            }).catch(_ => {});
     }
     return content;
 }
@@ -72,4 +68,28 @@ export function isMobile() {
             check = true;
     })(navigator.userAgent || navigator.vendor || window.opera);
     return check;
+}
+export function timeDifference(givenDate) {
+    const now = moment()
+    const given = moment(givenDate);
+    moment.locale('smartEnu', {
+        relativeTime: {
+            future: this.$i18n.locale === "kz" ? "" : this.$i18n.locale === "en" ? "in %s" : "",
+            past: this.$i18n.locale === "kz" ? "%s бұрын" : this.$i18n.locale === "en" ? "%s ago" : "%s назад",
+            ss: this.$i18n.locale === "kz" ? "бірнеше секунд бұрын" : this.$i18n.locale === "en" ? "few seconds ago" : "несколько секунд назад",
+            m: this.$i18n.locale === "kz" ? "минут бұрын" : this.$i18n.locale === "en" ? "a minute" : "минут назад",
+            mm: this.$i18n.locale === "kz" ? "%d минут бұрын" : this.$i18n.locale === "en" ? "%d minutes" : "%d минут назад",
+            h: this.$i18n.locale === "kz" ? "бір сағат бұрын" : this.$i18n.locale === "en" ? "an hour" : "час назад",
+            hh: this.$i18n.locale === "kz" ? "%d сағат бұрын" : this.$i18n.locale === "en" ? "%d hours" : "%d час. назад",
+            d: this.$i18n.locale === "kz" ? "бір күн бұрын" : this.$i18n.locale === "en" ? "a day" : "день назад",
+            dd: this.$i18n.locale === "kz" ? "%d күн бұрын" : this.$i18n.locale === "en" ? "%d days" : "%d дн. назад",
+            w: this.$i18n.locale === "kz" ? "бір апта бұрын" : this.$i18n.locale === "en" ? "a week" : "неделю назад",
+            ww: this.$i18n.locale === "kz" ? "%d апта бұрын" : this.$i18n.locale === "en" ? "%d weeks" : "%d нед.",
+            M: this.$i18n.locale === "kz" ? "бір ай бұрын" : this.$i18n.locale === "en" ? "a month" : "месяц назад",
+            MM: this.$i18n.locale === "kz" ? "%d ай бұрын" : this.$i18n.locale === "en" ? "%d months" : "%d мес. назад",
+            y: this.$i18n.locale === "kz" ? "бір жыл бұрын" : this.$i18n.locale === "en" ? "a year" : "год назад",
+            yy: this.$i18n.locale === "kz" ? "%d жыл бұрын" : this.$i18n.locale === "en" ? "%d years" : "%d год. назад",
+        }
+    });
+    return moment.duration(given.diff(now)).humanize();
 }

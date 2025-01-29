@@ -5,7 +5,6 @@ stages:
 
 variables:
   SSH_PRIVATE_KEY: "$SSH_PRIVATE_KEY"
-  TG_ACCESS_TOKEN: 6776695616:AAEiwTHzfZPwdOiJnnBFPLfP2DzlkmrT8fA
   MASTER_ARTIFACT_PATH: "dist_prod/"
   TEST_ARTIFACT_PATH: "dist_test/"
   NODE_OPTIONS: "--max-old-space-size=4096"
@@ -14,23 +13,11 @@ cache:
   paths:
     - node_modules/
 
-before_script:
-  - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client wget gnupg -y )'
-  - wget -qO- https://get.docker.com/gpg | apt-key add -
-  - eval $(ssh-agent -s)
-  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-  - mkdir -p ~/.ssh
-  - touch ~/.ssh/config
-  - touch ~/.ssh/known_hosts
-  - chmod -R 400 ~/.ssh
-  - ssh-keyscan -H smart.enu.kz >> ~/.ssh/known_hosts
-  - '[[ -f /.dockerinit ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-
 install_stage:
   stage: install
   image: node:18
   script:
-    - npm ci
+    - npm i
   only:
     - master
     - test
@@ -63,21 +50,54 @@ build_stage:
       - dist_prod/
       - dist_test/
 
-deploy_stage:
+deploy_production:
   stage: deploy
   image: node:lts
-  script:
-    - if [ "$CI_COMMIT_BRANCH" == "master" ]; then
-      ssh root@smart.enu.kz "sudo rm -rf /local/prohtml/*";
-      scp -r dist_prod/* root@smart.enu.kz:/local/prohtml;
-      elif [ "$CI_COMMIT_BRANCH" == "test" ]; then
-      ssh root@smart.enu.kz "sudo rm -rf /local/testhtml/*";
-      scp -r dist_test/* root@smart.enu.kz:/local/testhtml;
-      fi
   dependencies:
     - build_stage
+  before_script:
+    - apt-get update -y
+    - apt-get install -y openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | ssh-add -
+    - mkdir -p ~/.ssh
+    - touch ~/.ssh/config
+    - touch ~/.ssh/known_hosts
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod -R 400 ~/.ssh
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $SMARTENU_IP >> ~/.ssh/known_hosts
+  script:
+    - echo "$SSH_AUTH_URL"
+    - ssh $SSH_AUTH_URL "rm -rf /local/prohtml/*";
+    - scp -r dist_prod/* $SSH_AUTH_URL:/local/prohtml;
   only:
     - master
+  tags:
+    - front
+
+deploy_test:
+  stage: deploy
+  image: node:lts
+  dependencies:
+    - build_stage
+  before_script:
+    - apt-get update -y
+    - apt-get install -y openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY_TEST" | ssh-add -
+    - mkdir -p ~/.ssh
+    - touch ~/.ssh/config
+    - touch ~/.ssh/known_hosts
+    - echo "$SSH_PRIVATE_KEY_TEST" > ~/.ssh/id_rsa
+    - chmod -R 400 ~/.ssh
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -p $SSH_AUTH_PORT_TEST -H $SMARTENU_TEST_IP >> ~/.ssh/known_hosts
+  script:
+    - echo "$SSH_AUTH_URL_TEST"
+    - ssh -p $SSH_AUTH_PORT_TEST $SSH_AUTH_URL_TEST "rm -rf /root/project/public/*";
+    - scp -r -P $SSH_AUTH_PORT_TEST dist_test/* $SSH_AUTH_URL_TEST:/root/project/public;
+  only:
     - test
   tags:
     - front

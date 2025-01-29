@@ -62,6 +62,14 @@
                 v-if="validation.organization"
             >{{ $t("common.requiredField") }}</small>
           </div>
+          <div class="field-checkbox" style="margin-left: 15px">
+            <Checkbox id="binary" v-model="value.isAccessibleVacancies" :binary="true"/>
+            <label for="binary" style="font-size: 15px; text-align: justify">
+              <b>
+                Данная вакансия подходит для людей с особыми потребностями
+              </b>
+            </label>
+          </div>
         </div>
         <TabView>
           <TabPanel header="Қазақша">
@@ -766,7 +774,8 @@ export default {
         languageLevelEn: false,
         certificateRequirementsEn: false,
         personalQualitiesEn: false,
-        workConditionEn: false
+        workConditionEn: false,
+        accessibleVacancies: false,
       },
       menu: [
         {
@@ -812,12 +821,6 @@ export default {
       if (this.validationForm()) {
         this.vacancyService.createOrUpdateVacancy(this.value, path).then(result => {
           this.emitter.emit("vacancyAdded", true);
-        }).catch(error => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
         });
       }
     },
@@ -825,12 +828,7 @@ export default {
     vacancyAction(id, action) {
       this.vacancyService.vacancyAction(id, action).then(response => {
         this.emitter.emit("vacancyAdded", true);
-      }).catch(error => {
-        this.$toast.add({
-          severity: "error",
-          summary: + error,
-          life: 3000,
-        });
+      }).catch(_ => {
       })
     },
 
@@ -851,12 +849,7 @@ export default {
             this.menu[1].visible = this.action.visible
             this.menu[2].visible = false
           }
-        }).catch(error => {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
+        }).catch(_ => {
         })
       }
     },
@@ -947,12 +940,6 @@ export default {
               }
             }
 
-          })
-          .catch((error) => {
-            console.error(error);
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            }
           });
     }
   },

@@ -139,7 +139,7 @@
       await service.addModulesToCourse(formData.value);
       props.closeModuleDialog();
     } catch (error) {
-      console.error(error);
+      toast.add({severity: 'error', summary: t('common.error'), life: 3000 });
     } finally {
       loading.value = false;
       submitted.value = false;
@@ -148,8 +148,6 @@
 
 
   const updateModuleOfCourse = async () => {
-    console.log(formData)
-    console.log(formData.value.id)
     if (formData.value.id === undefined || formData.value.id <= 0) {
       await addModulesToCourse()
       return
@@ -168,7 +166,7 @@
       await service.updateModuleOfCourse(formData.value);
       props.closeModuleDialog();
     } catch (error) {
-      console.error(error);
+      toast.add({severity: 'error', summary: t('common.error'), life: 3000 });
     } finally {
       submitted.value = false;
       loading.value = false;

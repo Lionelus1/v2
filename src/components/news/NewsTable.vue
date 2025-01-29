@@ -1,7 +1,7 @@
 <template>
     <div class="col-12">
         <h3>{{ $t("smartenu.newsTitle") }}</h3>
-        <ToolbarMenu :data="menu" @search="getAllNews" :search="true"/>
+        <ToolbarMenu :data="menu" @filter="toggleFilter('filterOverlayPanel', $event)" :filter="true" :filtered="filtered" @search="getAllNews" :search="true"/>
         <div class="card">
             <DataTable :lazy="true" :value="allNews" @page="onPage($event)" :totalRecords="newsCount" :paginator="true"
                        paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -15,6 +15,10 @@
                 <Column field="titleKz" v-bind:header="$t('common.nameIn')" :sortable="true" style="width: 40%">
                     <template #body="{data}">
                         <span>{{ data['title' + locale] }}</span>
+                      <template v-if="data.isHiddenNews">
+                        (<a :href="data.url" target="_blank">{{ $t('common.link') }}</a>)
+                      </template>
+                      <Badge style="margin-left:5px" :value="$t('web.isHidden')" v-if="data.isHiddenNews"></Badge>
                     </template>
                 </Column>
                 <Column :field="$i18n.locale === 'kz' ? `history.status.nameKz` : $i18n.locale === 'ru'
@@ -119,6 +123,22 @@
     <AddEditNews v-if="editVisible" :is-visible="editVisible" :selected-news="newsData" :cat-tree="catTree"
                  :catTreeList="catTreeElementsList"/>
 
+  <OverlayPanel ref="filterOverlayPanel">
+    <div class="p-fluid" style="min-width: 320px;">
+      <div class="field">
+        <label>{{ $t('contracts.filter.createdFrom') }}</label>
+        <PrimeCalendar v-model="tempFilter.createdFrom" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field">
+        <label>{{ $t('contracts.filter.createdTo') }}</label>
+        <PrimeCalendar v-model="tempFilter.createdTo" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
+      </div>
+      <div class="field">
+        <Button :label="$t('common.clear')" @click="clearFilter();toggleFilter('filterOverlayPanel', $event);getAllNews()" class="mb-2 p-button-outlined"/>
+        <Button :label="$t('common.search')" @click="saveFilter();toggleFilter('filterOverlayPanel', $event);getAllNews()" class="mt-2"/>
+      </div>
+    </div>
+  </OverlayPanel>
 </template>
 
 <script>
@@ -133,12 +153,14 @@ import {formatDate, upFirstLetter} from "@/helpers/HelperUtil";
 import ToolbarMenu from "@/components/ToolbarMenu.vue";
 import ActionButton from "@/components/ActionButton.vue";
 import HistoryNews from "@/components/news/HistoryNews.vue";
+import {EnuWebService} from "@/service/enu.web.service";
 
 export default {
     name: "NewsTable",
-    components: {HistoryNews, ActionButton, ToolbarMenu, AddEditNews, NewsView},
+    components: { HistoryNews, ActionButton, ToolbarMenu, AddEditNews, NewsView},
     data() {
         return {
+          enuService: new EnuWebService(),
             lazyParams: {
                 page: 0,
                 rows: 10,
@@ -203,7 +225,16 @@ export default {
             imageFileAdd: null,
             newsService: new NewsService(),
             posterService: new PosterService(),
-            actionsNode: null
+            actionsNode: null,
+            filtered: false,
+            filter: {
+              createdFrom: null,
+              createdTo: null,
+            },
+            tempFilter: {
+              createdFrom: null,
+              createdTo: null,
+            },
         }
     },
     mounted() {
@@ -276,6 +307,7 @@ export default {
             // this.allNews = [];
             this.lazyParams.searchText = data;
             this.lazyParams.countMode = null;
+            this.lazyParams.filter = this.filter
             this.newsService.getNews(this.lazyParams).then((response) => {
                 if (response.data && response.data.news) {
                     this.allNews = response.data.news;
@@ -286,7 +318,8 @@ export default {
                             e.poster.imageRuUrl = smartEnuApi + fileRoute + e.poster.imageRu;
                             e.poster.imageEnUrl = smartEnuApi + fileRoute + e.poster.imageEn;
                         }
-                        e.galleryFiles = e.files ? e.files.find(x => x.is_gallery === true) : null
+                        e.galleryFiles = e.files ? e.files.find(x => x.is_gallery === true) : null;
+                        e.url = `${this.getSiteUrl}/${this.$i18n.locale}/news/${e.id}`
                     });
                     this.newsCount = response.data.total;
                 }
@@ -554,6 +587,57 @@ export default {
       toggle(node) {
         this.actionsNode = node
       },
+      toggleFilter(ref, event) {
+        if (ref === 'filterOverlayPanel') {
+          this.tempFilter = JSON.parse(JSON.stringify(this.filter));
+          this.tempFilter.date = this.tempFilter.date ? new Date(this.tempFilter.date) : null;
+          this.tempFilter.mnvoDate = this.tempFilter.mnvoDate ? new Date(this.tempFilter.mnvoDate) : null;
+        }
+
+        this.$refs[ref].toggle(event);
+      },
+      saveFilter() {
+        this.filter = JSON.parse(JSON.stringify(this.tempFilter));
+        this.filter.applied = true;
+        this.filtered = true;
+      },
+      clearFilter() {
+        this.filter = {
+          date: null,
+        };
+        this.filtered = false;
+      },
+      getActs() {
+        this.tableLoading = true;
+
+        this.service.getDocumentsV2({
+          page: this.page,
+          rows: this.rows,
+          filter: {
+            date: this.filter.date,
+          },
+        }).then(res => {
+          this.documents = res.data.documents;
+          this.total = res.data.total;
+          this.currentDocument = null;
+
+          this.tableLoading = false;
+        }).catch(err => {
+          this.documents = [];
+          this.total = 0;
+          this.currentDocument = null;
+
+          if (err.response && err.response.status == 401) {
+            this.$store.dispatch("logLout")
+          } else if (err.response && err.response.data && err.response.data.localized) {
+            this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+          } else {
+            this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+          }
+
+          this.tableLoading = false
+        });
+      },
     },
 
     created() {
@@ -595,6 +679,9 @@ export default {
             command: () => {this.rejectReason()},
           }
         ]
+      },
+      getSiteUrl() {
+        return this.enuService.getSiteUrl(this.$store, this.lazyParams.slug)
       },
       actions () {
         return [

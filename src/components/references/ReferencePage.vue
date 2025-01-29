@@ -19,8 +19,8 @@
         <InputText :disabled="true" :value="url"/>
         <Button v-bind:label="$t('ncasigner.copy')" v-clipboard:copy="url" v-clipboard:success="onCopy" v-clipboard:error="onFail" class="p-button-secondary"/>
       </div>
-      <div class="flex-grow-1 flex flew-row align-items-stretch">
-        <embed :src="pdf" style="width: 100%;" v-if="pdf" type="application/pdf"/>
+      <div class="flex-grow-1">
+        <embed :src="pdf" style="width: 100%; height: 100%" v-if="pdf" type="application/pdf"/>
       </div>
     </div>
     <div class="flex flex-column" style="height: 100%;" v-else>
@@ -132,7 +132,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -158,7 +157,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('ref.failed'))
         }
 
@@ -182,7 +180,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 

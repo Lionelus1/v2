@@ -78,15 +78,6 @@ export default {
     this.selectedOrganizationText = this.selectedOrganization ? this.selectedOrganization.bin + ' - ' + this.selectedOrganization['name' + this.$i18n.locale] : this.$t('roleControl.selectOrg')
     this.roleControlService.getRoles(this.selectedOrganization.id).then(response => {
       this.roles = response.data
-    }).catch(error => {
-      if (error.response.status == 401) {
-        this.$store.dispatch("logLout")
-      }
-      this.$toast.add({
-        severity: "error",
-        summary: error,
-        life: 3000,
-      })
     })
   },
   methods: {
@@ -96,15 +87,6 @@ export default {
       this.params.userId = this.employeeFullName[0].userID;
       this.roleControlService.addRoleRelation(this.params).then(result => {
         this.emitter.emit("roleRelationAdded", true);
-      }).catch(error => {
-        if (error.response.status == 401) {
-          this.$store.dispatch("logLout")
-        }
-        this.$toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        })
       });
     },
     // searchEmployee() {
@@ -140,9 +122,6 @@ export default {
     },
     isDisabled() {
       return !(this.selectedOrganization !== null && this.employeeFullName !== null && this.role !== null);
-    },
-    onInputEvent() {
-      console.log("HERE")
     }
   }
 }

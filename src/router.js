@@ -19,7 +19,6 @@ const ifAuthenticated = (to, from, next) => {
         next()
         return
     } else {
-        console.log(to)
         store.dispatch("solveAttemptedUrl", to);
         next('/login')
         return
@@ -62,7 +61,7 @@ const ifUserRoles = (to, from, next) => {
 
 const routes = [
     {
-        path: '/login',
+        path: '/login/:sessionID?',
         name: 'Login',
         component: load('Login'),
         beforeEnter: ifNotAuthenticated
@@ -108,6 +107,12 @@ const routes = [
                 path: '/',
                 name: 'Welcome',
                 component: load('Welcome'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/finance',
+                name: 'Finance',
+                component: load('finance/Finance'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -228,6 +233,12 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/documents/scientific-works',
+                name: 'ScientificWorks',
+                component: load('documents/ScientificWorks'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/docrequests',
                 name: 'DocumentRequests',
                 component: load('references/ReferenceRequests'),
@@ -320,20 +331,29 @@ const routes = [
                 path: '/contragent/organizations',
                 name: 'OrganizationList',
                 component: load('contragent/v2/OrganizationList'),
-                beforeEnter: ifAuthenticated,
+                beforeEnter: ifUserRoles,
+                meta: { roles: ['student', 'personal'] }
             },
             {
                 path: '/contragent/organization/:id?',
                 name: 'OrganizationPage',
                 component: load('contragent/v2/OrganizationPage'),
                 props: true,
+                beforeEnter: ifUserRoles,
+                meta: { roles: ['student', 'personal'] }
+            },
+            {
+                path: '/user/cv/:uuid',
+                name: 'CurriculumVitae',
+                component: load('contragent/CurriculumVitae'),
                 beforeEnter: ifAuthenticated,
             },
             {
                 path: '/contragent/persons/:type',
                 name: 'PersonsList',
                 component: load('contragent/v2/PersonsList'),
-                beforeEnter: ifAuthenticated,
+                beforeEnter: ifUserRoles,
+                meta: { roles: ['personal'] }
             },
             {
                 path: '/hdfs/hdfsmain',
@@ -341,7 +361,53 @@ const routes = [
                 component: () => import('./components/hdfs/HdfsMain.vue'),
                 beforeEnter: ifAuthenticated,
             },
-
+            {
+                path: '/mailing',
+                name: 'MailingTable',
+                component: load('mailing/MailingComponent'),
+                beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'MailingTable',
+                        component: load('mailing/MailingTable'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: ':id',
+                        name: 'AddEditMailing',
+                        component: load('mailing/AddEditMailing'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    // {
+                    //     path: 'add',
+                    //     name: 'AddMailing',
+                    //     component: load('mailing/AddEditMailing'),
+                    //     beforeEnter: ifAuthenticated,
+                    // },
+                    {
+                        path: '/template',
+                        name: 'TemplateEditor2',
+                        props: true,
+                        component: load('mailing/TemplateEditor'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                ]
+            },
+            {
+                path: '/editMailing/:id',
+                name: 'EditMailing',
+                component: load('mailing/EditMailing'),
+                props: true,
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/deleteMailing/:id',
+                name: 'DeleteMailing',
+                component: load('mailing/DeleteMailing'),
+                props: true,
+                beforeEnter: ifAuthenticated,
+            },
             {
                 path: '/news',
                 name: 'NewsComponent',
@@ -487,7 +553,7 @@ const routes = [
                         beforeEnter: ifAuthenticated,
                     },
                     {
-                        path: 'reports/:id/:userId',
+                        path: 'reports/:id/:userId/:uuId/:doc',
                         name: 'WorkPlanJournalReport',
                         component: load('work_plan/WorkPlanJournalReport'),
                         beforeEnter: ifAuthenticated,
@@ -503,6 +569,12 @@ const routes = [
                         name: 'WorkPlanView',
                         component: load('work_plan/WorkPlanView'),
                         beforeEnter: ifAuthenticated
+                    },
+                    {
+                        path: 'analysis/:id',
+                        name: 'WorkPlanAnalysisView',
+                        component: load('work_plan/analysis/OperPlanAnalysisView'),
+                        beforeEnter: ifAuthenticated,
                     },
                     {
                         path: '/work-plan/directors/protocol/:workPlanId/:protocolId',
@@ -623,6 +695,12 @@ const routes = [
                 name: '/queueMode',
                 component: load('queue/QueueMode'),
                 beforeEnter: ifAuthenticated,
+
+            },
+            {
+                path: '/queue/qr/:id',
+                name: '/queueQR',
+                component: load('queue/QueueQR'),
             },
             {
                 path: '/reception',
@@ -658,13 +736,48 @@ const routes = [
                 path: '/telegram',
                 name: 'TelegramComponent',
                 component: load('telegram/Questions'),
+                meta: { roles: ['telegram', 'main_administrator'] },
                 beforeEnter: ifUserRoles,
-                meta: { roles: ['telegram'] } // Здесь указываем роли
             },
-            
-
             {
-                path: '/helpdesk',
+                path: '/showcase',
+                name: 'ShowcaseComponent',
+                component: load('showcase/Showcase'),
+                meta: { roles: ['showcase'] },
+                beforeEnter: ifUserRoles,
+
+            },
+            {
+                path: '/hikvision',
+                name: 'HikvisionTemplate',
+                component: load('hikvision/Hikvision'),
+                meta: { roles: ['personal'] },
+                beforeEnter: ifUserRoles,
+            },
+            {
+                path: '/reports',
+                name: 'ReportsTemplate',
+                component: load('reports/Reports'),
+                meta: { roles: ['personal'] },
+                beforeEnter: ifUserRoles,
+            },
+            {
+                path: '/report-preview',
+                name: 'ReportPreview',
+                component: load('reports/ReportPreview'),
+                meta: { roles: ['personal'] },
+                beforeEnter: ifUserRoles,
+            },
+            {
+                path: '/report-view',
+                name: 'ReportView',
+                component: load('reports/ReportView'),
+                props: true,
+                meta: { roles: ['personal'] },
+                beforeEnter: ifUserRoles,
+            },
+            {
+                path: '/helpdesk/v2',
                 name: 'HelpDeskComponent',
                 component: load('helpDesk/HelpDeskComponent'),
                 beforeEnter: ifAuthenticated,
@@ -676,15 +789,33 @@ const routes = [
                         beforeEnter: ifAuthenticated,
                     },
                     {
-                        path: '/request/:uuid',
+                        path: 'request/:uuid',
                         name: 'Request',
                         component: load('helpDesk/Request'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'create',
+                        name: 'CreateCategory',
+                        component: load('helpDesk/CreateCategory'),
+                        beforeEnter: ifAuthenticated
+                    },
+                    {
+                        path: 'edit/:id',
+                        name: 'EditCategories',
+                        component: load('helpDesk/EditCategories'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: 'add',
+                        name: 'AddCategories',
+                        component: load('helpDesk/EditCategories'),
                         beforeEnter: ifAuthenticated,
                     }
                 ]
             },
             {
-                path: '/helpdesk/v2',
+                path: '/helpdesk',
                 name: 'HelpDeskComponent2',
                 component: load('helpDesk/v2/HelpDeskComponent'),
                 beforeEnter: ifAuthenticated,
@@ -898,6 +1029,18 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/categories-finances',
+                name: 'categoriesFinances',
+                component: () => import('./components/CategoriesFinances'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/catfinances/:categoryID',
+                name: 'financeCat',
+                component: () => import('./components/MyFinances'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
                 path: '/integrations',
                 name: 'IntegrationList',
                 component: load('integration/IntegrationList'),
@@ -907,6 +1050,12 @@ const routes = [
                 path: '/integrations/params',
                 name: 'IntegrationParams',
                 component: load('integration/IntegrationParams'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/service-catalog',
+                name: 'ServiceCatalog',
+                component: load('service-catalog/ServiceCatalog'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -955,5 +1104,14 @@ const router = createRouter({
     history: createWebHashHistory(),
     routes,
 });
+
+
+router.beforeEach((to, from, next) => {
+    if (to.name === 'Login' && to.params.sessionID) {
+        localStorage.setItem('sessionID', to.params.sessionID);
+    }
+    next();
+});
+
 
 export default router;

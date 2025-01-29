@@ -1,4 +1,5 @@
 <template>
+  <template v-if="visibleCount > 0">
   <template v-if="!visible && actionList.length > 1">
     <Button class="p-button-outlined p-button-sm" type="button" v-tooltip.bottom="showTooltip ? $t('web.actionID'): ''"
             :label="showLabel ? $t('web.actionID') : ''"
@@ -13,17 +14,21 @@
         </Button>
       </template>
     </template>
+    </template>
 </template>
 
 <script setup>
 
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 
 const props = defineProps(['items', 'showLabel', 'showTooltip'])
 const emit = defineEmits(['toggle'])
 const menu = ref()
 const actionList = computed(() => props.items)
 
+watch(() => props.items, (newItems) => {
+  actionList.value = newItems
+})
 const onClick = (event, index = null) => {
     if (index !== null) {
       actionList.value[index].command(index)
@@ -32,13 +37,10 @@ const onClick = (event, index = null) => {
     }
     emit('toggle')
 }
-const visibleCount = ref(0);
-actionList.value.forEach(item => {
-  if (item.visible === undefined || item.visible) {
-    visibleCount.value++;
-  }
-});
 
+const visibleCount = computed(() => {
+  return actionList.value.filter(item => item.visible === undefined || item.visible).length;
+})
 
 const visible = computed(() => {
   return visibleCount.value === 1;

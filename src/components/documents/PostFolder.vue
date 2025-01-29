@@ -25,6 +25,11 @@
             <MultiSelect v-model="folder.groups" :options="groupsData" :optionLabel="'name' + $i18n.locale" v-bind:placeholder="$t('common.selectGroup')"  display="chip"/>
             <small class="p-error" v-if="validation.groups">{{ $t("common.requiredField") }}</small>
         </div>
+        <div class="field" v-if="findRole(null, 'main_administrator') && folder?.id > 0">
+            <label for="foldergroup">{{$t('workPlan.changeCreatedPerson')}}</label>
+            <FindUser v-model="selectedOwner" :max="1" :user-type="3"></FindUser>
+            <small class="p-error" v-if="selectedOwner?.length <= 0">{{ $t("common.requiredField") }}</small>
+        </div>
         <div style="margin-top:5px;width:100%;text-align:right">
             <Button style="width:200px" :label="$t('common.save')" @click="updateFolder"></Button>
         </div> 
@@ -32,7 +37,8 @@
 </template>
 <script>
 import api from "@/service/api";
-import {smartEnuApi, getHeader} from "@/config/config";
+import {smartEnuApi, getHeader,  findRole} from "@/config/config";
+import { ContragentService } from "@/service/contragent.service";
 
 export default {
     
@@ -56,7 +62,10 @@ export default {
                 nameen: false,
                 code: false,
                 groups: false,
-            }
+            },
+            selectedOwner: [],
+            ownerID: [],
+            userService: new ContragentService(),
     }
   },
     props: {
@@ -65,20 +74,47 @@ export default {
     emits: ['updated'],
     setup(props, context) {
     function updateValue(folder) {
-      context.emit("update:modelValue", folder);
+        const folderJson = JSON.stringify(folder);
+        context.emit("update:modelValue", folderJson);
     }
     return {
       updateValue,
     };
   },
-  methods: {
+  created(){
+        if (this.folder !== null && this.folder?.ownerId) {
+        this.ownerID = [this.folder.ownerId];
 
+        const user = {
+        filter: {
+            userIDs: this.ownerID
+        }
+        };
+
+        this.userService.getPersons(user).then(
+        (resp) => {
+            if (resp && resp?.data && Array.isArray(resp?.data?.foundUsers)) {
+                this.selectedOwner = resp.data.foundUsers;
+            } else {
+                this.selectedOwner = [];
+            }
+        }
+        ).catch((_) => {
+            this.selectedOwner = [];
+        }
+        );
+    } else {
+        this.selectedOwner = [];
+    }
+  },
+  methods: {
+    findRole: findRole,
     notValid() {
         this.validation.namekz = this.folder.namekz === null || this.folder.namekz === ''
         this.validation.nameru = this.folder.nameru === null || this.folder.nameru === ''
         this.validation.nameen = this.folder.nameen === null || this.folder.nameen === ''
         this.validation.code = this.folder.code === null || this.folder.code === ''
-        this.validation.groups = this.folder.groups === null || (this.folder.groups !== null && this.folder.groups.length<=0)
+        this.validation.groups = this.folder?.groups === null || (this.folder?.groups !== null && this.folder?.groups?.length <= 0)
         var result = true;
         var validation = this.validation
         Object.keys(this.validation).forEach(function(k)
@@ -96,19 +132,28 @@ export default {
 
     },
     updateFolder() {
+        if(this.folder?.id > 0 && this.selectedOwner?.length <= 0){
+           this.$toast.add({ severity: "warn", summary: this.$t('workPlan.requiredCreatedPerson'), life: 4000 });
+           return
+        }
         if (this.notValid()) {
             return
         }
         let url = "/doctemplate/createFolder";
+     
+
+        if (this.selectedOwner && this.selectedOwner.length > 0) {
+            this.folder.ownerID = this.selectedOwner[0]?.userID || null;
+        }
+        
         api.post(url, this.folder, { headers: getHeader() })
         .then(response=>{
             this.folder.id = response.data.id
             this.folder.key = response.data.id + "";
             this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
             this.$emit("updated", this.folder);
-        },
-        error =>{
-          console.log(error);
+            this.selectedOwner = []
+            this.ownerID = []
         });
     },
     deleteFolder(hide) {
@@ -120,9 +165,6 @@ export default {
            
             this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
             this.$emit("updated", this.folder);
-        },
-        error =>{
-          console.log(error);
         });
     },
   }

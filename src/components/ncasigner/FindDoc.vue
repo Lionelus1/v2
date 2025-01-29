@@ -29,17 +29,19 @@
 
 <script>
     import {checkIdAvailability} from "../../helpers/SignDocFunctions";
-    import axios from "axios";
     import {signerApi, header} from "@/config/config";
     import DocIdNotExist from "./DocIdNotExist";
     import FileHasNoId from "./FileHasNoId";
+    import { DocService } from "../../service/doc.service";
+    import axios from "axios";  
     export default {
         components: {DocIdNotExist, FileHasNoId},
         data() {
             return {
                 document: null,
                 haveId: true,
-                existId: true
+                existId: true,
+                docService: new DocService()
             }
         },
         methods: {

@@ -19,6 +19,9 @@
               <span v-if="(contragentRequest && contract.docHistory.stateId == DocEnum.CREATED.ID)" class="ml-1 customer-badge status-status_signed">
                 {{ $t('contracts.contragentRequest') }}
               </span>
+              <span v-if="practiceLeaderRequest" class="ml-1 customer-badge status-status_inapproval">
+                {{ $t('contracts.practiceLeaderRequest') }}
+              </span>
             </p>
           </div>
           <div class="md:col-6" v-if="contract.docHistory.stateId === DocEnum.REVISION.ID || contract.docHistory.stateId === DocEnum.REJECTED.ID">
@@ -232,6 +235,8 @@ import DocSignaturesInfo from "@/components/DocSignaturesInfo";
 import FindUser from "@/helpers/FindUser";
 import StepComponent from "@/components/ncasigner/ApprovalUsers/StepComponent";
 import Share from "@/components/Share.vue";
+import {DicService} from "@/service/dic.service";
+
 
 export default {
   name: 'ContractV2',
@@ -241,6 +246,7 @@ export default {
     return {
       apiDomain: apiDomain,
       service: new DocService(),
+      dicService: new DicService(),
       DocEnum: DocEnum,
       RolesEnum: RolesEnum,
       findRole: findRole,
@@ -264,6 +270,7 @@ export default {
       contragentEmail: null,
       contragentOption: "organization",
       contragentRequest: false,
+      practiceLeaderRequest: false,
 
       selectedUsers: [],
       stages: [],
@@ -297,6 +304,23 @@ export default {
               command: () => {
                 this.open("documentNumberDialog");
               },
+            }
+          ]
+        },
+        {
+          label: this.$t("contracts.practiceLeader"),
+          icon: "fa-solid fa-user-check",
+          visible: () => this.contract && this.practiceLeaderRequest,
+          items: [
+            {
+              label: this.$t("common.action.accept"),
+              icon: "fa-solid fa-check",
+              command: () => { this.acceptPracticeLeaderRequest(1) }
+            },
+            {
+              label: this.$t("common.action.notAccept"),
+              icon: "fa-solid fa-xmark",
+              command: () => { this.acceptPracticeLeaderRequest(2) }
             }
           ]
         },
@@ -426,8 +450,15 @@ export default {
               this.contragentRequest = true;
               this.contragentOption = "email";
             }
+
+            if (this.contract.requests[i].type === this.DocEnum.DocumentRequestType.PracticeLeaderRequest &&
+                this.contract.requests[i].status === 0) {
+              this.practiceLeaderRequest = true;
+            }
           }
         }
+
+
 
         this.getParams();
 
@@ -469,6 +500,15 @@ export default {
           });
         }
 
+        if (this.practiceLeaderRequest) {
+          this.dicService.checkStudentByManager({student_id: this.contract.creatorID}).then(res => {
+            if (res.data !== true) {
+              this.practiceLeaderRequest = false;
+            }
+          }).catch(_ => {
+          })
+        }
+
         this.loading = false;
       }).catch(err => {
         this.loading = false;
@@ -481,7 +521,6 @@ export default {
             this.haveAccess = false;
           }
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       });
@@ -679,7 +718,6 @@ export default {
             this.haveAccess = false;
           }
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       });
@@ -711,7 +749,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
@@ -749,7 +786,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
@@ -779,7 +815,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
@@ -816,7 +851,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
           })
@@ -855,7 +889,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
           })
@@ -891,7 +924,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
@@ -1035,7 +1067,6 @@ export default {
           } else if (err.response && err.response.data && err.response.data.localized) {
             this.showMessage('error', this.$t(err.response.data.localizedPath), null)
           } else {
-            console.log(err)
             this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
           }
         })
@@ -1047,7 +1078,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
@@ -1058,6 +1088,45 @@ export default {
         const v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
+    },
+    acceptPracticeLeaderRequest(accept) {
+      this.loading = true;
+
+      let myrequest = null;
+      if (this.contract.requests) {
+        for (let i = 0; i < this.contract.requests.length; i++) {
+          if (this.contract.requests[i].type === this.DocEnum.DocumentRequestType.PracticeLeaderRequest &&
+              this.contract.requests[i].status === 0) {
+            myrequest = this.contract.requests[i];
+          }
+        }
+
+        if (myrequest === null) {
+          return
+        }
+      } else {
+        return
+      }
+
+      this.service.updateDocRequestV2({
+        requestId: myrequest.id,
+        status: accept,
+      }).then(res => {
+        this.loading = false;
+        location.reload();
+      }).catch(err => {
+        this.loading = false;
+
+        if (err.response && err.response.status == 401) {
+          this.$store.dispatch("logLout");
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          if (err.response.status != 403) {
+            this.showMessage('error', this.$t(err.response.data.localizedPath), null);
+          }
+        } else {
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      })
     },
     newWork(id) {
       if (!this.contractParams[id].value) {

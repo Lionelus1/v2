@@ -15,3 +15,7 @@ export function getLongDateString(date, isLocal = true) {
     
     return moment(new Date(date)).utc(isLocal).format("DD.MM.YYYY HH:mm")
 }
+
+export function isMobile() {
+    return window.innerWidth <= 768;
+}

@@ -4,10 +4,11 @@
     <Button :label="$t('web.createElement')" @click="openDialog"/>
   </div>
   <div class="card">
-    <DataTable :lazy="true" :value="blockElements" dataKey="id" :rowHover="true" :loading="loading"
+    <DataTable  @rowReorder="onRowReorderBlock" :lazy="true" :value="blockElements" dataKey="id" :rowHover="true" :loading="loading"
                responsiveLayout="scroll">
       <template #empty>{{ $t("common.noData") }}</template>
       <template #loading>{{ $t("common.loading") }}</template>
+      <Column :rowReorder="true" headerStyle="width: 3rem" :reorderableColumn="false"/>
       <Column field="title" :header="$t('common.nameIn')">
         <template #body="{ data }">
           <span>
@@ -15,11 +16,22 @@
           </span>
         </template>
       </Column>
+      <Column field="title" header="Position">
+        <template #body="{ data }">
+          <span>
+            {{ data.position}}
+          </span>
+        </template>
+      </Column>
       <Column class="text-right">
         <template #body="{ data }">
           <div class="grid">
-            <Button icon="fa-solid fa-pen" class="p-button mr-2 " @click="openEdit(data)"/>
-            <Button icon="fa-solid fa-trash" class="p-button p-button-danger sm:mt-2 md:mt-2 lg:mt-0 xl:mt-0" @click="confirmRemove(data)"/>
+            <Button class="p-button-text p-button-warning p-1 mr-2" @click="openEdit(data)">
+              <i class="fa-solid fa-pencil fa-xl"></i>
+            </Button>
+            <Button class="p-button-text p-button-danger p-1 mr-2"  @click="confirmRemove(data)">
+              <i class="fa-solid fa-trash-can fa-xl"></i>
+            </Button>
           </div>
         </template>
       </Column>
@@ -100,11 +112,47 @@
       <InputText type="text" v-model="formData.block_list_link"/>
       <small class="p-error" v-if="!formData.block_list_link && submitted"></small>
     </div>
-    <div class="field">
-      <label>{{ $t('common.image') }}</label>
-      <FileUpload mode="basic" :customUpload="true" @uploader="uploadFile($event)" :auto="true"
-                  v-bind:chooseLabel="$t('faq.uploadImage')" accept="image/svg+xml"/>
-      <div style="width: 100px;padding:10px;" v-html="formData.block_list_image"></div>
+    <div class="field" v-if="formData && formData.title_kz ">
+      <label>Position</label><br>
+      <InputNumber class="w-fit" type="number" v-model="formData.position"/>
+    </div>
+    <div class="card">
+      <div class="card-title">{{ $t('common.image') }}</div>
+      <div class="field">
+        <div class="post-select-image-container" v-if="!(formData.main_image_file && formData.main_image_file.url || formData.imageUrl)&&!formData.block_list_image">
+          <div class="btn-select-image">
+            <div class="btn-select-image-inner">
+              <i class="fa-regular fa-image"></i>
+              <FileUpload ref="form" mode="basic" :customUpload="true" @uploader="uploadFile($event)"
+                          :auto="true" v-bind:chooseLabel="$t('common.choose')" accept="image/*"
+                          class="p-button-outlined" />
+            </div>
+          </div>
+        </div>
+
+        <small v-show="!formData.image_id && submitted" class="p-error">
+          {{ $t("smartenu.image1Invalid") }}
+        </small>
+        <div class="relative w-fit" v-if="formData.block_list_image">
+          <div class="svg_block" style="width: 100px;padding:10px;" v-html="formData.block_list_image">
+          </div>
+          <span class="btn-remove-image p-button p-button-danger p-button-sm" @click="removeMainImageFile(event)">
+              <i class="fa-solid fa-xmark"></i>
+            </span>
+        </div>
+        <div v-if="formData.main_image_file && formData.main_image_file.url" class="news-image-container mt-2">
+          <img :src="!formData.block_list_image && formData.main_image_file.url"/>
+          <span class="btn-remove-image p-button p-button-danger p-button-sm" @click="removeMainImageFile(formData.main_image_file)">
+              <i class="fa-solid fa-xmark"></i>
+            </span>
+        </div>
+        <div v-if="formData.imageUrl" class="news-image-container mt-2">
+          <img :src="formData.imageUrl" />
+          <span class="btn-remove-image p-button p-button-danger p-button-sm" @click="removeMainImageFile(formData.imageUrl)">
+              <i class="fa-solid fa-xmark"></i>
+            </span>
+        </div>
+      </div>
     </div>
     <template #footer>
       <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button p-component p-button-danger mr-2"
@@ -126,8 +174,9 @@ import {useI18n} from "vue-i18n";
 import {useToast} from "primevue/usetoast";
 import OptionalMessage from "@/components/enuwebsite/OptionalMessage";
 import TinyEditor from "@/components/TinyEditor.vue";
-import {downloadRoute, getHeader, smartEnuApi} from "@/config/config";
+import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "@/config/config";
 import {useStore} from "vuex";
+import {FileService} from "@/service/file.service";
 
 export default {
   name: "BlockElementsList",
@@ -142,6 +191,7 @@ export default {
     let isCreateModal = ref(false)
     let blockElements = ref([])
     const enuService = new EnuWebService()
+    const fileService = new FileService()
     const blockId = route.params.id
     let formData = ref({})
     let selectedData = ref(null)
@@ -152,10 +202,13 @@ export default {
       loading.value = true
       enuService.getBlockListByBlockId(blockId).then(res => {
         blockElements.value = res.data
+        blockElements.value.map(e => {
+          const fileUrl = e.main_image_file ? e.main_image_file.filepath : null
+          e.main_image_file ? e.imageUrl = smartEnuApi + fileRoute + fileUrl: null
+        });
         loading.value = false;
-      }).catch(error => {
+      }).catch(_ => {
         loading.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
       });
     }
 
@@ -174,6 +227,7 @@ export default {
 
       if (!isValid()) return;
       formData.value.block_id = parseInt(blockId);
+      formData.value.position = blockElements.value ? blockElements.value[blockElements.value.length - 1].position + 1 : 0;
       enuService.addBlockContentListElement(formData.value).then(res => {
         if (res.data && res.data.is_success) {
           toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
@@ -181,9 +235,8 @@ export default {
         submitted.value = false;
         isCreateModal.value = false;
         getBlockElements();
-      }).catch(error => {
+      }).catch(_ => {
         submitted.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
       });
     }
 
@@ -208,11 +261,10 @@ export default {
         selectedData.value = null;
         isCreateModal.value = false;
         getBlockElements()
-      }).catch(error => {
+      }).catch(_ => {
         submitted.value = false;
         selectedData.value = null;
         isCreateModal.value = false;
-        toast.add({severity: "error", summary: error, life: 3000});
       })
     }
 
@@ -222,9 +274,16 @@ export default {
           toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
           getBlockElements()
         }
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
+    }
+    const removeMainImageFile = (node) => {
+      if (node && node.url) {
+        formData.value.main_image_file.url = null
+      } else {
+        formData.value.imageUrl = null
+        formData.value.block_list_image = null
+      }
     }
 
     const confirmRemove = (data) => {
@@ -243,8 +302,7 @@ export default {
     const getBlockListFiles = () => {
       enuService.getBlockListFiles(formData.value.block_list_id).then(res => {
         formData.value.files = res.data;
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     }
 
@@ -269,12 +327,7 @@ export default {
         document.body.appendChild(a);
         a.click();
         a.remove();
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          store.dispatch("logLout");
-        } else {
-          toast.add({severity: "error", summary: error, life: 3000});
-        }
+      }).catch(_ => {
       });
     }
 
@@ -303,18 +356,28 @@ export default {
           getBlockListFiles();
           toast.add({severity: 'success', detail: i18n.t('common.done'), life: 3000});
         }
-      }).catch((error) => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch((_) => {
       });
     }
-
     const uploadFile = (event) => {
-      let file = event.files[0]
-      fetch(file.objectURL)
-          .then(response => response.text())
-          .then(text => {
-            formData.value.block_list_image = text;
-          });
+      if (event.files[0] && event.files[0].name.endsWith('.svg')){
+        const file = event.files[0]
+        fetch(file.objectURL)
+            .then(response => response.text())
+            .then(text => {
+              formData.value.block_list_image = text;
+            });
+      }else {
+        const fd = new FormData()
+        fd.append("files[]", event.files[0])
+        fileService.uploadFile(fd).then(res => {
+          if (res.data) {
+            formData.value.main_image_file = res.data[0];
+            formData.value.main_image_file.url = smartEnuApi + fileRoute + formData.value.main_image_file.filepath
+            formData.value.image_id = formData.value.main_image_file.id
+          }
+        });
+      }
     }
 
     const onAfterUpload = (file) => {
@@ -339,6 +402,22 @@ export default {
       return errors.length === 0
     };
 
+    const onRowReorderBlock = (event) => {
+      let data = {
+        drag_id: blockElements.value[event.dragIndex].block_list_id,
+        drop_id: blockElements.value[event.dropIndex].block_list_id,
+        is_position: 'block'
+      }
+      enuService.orderBlockIntoPage(data).then(res => {
+        if (res.data && res.data.is_success) {
+          getBlockElements()
+        } else {
+          toast.add({severity: "error", summary: i18n.t('common.error'), life: 3000});
+        }
+      }).catch(_ => {
+      });
+    }
+
     onMounted(() => {
       getBlockElements()
     });
@@ -346,15 +425,89 @@ export default {
     return {
       loading, blockElements, isCreateModal, formData, selectedData, hideDialog, openDialog,
       submitted, add, edit, confirmRemove, uploadFile, openEdit, onAfterUpload,
-      onCopy, copyToClipboard, deleteFileConfirm, downloadFile
+      onCopy, copyToClipboard, deleteFileConfirm, downloadFile, removeMainImageFile, onRowReorderBlock
     }
   }
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .p-fileupload-row {
   display: flex;
   align-items: center;
+}
+
+.post-select-image-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  max-width: 280px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  border-radius: 2px;
+}
+
+.btn-select-image {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  text-align: center;
+  background: #f8f9fb;
+  border: 2px dashed #e4e5e7;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.post-select-image-container .btn-select-image {
+  width: 100%;
+  height: 200px;
+}
+
+.btn-select-image .btn-select-image-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+}
+
+.btn-select-image svg {
+  display: block;
+  font-size: 48px;
+  line-height: 48px;
+  color: #dadbdd;
+  margin-bottom: 15px;
+}
+
+.news-image-container {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  overflow: hidden;
+  margin-bottom: 15px;
+  border-radius: 2px;
+}
+
+.news-image-container img {
+  display: block;
+  height: auto;
+  width: 280px;
+  min-width: 100%;
+}
+
+.btn-remove-image {
+  width: fit-content;
+  font-size: 12px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: #fff;
+  cursor: pointer;
+}
+.svg_block{
+  svg{
+    width: 100px!important;
+  }
 }
 </style>

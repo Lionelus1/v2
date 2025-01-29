@@ -11,9 +11,9 @@
 
 <script>
 import {identifyOIDs} from "../../helpers/SignDocFunctions";
-import axios from "axios";
 import {signerApi, header} from "@/config/config";
-
+import {SignatureService} from "@/service/signature.service"
+import axios from "axios";
 export default {
     props:['signature'],
     data() {
@@ -22,7 +22,8 @@ export default {
             identifier: null,
             signingDate: null,
             oid1: null,
-            oid2: null
+            oid2: null,
+            signatureService: new SignatureService()
         }
     },
     created() {
@@ -32,7 +33,6 @@ export default {
         getSignerInfo() {
             axios.get(signerApi + '/signature/signer/info/' + this.signature.id, {headers: header}).then((response) => {
                 if(response.data.serialNumber !== null || response.data.serialNumber !=='') {
-                    console.log(response.data)
                     this.identifier = response.data.serialNumber.replace('IIN', '')
                     this.fullName = response.data.CN
                     this.signingDate = new Date(response.data.signingDate).toLocaleDateString() + ", " + new Date(response.data.signingDate).toLocaleTimeString()

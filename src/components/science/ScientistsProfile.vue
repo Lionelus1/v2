@@ -40,12 +40,7 @@
 
       user.value = response.data.user
       userView.value = true
-    }).catch(error => {
-      toast.add({
-        severity: "error",
-        summary: t('message.actionError'),
-        life: 3000,
-      })
+    }).catch(_ => {
     })
   }
 
@@ -61,8 +56,7 @@
         }
         loading.value = false
         userView.value = true
-      }).catch(error => {
-          toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+      }).catch(_ => {
           loading.value = false;
           userView.value = true
       })
@@ -75,8 +69,7 @@
 
       scienceService.importSciencePublicationOfScientist(req).then(res => {
 
-      }).catch(error => {
-          toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+      }).catch(_ => {
       })
     }
 

@@ -1,5 +1,5 @@
 <template>
-  <div style="overflow-x: hidden">
+<div style="overflow-x: hidden">
     <Toast />
     <!-- <div class="feature-intro block">
   <h1>Smart.enu жүйесіне қош келдіңіз.</h1>
@@ -35,7 +35,7 @@
           <div class="p-fluid text-left">
             <div class="field col-12">
               <label for="inputtext">{{ $t('common.enterLogin') }}</label>
-              <InputText id="inputtext" type="text" v-model="loginData.username"/>
+              <InputText id="inputtext" type="text" v-model="loginData.username" @keyup.enter="login"/>
               <small class="p-error" v-if="loginDataCheck.username"> {{ $t("common.requiredField") }}
               </small>
             </div>
@@ -45,6 +45,11 @@
                         @keyup.enter="login"></Password>
               <small class="p-error" v-if="loginDataCheck.password"> {{ $t("common.requiredField") }}
               </small>
+            </div>
+          </div>
+          <div class="p-fluid mb-3">
+            <div class="field col-12">
+              <InlineMessage severity="info">{{ $t('common.agreement') }}</InlineMessage>
             </div>
           </div>
           <div class="p-w-100 text-right">
@@ -271,7 +276,6 @@ export default {
     },
     async xmlSignature(res) {
       let NCALaClient = new NCALayerClientExtension();
-      console.log("nc object ", NCALaClient);
       try {
         await NCALaClient.connect();
       } catch (error) {
@@ -342,17 +346,26 @@ export default {
       }
       api.post('/login', {
         'username': this.loginData.username,
-        'password': this.loginData.password
+        'password': this.loginData.password,
+        'session': this.$route.params.sessionID || localStorage.getItem('sessionID')
       }, {headers: getHeader()})
           .then((res) => {
             if (res.status === 200) {
               authUser.access_token = res.data.access_token;
               authUser.refresh_token = res.data.refresh_token;
+              authUser.session_uuid = res.data.session_uuid
               window.localStorage.setItem('authUser', JSON.stringify(authUser));
-              this.$router.push({name: 'AfterAuth'});
+              const sessionID = this.$route.params.sessionID || localStorage.getItem('sessionID');
+              if (sessionID) {
+                localStorage.removeItem("sessionID");
+                const botURL = process.env.VUE_APP_BOT_URL;
+                window.location.href = `${botURL}${res.data.session_uuid}`;
+              } else {
+                this.$router.push({name: 'AfterAuth'});
+              }
             }
           })
-          .catch(error => {  
+          .catch(error => {
             if (error.response && error.response.status === 401) {
                 this.$toast.add({
                   severity: 'error',
@@ -377,9 +390,7 @@ export default {
     },
     checkLoginAndPassword() {
       this.loginDataCheck.username = this.loginData.username.length === 0 
-      this.loginDataCheck.password = this.loginData.password.length === 0 
-      console.log(this.loginData.password.length)
-
+      this.loginDataCheck.password = this.loginData.password.length === 0
         return (
             !this.loginDataCheck.username &&
             !this.loginDataCheck.password
@@ -441,4 +452,5 @@ export default {
     font-size: 14px!important;
   }
 }
+
 </style>

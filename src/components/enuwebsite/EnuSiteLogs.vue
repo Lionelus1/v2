@@ -156,7 +156,6 @@ export default {
         const jsonObj = JSON.parse(jsonString);
         return JSON.stringify(jsonObj, null, 2);
       } catch (error) {
-        console.error('Error parsing JSON:', error);
         return jsonString;
       }
     }

@@ -1,5 +1,5 @@
 import Enum from "../enum/docstates";
-import { useStore } from "vuex";
+import {useStore} from "vuex";
 
 export class MenuService {
     getGlobalMenu($t) {
@@ -26,8 +26,8 @@ export class MenuService {
                         to: '/documents/catalog/normdoc'
                     },
                     {
-                        label: $t('educomplex.title'), 
-                        icon: 'pi pi-fw pi-folder', 
+                        label: $t('educomplex.title'),
+                        icon: 'pi pi-fw pi-folder',
                         to: '/documents/catalog/educomplex/' + Enum.DocType.EduComplex
                     },
                     {
@@ -43,7 +43,7 @@ export class MenuService {
                                 label: $t('postaccmonrep.title'),
                                 icon: 'pi pi-fw pi-folder',
                                 to: '/documents/catalog/postaccmonrep'
-                            },  
+                            },
                             {
                                 label: $t('common.sacReportMenuTitle'),
                                 icon: 'pi pi-fw pi-folder',
@@ -88,32 +88,46 @@ export class MenuService {
                         icon: 'fa-solid fa-rotate',
                         to: '/integrations',
                         visible: this.findRole("main_administrator")
-                    }
+                    },
+                    {
+                        label: $t('smartenu.mailingTitle'),
+                        icon: 'fa-regular fa-paper-plane',
+                        to: '/mailing',
+                        visible: this.findRole("mailing_manager")
+                    },
                 ]
             },
             {
                 label: $t('common.contragents'),
                 icon: 'pi pi-fw pi-users',
-                visible: this.isEnuWorker(),
                 items: [
                     {
                         label: $t('common.organizations'),
                         icon: 'pi pi-fw pi-home',
-                        to: '/contragent/organizations'},
+                        to: '/contragent/organizations',
+                        visible: this.findRole('student') || this.findRole('personal'),
+                    },
                     {
-                      label: $t('common.individualEntrepreneur'),
-                      icon: 'pi pi-fw pi-briefcase',
-                      to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
+                        label: $t('common.individualEntrepreneur'),
+                        icon: 'pi pi-fw pi-briefcase',
+                        to: '/contragent/persons/' + Enum.PersonType.IndividualEntrepreneur
                     },
                     {
                         label: $t('common.personal'),
                         icon: 'fa-solid fa-person-shelter',
-                        to: '/contragent/persons/' + Enum.PersonType.OrganizationMember
+                        to: '/contragent/persons/' + Enum.PersonType.OrganizationMember,
+                        visible: this.isEnuWorker(),
                     },
                     {
                         label: $t('common.students'),
                         icon: 'fa-solid fa-graduation-cap',
-                        to: '/contragent/persons/' + Enum.PersonType.Student
+                        visible: this.isEnuWorker(),
+                        to: '/contragent/persons/' + Enum.PersonType.Student,
+                    },
+                    {
+                        label: $t('common.graduates'),
+                        icon: 'fa-solid fa-graduation-cap',
+                        to: '/contragent/persons/' + Enum.PersonType.Graduate
                     }
                 ]
             },
@@ -128,8 +142,8 @@ export class MenuService {
                         visible: !this.findRole("student")
                     },
                     {
-                        label: $t('smartenu.newsList'), 
-                        icon: 'fa-solid fa-rss', 
+                        label: $t('smartenu.newsList'),
+                        icon: 'fa-solid fa-rss',
                         to: '/news'
                     },
                 ]
@@ -188,11 +202,12 @@ export class MenuService {
                             }
                         ]
                     },
-                ]},
+                ]
+            },
             {
                 label: $t('workPlan.plans'),
                 icon: 'fa-solid fa-list-check',
-                to: '/work-plan'
+                to: '/work-plan',
             },
             {
                 label: $t('common.forStudentsAndGraduates'),
@@ -237,7 +252,7 @@ export class MenuService {
                 label: $t('web.mainMenuTitle'),
                 icon: 'pi pi-fw pi-box ',
                 visible: (this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_page_admin')),
-                items:  [
+                items: [
                     {
                         label: $t('web.menuPage'),
                         icon: 'pi pi-fw pi-bars',
@@ -245,14 +260,14 @@ export class MenuService {
                         visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_menu_admin')
                     },
                     {
-                        label: $t('web.pageLink'), 
-                        icon: 'pi pi-fw pi-external-link', 
+                        label: $t('web.pageLink'),
+                        icon: 'pi pi-fw pi-external-link',
                         to: '/enu/pages',
                         visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin') || this.findRole('enu_web_page_admin') || this.findRole('enu_web_menu_admin')
                     },
                     {
-                        label: $t('web.blocks'), 
-                        icon: 'fa-solid fa-cube', 
+                        label: $t('web.blocks'),
+                        icon: 'fa-solid fa-cube',
                         to: '/enu/blocks',
                         visible: this.findRole('enu_web_admin') || this.findRole('enu_web_fac_admin')
                     },
@@ -302,7 +317,6 @@ export class MenuService {
                         label: $t('course.courses'),
                         icon: 'fa-solid fa-chalkboard',
                         to: '/categories-courses',
-
                     },
 
                 ]
@@ -311,14 +325,39 @@ export class MenuService {
                 label: $t('helpDesk.title'),
                 icon: 'pi pi-spin pi-cog',
                 to: '/helpdesk',
-            
+
             },
             {
-                label: $t('Telegram'),
-                icon: 'fa-brands fa-telegram',
+                label: $t('telegram.title'),
+                icon: 'fa-solid fa-robot',
                 to: '/telegram',
                 visible: this.findRole('telegram') || this.findRole('main_administrator')
-            }
+            },
+            {
+                label: $t('workPlan.reports'),
+                icon: 'pi pi-fw pi-chart-line',
+                visible: this.findRole("personal"),
+                items: [
+                    {
+                        label: $t('Hikvision'),
+                        icon: 'fa-solid fa-file-signature',
+                        to: '/hikvision',
+
+                    },
+                    {
+                        label: $t('report.title'),
+                        icon: 'fa-solid fa-chart-simple',
+                        to: '/reports',
+                        visible: this.findRole('report_builder_manager'),
+                    }
+                ]
+            },
+            {
+                label: $t('showcase.title'),
+                icon: 'fa-brands fa-shopify',
+                to: '/showcase',
+                visible: this.findRole('showcase')
+            },
         ]
     }
 
@@ -354,36 +393,36 @@ export class MenuService {
         return role;
     }
 
-  isRoleGroupMember(groupPrefix) {
-    let loginedUser = this.getLoginedUser();
-    if (!loginedUser || !loginedUser.roles) {
-      return false;
-    }
-    for (let i = 0; i < loginedUser.roles.length; i++) {
-      if (loginedUser.roles[i].name.includes(groupPrefix)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  isEnuWorker() {
-    let loginedUser = this.getLoginedUser();
-    if (
-      !loginedUser ||
-      !loginedUser.roles ||
-      !loginedUser.mainPosition ||
-      loginedUser.mainPosition.organization.id !== 1
-    ) {
-      return false;
-    }
-
-    for (let i = 0; i < loginedUser.roles.length; i++) {
-      if (loginedUser.roles[i].name === "student") {
+    isRoleGroupMember(groupPrefix) {
+        let loginedUser = this.getLoginedUser();
+        if (!loginedUser || !loginedUser.roles) {
+            return false;
+        }
+        for (let i = 0; i < loginedUser.roles.length; i++) {
+            if (loginedUser.roles[i].name.includes(groupPrefix)) {
+                return true;
+            }
+        }
         return false;
-      }
     }
 
-    return true;
-  }
+    isEnuWorker() {
+        let loginedUser = this.getLoginedUser();
+        if (
+            !loginedUser ||
+            !loginedUser.roles ||
+            !loginedUser.mainPosition ||
+            loginedUser.mainPosition.organization.id !== 1
+        ) {
+            return false;
+        }
+
+        for (let i = 0; i < loginedUser.roles.length; i++) {
+            if (loginedUser.roles[i].name === "student") {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

@@ -2,8 +2,9 @@
   <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{ width: '50vw' }"
           class="p-fluid" @closed="closeModal"
           @hide="closeModal" :closeOnEscape="true">
+    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
     <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
-    <BlockUI :blocked="approving">
+    <BlockUI :blocked="loading || approving">
       <div class="field">
         <ApprovalUsers :approving="approving" v-model="approval_users" @closed="closeModal" @approve="approve($event)"
                        :stages="stages" :mode="'standard'">
@@ -17,7 +18,6 @@
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
 import {WorkPlanService} from "@/service/work.plan.service";
 import Enum from "@/enum/workplan/index"
-import {b64toBlob} from "@/config/config";
 
 export default {
   name: "WorkPlanReportApprove",
@@ -30,7 +30,7 @@ export default {
       showModal: this.visible,
       selectedUsers: null,
       step: 1,
-      approval_users: [
+      approval_users: this.approvalStages ? this.approvalStages : [
         {
           stage: 1,
           users: [],
@@ -57,7 +57,8 @@ export default {
       approving: false,
       stages: this.approvalStages ? this.approvalStages : null,
       Enum: Enum,
-      file: null
+      file: null,
+      loading: true,
     }
   },
   created() {
@@ -76,6 +77,7 @@ export default {
       fd.append("file", this.file)
       fd.append("report_id", this.data.id)
       fd.append("doc_id", this.doc_id)
+      fd.append("eventUserId", this.$route.params.userId)
       fd.append("approval_users", JSON.stringify(this.approval_users))
       this.planService.approvePlan(fd).then(res => {
         if (res.data && res.data.is_success) {
@@ -92,8 +94,10 @@ export default {
 
     },
     getWorkPlanReportData() {
+      this.loading = true;
       let data = {
         work_plan_id: parseInt(this.plan.work_plan_id),
+        eventUserId: parseInt(this.$route.params.userId),
         quarter: this.report.report_type === 2 ? this.report.quarter : null,
         halfYearType: this.report.report_type === 3 ? this.report.halfYearType : null,
         department_id: this.report.department_id ? this.report.department_id : null,
@@ -102,6 +106,7 @@ export default {
       };
       this.planService.getWorkPlanData(data).then(res => {
         this.file = this.b64toBlob(res.data);
+        this.loading = false;
       }).catch(error => {
         this.loading = false;
         if (error.response && error.response.status === 401) {

@@ -1,7 +1,7 @@
 <template>
   <div class="col-12">
-    <TitleBlock :title="$t('workPlan.journalReports')" :show-back-button="true" />
-    <div class="card" v-if="dReports && dReports[active].doc_info.docHistory.stateEn === DocState.REVISION.Value">
+    <TitleBlock v-if="dReports && dReports[active].doc_info" :title="$t('workPlan.journalReports') + ' - ' + dReports[active].doc_info.owner.fullName" :show-back-button="true" />
+    <div class="card" v-if="dReports && dReports[active].doc_info && dReports[active].doc_info.docHistory.stateEn === DocState.REVISION.Value">
       <div class="p-fluid">
         <div class="field">
           <label>{{ $t('common.state') }}:</label>
@@ -34,10 +34,10 @@
     <TabView v-model:activeIndex="active" @tab-change="tabChanged">
       <!--дневник-отчет-->
       <TabPanel :header="$t('workPlan.journalReports')" >
-        <span v-if="!loading && dReports" :class="'ml-3 customer-badge status-' + dReports[0].doc_info.docHistory.stateEn">
+        <span v-if="!loading && dReports && dReports[0].doc_info" :class="'ml-3 customer-badge status-' + dReports[0].doc_info.docHistory.stateEn">
           {{ $t('common.states.' + dReports[0].doc_info.docHistory.stateEn) }}
         </span>
-        <div class="card" v-if="!loading && dReports && dReports[0].doc_info && !(dReports[0].doc_info.docHistory.stateId === 1 || dReports[0].doc_info.docHistory.stateId === 4)">
+        <div class="card" v-if="!loading && dReports  && dReports[0].doc_info && !(dReports[0].doc_info.docHistory.stateId === 1 || dReports[0].doc_info.docHistory.stateId === 4)">
           <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc0"></Button>
         </div>
         <div class="card" v-if="visibleSendToApprove()">
@@ -55,7 +55,7 @@
       </TabPanel>
       <!--Техника безоп<-->
       <TabPanel :header="$t('workPlan.safetyPrecautions')">
-        <span v-if="!loading && dReports" :class="'ml-3 customer-badge status-' + dReports[1].doc_info.docHistory.stateEn">
+        <span v-if="!loading && dReports && dReports[1].doc_info" :class="'ml-3 customer-badge status-' + dReports[1].doc_info.docHistory.stateEn">
           {{ $t('common.states.' + dReports[1].doc_info.docHistory.stateEn) }}
         </span>
         <div class="card" v-if="dReports && dReports[1].doc_info && !(dReports[1].doc_info.docHistory.stateId === 1 || dReports[1].doc_info.docHistory.stateId === 4)">
@@ -71,7 +71,7 @@
           <DocSignaturesInfo :docIdParam="dReports[1].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 1)"></DocSignaturesInfo>
         </Sidebar>
 
-        <ToolbarMenu :data="toolbarMenus"/>
+        <ToolbarMenu :data="toolbarMenus" v-if="dReports && dReports[1].doc_info && (dReports[1].doc_info.docHistory.stateId === 1 || dReports[1].doc_info.docHistory.stateId === 5)"/>
 
         <div class="card" v-if="dReports">
 <!--          {{ tbDoc.params.filter(item => item.name.includes("content")) }}-->
@@ -82,7 +82,7 @@
               </template>
             </Column>
             <Column style="width: 80%" field="txt" :header="$t('workPlan.textCS')"></Column>
-            <Column style="width: 10%; text-align: center;" field="actions" header="" >
+            <Column v-if="findRole(null, 'student') && dReports && dReports[1].doc_info && (dReports[1].doc_info.docHistory.stateId === 1 || dReports[1].doc_info.docHistory.stateId === 5)" style="width: 10%; text-align: center;" field="actions" header="" >
               <template #body="{ data: node, index }">
                 <ActionButton :items="actionMenus" :show-label="true" @toggle="actionsToggle(node, index)"/>
               </template>
@@ -94,7 +94,7 @@
       <!--Закл Контр-->
       <TabPanel :header="$t('workPlan.conclusionCounterparty')">
         <vue-element-loading :active="contrConcLoading" color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
-        <span v-if="!loading && dReports" :class="'ml-3 customer-badge status-' + dReports[2].doc_info.docHistory.stateEn">
+        <span v-if="!loading && dReports && dReports[2].doc_info" :class="'ml-3 customer-badge status-' + dReports[2].doc_info.docHistory.stateEn">
           {{ $t('common.states.' + dReports[2].doc_info.docHistory.stateEn) }}
         </span>
         <div class="card" v-if="dReports && dReports[2].doc_info && !(dReports[2].doc_info.docHistory.stateId === 1 || dReports[2].doc_info.docHistory.stateId === 4)">
@@ -109,14 +109,24 @@
           <DocSignaturesInfo :docIdParam="dReports[2].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 2)"></DocSignaturesInfo>
         </Sidebar>
         <div class="field">
-          <TinyEditor v-model="contrConcModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
+          <TinyEditor
+              disabled="true"
+              v-model="contrConcModel"
+              :init="{
+                menubar: false, // Отключить меню
+                toolbar: false  // Убрать панель инструментов
+              }"
+              :height="300"
+              :style="{ height: '80%', width: '100%' }"
+          />
+        <!-- <ToolbarMenu :data="toolbarMenus"/>-->
         </div>
-        <ToolbarMenu :data="toolbarMenus"/>
+
       </TabPanel>
       <!--Заключение руководителя-->
       <TabPanel :header="$t('workPlan.conclusionHeadDepartment')">
         <vue-element-loading :active="headConcLoading" color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
-        <span v-if="!loading && dReports" :class="'ml-3 customer-badge status-' + dReports[3].doc_info.docHistory.stateEn">
+        <span v-if="!loading && dReports && dReports[3].doc_info" :class="'ml-3 customer-badge status-' + dReports[3].doc_info.docHistory.stateEn">
           {{ $t('common.states.' + dReports[3].doc_info.docHistory.stateEn) }}
         </span>
         <div class="card" v-if="dReports && dReports[3].doc_info && !(dReports[3].doc_info.docHistory.stateId === 1 || dReports[3].doc_info.docHistory.stateId === 4)">
@@ -130,15 +140,29 @@
         <Sidebar v-model:visible="showReportDocInfo3" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal3">
           <DocSignaturesInfo :docIdParam="dReports[3].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 3)"></DocSignaturesInfo>
         </Sidebar>
-        <div class="field">
-          <TinyEditor v-model="headConcModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
+        <div class="field" v-if="dReports && dReports[3].doc_info && !(dReports[3].doc_info.docHistory.stateId === 1 || dReports[3].doc_info.docHistory.stateId === 4)">
+          <TinyEditor
+              disabled="true"
+              v-model="headConcModel"
+              :init="{
+                menubar: false, // Отключить меню
+                toolbar: false  // Убрать панель инструментов
+              }"
+              :height="300"
+              :style="{ height: '80%', width: '100%' }"
+          />
+          <!-- <ToolbarMenu :data="toolbarMenus"/>-->
         </div>
-        <ToolbarMenu :data="toolbarMenus"/>
+        <div class="field" v-if="!findRole(null, 'student') && visibleSendToApproveHeadConc()">
+          <TinyEditor v-model="headConcModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
+          <ToolbarMenu :data="toolbarMenus"/>
+        </div>
+
       </TabPanel>
       <!--Оценка практики-->
       <TabPanel :header="$t('workPlan.practiceAssessment')">
         <vue-element-loading :active="assignLoading" color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)" />
-        <span v-if="!loading && dReports" :class="'ml-3 customer-badge status-' + dReports[4].doc_info.docHistory.stateEn">
+        <span v-if="!loading && dReports && dReports[4].doc_info" :class="'ml-3 customer-badge status-' + dReports[4].doc_info.docHistory.stateEn">
           {{ $t('common.states.' + dReports[4].doc_info.docHistory.stateEn) }}
         </span>
         <div class="card" v-if="dReports && dReports[4].doc_info && !(dReports[4].doc_info.docHistory.stateId === 1 || dReports[4].doc_info.docHistory.stateId === 4)">
@@ -153,9 +177,23 @@
           <DocSignaturesInfo :docIdParam="dReports[4].doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event, 4)"></DocSignaturesInfo>
         </Sidebar>
 
-        <div class="field" >
+        <div class="field" v-if="dReports && dReports[4].doc_info && !(dReports[4].doc_info.docHistory.stateId === 1 || dReports[4].doc_info.docHistory.stateId === 4)">
+          <TinyEditor
+              disabled="true"
+              v-model="assignModel"
+              :init="{
+                menubar: false, // Отключить меню
+                toolbar: false  // Убрать панель инструментов
+              }"
+              :height="300"
+              :style="{ height: '80%', width: '100%' }"
+          />
+          <!-- <ToolbarMenu :data="toolbarMenus"/>-->
+        </div>
+
+        <div class="field" v-if="!findRole(null, 'student') && visibleSendToApproveAssign()">
           <TinyEditor v-model="assignModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
-          <ToolbarMenu :data="toolbarMenus"  v-if="loginedUser && (dReports && dReports[4].doc_info && (dReports[4].doc_info.docHistory.stateId === 1 || dReports[4].doc_info.docHistory.stateId === 4))"/>
+          <ToolbarMenu :data="toolbarMenus"/>
         </div>
       </TabPanel>
     </TabView>
@@ -194,6 +232,8 @@ import DocState from "@/enum/docstates/index";
 import moment from "moment/moment";
 import JSZip, {forEach} from "jszip";
 import { saveAs } from 'file-saver';
+import {findRole} from "../../config/config";
+import {AgreementService} from "../../service/agreement.service";
 
 const {t, locale} = useI18n()
 
@@ -237,7 +277,7 @@ const toolbarMenus = computed(() => {
       label: t('common.add'),
       icon: 'pi pi-plus',
       color: 'blue',
-      visible: active.value === 1,
+      visible: findRole(null, 'student') && active.value === 1,
       command: () => {
         AddTechSecDialog.value = true
       },
@@ -310,11 +350,12 @@ const student_id = ref(parseInt(route.params.userId));
 const planService = new WorkPlanService()
 const contragentService = new ContragentService()
 const docService = new DocService()
+const agreeService = new AgreementService()
 
 const loginedUserId = JSON.parse(localStorage.getItem("loginedUser")).userID;
 const loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
 
-// console.log(student_id.value, loginedUser, loginedUserId)
+const contrData = ref(null);
 const plan = ref(null);
 const planDoc = ref(null);
 const report = ref(null);
@@ -398,7 +439,6 @@ const createTechSec = () => {
 
   docService.saveDocumentV2(tbDoc.value).then(res => {
     tbDoc.value = res.data
-    toast.add({severity: "success", summary: t('common.success'), life: 3000});
     tbLoading.value = false;
   }).catch(error => {
     toast.add({ severity: 'error', summary: error.message, life: 3000 });
@@ -407,14 +447,37 @@ const createTechSec = () => {
   closeDialog();
 }
 
+const getContrData = () => {
+  let data = {
+    doc_uuid: route.params.uuId
+  }
+  agreeService.getSignInfo(data).then(res => {
+    if(res.data){
+      if(route.params.doc && route.params.doc === "Трехсторонний договор"){
+        if(res.data && res.data.newParams && res.data.newParams.contragent && res.data.newParams.contragent.value && res.data.newParams.contragent.value && res.data.newParams.contragent.value.data){
+          contrData.value = res.data.newParams.contragent.value.data
+        }
+      } else if(route.params.doc && route.params.doc === "Двухсторонний договор"){
+        if(res.data && res.data.newParams && res.data.newParams.contragent && res.data.newParams.contragent.value && res.data.newParams.contragent.value && res.data.newParams.contragent.value.data
+            && res.data.newParams.contragent.value.data.chief){
+          contrData.value = res.data.newParams.contragent.value.data.chief
+        }
+      }
+    }else{
+      toast.add({ severity: 'error', summary: 'getSignInfo - NO RES DATA', life: 3000 });
+    }
+  }).catch(error => {
+    toast.add({ severity: 'error', summary: error.message, life: 3000 });
+  });
+}
+
+//заключение контрагента тек докты курган адам гана жаза алады
 const saveContrConc = () => {
   contrConcLoading.value = true;
   contrConcDoc.value.params?.forEach((param) => {
     if(param.name === "content") {
       if (!param.value) param.value = "";
       param.value = contrConcModel.value;
-      console.log(contrConcModel.value)
-      console.log(param.value)
     }
   })
   docService.saveDocumentV2(contrConcDoc.value).then(res => {
@@ -433,8 +496,6 @@ const saveHeadConc = () => {
     if(param.name === "content") {
       if (!param.value) param.value = "";
       param.value = headConcModel.value;
-      console.log(headConcModel.value)
-      console.log(param.value)
     }
   })
   docService.saveDocumentV2(headConcDoc.value).then(res => {
@@ -467,7 +528,7 @@ const saveAssign = () => {
 
 const tabChanged = () => {
   if (active.value === 0) {
-    console.log("tabChanged 1");
+    // console.log("tabChanged 1");
   }
 }
 
@@ -516,7 +577,9 @@ const visibleSendToApprove = () => {
 }
 
 const visibleSendToApproveTB = () => {
-  return !loading.value && loginedUser && (dReports.value && dReports.value[1].doc_info && (dReports.value[1].doc_info.docHistory.stateId === 1 || dReports.value[1].doc_info.docHistory.stateId === 4));
+  //!findRole(null, 'student') &&
+  return !loading.value && loginedUser && (dReports.value && dReports.value[1].doc_info && (dReports.value[1].doc_info.docHistory.stateId === 1 ||
+      dReports.value[1].doc_info.docHistory.stateId === 4));
 }
 
 const visibleSendToApproveContrConc = () => {
@@ -524,11 +587,11 @@ const visibleSendToApproveContrConc = () => {
 }
 
 const visibleSendToApproveHeadConc = () => {
-  return !loading.value && loginedUser && (dReports.value && dReports.value[3].doc_info && (dReports.value[3].doc_info.docHistory.stateId === 1 || dReports.value[3].doc_info.docHistory.stateId === 4));
+  return !findRole(null, 'student') && !loading.value && loginedUser && (dReports.value && dReports.value[3].doc_info && (dReports.value[3].doc_info.docHistory.stateId === 1 || dReports.value[3].doc_info.docHistory.stateId === 4));
 }
 
 const visibleSendToApproveAssign = () => {
-  return !loading.value && loginedUser && (dReports.value && dReports.value[4].doc_info && (dReports.value[4].doc_info.docHistory.stateId === 1 || dReports.value[4].doc_info.docHistory.stateId === 4));
+  return !findRole(null, 'student') && !loading.value && loginedUser && (dReports.value && dReports.value[4].doc_info && (dReports.value[4].doc_info.docHistory.stateId === 1 || dReports.value[4].doc_info.docHistory.stateId === 4));
 }
 // проверка подписания всех документов
 const checkingSignAllDoc = () => {
@@ -573,8 +636,8 @@ const downloadDiaryRep = async () => {
     };
 
     for (const report of dReports.value) {
-      if(report.doc_info){
-        const fileBlob = await fetchFile(report.doc_info.filePath);
+      if(report?.doc_info){
+        const fileBlob = await fetchFile(report?.doc_info.filePath);
         zip.file(report.report_name.replace('.', '_') + '.pdf', fileBlob);  // Добавляем файл в архив с его именем
       }
     }
@@ -585,22 +648,6 @@ const downloadDiaryRep = async () => {
     // Сообщаем об успешной операции
     toast.add({ severity: "success", summary: t('common.success'), life: 3000 });
     loading.value = false;
-    // const zip = new JSZip();
-    //
-    // // Fetch the remote file
-    // const fetchFile = async (url) => {
-    //   const response = await fetch(url);
-    //   if (!response.ok) throw new Error('Failed to fetch the file');
-    //   return await response.blob();  // Or use response.arrayBuffer() if needed
-    // };
-    //
-    // // Add files to the zip
-    // const pdfBlob = await fetchFile('http://smart.enu.kz:8090/serve?path=work_plan/report/42613653-59a3-4d3b-8ee3-783ca65795f0.pdf');
-    // zip.file('report.pdf', pdfBlob);  // Add the fetched PDF as 'report.pdf' in the zip
-    //
-    // // Generate the zip and trigger the download
-    // const content = await zip.generateAsync({ type: "blob" });
-    // saveAs(content, "resumes.zip");
   } catch (error) {
     loading.value = false;
     toast.add({ severity: 'error', summary: error.message, life: 3000 });
@@ -650,6 +697,7 @@ const getDiaryReports = async () => {
   async function createDiaryReports(wpId, name, type) {
     let data = {
       work_plan_id: wpId,
+      creator_id: student_id.value,
       report_name: name,
       report_type: type,
       quarter: null,
@@ -665,7 +713,11 @@ const getDiaryReports = async () => {
 
   try {
     loading.value = true;
-    const dRes = await planService.getWorkPlanDiaryReports(workPlanId.value);
+    let data = {
+      work_plan_id: workPlanId.value,
+      student_id: student_id.value,
+    };
+    const dRes = await planService.getWorkPlanDiaryReports(data);
     if (dRes && dRes.data && dRes.data.length > 0) {
       dReports.value = dRes.data;
       calcCC(); //для заключения контрагента
@@ -711,14 +763,10 @@ const getData = async (index) => {
     department_id: null,
     report_id: dReports.value[index].id,
   };
-  console.log("iiiiiiiiinnnnnnn")
-  console.log(data)
   planService.getWorkPlanData(data).then(async res => {
-    console.log("iiinn")
     loading.value = false;
     blobSource.value = URL.createObjectURL(await b64toBlob(res.data));
   }).catch(error => {
-    console.log("error")
     loading.value = false;
     toast.add({ severity: 'error', summary: error.message, life: 3000 });
   });
@@ -771,13 +819,28 @@ const openModal = async () => {
     }
   ]
 
+
   if(active.value === 0) {
-    showModal0.value = true;
+    //Проверяет, заполнены ли все результаты этим студентом для задач плана
+    if(dReports.value[0].is_completed){
+      if(contrData.value){
+        approval_users.value[0].users.push(contrData.value);
+      }
+      showModal0.value = true;
+    } else {
+      toast.add({ severity: 'info', summary: t('common.checkTaskCompletion'), life: 3000 });
+    }
   }
   else if(active.value === 1) {
+    if(contrData.value){
+      approval_users.value[0].users.push(contrData.value);
+    }
     showModal1.value = true;
   }
   else if(active.value === 2) {
+    if(contrData.value){
+      approval_users.value[0].users.push(contrData.value);
+    }
     showModal2.value = true;
   }
   else if(active.value === 3){
@@ -870,6 +933,7 @@ const getSt = async () => {
 onMounted(() => {
   getPlan();
   getDiaryReports();
+  getContrData()
   // getSt();
 })
 

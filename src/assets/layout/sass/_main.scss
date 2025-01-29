@@ -41,6 +41,9 @@ a {
     border-bottom: 1px solid #e9ecef;
     border-top: transparent;
 }
+.main_container{
+    padding: 20px;
+}
 
 .p-treetable .p-treetable-header {
     background: transparent;
@@ -113,6 +116,27 @@ a {
         svg{
             transform: rotate(180deg);
         }
+    }
+}
+.sidebar_notific.p-sidebar .p-sidebar-content{
+    padding: 0;
+}
+.content_notific p {
+    img {
+        width: 300px !important;
+        height: auto;
+    }
+}
+.content_notific {
+    .enuImg{
+        width: 150px!important;
+        margin-bottom: 20px!important;
+    }
+    .monitor{
+        width: 150px!important;
+        aspect-ratio: auto!important;
+        height: auto!important;
+        margin-right: -360px;
     }
 }
 .customer-badge {
@@ -265,4 +289,11 @@ a {
 }
 .fa-pen, .fa-pencil {
     color: #FBC02D;
+}
+.select_wp .p-dropdown, .p-chips, .select_wp .p-button {
+    width: 100%;
+}
+
+.timeline_wp_history .p-timeline-event-opposite {
+    flex:0;
 }

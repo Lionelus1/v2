@@ -39,7 +39,7 @@
         <Column v-if="!readonly" :header="t('dissertation.dissReportActions')">
             <template #body="slotProps">
                 <Button icon="fa-solid fa-pencil fa-xl" class="p-button-text p-button-warning p-1 mr-2" @click="award=slotProps.data;update()"></Button>
-                <Button v-if="!slotProps.data.platonus_award_id" icon="fa-solid fa-trash-can fa-xl" class="p-button-text p-button-danger p-1 mr-2" @click="award=slotProps.data;deleteValue()"></Button>
+                <Button icon="fa-solid fa-trash-can fa-xl" class="p-button-text p-button-danger p-1 mr-2" @click="award=slotProps.data;deleteValue()"></Button>
             </template>
         </Column>
       
@@ -136,8 +136,7 @@
             loading.value = false
             toast.add({severity: "success", summary: t('common.success'), life: 3000});
             getScienceAward()
-          }).catch(error => {
-            toast.add({severity: 'error', summary: t('common.error'), life: 3000})
+          }).catch(_ => {
             loading.value = false;
           })
       },

@@ -70,7 +70,7 @@
       <Column style="min-width: 50px;">
         <template #body="slotProps">
           <div class="flex flex-wrap">
-            <ActionButton :show-label="true" :items="actions" @toggle="toggleActions(slotProps.data)"/>
+            <ActionButton :show-label="true" :items="actions(slotProps.data)" @toggle="toggleActions(slotProps.data)"/>
           </div>
         </template>
       </Column>
@@ -303,7 +303,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
 
@@ -335,7 +334,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
@@ -367,7 +365,6 @@ export default {
           } else if (err.response && err.response.data && err.response.data.localized) {
             this.showMessage('error', this.$t(err.response.data.localizedPath), null)
           } else {
-            console.log(err)
             this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
           }
         })
@@ -425,7 +422,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
@@ -460,7 +456,6 @@ export default {
         } else if (err.response && err.response.data && err.response.data.localized) {
           this.showMessage('error', this.$t(err.response.data.localizedPath), null)
         } else {
-          console.log(err)
           this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
         }
       })
@@ -490,7 +485,6 @@ export default {
             } else if (err.response && err.response.data && err.response.data.localized) {
               this.showMessage('error', this.$t(err.response.data.localizedPath), null)
             } else {
-              console.log(err)
               this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
             }
 
@@ -576,7 +570,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e)
         return false
       }
 
@@ -605,7 +598,6 @@ export default {
           }
         }
       } catch (e) {
-        console.log(e)
         return signed
       }
 
@@ -644,47 +636,49 @@ export default {
       ]
     },
     actions() {
-      return [
-        {
-          label: this.$t('common.show'),
-          icon: "fa-solid fa-eye",
-          command: () => {
-            this.currentDocument = this.actionsNode;
-            this.open('documentInfoSidebar')
+      return (data) => {
+        return [
+          {
+            label: this.$t('common.show'),
+            icon: "fa-solid fa-eye",
+            command: () => {
+              this.currentDocument = data;
+              this.open('documentInfoSidebar')
+            },
           },
-        },
-        {
-          label: this.$t('common.download'),
-          icon: "fa-solid fa-file-arrow-down",
-          visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID,
-          command: () => {
-            this.currentDocument = this.actionsNode;
-            this.download()
+          {
+            label: this.$t('common.download'),
+            icon: "fa-solid fa-file-arrow-down",
+            visible: data.docHistory && data.docHistory?.stateId === Enum.APPROVED.ID,
+            command: () => {
+              this.currentDocument = data;
+              this.download()
+            },
           },
-        },
-        {
-          label: this.$t('common.additionalInfo'),
-          icon: "fa-solid fa-file-arrow-down",
-          visible: this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.APPROVED.ID &&
-              this.actionsNode.newParams !== null && this.actionsNode.newParams.attachments !== null &&
-              this.actionsNode.newParams.attachments !== undefined,
-          command: () => {
-            this.currentDocument = this.actionsNode;
-            this.downloadAttachments()
+          {
+            label: this.$t('common.additionalInfo'),
+            icon: "fa-solid fa-file-arrow-down",
+            visible: data.docHistory && data.docHistory?.stateId === Enum.APPROVED.ID &&
+                data.newParams !== null && data.newParams.attachments !== null &&
+                data.newParams.attachments !== undefined,
+            command: () => {
+              this.currentDocument = data;
+              this.downloadAttachments()
+            },
           },
-        },
-        // {
-        //   label: this.$t('common.delete'),
-        //   icon: "fa-solid fa-trash",
-        //   visible: (this.actionsNode.docHistory && this.actionsNode.docHistory?.stateId === Enum.CREATED.ID ||
-        //       this.actionsNode.docHistory?.stateId === Enum.REVISION.ID || this.actionsNode.docHistory?.stateId === Enum.INAPPROVAL.ID) &&
-        //       this.loginedUser.userID === this.actionsNode.creatorID,
-        //   command: () => {
-        //     this.currentDocument = this.actionsNode;
-        //     this.deleteFile()
-        //   },
-        // }
-      ]
+          {
+            label: this.$t('common.delete'),
+            icon: "fa-solid fa-trash",
+            visible: data.docHistory &&
+                (data.docHistory?.stateId === Enum.CREATED.ID && this.loginedUser.userID === data.creatorID) ||
+                ((data.docHistory?.stateId === Enum.INAPPROVAL.ID || data.docHistory?.stateId === Enum.REJECTED.ID) &&
+                    this.findRole(null, "main_administrator")),
+            command: () => {
+              this.currentDocument = data;
+              this.deleteFile()
+            },
+          }
+        ]}
     },
   }
 }

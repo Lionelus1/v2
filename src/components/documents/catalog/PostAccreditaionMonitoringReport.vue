@@ -172,7 +172,7 @@
         </Column>
         <Column field="path">
           <template #body="slotProps">
-            <ActionButton v-if="slotProps.node.path != null" :show-label="true" :items="actions" @toggle="toggleActions(slotProps.node)" />
+            <ActionButton v-if="slotProps.node.path != null" :show-label="true" :items="actions(slotProps.node)" @toggle="toggleActions(slotProps.node)" />
           </template>
         </Column>
 
@@ -186,7 +186,7 @@
                 @updated="fileUpdated" accept=".pdf"></PostFile>
     </Dialog>
     <Sidebar v-model:visible="dialogOpenState.signerInfo" position="right" class="p-sidebar-lg"
-             style="overflow-y: scroll" @hide="getFolders(parentNode)">
+             style="overflow-y: scroll" @hide="onHide">
       <DocSignaturesInfo :docIdParam="file.key" @signed="signed"></DocSignaturesInfo>
     </Sidebar>
     <Sidebar v-model:visible="dialogOpenState.docInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll">
@@ -334,7 +334,7 @@ export default {
           value: "revision"
         },
         {
-          id: 7,
+          id: 3,
           nameRu: "Подписан",
           nameKz: "Қол қойылды",
           nameEn: "Signed",
@@ -530,14 +530,7 @@ export default {
               }
             }
             this.loading = false
-          })
-          .catch(error => {
-            console.log(error)
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else
-              console.error(error)
-          })
+          });
     },
     resetFileInfo() {
       this.file = {
@@ -650,9 +643,6 @@ export default {
                     if (!hide) {
                       this.deleteChild(this.catalog[0])
                     }
-                  },
-                  error => {
-                    console.log(error);
                   });
         },
       });
@@ -678,14 +668,7 @@ export default {
             this.file.hidden = false
             this.selected.hidden = false
 
-          })
-          .catch(error => {
-            console.log(error)
-            if (error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else
-              console.error(error)
-          })
+          });
     },
     downloadFile(path = null) {
       if (this.file || path) {
@@ -698,7 +681,7 @@ export default {
         )
             .then(response => {
               const link = document.createElement("a");
-              link.href = "data:application/octet-stream;base64," + response.data;
+              link.href = "data:application/octet-stream;base64," + response.data.file;
               link.setAttribute("download", path);
               link.download = path;
               link.click();
@@ -729,16 +712,16 @@ export default {
         this.file.revision = false;
         this.approving = false
       })
-          .catch(error => {
-            this.approving = false
-            if (error.response && error.response.status == 401) {
-              this.$store.dispatch("logLout");
-            } else
-              console.log(error);
-          })
 
       this.dialogOpenState.revision = false;
     },
+    onHide() {
+      if (this.filtered) {
+        this.getFoldersByGlobalFilter()
+      } else {
+        this.getFolders(this.parentNode)
+      }
+    }
   },
   computed: {
     menu () {
@@ -776,33 +759,35 @@ export default {
       ]
     },
     actions () {
-      return [
-        {
-          label: this.$t('common.download'),
-          icon: "fa-solid fa-file-arrow-down",
-          visible: this.actionsNode.path != null,
-          command: () => {this.downloadFile(this.actionsNode.path)},
-        },
-        {
-          label: this.$t('common.show'),
-          icon: "fa-solid fa-eye",
-          visible: this.actionsNode.key != null && this.actionsNode.depType ===3 && this.actionsNode.stateID !==4,
-          command: () => {this.onNodeSelect(this.actionsNode);this.openDialog('signerInfo')},
-        },
-        {
-          label: this.$t('common.show'),
-          icon: "fa-solid fa-eye",
-          visible: this.actionsNode.key != null && this.actionsNode.depType ===3 && this.actionsNode.stateID === 4,
-          command: () => {this.onNodeSelect(this.actionsNode);this.openDialog('docInfo')},
-        },
-        {
-          label: this.$t('common.delete'),
-          icon: "fa-solid fa-trash",
-          visible: this.actionsNode.key != null && this.actionsNode.depType === 3 && this.actionsNode.stateID !==7 && this.loginedUser.userID === this.actionsNode.ownerId,
-          command: () => {this.onNodeSelect(this.actionsNode);this.deleteFile(false)},
-        }
+      return (data) => {
+        return [
+          {
+            label: this.$t('common.download'),
+            icon: "fa-solid fa-file-arrow-down",
+            visible: data?.path != null,
+            command: () => {this.downloadFile(data?.path)},
+          },
+          {
+            label: this.$t('common.show'),
+            icon: "fa-solid fa-eye",
+            visible: data?.key != null && data.depType ===3 && data.stateID !==4,
+            command: () => {this.onNodeSelect(data);this.openDialog('signerInfo')},
+          },
+          {
+            label: this.$t('common.show'),
+            icon: "fa-solid fa-eye",
+            visible: data?.key != null && data.depType ===3 && data.stateID === 4,
+            command: () => {this.onNodeSelect(data);this.openDialog('docInfo')},
+          },
+          {
+            label: this.$t('common.delete'),
+            icon: "fa-solid fa-trash",
+            visible: data?.key != null && data.depType === 3 && data.stateID !==7 && this.loginedUser.userID === data.ownerId,
+            command: () => {this.onNodeSelect(data);this.deleteFile(false)},
+          }
 
-      ]
+        ]
+      }
     },
   }
 }

@@ -15,7 +15,7 @@
         </li>
       </ul>
       <div class="steps-content p-fluid">
-        <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers" :user-type="3"  :disabled="readonly"></FindUser>
+        <FindUser @add="updateModel" @remove="updateModel" v-model="selectedUsers" :searchMode="searchMode" :user-type="3"  :disabled="readonly"></FindUser>
         <Dropdown :disabled="!isNewStage || readonly" @change="updateModel" class="mt-2"
                   v-model="certificate" dataKey="value" :options="certificates" :optionLabel="'name' + $i18n.locale"
                   :placeholder="$t('ncasigner.certType')" />
@@ -43,7 +43,7 @@
       </ul>
       <div class="steps-content p-fluid">
         <Dropdown v-if="isNewStage" @change="approvalListChanged" v-model="approvalListItem" :options="approvalList" :optionLabel="'title' + $i18n.locale.charAt(0).toUpperCase() + $i18n.locale.slice(1)" :placeholder="$t('roleControl.instance')"></Dropdown>
-        <FindUser :disabled="readonly || !approvalStages[activeIndex].userChangeable" class="mt-2" @add="updateModel" @remove="updateModel" v-model="selectedUsers" :user-type="3"></FindUser>
+        <FindUser :disabled="readonly || !approvalStages[activeIndex].userChangeable" class="mt-2" @add="updateModel" @remove="updateModel" v-model="selectedUsers" :searchMode="searchMode" :user-type="3"></FindUser>
         <Dropdown v-if="mode !== 'doc_template_creating'"  :disabled="true" @change="updateModel" class="mt-2" v-model="certificate" :options="certificates" optionValue="value" :optionLabel="'name' + $i18n.locale" :placeholder="$t('ncasigner.certType')" />
       </div>
 
@@ -74,6 +74,11 @@ export default {
     stages: null,
     mode: null, // 'standard', 'doc_template', 'doc_template_creating'
     readonly: null,
+    searchMode:{
+      type: String,
+      default: 'ldap'
+    }
+
   },
   emits: ['clearStages'],
   components: { ApprovalListControl },
@@ -87,6 +92,8 @@ export default {
         {namekz: "Кадр бөлімі қызметкерінің сертификаты", nameru: "Сертификат сотрудника отела кадров", nameen: "Certificate of the HR worker", value: "hr_worker"},
         {namekz: "Қол қою құқығы бар қызметкер сертификаты", nameru: "Сертификат сотрудника с правом подписи", nameen: "Certificate of the employee with the right to sign", value: "sign_right"},
         {namekz: "Қаржы құжаттарына қол қою құқығы бар қызметкер сертификаты", nameru: "Сертификат сотрудника с правом подписи финансовых документов", nameen: "Certificate of the employee with the right to sign financial docs", value: "financial_sign_right"},
+
+        {namekz: "Қол қою қажет емес", nameru: "Подпись не требуется", nameen: "No signature required", value: "no_signature"},
       ],
       certificate: null,
       stage: this.modelValue != null ? this.modelValue.length + 1 : 1,
@@ -244,16 +251,6 @@ export default {
         headers: getHeader(),
       }).then(response => {
         this.approvalList = response.data
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       })
     },
     isEnuWorker() {
@@ -410,7 +407,7 @@ h3 {
   margin-bottom: 1rem;
   padding: 0;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .steps-item {
@@ -426,8 +423,6 @@ h3 {
 }
 
 .steps-item span {
-  width: 38px;
-  height: 38px;
   cursor: pointer;
   border-radius: 50%;
   padding: .75rem 1rem;

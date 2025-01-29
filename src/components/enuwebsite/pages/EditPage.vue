@@ -40,7 +40,6 @@
               </div>
               <div class="field">
                 <label for="kz-content">{{ $t("common.contentInQazaq") }}</label>
-                <!--          <RichEditor id="content_kz" v-model="formData.content_kz" editorStyle="height: 320px"/>-->
                 <TinyEditor v-model="formData.content_kz" :height="400" :custom-file-upload="true" :accordion="true"
                             @onAfterUpload="onAfterUpload"/>
               </div>
@@ -55,7 +54,6 @@
               </div>
               <div class="field">
                 <label for="kz-content">{{ $t("common.contentInRussian") }}</label>
-                <!--          <RichEditor id="content_ru" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
                 <TinyEditor v-model="formData.content_ru" :height="400" :customFileUpload="true" :accordion="true"
                             @onAfterUpload="onAfterUpload"/>
               </div>
@@ -70,7 +68,6 @@
               </div>
               <div class="field">
                 <label for="kz-content">{{ $t("common.contentInEnglish") }}</label>
-                <!--          <RichEditor id="content_en" v-model="formData.content_en" editorStyle="height: 320px"/>-->
                 <TinyEditor v-model="formData.content_en" :height="400" :custom-file-upload="true" :accordion="true"
                             @onAfterUpload="onAfterUpload"/>
               </div>
@@ -127,10 +124,9 @@ import {computed, inject, ref} from "vue";
 import {EnuWebService} from "@/service/enu.web.service";
 import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
-import {downloadRoute, getHeader, smartEnuApi, findRole} from "@/config/config";
+import {downloadRoute, findRole, getHeader, smartEnuApi} from "@/config/config";
 import {useConfirm} from "primevue/useconfirm";
 import {useStore} from "vuex";
-import CustomFileUpload from "@/components/CustomFileUpload.vue";
 import Gallery from "@/components/Gallery.vue";
 import Access from "@/pages/Access.vue";
 
@@ -174,7 +170,6 @@ const getPage = () => {
       haveAccess.value = false
     } else {
       loading.value = false
-      toast.add({severity: "error", summary: error, life: 3000});
     }
   });
 }
@@ -195,8 +190,7 @@ const save = () => {
       emitter.emit('pageCreateEditMsg', true)
     }
     navigateToPages()
-  }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
+  }).catch(_ => {
   });
 }
 
@@ -317,7 +311,6 @@ const onGalleryRemove = (event) => {
       }
     })
     /*let found = galleryFiles.value.find(x => x.file_id === event.id)
-    console.log(found)
     found.is_deleted = true;*/
   }
 }

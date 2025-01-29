@@ -98,9 +98,6 @@ export default {
             this.journal = response.data.templates;
             this.count = response.data.count;
           })
-          .catch((e)=> {
-            console.log(e)
-          })
           .finally(() => {
             this.loading = false;
           })

@@ -15,7 +15,6 @@
             </div>
             <div class="field">
               <label>{{ $t("common.contentInQazaq") }}</label>
-              <!--            <RichEditor ref="kztext" v-model="content.content_kz" editorStyle="height: 320px"></RichEditor>-->
               <TinyEditor v-model="formData.content_kz" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
               <small v-show="!formData.content_kz && submitted" class="p-error">
                 {{ $t("smartenu.contentKzInvalid") }}
@@ -32,7 +31,6 @@
             </div>
             <div class="field">
               <label for="ru-content">{{ $t("common.contentInRussian") }}</label>
-              <!--            <RichEditor id="ru-content" v-model="formData.content_ru" editorStyle="height: 320px"/>-->
               <TinyEditor v-model="formData.content_ru" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
               <small v-show="!formData.content_ru && submitted" class="p-error">
                 {{ $t("smartenu.contentRuInvalid") }}
@@ -49,7 +47,6 @@
             </div>
             <div class="field">
               <label>{{ $t("common.contentInEnglish") }}</label>
-              <!--            <RichEditor v-model="formData.content_en" editorStyle="height: 320px"/>-->
               <TinyEditor v-model="formData.content_en" :custom-file-upload="true" @onAfterUpload="onAfterUpload"/>
               <small v-show="!formData.content_en && submitted" class="p-error">
                 {{ $t("smartenu.contentEnInvalid") }}
@@ -92,7 +89,7 @@
 </template>
 
 <script>
-import {onMounted, ref} from "vue";
+import {ref} from "vue";
 import {EnuWebService} from "@/service/enu.web.service";
 import BlockElementsList from "@/components/enuwebsite/blocks/BlockElementsList.vue";
 import {useRoute} from "vue-router";
@@ -100,7 +97,7 @@ import {useToast} from "primevue/usetoast";
 import {useI18n} from "vue-i18n";
 import TitleBlock from "@/components/TitleBlock.vue";
 import {FileService} from "../../../service/file.service";
-import {downloadRoute, fileRoute, getHeader, smartEnuApi} from "../../../config/config";
+import {downloadRoute, getHeader, smartEnuApi} from "../../../config/config";
 import {useConfirm} from "primevue/useconfirm";
 import {useStore} from "vuex";
 import TinyEditor from "../../TinyEditor";
@@ -140,7 +137,6 @@ export default {
           haveAccess.value = false
         } else {
           loading.value = false
-          toast.add({severity: "error", summary: error, life: 3000});
         }
       });
     }
@@ -172,9 +168,8 @@ export default {
             toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
           }
           getBlockContent(blockId)
-        }).catch(error => {
+        }).catch(_ => {
           submitted.value = false;
-          toast.add({severity: "error", summary: error, life: 3000});
         });
       } else {
         enuService.addBlockContent(formData.value).then(res => {
@@ -182,9 +177,8 @@ export default {
             submitted.value = false;
             toast.add({severity: "success", summary: i18n.t('common.success'), life: 3000});
           }
-        }).catch(error => {
+        }).catch(_ => {
           submitted.value = false;
-          toast.add({severity: "error", summary: error, life: 3000});
         });
       }
     }
@@ -241,8 +235,6 @@ export default {
       }).catch(error => {
         if (error.response && error.response.status === 401) {
           store.dispatch("logLout");
-        } else {
-          toast.add({severity: "error", summary: error, life: 3000});
         }
       });
     }
@@ -272,16 +264,14 @@ export default {
           getBlockContentFiles();
           toast.add({severity: 'success', detail: i18n.t('common.done'), life: 3000});
         }
-      }).catch((error) => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch((_) => {
       });
     }
 
     const getBlockContentFiles = () => {
       enuService.getBlockContentFiles(formData.value.block_content_id).then(res => {
         formData.value.files = res.data;
-      }).catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     }
 

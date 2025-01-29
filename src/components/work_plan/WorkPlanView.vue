@@ -210,8 +210,15 @@ export default {
       });
     },
     getWorkPlanApprovalUsers() {
-      this.planService.getWorkPlanApprovalUsers(parseInt(this.work_plan_id)).then(res => {
-        if (res.data) {
+
+      let data = {
+        work_plan_id: parseInt(this.work_plan_id),
+        page: 0,
+        rows: 0,
+        is_contract: false
+      };
+      this.planService.getWorkPlanApprovalUsers(data).then(res => {
+        if (res.data?.work_plan_users) {
           this.approvals = [];
           const d = res.data;
           this.isPlanApproved = d.every(x => x.is_success);
@@ -224,15 +231,6 @@ export default {
           this.init();
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       });
     },
 
@@ -419,6 +417,11 @@ export default {
   &.status-2 {
     background: #FEEDAF;
     color: #8A5340;
+  }
+
+  &.status-1 {
+    background: #B3E5FC;
+    color: #23547B;
   }
 }
 </style>

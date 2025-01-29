@@ -151,13 +151,6 @@
             loading.value = false;
         }).catch(err => {
             loading.value = false;
-
-            toast.add({
-                severity: "error",
-                detail: t("roleControl.noResult"),
-                life: 3000,
-            })
-
         })
     }
 
@@ -225,7 +218,6 @@
                 life: 3000,
             })
             } else {
-            console.log(err)
             toast.add({
                 severity: "error",
                 summary: t('common.message.actionError'),

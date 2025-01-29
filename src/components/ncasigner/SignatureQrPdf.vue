@@ -12,7 +12,7 @@
           <br/> {{ item.sign && item.sign.length > 0 ? $t('ncasigner.signed') + ": " + new Date(item.signDate).toLocaleDateString() + ", " + new Date(item.signDate).toLocaleTimeString()  : $t('ncasigner.signingexpected') }}
         </p>
         <div class="field">
-          <Button v-if="item.sign && item.sign.length > 0" :label="$t('common.downloadCms')" icon="pi pi-download" @click="this.emitter.emit('downloadCMS', item.id)"
+          <Button v-if="item.sign && item.sign.length > 0" :label="$t('common.downloadCms')" icon="pi pi-download" @click="$emit('downloadCMS', item.id)"
                   class="p-button-secondary ml-1"/>
         </div>
         <div style="width: 100%;text-align: left;">
@@ -30,7 +30,11 @@
             style="border: 1px solid #000; padding: 5px; margin: 5px;display: block;">
             <p>
               <b> {{ user.fullName }} </b>
-              <br/> {{ stage.usersApproved && stage.usersApproved[userInd] == 1 ? $t('ncasigner.approved') + getStageSignaturesDate(stage.signatures, userInd) : $t('ncasigner.approvingExpected') }}
+              <br/> {{ stage.usersApproved && stage.usersApproved[userInd] == 1 ? stage.certificate.value === "no_signature"  ? $t('ncasigner.confirmed') : $t('ncasigner.approved')  + getStageSignaturesDate(stage.signatures, userInd) :   stage.certificate.value === "no_signature"
+                ? $t('ncasigner.approvingСonfirmation')
+                : (stage.usersApproved && stage.usersApproved[userInd] == 1
+                    ? $t('ncasigner.approved') + getStageSignaturesDate(stage.signatures, userInd)
+                    : $t('ncasigner.approvingExpected')) }}
             </p>
             <div v-if="stage.signatures" style="width: 100%;text-align: left;">
               <qrcode-vue v-for="(i, ind) of stage.signatures[userInd].sign" :key="ind" size="300" render-as="svg" margin="2" :value="i"></qrcode-vue>
@@ -54,6 +58,7 @@ export default {
     approvalStages: null,
     showSign: null,
   },
+  emits: ['downloadCMS'],
   methods: {
     getStageSignaturesDate(signatures, userInd) {
       if (signatures) {

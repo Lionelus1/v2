@@ -140,23 +140,20 @@ onMounted(() => {
   getWorkPlanTypes();
 })
 
-watch(() => formData.plan_type, () => {
-  if (!formData.plan_type || !types.value || types.value.length < formData.plan_type) {
-    params.value = null;
-    return;
-  }
-  const id = types.value[formData.plan_type - 1].dic_document_types
-  
-  if (id == null || id == 25) {
+const planChange = (event) => {
+  formData.plan_type = event.value?.id
+
+  const id = event.value?.dic_document_types
+  if (id == null) {
     params.value = null
     return
   }
- 
+
   docService.getDocParams(id).then(res => {
     params.value = JSON.parse(res.data)
   }).catch(error => {
     params.value = null
   })
+}
 
-})
 </script>

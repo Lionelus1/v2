@@ -135,13 +135,8 @@
       total.value = response.data.total
 
       loading.value = false
-    }).catch(error => {
+    }).catch(_ => {
       loading.value = false
-      toast.add({
-        severity: "error",
-        summary: t('message.actionError'),
-        life: 3000,
-      })
     })
   }
 
@@ -181,12 +176,7 @@
         scienceService.deleteScientificGrant(data).then(res  => {
           toast.add({severity: "success", summary: t('common.success'), life: 3000});
           getScientificGrants()
-        }).catch(err => {
-          toast.add({
-            severity: "error",
-            summary: t('message.actionError'),
-            life: 3000,
-          })
+        }).catch(_ => {
         })
       },
     });

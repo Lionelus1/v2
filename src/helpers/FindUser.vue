@@ -22,8 +22,8 @@
           <template #option="slotProps">
             <div class="user-item grid">
               <div class="image-container lg:col-2  md:col-3 p-sm-12">
-                <img class="round" v-if="slotProps.option.photo != null && slotProps.option.photo !==''"
-                     :src="'data:image/jpeg;base64,' + slotProps.option.photo "/>
+                <img class="round" v-if="slotProps.option.photo_v2 != null && slotProps.option.photo_v2 !==''"
+                     :src="'data:image/jpeg;base64,' + slotProps.option.photo_v2 "/>
                 <img class="round" v-else
                      src="assets/layout/images/default-user.jpg"/>
               </div>
@@ -52,6 +52,7 @@
 <script>
 import {getHeader, smartEnuApi, templateApi} from "@/config/config";
 import axios from 'axios';
+import { UserService } from "../service/user.service";
 
 import { ContragentService } from "@/service/contragent.service";
 
@@ -136,6 +137,7 @@ export default {
         bank: {}
         
       },
+      userService: new UserService(),
       cancelToken : null,
       requests: [],
       request: null,
@@ -156,7 +158,7 @@ export default {
     }
   },
   methods: {
-    userCreated(user) { 
+    userCreated(user) {
       const event = new Event('userCreated');
       this.addItem(event,user,true)
     },
@@ -172,16 +174,16 @@ export default {
         if (user.thirdnameEn) {
           fullname += ' ' + user.thirdnameEn
         }
-      } 
-      
+      }
+
       if (fullname.length > 0) {
         return fullname
       }
-      
-      fullname += user.thirdName + ' ' + user.firstName 
+
+      fullname += user.thirdName + ' ' + user.firstName
 
       if (user.lastName) {
-        fullname += ' ' + user.lastName 
+        fullname += ' ' + user.lastName
       }
 
       return fullname
@@ -228,7 +230,7 @@ export default {
           "name": inputValue,
         },
         "searchMode": this.userType == 1 ? "student" : this.userType == 2 ? "staff" : "all",
-        "ldap": this.searchMode == 'ldap' ? true : false,
+        "ldap": this.userType == 1 || this.userType == 2 ? true : false,
         "page": 0,
         "rows": 15
       }, this.cancelToken.token).then(

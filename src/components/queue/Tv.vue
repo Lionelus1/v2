@@ -99,8 +99,6 @@ export default {
         this.audioSrc = `data:audio/mp3;base64,${res.data}`
         this.globAudio = new Audio(this.audioSrc);
         this.globAudio.play()
-      }).catch(error => {
-        console.log(error);
       })
     },
     audioEnded() {

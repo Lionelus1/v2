@@ -1,62 +1,74 @@
 <template>
-    <div class="layout-topbar no-print">
-        <div>
-            <button v-if="isMobile()" class="p-link layout-menu-button" @click="onMenuToggle">
-                <span class="pi pi-bars"></span>
-            </button>
-            <Button v-if="($route.name=='organizations') || ($route.name=='persons')" class="add_new p-button"
-                    icon="pi pi-plus"
-                    :label="getCreateLabel" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
-        </div>
-        <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
-        <div class="header_icons flex align-items-center">
-            <!--                <i v-tooltip.bottom="'Telegram Chat'" @click="navigateToTelegram()" class="tg pi pi-telegram ml-2 mr-2"></i>-->
-            <img class="telegram ml-2 mr-2" v-tooltip.bottom="'Telegram Chat'" @click="navigateToTelegram()"
-                 src="@/assets/layout/images/telegram.svg" alt="">
-            <i v-if="isShowGuide" v-tooltip.bottom="$t('guide.guide')" @click="navigate()"
-               class="pi pi-question-circle ml-2 mr-2"></i>
-            <div class="notification ml-2 mr-4" @click="visibleRight = true">
-                <i class="fa-regular fa-bell"/>
-                <Badge :value="notLength" severity="primary"></Badge>
-            </div>
-            <LanguageDropdown class="top_lang"/>
-        </div>
-        <Sidebar v-model:visible="visibleRight"
-                 blockScroll=false
-                 @show="firstShow"
-                 @after-hide="resetNot"
-                 :baseZIndex="10000" position="right"
-                 style="width: 25%;">
-            <h4>{{ $t('common.notifications') }}</h4>
-            <div>
-                <div v-for="(n,ni) in notifications" :key="ni"
-                     style="clear: left; width: 100%; display: block; margin-bottom:25px;padding-bottom:15px;border-bottom:1px dotted #ccc;">
-                    <div class="flex">
-                        <img class="notification_img round mr-3"
-                             v-if="n.senderObject.photo != null && n.senderObject.photo !=''"
-                             :src="'data:image/jpeg;base64,' + n.senderObject.photo " rounded/>
-                        <div class="flex flex-column gap-1" style="width: 75%;word-wrap: break-word;">
-                            <h6 :style="{margin:0,marginBottom:'2px',fontWeight : n.isSeen==0 ? 'bolder' : '400'}">
-                                {{ n.senderObject.fullName }}</h6>
-                            <div :style="{fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="font-semibold"
-                                 v-html="n['description_' + $i18n.locale]">
-                            </div>
-                            <span class="text-gray-500">{{
-                                timeDifference(n.createdDate)
-                                }}</span>
-                        </div>
-                        <div v-if="n.isSeen===0" class="new_notification"></div>
-                    </div>
-                </div>
-                <div class="p-w-full p-text-center">
-                    <span v-if="notLoading">Loading please wait . . .</span>
-                    <Button v-if="showCalc && !notLoading" icon="pi pi-refresh" @click="loadByPage()"
-                            style="width:100%;" class="p-w-full p-button-rounded p-button-outlined" iconPos="right"
-                            :label="$t('common.loadMore')"/>
-                </div>
-            </div>
-        </Sidebar>
+  <div class="layout-topbar no-print">
+    <div>
+      <button v-if="isMobile()" class="p-link layout-menu-button" @click="onMenuToggle">
+        <span class="pi pi-bars"></span>
+      </button>
+      <Button v-if="($route.name=='organizations') || ($route.name=='persons')" class="add_new p-button"
+              icon="pi pi-plus"
+              :label="getCreateLabel" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"/>
     </div>
+    <Menu id="overlay_menu" ref="menu" :model="pagemenu" :popup="true"/>
+    <div class="header_icons flex align-items-center">
+      <!--                <i v-tooltip.bottom="'Telegram Chat'" @click="navigateToTelegram()" class="tg pi pi-telegram ml-2 mr-2"></i>-->
+      <img class="telegram ml-2 mr-2" v-tooltip.bottom="'Telegram Chat'" @click="navigateToTelegram()"
+           src="@/assets/layout/images/telegram.svg" alt="">
+      <i v-if="isShowGuide" v-tooltip.bottom="$t('guide.guide')" @click="navigate()"
+         class="pi pi-question-circle ml-2 mr-2"></i>
+      <div class="notification ml-2 mr-4" @click="visibleRight = true">
+        <i class="fa-regular fa-bell"/>
+        <Badge :value="notLength" severity="primary"></Badge>
+      </div>
+      <LanguageDropdown class="top_lang ml-2"/>
+    </div>
+    <Sidebar v-model:visible="visibleRight"
+             blockScroll=false
+             @show="firstShow"
+             @after-hide="resetNot"
+             :baseZIndex="10000" position="right"
+             style="width: 25%;" :header="$t('common.notifications')" class="sidebar_notific">
+      <div>
+        <div class="surface-card skeleton_notific" v-if="notLoading">
+          <ul class="m-0 p-0 list-none">
+            <li class="mb-5" v-for="i of 10" :key="i">
+              <div class="flex">
+                <Skeleton shape="circle" size="4rem" class="mr-2"></Skeleton>
+                <div class="align-self-center" style="flex: 1">
+                  <Skeleton width="100%" class="mb-2"></Skeleton>
+                  <Skeleton width="75%"></Skeleton>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div v-else v-for="(n,ni) in notifications" :key="ni" class="notific_item">
+          <div class="flex">
+            <img class="notification_img round mr-3"
+                 v-if="n.senderObject.photo_v2 != null && n.senderObject.photo_v2 !=''"
+                 :src="'data:image/jpeg;base64,' + n.senderObject.photo_v2 " rounded/>
+            <div v-else class="ava_user flex justify-content-center align-items-center notification_img round mr-3"><i class="pi pi-user"></i></div>
+            <div class="flex flex-column gap-1" style="width: 75%;word-wrap: break-word;">
+              <h6 :style="{margin:0,marginBottom:'2px',fontWeight : n.isSeen==0 ? 'bolder' : '400'}">
+                {{ n.senderObject.fullName }}</h6>
+              <div :style="{fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="content_notific font-semibold"
+                   v-html="getContentWithLinkHandler(n['description_' + $i18n.locale])" :class="{ 'visible': n.isShow }"  @click="handleLinkClick">
+              </div>
+              <div v-if="n.description_kz && n.description_kz.length > maxLength" class="read_more" @click="toggleShowMore(n)" :class="{ 'visible': n.isShow }">
+                {{ n.isShow ? $t("educomplex.tooltip.cover")+'^' : $t("common.readMore")+'...' }}
+              </div>
+              <span class="text-gray-500">{{ timeDifference(n.createdDate) }}</span>
+            </div>
+            <div v-if="n.isSeen===0" class="new_notification"></div>
+          </div>
+        </div>
+        <div class="p-w-full text-center p-3">
+          <Button v-if="showCalc && !notLoading" :icon="btnLoading? 'pi pi-spin pi-spinner':'pi pi-refresh'" @click="loadByPage()"
+                  class="p-w-full p-button-rounded p-button-outlined" iconPos="right"
+                  :label="$t('common.loadMore')"/>
+        </div>
+      </div>
+    </Sidebar>
+  </div>
 </template>
 <script>
 import LanguageDropdown from "./LanguageDropdown";
@@ -64,194 +76,182 @@ import {getHeader, smartEnuApi, socketApi} from "@/config/config";
 import moment from "moment";
 import {mapState} from "vuex";
 import {NotificationService} from "@/service/notification.service";
+import {timeDifference} from "./helpers/HelperUtil";
 
 export default {
-    components: {LanguageDropdown},
-    props: {
-        pagemenu: null,
+  components: {LanguageDropdown},
+  props: {
+    pagemenu: null,
+  },
+  data() {
+    return {
+      visibleRight: false,
+      socket: null,
+      isShowGuide: process.env.VUE_APP_SHOW_GUIDE === 'true',
+      notifications: [],
+      itemsPerPage: 6,
+      pageCount: 0,
+      pageNum: 1,
+      newCount: 0,
+      firstShown: false,
+      notificationService: new NotificationService(),
+      loginedUser: null,
+      notLoading: false,
+      btnLoading: false,
+      imgPreview: null,
+      maxLength: 340,
+    }
+  },
+  methods: {
+    timeDifference,
+    resetNot() {
+      this.notifications = [];
+      this.pageNum = 1;
     },
-    data() {
-        return {
-            visibleRight: false,
-            socket: null,
-            isShowGuide: process.env.VUE_APP_SHOW_GUIDE === 'true',
-            notifications: [],
-            itemsPerPage: 6,
-            pageCount: 0,
-            pageNum: 1,
-            newCount: 0,
-            firstShown: false,
-            notificationService: new NotificationService(),
-            loginedUser: null,
-        }
+    firstShow() {
+      this.loadNotifications();
     },
-    methods: {
-        resetNot() {
-            this.notifications = [];
-            this.pageNum = 1;
-        },
-        firstShow() {
-            this.loadNotifications();
-        },
-        loadByPage() {
-            //alert("pageNum :"+this.pageNum +" pageCount :" +parseInt(this.pageCount-1))
-            this.loadNotifications();
-        },
-        toggle(event) {
-            this.$refs.menu.toggle(event);
-        },
-        onMenuToggle(event) {
-            this.$emit('menu-toggle', event);
-        },
-        navigate() {
-            let routeData = this.$router.resolve({name: 'MainGuide', params: {id: this.$route.path}});
-            window.open(routeData.href, '_blank');
-        },
-        navigateToTelegram() {
-            window.open('https://t.me/smartenu_chat', '_blank')
-        },
-        ViewNotification(nots) {
-            this.notificationService.viewNotifications({views: nots}).then(response => {
-                    if (this.newCount > 0)
-                        this.newCount = this.newCount - nots.length < 0 ? 0 : this.newCount - nots.length;
-                    console.info("view result", response)
-                }
-            ).catch(error => {
-                this.$toast.add({severity: "error", summary: error, life: 3000});
-            });
-        },
-        loadNotifications() {
-          if (this.loginedUser) {
-            this.notLoading = true;
-            this.notificationService.getNotifications(this.pageNum, this.itemsPerPage).then(response => {
-              this.newCount = response.data.NewCount ? response.data.NewCount : 0;
-              let recordCount = response.data.RecordCount;
-              this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
-              //alert("private len "+response.data.private.length+" "+" general len"+response.data.general.length);
-              if (!response.data.private) {
-                  response.data.private = [];
-              }
-              if (!response.data.general) {
-                  response.data.general = [];
-              }
-              let nots = response.data.private.concat(response.data.general);
-              nots.forEach(n => {
-                  if (n) {
-                      n.senderObject = JSON.parse(n.senderJSON);
-                      if (!n.isSeen) {
-                          n.isSeen = 0;
-                      }
-                  }
-
-              });
-              this.notifications = this.notifications.concat(nots);
-              this.pageNum = this.pageNum + 1;
-              this.notLoading = false;
-              let newNots = this.notifications.filter(f => parseInt(f.isSeen) == 0);
-              if (newNots.length > 0) {
-                  this.ViewNotification(newNots);
-              }
-            }).catch(error => {
-              console.log(error)
-            })
+    loadByPage() {
+      //alert("pageNum :"+this.pageNum +" pageCount :" +parseInt(this.pageCount-1))
+      this.loadNotifications();
+    },
+    toggle(event) {
+      this.$refs.menu.toggle(event);
+    },
+    onMenuToggle(event) {
+      this.$emit('menu-toggle', event);
+    },
+    navigate() {
+      let routeData = this.$router.resolve({name: 'MainGuide', params: {id: this.$route.path}});
+      window.open(routeData.href, '_blank');
+    },
+    navigateToTelegram() {
+      window.open('https://t.me/smartenu_chat', '_blank')
+    },
+    ViewNotification(nots) {
+      this.notificationService.viewNotifications({views: nots}).then(response => {
+            if (this.newCount > 0)
+              this.newCount = this.newCount - nots.length < 0 ? 0 : this.newCount - nots.length;
           }
-        },
-        timeDifference(givenDate) {
-
-            const now = moment()
-
-            const given = moment(givenDate);
-            moment.locale('smartEnu', {
-                relativeTime: {
-                    future: this.$i18n.locale === "kz" ? "" : this.$i18n.locale === "en" ? "in %s" : "",
-                    past: this.$i18n.locale === "kz" ? "%s бұрын" : this.$i18n.locale === "en" ? "%s ago" : "",
-                    ss: this.$i18n.locale === "kz" ? "бірнеше секунд бұрын" : this.$i18n.locale === "en" ? "few seconds ago" : "",
-                    m: this.$i18n.locale === "kz" ? "минут бұрын" : this.$i18n.locale === "en" ? "a minute" : "",
-                    mm: this.$i18n.locale === "kz" ? "%d минут бұрын" : this.$i18n.locale === "en" ? "%d minutes" : "",
-
-                    h: this.$i18n.locale === "kz" ? "бір сағат бұрын" : this.$i18n.locale === "en" ? "an hour" : "",
-                    hh: this.$i18n.locale === "kz" ? "%d сағат бұрын" : this.$i18n.locale === "en" ? "%d hours" : "",
-                    d: this.$i18n.locale === "kz" ? "бір күн бұрын" : this.$i18n.locale === "en" ? "a day" : "",
-                    dd: this.$i18n.locale === "kz" ? "%d күн бұрын" : this.$i18n.locale === "en" ? "%d days" : "",
-                    w: this.$i18n.locale === "kz" ? "бір апта бұрын" : this.$i18n.locale === "en" ? "a week" : "",
-                    ww: this.$i18n.locale === "kz" ? "%d апта бұрын" : this.$i18n.locale === "en" ? "%d weeks" : "",
-                    M: this.$i18n.locale === "kz" ? "бір ай бұрын" : this.$i18n.locale === "en" ? "a month" : "",
-                    MM: this.$i18n.locale === "kz" ? "%d ай бұрын" : this.$i18n.locale === "en" ? "%d months" : "",
-                    y: this.$i18n.locale === "kz" ? "бір жыл бұрын" : this.$i18n.locale === "en" ? "a year" : "",
-                    yy: this.$i18n.locale === "kz" ? "%d жыл бұрын" : this.$i18n.locale === "en" ? "%d years" : "",
-                }
-            });
-            console.log(now);
-            console.log(given);
-            return moment.duration(given.diff(now)).humanize();
-
-        },
-      isMobile() {
-        return window.innerWidth <= 1024;
-      },
+      );
     },
-    computed: {
-        ...mapState(["loginedUser"]),
-        notLength() {
-            return this.newCount.toString()
-        },
-
-        showCalc() {
-            if (parseInt(this.pageNum) <= parseInt(this.pageCount)) {
-                return true;
-            }
-            return false;
-        },
-        getCreateLabel() {
-            if (window.innerWidth <= 460) {
-                return ""
-            }
-            return this.$t('common.createNew')
-        }
-    },
-    mounted() {
-      this.loginedUser = localStorage.getItem("loginedUser");
+    loadNotifications() {
       if (this.loginedUser) {
-        this.notLoading = true;
+        if (this.pageNum > 1) {
+          this.btnLoading = true;
+        }else {
+          this.notLoading = true;
+        }
         this.notificationService.getNotifications(this.pageNum, this.itemsPerPage).then(response => {
           this.newCount = response.data.NewCount ? response.data.NewCount : 0;
-          let recordCount = response.data.RecordCount;
+          let recordCount = response.data.RecordCount
           this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
-        }).catch(error => {
-          this.$toast.add({severity: "error", summary: error, life: 3000});
-        })
+          //alert("private len "+response.data.private.length+" "+" general len"+response.data.general.length);
+          if (!response.data.private) {
+            response.data.private = [];
+          }
+          if (!response.data.general) {
+            response.data.general = [];
+          }
+          let nots = response.data.private.concat(response.data.general);
+          nots.forEach(n => {
+            if (n) {
+              n.senderObject = JSON.parse(n.senderJSON);
+              if (!n.isSeen) {
+                n.isSeen = 0;
+              }
+            }
+          });
+          this.notifications = this.notifications.concat(nots);
+          this.pageNum = this.pageNum + 1;
+            this.btnLoading = false;
+            this.notLoading = false;
+          let newNots = this.notifications.filter(f => parseInt(f.isSeen) === 0);
+          if (newNots.length > 0) {
+            this.ViewNotification(newNots);
+          }
+        });
       }
     },
-    async created() {
-
-        let v = this;
-        this.socket = await new WebSocket(socketApi + "/notificationws");
-        this.socket.onopen = () => {
-            this.socket.send(this.loginedUser);
-        }
-
-        this.socket.onmessage = (event) => {
-            let parsed = JSON.parse(event.data);
-            this.$toast.add({
-                    severity: 'success',
-                    summary: parsed.description,
-                    detail: JSON.parse(parsed.senderJSON).fullName,
-                    life: 3000
-                }
-            );
-            this.newCount = this.newCount + 1;
-            // v.notifications.unshift({
-            //     uniqueName:parsed.uniqueName,
-            //     isSeen:parsed.isSeen,
-            //     notificationId:parsed.notificationId,
-            //     senderId:parsed.senderId,
-            //     senderObject:JSON.parse(parsed.senderJSON),
-            //     description:parsed.description,
-            //     link:parsed.link,
-            //     jsMethod:parsed.jsMethod,
-            // });
-        }
+    isMobile() {
+      return window.innerWidth <= 1024;
+    },
+    handleLinkClick(event){
+      if (event.target.tagName === 'A') {
+        event.preventDefault();
+        window.location.href = event.target.href;
+        this.visibleRight = false
+      }
+    },
+    getContentWithLinkHandler(content) {
+       const div = document.createElement('div');
+      div.innerHTML = content;
+      return div.innerHTML;
+    },
+    toggleShowMore(item) {
+      item.isShow = !item.isShow;
     }
+  },
+  computed: {
+    ...mapState(["loginedUser"]),
+    notLength() {
+      return this.newCount.toString()
+    },
+
+    showCalc() {
+      if (parseInt(this.pageNum) <= parseInt(this.pageCount)) {
+        return true;
+      }
+      return false;
+    },
+    getCreateLabel() {
+      if (window.innerWidth <= 460) {
+        return ""
+      }
+      return this.$t('common.createNew')
+    }
+  },
+  mounted() {
+    this.loginedUser = localStorage.getItem("loginedUser");
+    if (this.loginedUser) {
+      this.notLoading = true;
+      this.notificationService.getNotifications(this.pageNum, this.itemsPerPage).then(response => {
+        this.newCount = response.data.NewCount ? response.data.NewCount : 0;
+        let recordCount = response.data.RecordCount;
+        this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
+      });
+    }
+  },
+  async created() {
+
+    let v = this;
+    this.socket = await new WebSocket(socketApi + "/notificationws");
+    this.socket.onopen = () => {
+      this.socket.send(this.loginedUser);
+    }
+
+    this.socket.onmessage = (event) => {
+      let parsed = JSON.parse(event.data);
+      this.$toast.add({
+            severity: 'success',
+            summary: parsed.description,
+            detail: JSON.parse(parsed.senderJSON).fullName,
+            life: 3000
+          }
+      );
+      this.newCount = this.newCount + 1;
+      // v.notifications.unshift({
+      //     uniqueName:parsed.uniqueName,
+      //     isSeen:parsed.isSeen,
+      //     notificationId:parsed.notificationId,
+      //     senderId:parsed.senderId,
+      //     senderObject:JSON.parse(parsed.senderJSON),
+      //     description:parsed.description,
+      //     link:parsed.link,
+      //     jsMethod:parsed.jsMethod,
+      // });
+    }
+  }
 }
 </script>
 
@@ -292,6 +292,11 @@ export default {
   width: 60px;
   min-width: 60px;
   height: 60px;
+  object-fit: cover;
+
+  i {
+    font-size: 20px;
+  }
 }
 
 .new_notification {
@@ -302,17 +307,64 @@ export default {
   border-radius: 50%;
   //box-shadow: 0 0 3px 1px #2196F3;
 }
+
+.notific_item {
+  clear: left;
+  width: 100%;
+  display: block;
+  padding: 14px;
+  border-bottom: 1px solid #e3e3e3;
+}
+.content_notific{
+  max-height: 200px;
+  overflow: hidden;
+}
+.read_more{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  cursor: pointer;
+  color: #2196f3;
+  font-weight: 600;
+  text-align: center;
+}
+.content_notific.visible {
+  max-height: 5000px !important;
+  //transition: max-height 3s ease-in;
+}
+
+.skeleton_notific {
+  padding: 14px;
+}
+
+.notific_item:hover {
+  background: #f8f8f8;
+}
+
 .telegram {
-    width: 21px;
-    height: 21px;
-    display: block;
+  width: 21px;
+  height: 21px;
+  display: block;
 }
-::v-deep(.p-inputtext, .p-dropdown .p-dropdown-trigger){
-    color: #293042!important;
+
+::v-deep(.p-inputtext, .p-dropdown .p-dropdown-trigger) {
+  color: #293042 !important;
 }
-::v-deep(.p-dropdown .p-dropdown-trigger){
-    color: #293042!important;
+
+::v-deep(.p-dropdown .p-dropdown-trigger) {
+  color: #293042 !important;
 }
+
+.ava_user {
+  border: 1px solid #ccc;
+
+  i {
+    color: #ccc;
+  }
+}
+
+
 
 @media print {
   .no-print, .no-print * {
@@ -332,9 +384,11 @@ export default {
   font-size: 20px;
   //color: white;
 }
+
 .p-link:focus {
-    box-shadow: none;
+  box-shadow: none;
 }
+
 @media (max-width: 425px) {
   .layout-topbar {
     padding: 1em;

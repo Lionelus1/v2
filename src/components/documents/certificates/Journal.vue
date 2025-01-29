@@ -37,6 +37,11 @@
            <Column :field="'course.name' + $i18n.locale" :header="$t('common.nameIn')"></Column>
            <Column :field="'course.organizer.name' + $i18n.locale" :header="$t('course.organizers')"></Column>
            <Column field="number" :header="$t('common.number')"></Column>
+           <Column :header="$t('course.certificate.issueDate')">
+            <template #body="slotProps">
+            {{ getShortDateString(slotProps.data.issueDate) }}
+            </template>
+           </Column>
 
            <Column headerStyle="width:60px;">
              <template #body="slotProps">
@@ -56,6 +61,7 @@
  
  import {OnlineCourseService} from "@/service/onlinecourse.service";
  import { smartEnuApi, fileRoute, findRole } from '../../../config/config';
+ import { getShortDateString } from "@/helpers/helper";
  export default {
      name: "SertificateJournal",
     
@@ -121,11 +127,11 @@
          }
      },
      methods: {
+      getShortDateString: getShortDateString,
       findRole: findRole,
       getStudentCertificates() {
           this.loading = true
           this.service.getStudentCertificates().then(_ => {
-          }).catch(_ =>{
           })
           .finally(()=> {
             this.getJournal()

@@ -58,7 +58,6 @@
     methods: {
       downloadResume() {
         if (!this.candidate) {
-          console.log(this.candidate)
           return; 
         }
   
@@ -83,7 +82,6 @@
           reader.readAsDataURL(pdf);
           reader.onloadend = () => {
             var base64data = reader.result;
-            console.log(base64data);
             var link = document.createElement('a');
             link.innerHTML = 'Download PDF file';
             link.download = 'Resume.pdf';
@@ -104,17 +102,7 @@
         this.candidateService.getUserCandidate(req).then((res) => {
           this.candidate = res.data;
           this.visible = true;
-        }).catch((error) => {
-          if (error.response.status === 404) {
-            this.candidate = null;
-            this.visible.notFound = true;
-          } else {
-            this.$toast.add({
-              severity: "error",
-              summary: error,
-              life: 3000,
-            });
-          }
+        }).catch((_) => {
         });
       },
       isDisabled() {
@@ -126,4 +114,3 @@
     },
   };
   </script>
-  

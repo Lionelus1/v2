@@ -5,16 +5,14 @@
     <div class="col-12" v-if="report && plan">
       <div class="card" v-if="report && report?.doc_info">
         <div>
-          <TitleBlock :title="report.report_name" :show-back-button="true"/>
+          <TitleBlock :title="report.doc_info.docType === 15 ? $t(report.report_name) : report.report_name" :show-back-button="true"/>
           <span v-if="report" :class="'ml-3 customer-badge status-' + report?.doc_info.docHistory.stateEn">
             {{ $t('common.states.' + report?.doc_info.docHistory.stateEn) }}
           </span>
         </div>
       </div>
-      <div class="card"
-           v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4)">
-        <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')"
-                @click="openDoc"></Button>
+      <div class="card" v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4)">
+        <Button type="button" icon="pi pi-eye" class="p-button-outlined" :label="$t('educomplex.tooltip.document')" @click="openDoc"/>
       </div>
       <div class="card" v-if="visibleSendToApprove">
         <Button type="button" icon="pi pi-send" class="p-button-success ml-2" :label="$t('common.toapprove')"
@@ -24,7 +22,26 @@
                                :report="report" :plan="plan" @sent-to-approve="getReport" @closed="closeApproveModal"/>
 
       </div>
-      <div class="card" v-if="blobSource">
+      <div v-if="report && report?.doc_info && !(report?.doc_info.docHistory.stateId === 1 || report?.doc_info.docHistory.stateId === 4) && report.report_type === 5">
+        <vue-element-loading :active="contrConcLoading" color="#FFF" size="80" :text="$t('common.loading')" backgroundColor="rgba(0, 0, 0, 0.4)"/>
+        <span :class="'ml-3'">
+          <br/>
+
+          {{ report?.doc_info.owner.fullName }}
+          <br/>
+          {{ report?.doc_info.owner.mainPosition.name }}
+          <br/>
+          {{ report?.doc_info.owner.mainPosition.department.name }} {{ report?.doc_info.owner.mainPosition.department.cafedra.name }}
+
+        </span>
+        <div style="height: 10px;"/>
+        <div class="field">
+          <TinyEditor v-model="contrConcModel" :height="300" :style="{ height: '100%', width: '100%' }"/>
+          <div style="height: 10px;"/>
+          <Button :label="$t('common.save')" icon="pi pi-save" class="p-button-success mr-2" @click="saveContr"/>
+        </div>
+      </div>
+      <div class="card" v-else-if="blobSource">
         <embed :src="blobSource" style="width: 100%; height: 1000px" type="application/pdf"/>
       </div>
     </div>
@@ -44,10 +61,8 @@
     </Dialog>
   </div>
 
-  <Sidebar v-model:visible="showReportDocInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll"
-           @hide="closeSideModal">
-    <DocSignaturesInfo :docIdParam="report.doc_id" :isInsideSidebar="true"
-                       @sentToRevision="rejectPlanReport($event)"></DocSignaturesInfo>
+  <Sidebar v-model:visible="showReportDocInfo" position="right" class="p-sidebar-lg" style="overflow-y: scroll" @hide="closeSideModal">
+    <DocSignaturesInfo :docIdParam="report.doc_id" :isInsideSidebar="true" @sentToRevision="rejectPlanReport($event)"/>
   </Sidebar>
 </template>
 
@@ -57,7 +72,8 @@ import WorkPlanReportApprove from "@/components/work_plan/WorkPlanReportApprove"
 import {WorkPlanService} from "@/service/work.plan.service";
 import Enum from "@/enum/workplan";
 import DocSignaturesInfo from "@/components/DocSignaturesInfo.vue";
-import {log} from "qrcode/lib/core/galois-field";
+import {findRole} from "../../config/config";
+import {DocService} from "../../service/doc.service";
 
 export default {
   name: "WorkPlanReportView",
@@ -66,6 +82,8 @@ export default {
   data() {
     const loginedUser = JSON.parse(localStorage.getItem("loginedUser"));
     return {
+      contrConcModel: null,
+      contrConcLoading: false,
       loginedUser: loginedUser,
       source: null,
       showModal: false,
@@ -121,6 +139,7 @@ export default {
       fd: new FormData(),
       isSciencePlan: false,
       reportPath: null,
+      docService: new DocService(),
     }
   },
   mounted() {
@@ -143,6 +162,7 @@ export default {
   },
 
   methods: {
+    findRole,
     closeSideModal() {
       this.showReportDocInfo = false;
       this.$emit('closed', true)
@@ -157,34 +177,24 @@ export default {
             this.isSciencePlan = this.plan && this.plan.plan_type && this.plan.plan_type.code === Enum.WorkPlanTypes.Science
           }
         }
-      }).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     },
     getRespUsers() {
       this.planService.getRespUsers(this.report.work_plan_id).then(res => {
         this.respUsers = res.data
-      }).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
+      }).catch(_ => {
       });
     },
     getReport() {
       this.planService.getPlanReportById(this.report_id).then(res => {
         this.report = res.data;
+        if (this.report.report_type && this.report.report_type === 5)
+          this.calcCC(); //для заключения контрагента
         this.getPlan();
         this.getFile();
         // this.getReportApprovalUsers();
         this.getRespUsers()
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       });
     },
     getFile() {
@@ -196,16 +206,6 @@ export default {
           this.document = res.data;
         } else {
           this.getData();
-        }
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
         }
       });
     },
@@ -226,17 +226,8 @@ export default {
         this.source = `data:application/pdf;base64,${res.data}`;
         this.blobSource = URL.createObjectURL(this.b64toBlob(res.data));
         this.loading = false;
-      }).catch(error => {
+      }).catch(_ => {
         this.loading = false;
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       });
     },
     download() {
@@ -248,17 +239,7 @@ export default {
         if (res.data) {
           this.approval_users = res.data;
         }
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
-      });
+      })
     },
     rejectPlanReport(comment) {
       this.reject.comment = comment;
@@ -272,16 +253,6 @@ export default {
           this.$router.push({name: 'WorkPlanReport', params: {id: this.report.work_plan_id}});
         }
         this.getReport()
-      }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       })
     },
     async downloadWord() {
@@ -328,8 +299,24 @@ export default {
     closeModal() {
       this.showRejectPlan = false;
     },
+    saveContr() {
+      this.contrConcLoading = true;
+      this.report.doc_info.params?.forEach((param) => {
+        if (param.name === "content") {
+          if (!param.value) param.value = "";
+          param.value = this.contrConcModel;
+        }
+      })
+      this.docService.saveDocumentV2(this.report.doc_info).then(res => {
+        this.report.doc_info = res.data
+        this.$toast.add({severity: "success", summary: this.$t('common.success'), life: 3000});
+        this.contrConcLoading = false;
+      }).catch(error => {
+        this.$toast.add({severity: 'error', summary: error.message, life: 3000});
+        this.contrConcLoading = false;
+      });
+    },
     openModal() {
-      console.log(this.plan.plan_type.id)
       this.showModal = true;
       if (this.plan.plan_type.id === 2 && !this.isPlanCreator) {
         this.approval_users = [
@@ -360,14 +347,14 @@ export default {
             }
           }
         ]
-      } else if (this.plan.plan_type.id === 5) {
+      } else if (this.plan.plan_type.id === 5 || this.plan.plan_type.id === 6) {
         this.approval_users = [
           {
             stage: 1,
             users: [this.loginedUser],
-            titleRu: 'Структурное подразделение',
-            titleKz: 'Құрылымдық бөлім',
-            titleEn: 'Structural department',
+            titleRu: 'Студент',
+            titleKz: 'Студент',
+            titleEn: 'Student',
             certificate: {
               namekz: 'Жеке тұлғаның сертификаты',
               nameru: 'Сертификат физического лица',
@@ -419,7 +406,21 @@ export default {
           }
         ]
       }
-
+      if (this.plan.plan_type.id === 6) {
+        this.approval_users.push({
+          stage: 4,
+          users: null,
+          titleRu: 'Декан факультета',
+          titleKz: 'Факультет деканы',
+          titleEn: 'Dean of the Faculty',
+          certificate: {
+            namekz: 'Ішкі құжат айналымы үшін (ГОСТ)',
+            nameru: 'Для внутреннего документооборота (ГОСТ)',
+            nameen: 'For internal document management (GOST)',
+            value: 'internal',
+          },
+        },)
+      }
     },
     openDoc() {
       this.showReportDocInfo = true;
@@ -429,6 +430,14 @@ export default {
     },
     closeApproveModal() {
       this.showModal = false
+    },
+    calcCC() {
+      if (this.report && this.report.doc_info && this.report.doc_info.params) {
+        const temp = this.report.doc_info.params.filter(item => item.name.includes("content"));
+        if (temp.length <= 1) {
+          this.contrConcModel = temp[0].value;
+        }
+      }
     }
   }
 }

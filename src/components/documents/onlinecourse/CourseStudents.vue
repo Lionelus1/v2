@@ -403,7 +403,6 @@
       total.value = response.data.total;
       dic_course_type.value = response.data.dic_course_type;
     } catch (error) {
-      console.error(error);
       // Handle error appropriately, e.g., show a user-friendly message.
     } finally {
       loading.value = false;
@@ -528,12 +527,6 @@
             life: 3000,
         });
         journalVisible.value = false
-    }).catch(_ => {
-        toast.add({
-            severity: "error",
-            summary: t("common.message.saveError"),
-            life: 3000,
-        });
     })
   }
 
@@ -586,8 +579,6 @@
       student_completed_count.value = res.data.student_completed_count
       student_registered_count.value = res.data.student_registered_count
       grade_count.value = res.data.grade_count
-    }).catch(error => {
-      toast.add({severity: "error", summary: t("common.message.saveError"), life: 3000});
     })
   }
 
@@ -660,9 +651,8 @@
       getCourse()
       getCourseHistoryStudents()
       getCourseHistory()
-    }).catch(err => {
+    }).catch(_ => {
       loading.value = false
-      console.log(err)
     })
 
     // onlineCourseService.createCourse(req).then(_ => {
@@ -670,7 +660,6 @@
     //   loading.value = false
     //   getCourseHistoryStudents()
     // }).catch(_=> {
-    //   console.log(stateID, req, 'test')
     //
     //   loading.value = false;
     //   showMessage('error', t('common.message.actionError'), t('common.message.actionErrorContactAdmin'), 3000)
@@ -730,7 +719,6 @@
           });
           getCourseHistoryStudents()
 
-      }).catch(_ => {
       })
       .finally(() => {
           loading.value = false
@@ -757,8 +745,6 @@
     onlineCourseService.deleteCertificateOrStudent(req).then(res => {
       getCourseHistoryStudents();
       toast.add({severity: "success", summary: t("common.success"), life: 3000});
-    }).catch(error => {
-      toast.add({severity: "error", summary: t("common.message.saveError"), life: 3000});
     })
   }
 

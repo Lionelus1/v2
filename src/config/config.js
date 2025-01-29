@@ -77,7 +77,6 @@ export const getMultipartHeader = function () {
 export const testFunction = function () {
   //alert("");
   // let u go main test
-  //console.log("ene bol busgui chini");
 };
 //findRole ---
 export const findRole = function (user, role) {
@@ -97,12 +96,13 @@ export const getUser = function () {
   return store.state.loginedUser;
 };
 
-export const downloadFile = function (filePath) {
+export const downloadFile = function (filePath, id) {
   axios
     .post(
       smartEnuApi + "/downloadFile",
       {
         filePath: filePath,
+        doc_id: id,
       },
       {
         headers: getHeader(),
@@ -111,23 +111,11 @@ export const downloadFile = function (filePath) {
     .then((response) => {
       // const blob = new Blob([response.data], )
       const link = document.createElement("a");
-      console.log(response);
-      link.href = "data:application/octet-stream;base64," + response.data;
-      link.setAttribute("download", filePath);
-      link.download = filePath;
+      link.href = "data:application/octet-stream;base64," + response.data.file;
+      link.setAttribute("download", response.data.file_path);
+      link.download = response.data.file_path;
       link.click();
       URL.revokeObjectURL(link.href);
-    })
-    .catch((error) => {
-      if (error.response.status == 401) {
-        this.$store.dispatch("logLout");
-      } else {
-        this.$toast.add({
-          severity: "error",
-          summary: "downloadFileError:\n" + error,
-          life: 3000,
-        });
-      }
     });
 };
 

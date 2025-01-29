@@ -1,22 +1,22 @@
 import api from "./api";
-import {getHeader, getMultipartHeader, smartEnuApi} from "@/config/config";
+import {getHeader, getMultipartHeader} from "@/config/config";
 
 export class WorkPlanService {
 
     getEventsTree(lazyParams) {
-        return api.post(`/workPlan/getEventsTree`, lazyParams, {headers: getHeader()});
+        let data = JSON.parse(JSON.stringify(lazyParams));
+        if (data?.parent_id) {
+            data.rows = 0;
+        }
+        return api.post(`/workPlan/getEventsTree`, data, {headers: getHeader()});
     }
 
-    getWorkPlanApprovalUsers(work_plan_id) {
+    getWorkPlanApprovalUsers(work_plan_data) {
         return api.post(`/workPlan/getApprovalUsers`, work_plan_data, {headers: getHeader()});
     }
 
     getPlanById(planId) {
         return api.get(`/workPlan/getWorkPlanById/${planId}`, {headers: getHeader()});
-    }
-
-    downloadDiaryRepPlanById(planId) {
-        return api.get(`/workPlan/downloadZipDiaryRep/${planId}`, {headers: getHeader()});
     }
 
     finishEvent(planId) {
@@ -47,6 +47,10 @@ export class WorkPlanService {
         return api.post(`/workPlan/addPlan`, data, {headers: getHeader()});
     }
 
+    confContr(data) {
+        return api.post(`/document/create`, data, {headers: getHeader()});
+    }
+
     savePlanFile(fd) {
         return api.post(`/workPlan/savePlanFile`, fd, {headers: getMultipartHeader()});
     }
@@ -64,7 +68,7 @@ export class WorkPlanService {
     }
 
     getEventResult(data) {
-        return api.post(`/workPlan/getWorkPlanEventResult`, data,  {
+        return api.post(`/workPlan/getWorkPlanEventResult`, data, {
             headers: getHeader()
         })
     }
@@ -89,8 +93,15 @@ export class WorkPlanService {
         return api.post(`/workPlan/updateEventStatus`, data, {headers: getHeader()});
     }
 
-    verifyEventResultHistory(isInspection, RejectComment, userID, SenderUserID, resultID) {
-        return api.post(`/workPlan/verifyEventResultHistory`, {is_inspection: isInspection, comment: RejectComment, user_id: parseInt(userID), sender_user_id: parseInt(SenderUserID), result_id: parseInt(resultID)}, {headers: getHeader()});
+    verifyEventResultHistory(isInspection, RejectComment, userID, SenderUserID, resultID, event_id) {
+        return api.post(`/workPlan/verifyEventResultHistory`, {
+            is_inspection: isInspection,
+            comment: RejectComment,
+            user_id: parseInt(userID),
+            sender_user_id: parseInt(SenderUserID),
+            result_id: parseInt(resultID),
+            event_id: parseInt(event_id)
+        }, {headers: getHeader()});
     }
 
 
@@ -110,8 +121,8 @@ export class WorkPlanService {
         return api.get(`/workPlan/getWorkPlanReports/${planId}`, {headers: getHeader()});
     }
 
-    getWorkPlanDiaryReports(planId) {
-        return api.get(`/workPlan/getWorkPlanDiaryReports/${planId}`, {headers: getHeader()});
+    getWorkPlanDiaryReports(data) {
+        return api.post(`/workPlan/getWorkPlanDiaryReports`, data, {headers: getHeader()});
     }
 
     deletePlanReport(id) {
@@ -147,6 +158,17 @@ export class WorkPlanService {
         return api.get(`/workPlan/getReportApprovalUsers/${id}`, {headers: getHeader()});
     }
 
+    practicemanager() {
+        return api.get(`/workPlan/check/practicemanager`, {headers: getHeader()});
+    }
+
+    // getSignatures(data) {
+    //     return api.post(`/workPlan/getSignatures`, data, {headers: getHeader()});
+    // }
+    // signPlanReport(data) {
+    //     return api.post('/workPlan/reportSignature', data, {headers: getHeader()});
+    // }
+
     rejectReport(data) {
         return api.post('/workPlan/rejectReport', data, {headers: getHeader()});
     }
@@ -163,12 +185,16 @@ export class WorkPlanService {
         return api.post('/workPlan/reapprove', data, {headers: getHeader()});
     }
 
+    getEvents(data) {
+        return api.post('/workPlan/getEvents', data, {headers: getHeader()});
+    }
+
     getWorkPlanTypes() {
         return api.get('/workPlan/types', {headers: getHeader()});
     }
 
     getStudents(planId) {
-        return api.post('/workPlan/students', {work_plan_id: planId},{headers: getHeader()});
+        return api.post('/workPlan/students', {work_plan_id: planId}, {headers: getHeader()});
     }
 
     getPracticeTypes() {
@@ -183,8 +209,12 @@ export class WorkPlanService {
         return api.post('/workPlan/updatePlanAttachments', data, {headers: getHeader()});
     }
 
-    updateEventFact(data){
+    updateEventFact(data) {
         return api.post('/workPlan/updateWorkPlanEventFact', data, {headers: getHeader()});
+    }
+
+    changePlanCreator(data) {
+        return api.post('/workPlan/changeWorkPlanCreator', data, {headers: getHeader()});
     }
 
     createProtocol(data) {

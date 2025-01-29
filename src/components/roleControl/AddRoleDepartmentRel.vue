@@ -104,7 +104,6 @@
             life: 3000,
           })
         } else {
-          console.log(err)
           toast.add({
             severity: "error",
             summary: t('common.message.actionError'),
@@ -173,7 +172,6 @@
               life: 3000,
             })
           } else {
-            console.log(err)
             toast.add({
               severity: "error",
               summary: t('common.message.actionError'),
@@ -188,12 +186,6 @@
     const getRoles = () => {
       roleControlService.getRoles(2).then(response => {
         roles.value = response.data
-      }).catch(error => {
-        toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        })
       })
     }
 
@@ -210,12 +202,6 @@
             handleSelectionChange()
           }
         }
-      }).catch(error => {
-        toast.add({
-          severity: "error",
-          summary: error,
-          life: 3000,
-        })
       })
     }
 

@@ -38,8 +38,8 @@ export class EventsService {
         }, {headers: getHeader()})
     }
 
-    getPublishEvents() {
-        return api.get("/getPublishEvents")
+    getPublishEvents(params) {
+        return api.post(`/getPublishEvents`, params,{headers: getHeader()});
     }
 
     getEventTypes() {

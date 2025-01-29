@@ -73,9 +73,11 @@
     import SignerInfo from "./SignerInfo";
     import {apiDomain, signerApi, header} from "../../config/config";
     import {arrayBufferToB64, checkIdAvailability, docToByteArray} from "../../helpers/SignDocFunctions";
-    import axios from "axios";
     import IncorrectFile from "./IncorrectFile";
     import {NCALayerClient} from "ncalayer-js-client";
+    import {SignatureService} from "@/service/signature.service"
+    import {DocService} from "@/service/doc.service"
+    import axios from "axios";
     export default {
         components: {IncorrectFile, DocInfo, SignerInfo},
         data() {
@@ -91,7 +93,9 @@
                 incorrect: false,
                 docName: null,
                 CMSSignature: null,
-                isSuccess: false
+                isSuccess: false,
+                signatureService: new SignatureService(),
+                docService: new DocService()
             }
         },
         created() {
@@ -121,11 +125,11 @@
                     });
                     return
                 }
-                axios.post(signerApi + '/signature/cms/verify', {
+                const req = {
                     documentUuid: this.id,
                     plainData: arrayBufferToB64(documentByteArray)
-                }, {headers: header}).then((response) => {
-                    console.log(response)
+                }
+                axios.post(signerApi + '/signature/cms/verify', req, {headers: header}).then((response) => {
                     if (response.data.code === 1) {
                         if(!withSigning) {
                             this.correct = true
@@ -171,11 +175,12 @@
                 })
             },
             addSignature() {
-                axios.post(signerApi + '/signature', {
+                const req = {
                     id: null,
                     documentUuid: this.id,
                     signature: this.CMSSignature
-                }, {headers: header}).then((response) => {
+                }
+                axios.post(signerApi + '/signature', req, {headers: header}).then((response) => {
                     if (response.data.id !== null || response.data.id !== '') {
                         this.isSuccess = true
                         this.active = 0

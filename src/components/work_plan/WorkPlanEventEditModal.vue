@@ -1,13 +1,13 @@
 <template>
-  <Dialog
-      :header="isShedulePlan ? $t('workPlan.editTask') : $t('workPlan.editEvent')"
-      v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
-    <div v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters">
-        <div class="field">
-        <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
-            isShedulePlan ? $t('workPlan.worksByWeek') :
-          $t('workPlan.eventName') }} </label>
-        <InputText v-model="editData.event_name" />
+  <Dialog :header="$t('workPlan.editEvent')" v-model:visible="showWorkPlanEventEditModal" :style="{ width: '450px' }" class="p-fluid" @hide="closeBasic">
+    <div v-if="plan?.plan_type?.code !== Enum.WorkPlanTypes.Masters && plan?.plan_type?.code !==  Enum.WorkPlanTypes.Doctors">
+      <div class="field">
+        <label>{{
+            plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('workPlan.resultIndicator') :
+                isShedulePlan ? $t('workPlan.worksByWeek') :
+                    $t('workPlan.eventName')
+          }} </label>
+        <InputText v-model="editData.event_name" :disabled="isEditResponsiveUsers"/>
         <small class="p-error" v-if="submitted && formValid.event_name">{{ $t('workPlan.errors.eventNameError') }}</small>
       </div>
 
@@ -19,34 +19,35 @@
         <label>{{ $t('common.endDate') + "(" + $t('workPlan.week') + ")" }}</label>
         <PrimeCalendar v-model="editData.end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
+
       <div class="field" v-if="isShedulePlan">
         <label>{{ $t('web.note') }}</label>
-        <InputText v-model="editData.comment" />
+        <InputText v-model="editData.comment"/>
       </div>
 
-      <div class="field" v-if="plan && (plan.plan_type.code === Enum.WorkPlanTypes.Science || plan.plan_type.code === Enum.WorkPlanTypes.Directors)">
+      <div class="field" v-if="plan && (plan.plan_type.code === Enum.WorkPlanTypes.Science || plan.plan_type.code === Enum.WorkPlanTypes.Directors) && !isEditResponsiveUsers">
         <label>{{ $t('common.startDate') }}</label>
         <PrimeCalendar v-model="editData.start_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true" showTime hourFormat="24"></PrimeCalendar>
       </div>
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science">
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Science && !isEditResponsiveUsers">
         <label>{{ $t('common.endDate') }}</label>
         <PrimeCalendar v-model="editData.end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper && !isEditResponsiveUsers">
         <label>{{ $t('common.unit') }}</label>
-        <InputText v-model="editData.unit" />
+        <InputText v-model="editData.unit"/>
       </div>
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper && !isEditResponsiveUsers">
         <label>{{ $t('common.planNumber') }}</label>
-        <InputText v-model="editData.plan_number" />
+        <InputText v-model="editData.plan_number"/>
       </div>
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ">
         <label>{{ $t('workPlan.approvalUsers') }}</label>
-        <InputText v-model="editData.responsible_executor" />
+        <InputText v-model="editData.responsible_executor"/>
       </div>
       <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
-          <label>{{ $t('workPlan.summaryDepartment') }}</label>
-          <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
+        <label>{{ $t('workPlan.summaryDepartment') }}</label>
+        <FindUser v-model="resp_person" :max="1" editMode="true" :user-type="3"/>
       </div>
       <div class="field" v-if="(plan && plan.plan_type && plan.plan_type.code !== Enum.WorkPlanTypes.Science) && !isShedulePlan">
         <label>{{ plan && (plan.plan_type || plan.plan_type.code === Enum.WorkPlanTypes.Oper) ? $t('workPlan.summary') : $t('workPlan.approvalUsers') }}</label>
@@ -57,7 +58,7 @@
         <div v-for="(inputSet, index) in inputSets" :key="index">
           <div class="field">
             <label>{{ $t('workPlan.scienceParticipants') }}</label>
-            <FindUser v-model="inputSet.selectedUsers" :editMode="true" :user-type="3"></FindUser>
+            <FindUser v-model="inputSet.selectedUsers" searchMode="local" :editMode="true" :user-type="3"></FindUser>
             <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
           </div>
           <div class="field">
@@ -65,35 +66,42 @@
             <RolesByName v-model="inputSet.selectedRole" roleGroupName="workplan_science"></RolesByName>
           </div>
           <p style="text-align: right;" class="mb-3">
-              <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined"  @click="removeInputSet(index)" outlined />
-            </p>
+            <Button v-if="inputSets && inputSets.length > 1 && index > 0" icon="pi pi-times" class="p-button-danger p-button-sm p-button-outlined" @click="removeInputSet(index)"
+                    outlined/>
+          </p>
         </div>
       </template>
       <div class="field" v-if="plan && plan.plan_type && plan.plan_type.code === Enum.WorkPlanTypes.Science">
-        <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser" />
+        <Button :label="$t('common.add')" icon="fa-solid fa-add" class="p-button-sm p-button-outlined px-5" @click="addNewUser"/>
       </div>
       <div class="field"
-        v-if="(plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science && !isShedulePlan && !isDirectorsPlan) && ((editData && parentData && parentData.quarter === 5) || !parentData)">
+           v-if="(plan && plan.plan_type.code !== Enum.WorkPlanTypes.Science && !isEditResponsiveUsers && !isShedulePlan && !isDirectorsPlan) && ((editData && parentData && parentData.quarter === 5 && !isEditResponsiveUsers) || !parentData)">
         <label>{{ $t('workPlan.quarter') }}</label>
-        <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')" />
+        <Dropdown v-model="editData.quarter" :options="quarters" optionLabel="name" optionValue="id" :placeholder="$t('common.select')"/>
         <small class="p-error" v-if="submitted && formValid.quarter">{{ $t('workPlan.errors.quarterError') }}</small>
       </div>
-      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
+      <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper && !isEditResponsiveUsers">
         <label>{{ $t('common.suppDocs') }}</label>
-        <Textarea v-model="editData.supporting_docs" rows="3" style="resize: vertical" />
+        <Textarea v-model="editData.supporting_docs" rows="3" style="resize: vertical"/>
       </div>
-      <div class="field" v-if="!isShedulePlan && !isDirectorsPlan">
+      <div class="field" v-if="!isShedulePlan && !isEditResponsiveUsers && !isDirectorsPlan">
         <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.additionalInfo') : $t('common.result') }}</label>
-        <Textarea v-model="editData.result" rows="3" style="resize: vertical" />
+        <Textarea v-model="editData.result" rows="3" style="resize: vertical"/>
       </div>
     </div>
-    <div v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
-      <div class="field" v-if="plan?.plan_type?.code === Enum.WorkPlanTypes.Masters">
-        <label>{{$t("educationalPrograms.semester")}}</label>
-        <Dropdown v-model="editData.semester" :options="semesters" optionLabel="name" optionValue="id" :placeholder="$t('educationalPrograms.semester')" />
+    <div
+        v-if="(plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors)">
+      <div class="field">
+        <label>{{ $t("educationalPrograms.semester") }}</label>
+        <Dropdown v-model="editData.semester" :options="semesters" optionLabel="name" optionValue="id" :placeholder="$t('educationalPrograms.semester')"/>
       </div>
-      <div class="field" >
-        <label>{{$t("workPlan.content")}}</label>
+      <div class="field">
+        <label>{{ $t('workPlan.approvalUsers') }}</label>
+        <FindUser v-model="resp_person" :editMode="true" :user-type="3"></FindUser>
+        <small class="p-error" v-if="submitted && formValid.users">{{ $t('workPlan.errors.approvalUserError') }}</small>
+      </div>
+      <div class="field">
+        <label>{{ $t("workPlan.content") }}</label>
         <Textarea v-model="editData.event_name" rows="3" style="resize: vertical"/>
       </div>
       <div class="field">
@@ -104,33 +112,42 @@
         <label>{{ $t('common.endDate') }}</label>
         <PrimeCalendar v-model="editData.end_date" dateFormat="dd.mm.yy" showIcon :showButtonBar="true"></PrimeCalendar>
       </div>
-      <div class="field" >
-        <label>{{$t("workPlan.expectingResults")}}</label>
+      <div class="field">
+        <label>{{ $t("workPlan.expectingResults") }}</label>
         <Textarea v-model="editData.result" rows="3" style="resize: vertical"/>
       </div>
     </div>
+    <div class="field" v-if="isEditResponsiveUsers">
+      <label>{{ plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper ? $t('common.comment') : $t('common.comment') }}</label>
+      <Textarea v-model="editorComment" rows="3" style="resize: vertical"/>
+      <small class="p-error" v-if="submitted && isEditResponsiveUsers && !editorComment?.length > 0">{{ $t('common.requiredField') }}</small>
+    </div>
     <template #footer>
-      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeBasic" />
-      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="edit" />
+      <Button :label="$t('common.cancel')" icon="pi pi-times" class="p-button-rounded p-button-danger" @click="closeBasic"/>
+      <Button :label="$t('common.save')" icon="pi pi-check" class="p-button-rounded p-button-success mr-2" @click="edit"/>
     </template>
   </Dialog>
 </template>
 
 <script>
-import { WorkPlanService } from "@/service/work.plan.service";
+import {WorkPlanService} from "@/service/work.plan.service";
 import Enum from "@/enum/workplan/index"
 import RolesByName from "@/components/smartenu/RolesByName.vue";
-import FindUser from "../../helpers/FindUser.vue";
+import {ContragentService} from "@/service/contragent.service";
+import FindUser from "@/helpers/FindUser";
 
 export default {
-  name: "WorkPlanEventEditModal", 
-  components: {FindUser, RolesByName },
-  props: ['visible', 'event', 'planData', 'parent'],
+  name: "WorkPlanEventEditModal",
+  components: {FindUser, RolesByName},
+  props: ['visible', 'event', 'copiedEvent', 'planData', 'parent', 'isEditResponsiveUsers'],
   emits: ['hide'],
   data() {
     return {
+      service: new ContragentService(),
       showWorkPlanEventEditModal: this.visible,
       editData: JSON.parse(JSON.stringify(this.event)),
+      copyedEvent: this.copiedEvent ? JSON.parse(JSON.stringify(this.copiedEvent)) : {},
+      copyedEventUser: this.copiedEvent && this.copiedEvent.user ? JSON.parse(JSON.stringify(this.copiedEvent.user)) : {},
       plan: this.planData,
       quarters: [
         {
@@ -156,11 +173,11 @@ export default {
       ],
       parentData: this.parent != null ? JSON.parse(JSON.stringify(this.parent)) : null,
       selectedUsers: null,
-      summaryDepartment:[],
+      summaryDepartment: [],
       formValid: {
         event_name: false,
         users: false,
-        quarter: false
+        quarter: false,
       },
       sheduleFormValid: {
         workName: false,
@@ -171,6 +188,13 @@ export default {
       planService: new WorkPlanService(),
       Enum: Enum,
       inputSets: null,
+      editorComment: null,
+      addedRespUser: [],
+      removedRespUser: [],
+      removedUserNames: "",
+      addedUserNames: "",
+      copiedEventRespUserNames: "",
+      selectedEventRespUserNames: "",
       semesters: [
         {
           id: 1,
@@ -189,6 +213,7 @@ export default {
           name: '4'
         },
       ],
+      resp_person: []
     }
   },
   mounted() {
@@ -197,37 +222,65 @@ export default {
       this.editData.end_date = this.editData.end_date ? new Date(this.editData.end_date) : null
       this.selectedUsers = [];
       this.editData.quarter = parseInt(this.editData.quarter);
-      
       this.editData?.user?.forEach(e => {
         this.selectedUsers.push(e.user);
-        if(e.is_summary_department){
-            this.summaryDepartment.push(e.user);
-            this.selectedUsers.pop(e.user);
+        if (e.is_summary_department) {
+          this.summaryDepartment.push(e.user);
+          this.selectedUsers.pop(e.user);
         }
-        
+
       });
       if (this.plan && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science && this.editData.user) {
         const roleMap = new Map();
 
         this.editData.user.forEach(item => {
           if (item.role && item.user) {
-            const { role, user } = item;
+            const {role, user} = item;
             if (roleMap.has(role.id)) {
               roleMap.get(role.id).selectedUsers.push(user);
             } else {
-              roleMap.set(role.id, { selectedRole: role, selectedUsers: [user] });
+              roleMap.set(role.id, {selectedRole: role, selectedUsers: [user]});
             }
           }
         });
         this.inputSets = Array.from(roleMap.values());
       }
     }
+    if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
+      this.semesters.push(
+          ...[
+            {
+              id: 5,
+              name: '5',
+            },
+            {
+              id: 6,
+              name: '6',
+            },
+          ]
+      );
+    }
+    this.service.getPersons({
+      "filter": {
+        "userIds": [this.editData?.resp_person_id],
+      },
+      "searchMode": this.userType == 1 ? "student" : this.userType == 2 ? "staff" : "all",
+      "ldap": this.searchMode == 'ldap' ? true : false,
+      "page": 0,
+      "rows": 15
+    }).then(
+        response => {
+          if (response.data.foundUsers[0]) {
+            this.resp_person.push(response.data.foundUsers[0])
+          }
+        },
+    );
   },
   watch: {
     summaryDepartment: {
       handler(newVal) {
         if (newVal.length === 0) {
-        this.selectedUsers.shift();
+          this.selectedUsers.shift();
         } else {
           this.selectedUsers.unshift(...newVal);
         }
@@ -257,12 +310,13 @@ export default {
     edit() {
       this.submitted = true;
       if (this.notValid()) {
-        this.$toast.add({ severity: "warn", summary: this.$t('smartenu.notValid'), life: 4000 });
+        this.$toast.add({severity: "warn", summary: this.$t('smartenu.notValid'), life: 4000});
         return;
       }
+
       let userIds = [];
 
-      if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
+      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Science) {
         userIds = this.inputSets.reduce((acc, inputSet) => {
           inputSet.selectedUsers.forEach(user => {
             acc.push({
@@ -275,18 +329,293 @@ export default {
       } else {
         userIds = [];
         this.selectedUsers.forEach(e => {
-          userIds.push({ user: e, role: null })
+          userIds.push({user: e, role: null})
         });
       }
+
+
       let resp_person_id;
       if (this.summaryDepartment && this.summaryDepartment[0]?.userID) {
-          resp_person_id = this.summaryDepartment[0].userID;
+        resp_person_id = this.summaryDepartment[0].userID;
       } else {
-          resp_person_id = null;
+        resp_person_id = null;
       }
       this.editData.resp_person_id = resp_person_id;
 
+      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters || this.Enum.WorkPlanTypes.Doctors) {
+        if (this.resp_person.length !== 0) {
+          this.editData.resp_person_id = this.resp_person[0].userID
+          this.editData.responsible_executor = this.resp_person[0].fullName
+        }
+      }
+
+
       this.editData.resp_person_ids = userIds;
+
+      //resp person history change
+      let commentData = "";
+      let copySummaryDepUser = ""
+      if (this.isEditResponsiveUsers) {
+        copySummaryDepUser = this.copyedEvent?.user[0]?.user;
+      }
+
+      let currentSummaryDepUser;
+      if (Array.isArray(this.summaryDepartment) && this.summaryDepartment.length > 0 && this.isEditResponsiveUsers) {
+        currentSummaryDepUser = this.summaryDepartment[0];
+      }
+      if (this.isEditResponsiveUsers) {
+        this.copiedEventRespUserNames = this.copyedEventUser.map(item => {
+          const user = item.user || {};
+          const lastName = user.lastName ? user.lastName : '';
+          const fullName = `${user.thirdName || ''} ${user.firstName || ''} ${lastName}`.trim();
+          return fullName;
+        }).filter(name => name).join(', ');
+      }
+
+      if ((this.editorComment && this.editorComment.length > 0 && this.isEditResponsiveUsers) || (copySummaryDepUser !== null && currentSummaryDepUser !== null && this.isEditResponsiveUsers) || (this.addedRespUser?.length > 0 || this.removedRespUser?.length > 0 && this.isEditResponsiveUsers)) {
+        commentData += "{";
+        let currentDepUserFullName;
+        let copyDepUserFullName;
+        if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Oper) {
+          if (copySummaryDepUser !== null && currentSummaryDepUser !== null) {
+            if (copySummaryDepUser?.userID !== currentSummaryDepUser?.userID) {
+              let currentLastName = '';
+              if (currentSummaryDepUser && currentSummaryDepUser?.lastName !== null) {
+                currentLastName += currentSummaryDepUser.lastName;
+              }
+              currentDepUserFullName = currentSummaryDepUser.thirdName + ' ' + currentSummaryDepUser.firstName + ' ' + currentLastName;
+              let copyLastName = '';
+              if (copySummaryDepUser && copySummaryDepUser?.lastName !== null) {
+                copyLastName += copySummaryDepUser.lastName;
+              }
+              copyDepUserFullName = copySummaryDepUser.thirdName + ' ' + copySummaryDepUser.firstName + ' ' + copyLastName;
+              commentData += '"summary_department": {'
+              commentData += '"modified":['
+
+              //before
+              commentData += '{'
+              commentData += '"status":'
+              commentData += '{'
+              commentData += '"kz":{'
+              commentData += '"before":'
+              commentData += '"Бұрын",'
+              commentData += '"user":' + '"' + copyDepUserFullName + '"'
+              commentData += '},'
+              commentData += '"ru":{'
+              commentData += '"before":'
+              commentData += '"До",'
+              commentData += '"user":' + '"' + copyDepUserFullName + '"'
+              commentData += '},'
+              commentData += '"en":{'
+              commentData += '"before":'
+              commentData += '"Before",'
+              commentData += '"user":' + '"' + copyDepUserFullName + '"'
+              commentData += '}'
+              commentData += '}'
+              commentData += '},'
+              //----
+
+              //after
+              commentData += '{'
+              commentData += '"status":'
+              commentData += '{'
+              commentData += '"kz":{'
+              commentData += '"after":'
+              commentData += '"Кейін",'
+              commentData += '"user":' + '"' + currentDepUserFullName + '"'
+              commentData += '},'
+              commentData += '"ru":{'
+              commentData += '"after":'
+              commentData += '"После",'
+              commentData += '"user":' + '"' + currentDepUserFullName + '"'
+              commentData += '},'
+              commentData += '"en":{'
+              commentData += '"after":'
+              commentData += '"After",'
+              commentData += '"user":' + '"' + currentDepUserFullName + '"'
+              commentData += '}'
+              commentData += '}'
+              commentData += '}'
+              //----
+              commentData += ']}'
+            }
+          }
+
+        }
+
+        this.compareRespUsers();
+        if (this.addedRespUser?.length > 0 || this.removedRespUser?.length > 0) {
+          if (currentDepUserFullName?.length > 0 || copyDepUserFullName?.length > 0) {
+            commentData += ',"responsive_users": {'
+          } else {
+            commentData += '"responsive_users": {'
+          }
+
+          commentData += '"modified":['
+          //before
+          commentData += '{'
+          commentData += '"status":'
+          commentData += '{'
+          commentData += '"kz":{'
+          commentData += '"before":'
+          commentData += '"Бұрын",'
+          commentData += '"users":' + '"' + this.copiedEventRespUserNames + '"'
+          commentData += '},'
+          commentData += '"ru":{'
+          commentData += '"before":'
+          commentData += '"До",'
+          commentData += '"users":' + '"' + this.copiedEventRespUserNames + '"'
+          commentData += '},'
+          commentData += '"en":{'
+          commentData += '"before":'
+          commentData += '"Before",'
+          commentData += '"users":' + '"' + this.copiedEventRespUserNames + '"'
+          commentData += '}'
+          commentData += '}'
+          commentData += '},'
+          //----
+
+          if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
+            this.selectedEventRespUserNames = this.inputSets.flatMap(inputSet =>
+                inputSet.selectedUsers.map(user => {
+                  const thirdName = user.thirdName || '';
+                  const firstName = user.firstName || '';
+                  const lastName = user.lastName || '';
+                  const fullName = `${thirdName} ${firstName} ${lastName}`.trim();
+                  return fullName;
+                })
+            ).filter(name => name).join(', ');
+          } else {
+            this.selectedEventRespUserNames = this.selectedUsers.map(item => {
+              const user = item || {};
+              const thirdName = user.thirdName || '';
+              const firstName = user.firstName || '';
+              const lastName = user.lastName || '';
+              const fullName = `${thirdName} ${firstName} ${lastName}`.trim();
+              return fullName;
+            }).filter(name => name).join(', ');
+          }
+
+          //after
+          commentData += '{'
+          commentData += '"status":'
+          commentData += '{'
+          commentData += '"kz":{'
+          commentData += '"after":'
+          commentData += '"Кейін",'
+          commentData += '"users":' + '"' + this.selectedEventRespUserNames + '"'
+          commentData += '},'
+          commentData += '"ru":{'
+          commentData += '"after":'
+          commentData += '"После",'
+          commentData += '"users":' + '"' + this.selectedEventRespUserNames + '"'
+          commentData += '},'
+          commentData += '"en":{'
+          commentData += '"after":'
+          commentData += '"After",'
+          commentData += '"users":' + '"' + this.selectedEventRespUserNames + '"'
+          commentData += '}'
+          commentData += '}'
+          commentData += '},'
+
+          //added
+          this.addedUserNames = this.addedRespUser.map(item => {
+            const user = item || {};
+            const lastName = user.lastName ? user.lastName : '';
+            const fullName = `${user.thirdName || ''} ${user.firstName || ''} ${lastName}`.trim();
+            return fullName;
+          }).filter(name => name).join(', ');
+
+          commentData += '{'
+          commentData += '"status":'
+          commentData += '{'
+          commentData += '"kz":{'
+          commentData += '"added":'
+          commentData += '"Қосылды",'
+          commentData += '"users":' + '"' + this.addedUserNames + '"'
+          commentData += '},'
+          commentData += '"ru":{'
+          commentData += '"added":'
+          commentData += '"Добавлен",'
+          commentData += '"users":' + '"' + this.addedUserNames + '"'
+          commentData += '},'
+          commentData += '"en":{'
+          commentData += '"added":'
+          commentData += '"Added",'
+          commentData += '"users":' + '"' + this.addedUserNames + '"'
+          commentData += '}'
+          commentData += '}'
+          commentData += '},'
+
+          //removed
+          commentData += '{'
+          commentData += '"status":'
+          commentData += '{'
+          commentData += '"kz":{'
+          commentData += '"removed":'
+          commentData += '"Алынды",'
+
+          this.removedUserNames = this.removedRespUser.map(item => {
+            const user = item.user || {};
+            const lastName = user.lastName ? user.lastName : '';
+            const fullName = `${user.thirdName || ''} ${user.firstName || ''} ${lastName}`.trim();
+            return fullName;
+          }).filter(name => name).join(', ');
+
+          commentData += '"users":' + '"' + this.removedUserNames + '"'
+          commentData += '},'
+          commentData += '"ru":{'
+          commentData += '"removed":'
+          commentData += '"Исключен",'
+          commentData += '"users":' + '"' + this.removedUserNames + '"'
+          commentData += '},'
+          commentData += '"en":{'
+          commentData += '"removed":'
+          commentData += '"Removed",'
+          commentData += '"users":' + '"' + this.removedUserNames + '"'
+          commentData += '}'
+          commentData += '}'
+          commentData += '}'
+
+          commentData += ']'
+          commentData += '},'
+
+          if (this.editorComment?.length > 0) {
+            commentData += '"comment":"' + this.editorComment + '"';
+          } else {
+            commentData += '"comment":"' + '' + '"';
+          }
+        }
+
+        commentData += '}'
+      }
+      if (commentData && commentData.length > 0 && commentData !== "{}") {
+        this.editData.resp_person_edit_comment = commentData
+      }
+
+      const noComment = !this.editorComment || this.editorComment.length <= 0;
+      const noChangesInRespUser = this.removedRespUser?.length <= 0 && this.addedRespUser?.length <= 0;
+      const changesInSummaryDepUser = this.copySummaryDepUser?.userID !== this.currentSummaryDepUser?.userID;
+      const isOperPlan = this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Oper
+
+      if (noComment && noChangesInRespUser && this.isEditResponsiveUsers) {
+        this.$toast.add({severity: "warn", summary: this.$t('workPlan.message.noChanges'), life: 4000});
+        return false;
+      }
+
+      if (!noComment && noChangesInRespUser && this.isEditResponsiveUsers) {
+        this.$toast.add({severity: "warn", summary: this.$t('workPlan.message.noRespPersonChanged'), life: 4000});
+        return false;
+      }
+
+      if (noComment && !noChangesInRespUser && this.isEditResponsiveUsers) {
+        this.$toast.add({severity: "warn", summary: this.$t('common.noComment'), life: 4000});
+        return false;
+      }
+      if (isOperPlan && noComment && changesInSummaryDepUser && this.isEditResponsiveUsers) {
+        this.$toast.add({severity: "warn", summary: this.$t('workPlan.message.noChanges'), life: 4000});
+        return false;
+      }
 
       this.planService.editEvent(this.editData).then(res => {
         if (res.data.is_success) {
@@ -297,22 +626,45 @@ export default {
           });
           this.closeBasic();
           this.submitted = false;
-          this.event;
+
         }
       }).catch(error => {
         this.submitted = false;
         if (error && error.error === 'summaryDepartmentadded') {
-          this.$toast.add({ severity: "warn", summary: this.$t('workPlan.warnAddingsummaryDepartment'), life: 4000 });
+          this.$toast.add({severity: "warn", summary: this.$t('workPlan.warnAddingsummaryDepartment'), life: 4000});
         } else {
-          this.$toast.add({ severity: "error", summary: error, life: 4000 });
+          this.$toast.add({severity: "error", summary: error, life: 4000});
         }
       });
     },
+    compareRespUsers() {
+      const copiedRespUsersSet = new Set(this.copyedEvent?.user.map(item => item?.user?.userID));
+      let selectedUsersSet;
+      let allSelectedUsers;
+
+      if (this.plan && this.plan.plan_type && this.plan.plan_type.code === this.Enum.WorkPlanTypes.Science) {
+        allSelectedUsers = this.inputSets.flatMap(inputSet => inputSet?.selectedUsers || []);
+        selectedUsersSet = new Set(allSelectedUsers.map(user => user?.userID));
+      } else {
+        allSelectedUsers = this.selectedUsers;
+        selectedUsersSet = new Set(this.selectedUsers.map(item => item?.userID));
+      }
+
+      this.addedRespUser = allSelectedUsers.filter(item => !copiedRespUsersSet.has(item.userID));
+      this.removedRespUser = this.copyedEvent?.user.filter(item => !selectedUsersSet.has(item.user.userID)) || [];
+
+    },
+
     notValid() {
+      let validation = this.formValid;
       let errors = [];
-      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters) {
-        return false
-      } else if (this.isShedulePlan){
+      if (this.plan?.plan_type?.code === this.Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
+        this.formValid.users = this.resp_person.length === 0;
+        Object.keys(this.formValid).forEach(function (k) {
+          if (validation[k] === true) errors.push(validation[k])
+        });
+        return errors.length > 0
+      } else if (this.isShedulePlan) {
         this.sheduleFormValid.workName = this.editData.event_name === null || this.editData.event_name === '';
         this.sheduleFormValid.sDate = this.editData.start_date === null || this.editData.start_date === '';
         this.sheduleFormValid.fDate = this.editData.end_date === null || this.editData.end_date === '';
@@ -326,7 +678,6 @@ export default {
         this.formValid.users = this.selectedUsers.length === 0;
         this.formValid.quarter = this.editData.quarter === null;
 
-        let validation = this.formValid;
         Object.keys(this.formValid).forEach(function (k) {
           if (validation[k] === true) errors.push(validation[k])
         });
@@ -334,7 +685,7 @@ export default {
       return errors.length > 0
     },
     addNewUser() {
-      this.inputSets.push({ selectedUsers: null, selectedRole: null })
+      this.inputSets.push({selectedUsers: null, selectedRole: null})
     },
     removeInputSet(index) {
       this.inputSets.splice(index, 1);
