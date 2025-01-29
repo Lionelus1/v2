@@ -1645,7 +1645,7 @@ export default {
         contentsOfPlannedWork: "Contents of the planned work within the framework of the scientific internship",
         numberAndApprovedDate: "Number and Date of Approval of the Protocol",
         protocolNumber: "Protocol number",
-        protocolApprovedDate: "Date of approval of the protocol"
+        protocolApprovedDate: "Date of approval of the protocol",
         issueTitle: "The issue under consideration",
         implementationDate: "Time of the event",
         protocol: {
