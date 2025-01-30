@@ -35,7 +35,7 @@
                 </div>
                 <!-- Project Type -->
                 <div class="field" v-else-if="s.data.name === 'projectTypeOfResearch'">
-                  <Dropdown v-model="s.data.value" :options="fundingTypes" optionLabel="nameKz" class="p-column-filter" :showClear="true">
+                  <Dropdown v-model="s.data.value" :options="sciTypes" class="p-column-filter">
                     <template #value="slotProps">
                       <span v-if="slotProps.value">
                         {{
@@ -45,11 +45,37 @@
                         }}
                       </span>
                     </template>
+                    <template #option="slotProps">
+                      <span>
+                        {{ $i18n.locale === 'kz' ? slotProps.option.nameKz :
+                            $i18n.locale === 'ru' ? slotProps.option.nameRu :
+                                slotProps.option.nameEn
+                        }}
+                      </span>
+                    </template>
                   </Dropdown>
                 </div>
                 <!-- Priority Area -->
                 <div class="field" v-else-if="s.data.name === 'nameOfPriorityArea'">
-                  <textarea id="en" v-model="s.data.value" class="resizable-textarea"></textarea>
+                  <Dropdown v-model="s.data.value" :options="ActualData" class="p-column-filter">
+                    <template #value="slotProps">
+                      <span v-if="slotProps.value">
+                        {{
+                          $i18n.locale === 'kz' ? slotProps.value.value_kz :
+                              $i18n.locale === 'ru' ? slotProps.value.value_ru :
+                                  slotProps.value.value_en
+                        }}
+                      </span>
+                    </template>
+                    <template #option="slotProps">
+                      <span>
+                        {{ $i18n.locale === 'kz' ? slotProps.option.value_kz :
+                          $i18n.locale === 'ru' ? slotProps.option.value_ru :
+                              slotProps.option.value_en
+                        }}
+                      </span>
+                    </template>
+                  </Dropdown>
                 </div>
                 <!-- Documents -->
                 <div v-else-if="s.data.name === 'projectContract'">
@@ -97,8 +123,25 @@
                 </div>
                 <!-- Funding Source -->
                 <div class="field" v-else-if="s.data.name === 'projectFundingType'">
-                  <textarea id="en" v-model="s.data.value" class="resizable-textarea"></textarea>
-
+                  <Dropdown :loading="loadingFunding" v-model="s.data.value" :options="fundingData" class="p-column-filter">
+                    <template #value="slotProps">
+                      <span v-if="slotProps.value">
+                        {{
+                          $i18n.locale === 'kz' ? slotProps.value.value_kz :
+                              $i18n.locale === 'ru' ? slotProps.value.value_ru :
+                                  slotProps.value.value_en
+                        }}
+                      </span>
+                    </template>
+                    <template #option="slotProps">
+                      <span>
+                        {{ $i18n.locale === 'kz' ? slotProps.option.value_kz :
+                          $i18n.locale === 'ru' ? slotProps.option.value_ru :
+                              slotProps.option.value_en
+                        }}
+                      </span>
+                    </template>
+                  </Dropdown>
                 </div>
                 <!-- Implementation Period -->
                 <div v-else-if="s.data.name === 'projectYears'">
@@ -192,6 +235,8 @@
   </Dialog>
 </template>
 <script>
+import RegistryService from "@/service/registry_service";
+
 export default {
   name: 'SciPlanProjectInfo',
   props: {
@@ -207,7 +252,12 @@ export default {
   },
   data(){
     return {
-      fundingTypes: [
+      registryService: new RegistryService(),
+      fundingData: [],
+      ActualData: [],
+      loadingFunding: false,
+      loadingActual: false,
+      sciTypes: [
         {
           nameKz: 'Іргелі',
           nameRu: 'Фундаментальное',
@@ -222,6 +272,47 @@ export default {
     }
   },
   methods: {
+    getRegisterParamterApplactionFunding() {
+      this.loadingFunding = true;
+      const req = {
+        page: 0,
+        rows: 10,
+        search_text: "Виды финансирования",
+      };
+      this.registryService.getApplication(req).then((res) => {
+
+        this.loadingFunding = false;
+        if (res.data.applications){
+          this.fundingData = this.processDropdownData(res.data.applications)
+        }
+      });
+    },
+    getRegisterParamterApplactionActual() {
+      this.loadingActual = true;
+      const req = {
+        page: 0,
+        rows: 10,
+        search_text: "Наименования приоритетного направления",
+      };
+      this.registryService.getApplication(req).then((res) => {
+
+        this.loadingActual = false;
+        if (res.data.applications){
+          this.ActualData = this.processDropdownData(res.data.applications)
+        }
+      });
+    },
+    processDropdownData(applications) {
+      return applications.map(app => {
+        const nameParam = app.parameters.find(param => param.parameter.label_en.trim() === "Name");
+
+        return {
+          value_kz: nameParam ? nameParam.value_kz : '',
+          value_ru: nameParam ? nameParam.value_ru : '',
+          value_en: nameParam ? nameParam.value_en : ''
+        };
+      });
+    },
     closeDialog() {
       this.$emit('update:dialogVisible', false); // Уведомление родителя о закрытии
     },
@@ -269,6 +360,10 @@ export default {
       // Реализация сохранения параметров
     },
   },
+  created() {
+    this.getRegisterParamterApplactionFunding();
+    this.getRegisterParamterApplactionActual();
+  }
 };
 </script>
 

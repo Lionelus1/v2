@@ -1490,7 +1490,7 @@ export default {
           { name: "projectContractNum", description: "common.projectContractNum", multi: conNum },
           { name: "projectContractDate", description: "common.projectContractDate", multi: conDate },
           { name: "projectClient", description: "common.projectClient", multi: {"kz": "", "ru": "", "en": ""} },
-          { name: "projectFundingType", description: "common.projectFundingType", multi: {"kz": "", "ru": "", "en": ""} },
+          { name: "projectFundingType", description: "common.projectFundingType" },
           { name: "projectYears", description: "common.projectYears" },
           { name: "projectRes", description: "common.projectRes", multi:
                 [
@@ -1760,24 +1760,6 @@ export default {
           visible: this.isFinish && this.isPlanCreator && this.isPlanApproved && this.isSciencePlan,
           command: () => {
             this.confirmGenerateScienceReport()
-          }
-        },
-        {
-          label: this.$t('contracts.contract'),
-          visible: false,
-          // visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.Contract),
-          icon: 'fa-solid fa-download',
-          command: () => {
-            this.downloadContract('contract')
-          }
-        },
-        {
-          label: this.$t('common.additionalInfo'),
-          visible: false,
-          // visible: this.isSciencePlan && this.scienceDocs && this.scienceDocs.some(e => e.docType === this.docEnum.DocType.RelatedDoc),
-          icon: 'fa-solid fa-download',
-          command: () => {
-            this.downloadContract('additional')
           }
         },
         {
