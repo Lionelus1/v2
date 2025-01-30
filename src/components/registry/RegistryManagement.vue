@@ -146,7 +146,10 @@
         <template #footer>
           <Button :label="$t('common.cancel')" icon="fa-solid fa-times" class="p-button-rounded p-button-danger"
                   @click="close('newPublicationDialog')"/>
-          <Button :label="$t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2"
+          <Button v-if="formData.id" :label="$t('common.add')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2"
+                  :disabled="!formData"
+                  @click="createRegistry"/>
+          <Button v-else :label="$t('common.createNew')" icon="pi pi-plus" class="p-button-rounded p-button-success mr-2"
                   :disabled="!formData"
                   @click="createRegistry"/>
         </template>
@@ -285,6 +288,7 @@ export default {
     },
     close(){
       this.showAddRegistryDialog = false;
+      this.formData.id = null;
       this.formData.registry_name = null;
       this.formData.description = null;
       this.formData.status = null;
@@ -302,6 +306,10 @@ export default {
     },
     closeBasic() {
       this.showAddRegistryDialog = false
+      this.formData.id = null;
+      this.formData.registry_name = null;
+      this.formData.description = null;
+      this.formData.status = null;
     },
     closeAddNewRoleBasic(){
       this.showGiveRoleDialog = false
