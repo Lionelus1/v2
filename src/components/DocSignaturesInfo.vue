@@ -721,6 +721,7 @@ export default {
         this.loading = false
         // this.$emit('sentToRevision', this.revisionComment)
         // location.reload()
+        this.getData();
       }).catch(err => {
         if (err.response.status == 401) {
           this.$store.dispatch("logLout");
