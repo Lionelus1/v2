@@ -97,7 +97,6 @@ export default {
       },
       user: JSON.parse(window.localStorage.getItem('loginedUser')),
       filter: {
-        plan_type: null,
         filtered: false,
         search: null,
       },
@@ -173,6 +172,7 @@ export default {
     },
     search(data) {
       this.filter.search = data;
+      this.getRegisterParamterApplaction();
     },
     initFilter() {
       this.filter.filtered = true;
@@ -264,6 +264,7 @@ export default {
               value_en: null,
               value_ru: null,
             });
+            this.getRegisterParamterApplaction()
           })
           .catch(error => {
             this.loading = false;
@@ -272,12 +273,16 @@ export default {
     },
 
     getRegisterParamterApplaction() {
-    this.loading = true;
-
+      const nameId = this.columns.find(col => col.label_ru?.trim() === "Наименование")?.id;
+      this.loading = true;
       const req = {
-        page: this.lazyParams.page,
-        rows: this.lazyParams.rows,
+        page: parseInt(this.lazyParams.page),
+        rows: parseInt(this.lazyParams.rows),
         registry_id: parseInt(this.$route.params.id),
+        parameter: {
+          value: this.filter ? this.filter.search : null,
+          parameter_id: nameId
+        }
       };
       this.registryService.getApplication(req).then((res) => {
         this.applications = res.data.applications
@@ -438,7 +443,6 @@ export default {
   created() {
     this.getRegisterParameter()
     this.getRegistry()
-    this.getRegisterParamterApplaction()
     this.getUserRole()
   }
 }

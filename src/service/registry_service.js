@@ -8,7 +8,9 @@ export default class RegistryService {
   getRegistry(data) {
     return api.post(`/registry/get`, data, { headers: getHeader() });
   }
-
+  deleteRegistry(data) {
+    return api.post(`/registry/delete`, data, { headers: getHeader() });
+  }
   getRegistryParameters(data) {
     return api.post(`/registry/parameter`, data, { headers: getHeader() });
   }

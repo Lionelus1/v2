@@ -22,19 +22,19 @@
           </router-link>
         </template>
       </Column>
-      <Column field="dataSource" :header="$t('registry.dataSource')">
-        <template #body="{ data }">
-          {{ dataSourceId[data.data_source_id] }}
-        </template>
-      </Column>
-      <Column field="status" :header="$t('common.status')">
-        <template #body="{ data }">
-          {{ statusList[data.status] }}
-        </template>
-      </Column>
       <Column field="description" :header="$t('registry.description')">
         <template #body="{ data }">
           {{ data.description_ru }}
+        </template>
+      </Column>
+<!--      <Column field="dataSource" :header="$t('registry.dataSource')">-->
+<!--        <template #body="{ data }">-->
+<!--          {{ dataSourceId[data.data_source_id] }}-->
+<!--        </template>-->
+<!--      </Column>-->
+      <Column field="status" :header="$t('common.status')">
+        <template #body="{ data }">
+          {{ statusList[data.status] }}
         </template>
       </Column>
       <Column field="numberOfEntries" :header="$t('registry.numberOfEntries')">
@@ -44,9 +44,8 @@
       </Column>
       <Column field="accessControl" :header="$t('registry.accessControl')">
         <template #body="{ data }">
-          <Button v-if="data.data_source_id === this.user.userID"
-              type="button" icon="pi pi-eye" class="p-button-outlined"
-              @click="openAccessControl(data)"/>
+          <Button v-if="data.data_source_id === this.user.userID" class="p-button-text p-1 mr-2"
+              @click="openAccessControl(data)"><i class="fa-solid fa-eye fa-xl"></i></Button>
         </template>
       </Column>
 <!--      <Column field="numberOfEntries" :header="$t('registry.numberOfEntries')">-->
@@ -62,6 +61,18 @@
       <Column field="numberOfEntries" :header="$t('registry.createDate')">
         <template #body="{ data }">
           {{formatDate(data.created_at) }}
+        </template>
+      </Column>
+      <Column headerStyle="width: 10rem">
+        <template #body="{ data }">
+          <div class="inline-flex">
+            <Button v-if="data.data_source_id === this.user.userID" class="p-button-text p-button-warning p-1 mr-2" @click="updateRegistry(data)">
+              <i class="fa-solid fa-pencil fa-xl"></i>
+            </Button>
+            <Button v-if="data.data_source_id === this.user.userID" class="p-button-text p-button-danger " style="width: 50px; margin-left: 15px;" @click="deleteRegistry(data)">
+              <i class="fa-solid fa-trash-can fa-xl"></i>
+            </Button>
+          </div>
         </template>
       </Column>
 <!--      <Column field="numberOfEntries" :header="$t('registry.historyOfChanges')">-->
@@ -123,11 +134,11 @@
           <Dropdown v-model="formData.status" :options="fieldStatus"  optionLabel="label"
                     optionValue="value" placeholder="Тип статуса" />
         </div>
-        <div class="field">
-          <label>{{$t('workPlan.approvalUsers')}}</label>
-          <FindUser v-model="formData.users" :editMode="true" :user-type="3"></FindUser>
-          <small class="p-error">{{ $t('workPlan.errors.approvalUserError') }}</small>
-        </div>
+<!--        <div class="field">-->
+<!--          <label>{{$t('workPlan.approvalUsers')}}</label>-->
+<!--          <FindUser v-model="formData.users" :editMode="true" :user-type="3"></FindUser>-->
+<!--          <small class="p-error">{{ $t('workPlan.errors.approvalUserError') }}</small>-->
+<!--        </div>-->
         <div class="field">
           <label>{{ $t('registry.description') }}</label>
           <Textarea v-model="formData.description_ru" autoResize rows="5" cols="30"/>
@@ -339,6 +350,21 @@ export default {
         });
       })
     },
+    deleteRegistry(slotProps) {
+      const req = {
+        id: slotProps.id
+      }
+
+      this.registryService.deleteRegistry(req).then(res => {
+        this.getRegistries();
+      }).catch((err) => {
+        this.$toast.add({
+          severity: "error",
+          summary: err.message || err,
+          life: 3000
+        });
+      })
+    },
     initFilter() {
       this.filter.filtered = true;
       if (this.userNameSearch?.length > 0) {
@@ -387,7 +413,7 @@ export default {
         });
         return;
       }
-      this.formData.data_source_id = this.formData.users[0].userID
+      // this.formData.data_source_id = this.formData.users[0].userID
       this.registryService.createRegistry(this.formData).then(res => {
         this.closeBasic();
         this.$router.push({ name: 'Registry', params: { id: res.data } });
@@ -398,6 +424,18 @@ export default {
           life: 3000
         });
       });
+    },
+    updateRegistry(data){
+
+        this.formData = {
+          id: data.id,
+          name_ru: data.name_ru,
+          name_kz: data.name_kz,
+          name_en: data.name_en,
+          status: data.status,
+          description_ru: data.description_ru,
+        }
+       this.showAddRegistryDialog = true;
     },
     addNewRole() {
       if (this.selectedRegistry.access_users) {
@@ -499,7 +537,16 @@ export default {
           items: [
             {
               label: this.$t('roleControl.giveRole'),
+              icon: "pi pi-plus",
               command: () => { this.giveRoles() }
+            },
+            {
+              label: this.$t('workPlan.modifiedPerson'),
+              icon: "pi pi-pencil",
+              disabled: this.selectedRegistry === null || !this.hasRegistryAdminRole,
+              command: () => {
+                this.update()
+              },
             },
           ]
         },
