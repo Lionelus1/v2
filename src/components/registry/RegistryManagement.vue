@@ -392,6 +392,7 @@ export default {
       this.filter.created_by = null
       this.filter.status = null
       this.filter.createdAt = null
+      this.filter.createdTo = null
       this.userNameSearch = null
       this.getRegistries();
     },
@@ -504,7 +505,8 @@ export default {
         status: this.filter.status,
         created_at: this.filter.createdAt,
         created_to: this.filter.createdTo,
-        created_by: this.filter.created_by
+        created_by: this.filter.created_by,
+        user_id: this.user.userID,
       }
       this.registryService.getRegistry(req).then(res => {
         this.loading = false;
