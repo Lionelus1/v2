@@ -56,8 +56,8 @@ export class MenuService {
             {
                 label: $t('common.administration'),
                 icon: 'fa-solid fa-user-shield',
-                visible: this.isVacancyRightsValidity() || (this.isEnuWorker() && (this.findRole("dephead") ||
-                    this.findRole("practice_responsible") || this.findRole("main_administrator") || this.findRole("hr_manager"))),
+                // visible: this.isVacancyRightsValidity() || (this.isEnuWorker() && (this.findRole("dephead") ||
+                //     this.findRole("practice_responsible") || this.findRole("main_administrator") || this.findRole("hr_manager"))),
                 items: [
                     {
                         label: $t('hr.vacancies'),
@@ -94,6 +94,12 @@ export class MenuService {
                         icon: 'fa-regular fa-paper-plane',
                         to: '/mailing',
                         visible: this.findRole("mailing_manager")
+                    },
+                    {
+                        label: $t('registry.menuTitle'),
+                        icon: 'pi pi-pen-to-square',
+                        to: '/registry',
+                        // visible: this.findRole("main_administrator")
                     },
                 ]
             },

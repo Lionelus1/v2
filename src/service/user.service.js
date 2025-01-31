@@ -24,7 +24,7 @@ export class UserService {
         return api.post('/auth/getDictionary',data, {headers: getHeader()});
     }
 
-    getUser(data) {
+    getUsers(data) {
         return api.post('/getUser',data, {headers: getHeader()});
     }
 
