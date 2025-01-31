@@ -82,7 +82,6 @@ const closeBasic = () => {
 
 const createPlan = () => {
   submitted.value = true;
-  isDisabled.value = true;
   if (!validate()) return
 
   const fd = new FormData()
@@ -151,6 +150,7 @@ watch(() => formData.plan_type, () => {
     params.value = null
     return
   }
+
   docService.getDocParams(id).then(res => {
     params.value = JSON.parse(res.data);
     if (formData.plan_type === 9) {

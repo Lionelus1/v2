@@ -37,7 +37,7 @@
                  :value="data" :lazy="true" :loading="loading" @nodeExpand="onExpand" scrollHeight="flex"
                  responsiveLayout="scroll" :resizableColumns="true" columnResizeMode="fit" showGridlines :paginator="true" :first="lazyParams.first || 0" :rows="lazyParams.rows"
                  :total-records="total" :rowHover="true" :paginatorTemplate="paginatorTemplate"
-                 @page="onPage($event)" v-if="(!isMastersPlan && !isDoctorsPlan && !isWorkSchedule && !isInternshipPlan)">
+                 @page="onPage($event)" v-if="(!isMastersPlan && !isDoctorsPlan && !isWorkSchedule && !isInternshipPlan && !isDirectorsPlan)">
         <template #empty> {{ $t('common.noData') }}</template>
         <template #loading> {{ $t('common.loading') }}</template>
         <Column field="event_name" :expander="true" :header="$t('workPlan.eventName')"
@@ -188,6 +188,23 @@
       <InternshipPlanTable v-if="plan && planDoc && isInternshipPlan" :data="data" :items="initItems" @onPage="onPage"
                            @onExpand="onExpand" @onToggle="actionsToggle" :total="total" :loading="loading"
                            @showDialog="internshipDialogShow" :dialog="dialog" :isFinsih="isFinish"/>
+
+      <DirectorsTable
+          v-if="plan && planDoc && isDirectorsPlan"
+          :data="data"
+          :items="initItems"
+          @onPage="onPage"
+          @onExpand="onExpand"
+          @onToggle="actionsToggle"
+          :total="total"
+          :loading="loading"
+          :planStatus="planDoc?.docHistory?.stateEn"
+          :checkBoxVisiblity="checkBoxVisible"
+          @SelectedEventParamsLength="handleSelectedEventParamsLength"
+          :protocolModalVisible="protocalModal"
+          @hide="closeProtocalModal"
+          :planData="plan"
+      />
     </div>
   </div>
 
@@ -475,11 +492,13 @@ import WorkPlanScheduleEventTree from "@/components/work_plan/table/WorkPlanSche
 import RolesByName from "@/components/smartenu/RolesByName.vue";
 import ActionButton from "@/components/ActionButton.vue";
 import {ContragentService} from "@/service/contragent.service";
+import DirectorsTable from "@/components/work_plan/table/DirectorsTable.vue"
 import FindUser from "../../helpers/FindUser.vue";
 import InternshipPlanTable from './table/InternshipPlanTable.vue';
 
 export default {
   name: "WorkPlanEvent",
+  props: ['planStatus', 'checkBoxVisiblity', 'protocolModalVisible', 'planData', 'isEditResponsiveUsers'],
   components: {
     FindUser,
     WorkPlanScheduleEventTree,
@@ -495,9 +514,9 @@ export default {
     RolesByName,
     DoctorsMastersTable,
     WorkPlanEventAddMember,
-    InternshipPlanTable
+    InternshipPlanTable,
+    DirectorsTable
   },
-  props: ['isEditResponsiveUsers'],
   data() {
     return {
       active: 0,
@@ -673,6 +692,9 @@ export default {
       chartData: null,
       chartOptions: null,
       loginedStudentData: null,
+      checkBoxVisible: false,
+      SelectedEventParamsLength: 0,
+      protocalModal: false
     };
   },
   created() {
@@ -760,6 +782,20 @@ export default {
   methods: {
     addMemberButton() {
       this.showDialog(this.dialog.addMember);
+    },
+    createProtocal() {
+      this.protocalModal = true;
+    },
+    closeProtocalModal() {
+      this.protocalModal = false;
+      this.SelectedEventParamsLength = 0;
+      this.checkBoxVisible = false;
+    },
+    handleSelectedEventParamsLength(length) {
+      this.SelectedEventParamsLength = length;
+    },
+    eventSelection() {
+      this.checkBoxVisible = !this.checkBoxVisible;
     },
     handleActive(event) {
       this.active = event
@@ -1380,6 +1416,32 @@ export default {
                   is_contract: true
                 };
               }
+              this.getWorkPlanApprovalUsersFunc(data)
+            }
+
+            if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Directors) {
+              this.planApprovalStage = [
+                {
+                  stage: 1,
+                  users: null,
+                  certificate: {
+                    namekz: 'Жеке тұлғаның сертификаты',
+                    nameru: 'Сертификат физического лица',
+                    nameen: 'Certificate of an individual',
+                    value: 'individual',
+                  },
+                  titleKz: "Басқарма хатшысы - Ғалым хатшы",
+                  titleRu: "Секретарь Правления - Учёный секретарь",
+                  titleEn: "Executive Secretary - Scientific Secretary",
+                },
+              ];
+              let data = {
+                work_plan_id: parseInt(this.work_plan_id),
+                page: 0,
+                rows: 0,
+                is_contract: false
+              };
+
               this.getWorkPlanApprovalUsersFunc(data)
             }
           })
@@ -2065,6 +2127,13 @@ export default {
     isInternshipPlan() {
       return (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Internship);
     },
+    isDirectorsPlan() {
+      return (
+          this.plan &&
+          this.plan.plan_type &&
+          this.plan.plan_type.code === Enum.WorkPlanTypes.Directors
+      );
+    },
     toolbarMenus() {
       return [
         {
@@ -2117,7 +2186,7 @@ export default {
           color: this.isFinish ? '' : 'green',
           disabled: (this.isMastersPlan || this.isDoctorsPlan || this.isInternshipPlan) && (!this.data || this.data.length === 0 || !this.additinalInfoFilled),
           visible:
-              ((this.isMastersPlan || this.isDoctorsPlan || this.isInternshipPlan) && (!this.isFinish || this.isApproval)) || (this.isFinish && this.planDoc &&
+              ((this.isMastersPlan || this.isDoctorsPlan || this.isInternshipPlan || this.isDirectorsPlan) && (!this.isFinish || this.isApproval)) || (this.isFinish && this.planDoc &&
                   !(this.isCreatedPlan || this.isPlanUnderRevision)),
           command: () => {
             if (this.isFinish) {
@@ -2138,10 +2207,44 @@ export default {
           },
         },
         {
+          label: this.$t('workPlan.protocol.createProtocols'),
+          disabled: this.SelectedEventParamsLength <= 0 || !this.isPlanApproved,
+          visible: this.isPlanCreator && this.isDirectorsPlan,
+          command: () => {
+            this.createProtocal();
+          },
+        },
+        {
+          label: this.$t('contracts.menu.registerProtocols'),
+          visible: this.isPlanCreator && this.isDirectorsPlan && this.isPlanApproved,
+          command: () => {
+            this.$router.push({
+              name: "Protocols",
+              params: {docType: this.docEnum.DocType.WorkPlanProtocol, workPlanID: this.work_plan_id}
+            });
+          },
+        },
+        {
+          label: this.$t('common.choose'),
+          disabled: !this.isPlanApproved,
+          visible: this.isPlanCreator && this.isDirectorsPlan,
+          command: () => {
+            this.eventSelection();
+          },
+        },
+        {
+          label: this.$t('workPlan.protocol.addQuestion'),
+          disabled: !this.isPlanApproved,
+          visible: this.isPlanCreator && this.isDirectorsPlan,
+          command: () => {
+            this.showDialog(this.dialog.add);
+          },
+        },
+        {
           label: this.$t('workPlan.reports'),
           visible:
               this.isFinish && !this.isWorkSchedule &&
-              !this.isSciencePlan &&
+              !this.isSciencePlan && !this.isDirectorsPlan &&
               (this.isApproval || this.isPlanCreator || this.isAdmin || this.isRespUser) &&
               (!(this.isMastersPlan || this.isDoctorsPlan) ||
                   this.isPlanApproved) && (!(this.isMastersPlan || this.isDoctorsPlan || this.isInternshipPlan) || this.isPlanApproved),
@@ -2296,6 +2399,11 @@ export default {
   &.status-2 {
     background: #c8e6c9;
     color: #256029;
+  }
+
+  &.status-protocolQuestion {
+    background: #ea1cf1;
+    color: #ffffff;
   }
 
   .inline-container {

@@ -7,5 +7,6 @@ export default {
         Masters: "masters",
         Doctors: "doctors",
         Internship: "internship",
+        Directors: "directors"
     }
 }

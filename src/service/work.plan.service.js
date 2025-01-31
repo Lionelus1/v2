@@ -55,10 +55,6 @@ export class WorkPlanService {
         return api.post(`/workPlan/savePlanFile`, fd, {headers: getMultipartHeader()});
     }
 
-    // generatePdf(pdfContent) {
-    //     return api.post(`/workPlan/generatePdf`, {text: pdfContent}, {headers: getHeader()});
-    // }
-
     createEvent(data) {
         return api.post(`/workPlan/addEvent`, data, {headers: getHeader()})
     }
@@ -219,6 +215,21 @@ export class WorkPlanService {
 
     changePlanCreator(data) {
         return api.post('/workPlan/changeWorkPlanCreator', data, {headers: getHeader()});
+    }
+
+    createProtocol(data) {
+        return api.post(`/workPlan/createProtocol`, data, {headers: getHeader()});
+    }
+
+    getWorkPlanProtocolTypes() {
+        return api.get('/workPlan/protocolTypes', {headers: getHeader()});
+    }
+
+    sendProtocolToApprove(data) {
+        return api.post(`/workPlan/sendProtocolToApprove`, data, {headers: getHeader()});
+    }
+    getProtocolType(data) {
+        return api.post(`/workPlan/protocolType`, data, {headers: getHeader()});
     }
 
 }

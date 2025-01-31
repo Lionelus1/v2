@@ -681,6 +681,13 @@ export default {
     border-radius: 3px;
   }
 
+  &.directors {
+    background: #0766b4;
+    color: #fff;
+    font-weight: 500;
+    border-radius: 3px;
+  }
+
   .approved {
     color: #42855B;
   }
