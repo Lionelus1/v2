@@ -258,8 +258,28 @@
     </template>
   </Dialog>
 
-  <Dialog v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" :closable="false" v-model:visible="respPersonDialog" modal
-          :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
+  <Sidebar v-model:visible="dialog.addPublish.state" position="right" class="p-sidebar-lg">
+    <ScienceWorks
+        :openCardInSidebar="true"
+        :for-sci-plan="true"
+        @select="handleSelect"
+    />
+  </Sidebar>
+
+  <sci-plan-project-info
+      :dialogVisible="dialog.projectInfo.state"
+      :planDoc="planDoc"
+      :filteredParamsMainInfo="filteredParamsMainInfo"
+      :filteredParamsFundingInfo="filteredParamsFundingInfo"
+      :filteredParamsResultInfo="filteredParamsResultInfo"
+      :loadingProject="loadingProject"
+      @save-project-params="saveParams"
+      @add-pub="addPublication"
+      @download-contract="downloadContract"
+      @update:dialogVisible="dialog.projectInfo.state = $event"
+  />
+
+  <Dialog v-if="(isAdmin && isPlanApproved) || (isPlanCreator && isPlanApproved)" :closable="false" v-model:visible="respPersonDialog" modal :header="isOperPlan ? $t('workPlan.summary') : $t('workPlan.approvalUsers')">
     <div class="field" v-if="plan && plan.plan_type.code === Enum.WorkPlanTypes.Oper">
       <label>{{ $t('workPlan.summaryDepartment') }}</label>
       <FindUser v-model="summaryDepartment" :max="1" editMode="true" :user-type="3"/>
@@ -482,15 +502,17 @@ import DocSignaturesInfo from '@/components/DocSignaturesInfo';
 import WorkPlanEventResult from '@/components/work_plan/WorkPlanEventResult.vue';
 import Enum from '@/enum/workplan/index';
 import DocEnum from '@/enum/docstates/index';
-import DocState from '@/enum/docstates/index';
 import WorkPlanReportApprove from '@/components/work_plan/WorkPlanReportApprove.vue';
 import {DocService} from '@/service/doc.service';
-import CustomFileUpload from '@/components/CustomFileUpload.vue';
-import ToolbarMenu from '@/components/ToolbarMenu.vue';
 import DoctorsMastersTable from './table/DoctorsMastersTable.vue';
 import WorkPlanScheduleEventTree from "@/components/work_plan/table/WorkPlanScheduleEventTree.vue";
-import RolesByName from "@/components/smartenu/RolesByName.vue";
 import ActionButton from "@/components/ActionButton.vue";
+import CustomFileUpload from "@/components/CustomFileUpload.vue";
+import DocState from "@/enum/docstates/index";
+import ToolbarMenu from "@/components/ToolbarMenu.vue";
+import RolesByName from "@/components/smartenu/RolesByName.vue";
+import ScienceWorks from "@/components/documents/catalog/ScienceWorks.vue";
+import SciPlanProjectInfo from "@/components/work_plan/SciPlanProjectInfo.vue";
 import {ContragentService} from "@/service/contragent.service";
 import DirectorsTable from "@/components/work_plan/table/DirectorsTable.vue"
 import FindUser from "../../helpers/FindUser.vue";
@@ -500,6 +522,8 @@ export default {
   name: "WorkPlanEvent",
   props: ['planStatus', 'checkBoxVisiblity', 'protocolModalVisible', 'planData', 'isEditResponsiveUsers'],
   components: {
+    SciPlanProjectInfo,
+    ScienceWorks,
     FindUser,
     WorkPlanScheduleEventTree,
     ToolbarMenu,
@@ -553,6 +577,7 @@ export default {
       totalMembers: 0,
       quarter: null,
       loading: false,
+      loadingProject: false,
       loadingMembers: false,
       showReportModal: false,
       parent: null,
@@ -655,13 +680,19 @@ export default {
           state: false,
         },
         uploadAdditionalFile: {
-          state: false,
+          state: false
         },
         showMastersEventType: {
           state: false,
         },
         info: {
           state: false,
+        },
+        projectInfo: {
+          state: false
+        },
+        addPublish: {
+          state: false
         },
       },
       planApprovalStage: null,
@@ -694,8 +725,8 @@ export default {
       loginedStudentData: null,
       checkBoxVisible: false,
       SelectedEventParamsLength: 0,
-      protocalModal: false
-    };
+      selectedItem: null, // Данные, которые будут получены из ScienceWorks
+    }
   },
   created() {
     this.isAdmin = this.findRole(null, 'main_administrator');
@@ -809,6 +840,86 @@ export default {
         return member.user.fullName.toLowerCase().includes(query);
       });
     },
+    validString(str) {
+      return str && str.length > 0;
+    },
+
+    getFullname(user) {
+      let name = '';
+
+      if (!user) {
+        return name;
+      }
+
+      if (this.$i18n.locale === 'en' && this.validString(user.thirdnameEn) && this.validString(user.firstnameEn)) {
+        name = user.thirdnameEn + ' ' + user.firstnameEn;
+
+        if (this.validString(user.lastnameEn)) {
+          name += ' ' + user.lastnameEn;
+        }
+
+        return name;
+      }
+
+      name = user.thirdName + ' ' + user.firstName;
+
+      if (this.validString(user.lastName)) {
+        name += ' ' + user.lastName;
+      }
+
+      return name;
+    },
+
+    //запрос названия статьи для проекта Научного плана
+    getScienceWorkName(doc) {
+      if (!doc.newParams || !doc.newParams.publicationName ||
+          !this.validString(doc.newParams.publicationName.value)) {
+        return '';
+      }
+
+      return doc.newParams.publicationName.value;
+    },
+
+    getScienceEditionName(doc) {
+      let full = '';
+
+      if (!doc.newParams) return '';
+
+      const name = this.validString(doc.newParams.editionName?.value)
+          ? doc.newParams.editionName.value
+          : '';
+
+      const year = this.validString(doc.newParams.publicationDate?.value)
+          ? new Date(doc.newParams.publicationDate.value).getFullYear()
+          : '';
+      const num = this.validString(doc.newParams.editionNumber?.value)
+          ? doc.newParams.editionNumber.value
+          : '';
+      const page = this.validString(doc.newParams.editionPages?.value)
+          ? doc.newParams.editionPages.value
+          : '';
+
+      full = `${name} (${year}, ${num}, ${page})`;
+
+      return full;
+    },
+
+    handleSelect(item) {
+      // Обрабатываем данные, полученные из ScienceWorks
+      if(item){
+        this.selectedItem.push({
+          pubName:
+              this.getFullname(item.owner) + ". " +
+              this.getScienceWorkName(item) + ". " +
+              this.getScienceEditionName(item),
+          id: item.id,
+        });
+      }
+
+      this.dialog.addPublish.state = false;
+      this.selectedItem = null;
+    },
+
     findRole: findRole,
     setChartData() {
       const documentStyle = getComputedStyle(document.body);
@@ -1168,6 +1279,7 @@ export default {
             this.isPlanCreator = !!(this.plan && this.plan.user.id === this.loginedUserId);
 
             if (this.isSciencePlan) {
+              this.checkProjectInfo()
               this.planApprovalStage = [
                 {
                   stage: 1,
@@ -1224,7 +1336,6 @@ export default {
               ];
 
               let data = {
-
                 work_plan_id: parseInt(this.work_plan_id),
                 page: 0,
                 rows: 0,
@@ -1232,6 +1343,26 @@ export default {
               };
               this.getRelatedFiles();
               this.getWorkPlanApprovalUsersFunc(data);
+
+              for (const param of this.planDoc.params) {
+                if (param.name === "projectContractDate") { //Дата договора
+                  param.value = this.formatDateMoment(param.value, false);
+                }
+                else if (param.name === "projectYears") { //Период реализации
+                  if (param.value) {
+                    let tempD = [];
+                    for (let vParam of param.value) {
+                      tempD.push(new Date(vParam));
+                    }
+                    param.value = tempD;
+                  }
+                }
+                else if (param.name === "projectRes") { //результат проекта
+                  for (const projectResDate of param.value) {
+                    projectResDate.year = projectResDate.year ? new Date(projectResDate.year) : null;
+                  }
+                }
+              }
             }
             if (this.plan?.plan_type?.code === Enum.WorkPlanTypes.Masters || this.plan?.plan_type?.code === Enum.WorkPlanTypes.Doctors) {
               this.planApprovalStage = [
@@ -1902,6 +2033,9 @@ export default {
         this.getAdditionalInfo()
       }
     },
+    hideDialogProjectInfo(dialog) {
+      dialog.state = false
+    },
     canExecuteEvent() {
       const isStatusValid = [1, 4, 5, 6, 8].includes(
           this.selectedEvent.status.work_plan_event_status_id
@@ -2001,20 +2135,210 @@ export default {
 
       return signed;
     },
+    checkProjectInfo() {
+      if (this.planDoc.params) {
+
+        let pName = {"kz": "", "ru": "", "en": ""} //название проекта
+        let priorName = {"kz": "", "ru": "", "en": ""} // По приоритету
+        let conNum = "" //Номер договора
+        let conDate = "" //date договора
+
+        for (const param of this.planDoc.params) {
+          if(param.name === "plancontracttopic"){
+            if(this.plan.lang === 1){
+              pName = {"kz": param.value, "ru": "", "en": ""}
+            } else if(this.plan.lang === 2){
+              pName = {"kz": "", "ru": param.value, "en": ""}
+            }else if(this.plan.lang === 3){
+              pName = {"kz": "", "ru": "", "en": param.value}
+            }
+          } else if(param.name === "plancontractprioruty"){
+            if(this.plan.lang === 1){
+              priorName = {"kz": param.value, "ru": "", "en": ""}
+            } else if(this.plan.lang === 2){
+              priorName = {"kz": "", "ru": param.value, "en": ""}
+            }else if(this.plan.lang === 3){
+              priorName = {"kz": "", "ru": "", "en": param.value}
+            }
+          } else if(param.name === "plancontractnumber"){
+            conNum = param.value;
+          } else if(param.name === "plancontractdate"){
+            conDate = param.value;
+          }
+        }
+
+        const requiredParams = [
+          { name: "projectSupervisor", description: "common.projectSupervisor", multi: this.plan?.user?.fullName },
+          { name: "zhtn", description: "common.zhtn" },
+          { name: "projectName", description: "common.projectName", multi: pName },
+          { name: "projectPriority", description: "common.projectPriority", multi: priorName },
+          { name: "projectRelevance", description: "common.projectRelevance", multi: {"kz": "", "ru": "", "en": ""} },
+          { name: "projectGoal", description: "common.projectGoal", multi: {"kz": "", "ru": "", "en": ""} },
+          { name: "projectTypeOfResearch", description: "common.projectTypeOfResearch" },
+          { name: "nameOfPriorityArea", description: "common.nameOfPriorityArea" },
+          { name: "projectObjectives", description: "common.projectObjectives", multi: {"kz": "", "ru": "", "en": ""} },
+          { name: "projectAppAreas", description: "common.projectAppAreas", multi: {"kz": "", "ru": "", "en": ""} },
+          { name: "projectContract", description: "common.projectContract" },
+          { name: "projectPlan", description: "common.projectPlan" },
+
+          { name: "projectContractNum", description: "common.projectContractNum", multi: conNum },
+          { name: "projectContractDate", description: "common.projectContractDate", multi: conDate },
+          { name: "projectClient", description: "common.projectClient", multi: {"kz": "", "ru": "", "en": ""} },
+          { name: "projectFundingType", description: "common.projectFundingType" },
+          { name: "projectYears", description: "common.projectYears" },
+          { name: "projectRes", description: "common.projectRes", multi:
+                [
+                    {"year": "", "publish": [], "resKz": "", "resRu": "", "resEn": ""},
+                ]
+          },
+        ];
+
+        requiredParams.forEach(param => {
+          if (!this.planDoc.params.some(p => p.name === param.name)) {
+            this.planDoc.params.push({
+              id: null,
+              docID: null,
+              name: param.name,
+              value: param.multi,
+              description: param.description,
+              isDeleted: false
+            });
+          }
+        });
+      }
+    },
+
+    //добавить публикацию
+    addPublication(resultData) {
+      this.dialog.addPublish.state = true;
+      this.selectedItem = resultData;
+    },
+
+    saveParams() {
+      this.planDoc.newParams = {};
+      for (let i = 0; i < this.planDoc.params.length; i++) {
+        this.planDoc.newParams[this.planDoc.params[i].description] = this.planDoc.params[i];
+      }
+
+      this.loadingProject = true;
+      this.service.saveDocumentV2(this.planDoc).then(res => {
+        this.planDoc = res.data;
+        this.getPlan();
+        this.loadingProject = false;
+      }).catch(err => {
+        this.loadingProject = false;
+        if (err.response && err.response.status === 401) {
+          this.$store.dispatch("logLout")
+        } else if (err.response && err.response.data && err.response.data.localized) {
+          this.showMessage('error', this.$t(err.response.data.localizedPath), null)
+        } else {
+          this.showMessage('error', this.$t('common.message.actionError'), this.$t('common.message.actionErrorContactAdmin'))
+        }
+      })
+    },
+    showMessage(msgtype, message, content) {
+      this.$toast.add({
+        severity: msgtype,
+        summary: message,
+        detail: content,
+        life: 3000
+      });
+    },
   },
 
   computed: {
+    filteredParamsMainInfo() {
+      const allowedNames = [
+        'projectSupervisor',
+        'zhtn',
+        'projectName',
+        'projectPriority',
+        'projectRelevance',
+        'projectGoal',
+        'projectTypeOfResearch',
+        'nameOfPriorityArea',
+        'projectObjectives',
+        'projectAppAreas',
+        'projectContract',
+        'projectPlan'
+      ];
+      // Проверяем, что `this.planDoc?.params` существует и является массивом
+      const params = this.planDoc?.params || [];
+
+      // Фильтрация и сортировка в одном вызове
+      return params
+          .filter(param => allowedNames.includes(param.name)) // Оставляем только нужные элементы
+          .sort((a, b) => {
+            const indexA = allowedNames.indexOf(a.name);
+            const indexB = allowedNames.indexOf(b.name);
+            return indexA - indexB; // Сортируем по индексу в allowedNames
+          });
+    },
+
+    filteredParamsFundingInfo() {
+      const allowedNames = [
+        'projectContractNum',
+        'projectContractDate',
+        'projectClient',
+        'projectFundingType',
+        'projectYears',
+      ];
+
+      // Проверяем, что `this.planDoc?.params` существует и является массивом
+      const params = this.planDoc?.params || [];
+
+      // Фильтрация и сортировка в одном вызове
+      return params
+          .filter(param => allowedNames.includes(param.name)) // Оставляем только нужные элементы
+          .sort((a, b) => {
+            const indexA = allowedNames.indexOf(a.name);
+            const indexB = allowedNames.indexOf(b.name);
+            return indexA - indexB; // Сортируем по индексу в allowedNames
+          });
+    },
+    filteredParamsResultInfo() {
+      const allowedNames = [
+        'projectRes',
+      ];
+
+      // Проверяем, что `this.planDoc?.params` существует и является массивом
+      const params = this.planDoc?.params || [];
+
+      // Фильтрация и сортировка в одном вызове
+      return params
+          .filter(param => allowedNames.includes(param.name)) // Оставляем только нужные элементы
+          .sort((a, b) => {
+            const indexA = allowedNames.indexOf(a.name);
+            const indexB = allowedNames.indexOf(b.name);
+            return indexA - indexB; // Сортируем по индексу в allowedNames
+          });
+    },
     initItems() {
       return (data) => {
+        // Проверка для научного плана
+        let curDate = moment(new Date());
+        let sDate = moment(new Date(data.start_date));
+        let fDate = moment(new Date(data.end_date));
+        let showRes = false;
+        if (this.isSciencePlan){
+          showRes = this.isFinish && (curDate.isSameOrAfter(sDate) && curDate.isSameOrBefore(fDate));
+
+          if(this.isPlanCreator || this.isCreator || this.isAdmin){
+            showRes = this.isFinish;
+          }
+        } else {
+          showRes = this.isFinish;
+        }
         return [
           {
             label: this.$t('common.show'),
             icon: 'fa-solid fa-eye',
             disabled: !(this.isPlanApproved && this.canExecuteEvent),
-            visible: this.isFinish,
+            visible: showRes,
+
             command: () => {
-              this.openPlanExecuteSidebar();
-            },
+              this.openPlanExecuteSidebar()
+            }
           },
           {
             label: this.$t('common.add'),
@@ -2346,6 +2670,14 @@ export default {
             this.showDialog(this.dialog.info);
           }
         },
+        {
+          label: this.$t('common.projectInfo'),
+          visible: this.isSciencePlan,
+          icon: 'fa-solid fa-info',
+          command: () => {
+            this.showDialog(this.dialog.projectInfo)
+          }
+        }
       ];
     },
     isFinshButtonDisabled() {
@@ -2361,6 +2693,13 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+.p-button-text {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+}
+
 .customer-badge {
   border-radius: 2px;
   padding: 0.25em 0.5rem;

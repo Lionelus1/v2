@@ -1,7 +1,7 @@
 <template>
   <ProgressSpinner v-if="loading" class="progress-spinner" strokeWidth="5"/>
   <div class="flex flex-row mb-3">
-    <div v-if="!scientist" class="arrow-icon" @click="$router.back()">
+    <div v-if="forSciPlan ? false : !scientist" class="arrow-icon" @click="$router.back()">
       <i class="fas fa-arrow-left"></i>
     </div>
     <h3 class="m-0">{{ $t("scienceWorks.title") }}</h3>
@@ -244,6 +244,10 @@ export default {
     openCardInSidebar: {
       type: Boolean,
       default: false
+    },
+    forSciPlan: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -306,6 +310,14 @@ export default {
           disabled: () => !this.currentDocument,
         },
         {
+          label: this.$t("common.projectPublishAdd"),
+          icon: "fa-solid fa-plus",
+          command: () => {
+            this.selectItem();
+          },
+          visible: () => this.forSciPlan,
+        },
+        {
           label: this.$t("scienceWorks.buttons.newPublication"),
           icon: "fa-solid fa-plus",
           items: [
@@ -327,13 +339,13 @@ export default {
               ]
             },
           ],
-          visible: !this.scientist,
+          visible: this.forSciPlan ? false : !this.scientist,
         },
         {
           label: this.$t("scienceWorks.buttons.generateListDialog"),
           icon: "fa-solid fa-print",
           command: () => { this.$router.push('/documents/catalog/scienceWorksList'); },
-          visible: !this.scientist,
+          visible: this.forSciPlan ? false : !this.scientist,
         },
         {
           label: this.$t("scienceWorks.buttons.koksnvo"),
@@ -352,7 +364,7 @@ export default {
               command: () => { this.open('myKoksnvoRequests'); },
             },
           ],
-          visible: !this.scientist,
+          visible: this.forSciPlan ? false : !this.scientist,
         }
       ],
 
@@ -473,6 +485,10 @@ export default {
           this.$router.push('/documents/scienceWorks/' + this.currentDocument.uuid);
         }
       }
+    },
+    selectItem() {
+      // Эмитим событие 'select' с данными item for sci plan
+      this.$emit("select", this.currentDocument);
     },
     getScienceWorks() {
       this.tableLoading = true;
@@ -787,7 +803,7 @@ export default {
         {
           label: this.$t("scienceWorks.buttons.newPublication"),
           icon: "fa-solid fa-plus",
-          visible: !this.scientist,
+          visible: this.forSciPlan ? false : !this.scientist,
           command: ()=> {
             this.$refs.newPublicationMenu.toggle(event)
           },
