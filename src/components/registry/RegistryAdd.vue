@@ -492,25 +492,25 @@ const save = () => {
           ? String(field.applicant[0].fullName)
           : field.value_ru || '',
     })),
-    // reservation: [
-    //   {
-    //     id: null,
-    //     application: {
-    //       id: 5,
-    //       registry: {
-    //         id: parseInt(route.params.id)
-    //       },
-    //       status: 0,
-    //       created_at: "2025-01-21T10:00:00Z"
-    //     },
-    //     reserved_from: "2025-01-28T10:00:00Z",
-    //     reserved_until: "2025-01-29T10:00:00Z",
-    //     created_by: 67894,
-    //     status: 2,
-    //     created_date: "2025-01-14T10:00:00Z",
-    //     uuid: "7F4A4838D19711EFBBBD0242AC12000"
-    //   }
-    // ],
+    reservation: [
+      {
+        id: null,
+        application: {
+          id: 5,
+          registry: {
+            id: parseInt(route.params.id)
+          },
+          status: 0,
+          created_at: "2025-01-21T10:00:00Z"
+        },
+        reserved_from: "2025-01-28T10:00:00Z",
+        reserved_until: "2025-01-29T10:00:00Z",
+        created_by: 67894,
+        status: 2,
+        created_date: "2025-01-14T10:00:00Z",
+        uuid: "7F4A4838D19711EFBBBD0242AC12000"
+      }
+    ],
   };
   loading.value = true;
   if (selectedApplication.value && selectedApplication.value.length > 0) {

@@ -230,7 +230,7 @@ export default {
         registry_id: parseInt(this.$route.params.id),
       }
       this.registryService.getUserRole(req).then(res => {
-        this.roleId = res.data
+        this.roleCode = res.data.code
       }).catch(error => {
         this.$toast.add({severity: "error", summary: error, life: 3000});
       })
@@ -382,7 +382,7 @@ export default {
         {
           label: this.$t('common.add'),
           icon: "pi pi-plus",
-          disabled: this.registry.data_source_id !== this.user.userID && (this.roleId !== 1 && this.roleId !== 2 && this.roleId !== 3),
+          disabled: this.registry.data_source_id !== this.user.userID && (this.roleCode !== "super_admin" && this.roleCode !== "admin" && this.roleCode !== "editor"),
           command: () => {
             this.open()
           },
@@ -390,7 +390,7 @@ export default {
         {
           label: this.$t('registry.import'),
           icon: "pi pi-file-import",
-          disabled: this.registry.data_source_id !== this.user.userID && (this.roleId !== 1 && this.roleId !== 2 && this.roleId !== 3),
+          disabled: this.registry.data_source_id !== this.user.userID && (this.roleCode !== "super_admin" && this.roleCode !== "admin" && this.roleCode !== "editor"),
           command: () => {
             this.triggerFileInput()
           },
@@ -398,7 +398,7 @@ export default {
         {
           label: this.$t('common.export'),
           icon: "pi pi-cloud-upload",
-          // disabled: this.registry.data_source_id !== this.user.userID && (this.roleId !== 1 && this.roleId !== 2 && this.roleId !== 3) ,
+          // disabled: this.registry.data_source_id !== this.user.userID && (this.roleCode !== "super_admin" && this.roleCode !== "admin" && this.roleCode !== "editor") ,
           command: () => {
             this.registryExportData()
           },
@@ -414,7 +414,7 @@ export default {
         {
           label: this.$t('registry.actionsReferenceBooks'),
           icon: "pi pi-asterisk",
-          disabled:  this.selectedApplication === null || (this.roleId !== 1 && this.roleId !== 2 && this.roleId !== 3 && this.registry.data_source_id !== this.user.userID),
+          disabled:  this.selectedApplication === null || (this.roleCode !== "super_admin" && this.roleCode !== "admin" && this.roleCode !== "editor" && this.registry.data_source_id !== this.user.userID),
           // command: () => {
           //   this.openBasic()
           // },
@@ -422,7 +422,7 @@ export default {
             {
               label: this.$t('workPlan.modifiedPerson'),
               icon: "pi pi-pencil",
-              disabled: this.selectedApplication === null || (this.roleId !== 1 && this.roleId !== 2 && this.roleId !== 3 && this.registry.data_source_id !== this.user.userID),
+              disabled: this.selectedApplication === null || (this.roleCode !== "super_admin" && this.roleCode !== "admin" && this.roleCode !== "editor" && this.registry.data_source_id !== this.user.userID),
               command: () => {
                 this.update()
               },
@@ -430,7 +430,7 @@ export default {
             {
               label: this.$t('common.delete'),
               icon: "pi pi-trash",
-              disabled: this.selectedApplication === null || (this.roleId !== 1 && this.roleId !== 2 && this.registry.data_source_id !== this.user.userID),
+              disabled: this.selectedApplication === null || (this.roleCode !== "super_admin" && this.roleCode !== "admin" && this.registry.data_source_id !== this.user.userID),
               command: () => {
                 this.delete()
               },
