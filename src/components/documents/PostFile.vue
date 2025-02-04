@@ -1,223 +1,231 @@
 <template>
-    <div>
-    <ProgressBar v-if="uploading" mode="indeterminate" style="height: .5em" />
-      <div class="p-fluid">
-        <div class="field">
-          <label for="language" >{{$t('common.doclang')}}</label>
-          <SelectButton v-model="file.lang" optionLabel="name" :options="languages" dataKey="value" class="mb-3" :unselectable="false">
-            <template #option="slotProps">
-              <div>{{$t('common.language.' + slotProps.option.name)}}</div>
-            </template>
-          </SelectButton>
-          <small class="p-error" v-if="validation.lang">{{ $t("common.requiredField") }}</small>
+  <div>
+    <ProgressBar v-if="uploading" mode="indeterminate" style="height: .5em"/>
+    <div class="p-fluid">
+      <div class="field">
+        <label for="language">{{ $t('common.doclang') }}</label>
+        <SelectButton v-model="file.lang" optionLabel="name" :options="languages" dataKey="value" class="mb-3" :unselectable="false">
+          <template #option="slotProps">
+            <div>{{ $t('common.language.' + slotProps.option.name) }}</div>
+          </template>
+        </SelectButton>
+        <small class="p-error" v-if="validation.lang">{{ $t("common.requiredField") }}</small>
+      </div>
+      <div class="field">
+        <label for="filename">{{ $t('common.nameInQazaq') }}</label>
+        <InputText id="fodernamekaz" v-model="file.namekz" type="text"/>
+        <small class="p-error" v-if="validation.namekz && validation.nameru && validation.nameen">{{ $t("common.requiredField") }}</small>
+      </div>
+      <div class="field">
+        <label for="filename">{{ $t('common.nameInRussian') }}</label>
+        <InputText id="fodernameru" v-model="file.nameru" type="text"/>
+        <small class="p-error" v-if="validation.namekz && validation.nameru && validation.nameen">{{ $t("common.requiredField") }}</small>
+      </div>
+      <div class="field">
+        <label for="filename">{{ $t('common.nameInEnglish') }}</label>
+        <InputText id="fodernameen" v-model="file.nameen" type="text"/>
+        <small class="p-error" v-if="validation.namekz && validation.nameru && validation.nameen">{{ $t("common.requiredField") }}</small>
+      </div>
+      <div v-if="docType == attestationDocReportType" class="field">
+        <label for="filename">{{ $t('web.chooseDegree') }}</label>
+        <div class="flex flex-wrap gap-3">
+          <div class="flex align-items-center">
+            <RadioButton v-model="selectedEducationLevel" inputId="master" name="bachelor" :value="Enums.EducationLevel.Bachelor"/>
+            <label for="levelBachelor" class="ml-2">{{ $t('educationalPrograms.bachelor') }}</label>
+          </div>
+          <div class="flex align-items-center">
+            <RadioButton v-model="selectedEducationLevel" inputId="master" name="master" :value="Enums.EducationLevel.Magister"/>
+            <label for="levelMaster" class="ml-2">{{ $t('educationalPrograms.master') }}</label>
+          </div>
+          <div class="flex align-items-center">
+            <RadioButton v-model="selectedEducationLevel" inputId="doctorate" name="doctorate" :value="Enums.EducationLevel.Doctorate"/>
+            <label for="levelDoctoral" class="ml-2">{{ $t('educationalPrograms.doctoral') }}</label>
+          </div>
         </div>
-        <div class="field">
-          <label for="filename" >{{$t('common.nameInQazaq')}}</label>
-          <InputText id="fodernamekaz" v-model="file.namekz" type="text" />
-          <small class="p-error" v-if="validation.namekz && validation.nameru && validation.nameen">{{ $t("common.requiredField") }}</small>
-        </div>
-        <div class="field">
-          <label for="filename" >{{$t('common.nameInRussian')}}</label>
-          <InputText id="fodernameru" v-model="file.nameru" type="text" />
-          <small class="p-error" v-if="validation.namekz && validation.nameru && validation.nameen">{{ $t("common.requiredField") }}</small>
-        </div>
-        <div class="field">
-          <label for="filename" >{{$t('common.nameInEnglish')}}</label>
-          <InputText id="fodernameen" v-model="file.nameen" type="text" />
-          <small class="p-error" v-if="validation.namekz && validation.nameru && validation.nameen">{{ $t("common.requiredField") }}</small>
-        </div>
-        <div v-if="docType == attestationDocReportType" class="field">
-                <label for="filename" >{{$t('web.chooseDegree')}}</label>
-                <div class="flex flex-wrap gap-3">
-                    <div class="flex align-items-center">
-                        <RadioButton v-model="selectedEducationLevel" inputId="master" name="bachelor" :value="Enums.EducationLevel.Bachelor" />
-                        <label for="levelBachelor" class="ml-2">{{$t('educationalPrograms.bachelor')}}</label>
-                    </div>
-                    <div class="flex align-items-center">
-                        <RadioButton v-model="selectedEducationLevel" inputId="master" name="master" :value="Enums.EducationLevel.Magister" />
-                        <label for="levelMaster" class="ml-2">{{$t('educationalPrograms.master')}}</label>
-                    </div>
-                    <div class="flex align-items-center">
-                        <RadioButton v-model="selectedEducationLevel" inputId="doctorate" name="doctorate" :value="Enums.EducationLevel.Doctorate" />
-                        <label for="levelDoctoral" class="ml-2">{{$t('educationalPrograms.doctoral')}}</label>
-                    </div>
-                </div>
-                <small class="p-error" v-if="validation.academicLevel">{{ $t("common.requiredField") }}</small>
-        </div>
+        <small class="p-error" v-if="validation.academicLevel">{{ $t("common.requiredField") }}</small>
+      </div>
 
-        <div  v-if="file.params != null && file.params != undefined ">
-          <div class="field" v-for="(param,i) of file.params" :key="`${i}`" >
-            <label>{{$t('hdfs.' + param.name)}}</label>
-            <div v-if="param.description==='img'">
-              <img v-if="param.value" :src="imageUrl+param.value" class="shadow-2" style="max-width: 125px;max-height: 75px;" />
-              <Button :label="$t('common.choose')" @click="param.dialog=true;"></Button>
-              <Dialog v-model:visible="param.dialog" :modal="true" :closable="false" :breakpoints="{'960px': '75vw', '640px': '90vw'}" :style="{width: '80vw'}">
-                <template #header>
-                  <h5>{{ $t("common.message.addPicture") }}</h5>
-                </template>
-                  <Files folder="sysfile" :uuid="param.uuid" @selected="imageSelected($event, param)"></Files>
-                <template #footer>
-                  <div class="p-fluid">
-                    <Button :label="$t('common.cancel')" style="width:100%" @click="param.dialog=false"  class="mt-3 p-button-secondary p-button-outlined"/>
-                  </div> 
-                </template>
-              </Dialog>
-            </div>
-            <div v-else-if="param.name==='saceduprogram'">
-              <SpecialitySearch :style="'height:38px'" class="pt-1" :editMode="true"
-                :educationLevel="educationLevel" v-model="param.value" id="speciality">
-              </SpecialitySearch>
-              <small class="p-error" v-if="validation.academicLevel">{{ $t('web.chooseDegree') }}</small>
-            </div>
-            <div  v-else-if="param.name==='academicyear'">
-              <PrimeCalendar v-model="param.value" selectionMode="range" dateFormat="yy"  view="year" :manualInput="false" />
-            </div>
-            <InputText v-else  v-model="param.value" type="text" />
-            <small class="p-error" v-if="validation.param">{{ $t("common.requiredField") }}</small>
+      <div v-if="file.params != null && file.params != undefined ">
+        <div class="field" v-for="(param,i) of file.params" :key="`${i}`">
+          <label>{{ $t('hdfs.' + param.name) }}</label>
+          <div v-if="param.description==='img'">
+            <img v-if="param.value" :src="imageUrl+param.value" class="shadow-2" style="max-width: 125px;max-height: 75px;"/>
+            <Button :label="$t('common.choose')" @click="param.dialog=true;"></Button>
+            <Dialog v-model:visible="param.dialog" :modal="true" :closable="false" :breakpoints="{'960px': '75vw', '640px': '90vw'}" :style="{width: '80vw'}">
+              <template #header>
+                <h5>{{ $t("common.message.addPicture") }}</h5>
+              </template>
+              <Files folder="sysfile" :uuid="param.uuid" @selected="imageSelected($event, param)"></Files>
+              <template #footer>
+                <div class="p-fluid">
+                  <Button :label="$t('common.cancel')" style="width:100%" @click="param.dialog=false" class="mt-3 p-button-secondary p-button-outlined"/>
+                </div>
+              </template>
+            </Dialog>
           </div>
+          <div v-else-if="param.name==='saceduprogram'">
+            <SpecialitySearch :style="'height:38px'" class="pt-1" :editMode="true"
+                              :educationLevel="educationLevel" v-model="param.value" id="speciality">
+            </SpecialitySearch>
+            <small class="p-error" v-if="validation.academicLevel">{{ $t('web.chooseDegree') }}</small>
+          </div>
+          <div v-else-if="param.name==='academicyear'">
+            <PrimeCalendar v-model="param.value" selectionMode="range" dateFormat="yy" view="year" :manualInput="false"/>
+          </div>
+          <InputText v-else v-model="param.value" type="text"/>
+          <small class="p-error" v-if="validation.param">{{ $t("common.requiredField") }}</small>
         </div>
-        <div v-if="approveInfo">
-          <div class="field">
-            <label for="filename" >{{$t('common.author')}}</label>
-            <DepartmentList :orgType="2" :parentID="1" :autoLoad="true" class="pt-1" ref="departmentList"  v-model="file.author"  :editMode="true" ></DepartmentList>
-            <small class="p-error" v-if="validation.author">{{ $t("common.requiredField") }}</small>
-          </div>
-          <div class="field">
-            <label for="filename" >{{$t('common.approvedBy')}}</label>
-            <InputText id="approvedBy" :placeholder="$t('common.councilName')" v-model="file.approvedBy" type="text" />
-            <small class="p-error" v-if="validation.approvedBy">{{ $t("common.requiredField") }}</small>
-          </div>
-          <div class="field">
-            <label for="filename" >{{$t('common.approveDate')}}</label>
-             <PrimeCalendar
+      </div>
+      <div v-if="approveInfo">
+        <div class="field">
+          <label for="filename">{{ $t('common.author') }}</label>
+          <DepartmentList :orgType="2" :parentID="1" :autoLoad="true" class="pt-1" ref="departmentList" v-model="file.author" :editMode="true"></DepartmentList>
+          <small class="p-error" v-if="validation.author">{{ $t("common.requiredField") }}</small>
+        </div>
+        <div class="field">
+          <label for="filename">{{ $t('common.approvedBy') }}</label>
+          <InputText id="approvedBy" :placeholder="$t('common.councilName')" v-model="file.approvedBy" type="text"/>
+          <small class="p-error" v-if="validation.approvedBy">{{ $t("common.requiredField") }}</small>
+        </div>
+        <div class="field">
+          <label for="filename">{{ $t('common.approveDate') }}</label>
+          <PrimeCalendar
               class="mt-2"
               v-model="file.approveDate"
               dateFormat="dd.mm.yy"
-            />
-            <small class="p-error" v-if="validation.approveDate">{{ $t("common.requiredField") }}</small>
-          </div>
-        </div>
-        <div class="field-checkbox col-12 md:col-6">
-          <Checkbox
-              v-model="file.is_view_only" :binary="true"
-              inputId="viewOnlyCheckbox"
           />
-          <label for="viewOnlyCheckbox">{{ $t('common.viewOnlyCheckbox') }}</label>
-        </div>
-        <div v-if="showUploader" class="field">
-          <label>{{ $t('common.doc') }}</label>
-          <FileUpload
-              :showUploadButton="false"
-              :showCancelButton="false"
-              ref="ufile"
-              :multiple="false"
-              fileLimit="1"
-              :accept="accept || '.doc,.docx,.pdf,.xls,.xlsx,.zip,.mp4,.pptx'"
-              @upload="onUpload"
-              @select="onFileSelect"
-          >
-            <template #empty>
-              <p>{{ $t('hdfs.dragMsg') }}</p>
-            </template>
-
-            <template #content>
-              <div class="upload-content">
-                <div v-if="selectedFile" class="selected-file">
-                  <p>{{ selectedFile.name }}</p>
-                  <button @click="removeFile" class="remove-file-button">
-                    <i class="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-
-                <div class="field">
-                  <label for="fileDescription">{{ $t('hdfs.fileDescription') }}</label>
-                  <textarea
-                      id="fileDescription"
-                      v-model="file.fileDescription"
-                      :placeholder="$t('hdfs.hintEnterDescription')"
-                      rows="3"
-                  ></textarea>
-                </div>
-              </div>
-            </template>
-          </FileUpload>
-          <small class="p-error" v-if="validation.file && file.is_view_only">{{ $t("hdfs.onlyPdfAllowed") }}</small>
-
-          <small class="p-error" v-if="validation.file && !file.is_view_only">{{ $t("hdfs.chooseFile") }}</small>
-        </div>
-        <div v-if="showCatalog" class="field">
-          <label>{{$t('common.catalog')}}</label>
-          <Dropdown v-model="catalog" :options="catalogs" :optionLabel='"name" + $i18n.locale'></Dropdown>
-          <small class="p-error" v-if="validation.catalog">{{ $t("common.message.catalogNotFilled") }}</small>
+          <small class="p-error" v-if="validation.approveDate">{{ $t("common.requiredField") }}</small>
         </div>
       </div>
-      <div  style="text-align:right">
-        <Button v-if="file.id===null" :label="$t('hdfs.uploadBtn')" icon="pi pi-upload" @click="updateFile" />
-        <Button v-else :label="$t('common.save')" icon="pi pi-check" @click="updateFile" />
+      <div class="field-checkbox col-12 md:col-6">
+        <Checkbox
+            v-model="file.is_view_only" :binary="true"
+            inputId="viewOnlyCheckbox"
+        />
+        <label for="viewOnlyCheckbox">{{ $t('common.viewOnlyCheckbox') }}</label>
+      </div>
+      <div class="field-checkbox col-12 md:col-6">
+        <Checkbox
+            v-model="file.is_view_only" :binary="true"
+            inputId="viewOnlyCheckbox"
+        />
+        <label for="viewOnlyCheckbox">{{ $t('common.viewOnlyCheckbox') }}</label>
+      </div>
+      <div v-if="showUploader" class="field">
+        <label>{{ $t('common.doc') }}</label>
+        <FileUpload
+            :showUploadButton="false"
+            :showCancelButton="false"
+            ref="ufile"
+            :multiple="false"
+            fileLimit="1"
+            :accept="accept || '.doc,.docx,.pdf,.xls,.xlsx,.zip,.mp4,.pptx'"
+            @upload="onUpload"
+            @select="onFileSelect"
+        >
+          <template #empty>
+            <p>{{ $t('hdfs.dragMsg') }}</p>
+          </template>
+
+          <template #content>
+            <div class="upload-content">
+              <div v-if="selectedFile" class="selected-file">
+                <p>{{ selectedFile.name }}</p>
+                <button @click="removeFile" class="remove-file-button">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+
+              <div class="field">
+                <label for="fileDescription">{{ $t('hdfs.fileDescription') }}</label>
+                <textarea
+                    id="fileDescription"
+                    v-model="file.fileDescription"
+                    :placeholder="$t('hdfs.hintEnterDescription')"
+                    rows="3"
+                ></textarea>
+              </div>
+            </div>
+          </template>
+        </FileUpload>
+        <small class="p-error" v-if="validation.file && file.is_view_only">{{ $t("hdfs.onlyPdfAllowed") }}</small>
+
+        <small class="p-error" v-if="validation.file && !file.is_view_only">{{ $t("hdfs.chooseFile") }}</small>
+      </div>
+      <div v-if="showCatalog" class="field">
+        <label>{{ $t('common.catalog') }}</label>
+        <Dropdown v-model="catalog" :options="catalogs" :optionLabel='"name" + $i18n.locale'></Dropdown>
+        <small class="p-error" v-if="validation.catalog">{{ $t("common.message.catalogNotFilled") }}</small>
       </div>
     </div>
+    <div style="text-align:right">
+      <Button v-if="file.id===null" :label="$t('hdfs.uploadBtn')" icon="pi pi-upload" @click="updateFile"/>
+      <Button v-else :label="$t('common.save')" icon="pi pi-check" @click="updateFile"/>
+    </div>
+  </div>
 
 </template>
 <script>
 import api from "@/service/api";
 import Files from "@/components/documents/Files.vue"
 
-import {smartEnuApi, getHeader, getFileHeader, fileRoute} from "@/config/config";
+import {fileRoute, getFileHeader, getHeader, smartEnuApi} from "@/config/config";
 import DepartmentList from "../smartenu/DepartmentList.vue"
 import Enum from "@/enum/docstates/index";
-import SpecialitySearch from "../smartenu/speciality/specialitysearch/SpecialitySearch.vue";
 import Enums from "@/enum/docstates/index";
+import SpecialitySearch from "../smartenu/speciality/specialitysearch/SpecialitySearch.vue";
 
 export default {
-    components: {DepartmentList, SpecialitySearch, Files},
-    data() {
-      return {
-        file: this.modelValue,
-        selectedFile: null,
-        catalogs: null,
-        catalog: null,
-        state: this.visible,
-        selectedDepartment: null,
-        uploading: false,
-        imageUrl: smartEnuApi + fileRoute,
-        showUploader: this.fileUpload,
-        uploadedFiles: [],
-        languages: [{name:"kz", value: 0}, {name:"ru", value:1},  {name:"en", value:2}],
-        validation: {
-            parent: false,
-            file: false,
-            param: false,
-            lang: false,
-            approvedBy: false,
-            approveDate: false,
-            author: false,
-            catalog: false,
-            academicLevel:false,
-            eduProg:false,
-            nameGroup: false,
-        },
-        Enums: Enums,
-        selectedEducationLevel: null,
-        attestationDocReportType: parseInt(Enum.DocType.StateAttestationCommission),
-      }
-    },
-    props: {
-      modelValue: null,
-      directory: null,
-      parentID: null,
-      fileUpload: Boolean,
-      showCatalog: Boolean,
-      approveInfo: {
-        default: false
+  components: {DepartmentList, SpecialitySearch, Files},
+  data() {
+    return {
+      file: this.modelValue,
+      selectedFile: null,
+      catalogs: null,
+      catalog: null,
+      state: this.visible,
+      selectedDepartment: null,
+      uploading: false,
+      imageUrl: smartEnuApi + fileRoute,
+      showUploader: this.fileUpload,
+      uploadedFiles: [],
+      languages: [{name: "kz", value: 0}, {name: "ru", value: 1}, {name: "en", value: 2}],
+      validation: {
+        parent: false,
+        file: false,
+        param: false,
+        lang: false,
+        approvedBy: false,
+        approveDate: false,
+        author: false,
+        catalog: false,
+        academicLevel: false,
+        eduProg: false,
+        nameGroup: false,
       },
-      docType: null,
-      accept: null
+      Enums: Enums,
+      selectedEducationLevel: null,
+      attestationDocReportType: parseInt(Enum.DocType.StateAttestationCommission),
+    }
+  },
+  props: {
+    modelValue: null,
+    directory: null,
+    parentID: null,
+    fileUpload: Boolean,
+    showCatalog: Boolean,
+    approveInfo: {
+      default: false
     },
-    emits: ['updated'],
-    setup(props, context) {
+    docType: null,
+    accept: null
+  },
+  emits: ['updated'],
+  setup(props, context) {
     function updateValue(file) {
       context.emit("update:modelValue", file);
     }
+
     return {
       updateValue,
     };
@@ -278,9 +286,9 @@ export default {
       this.file.fileDescription = '';
       this.$refs.ufile.clear();
     },
-    levelValidate(){
+    levelValidate() {
       let docType = parseInt(this.docType)
-      if (docType === this.attestationDocReportType){
+      if (docType === this.attestationDocReportType) {
         this.validation.academicLevel = this.selectedEducationLevel === null;
         return !this.validation.academicLevel;
       }
@@ -323,21 +331,21 @@ export default {
       //this.validation.parent = this.file.parentID === null || this.file.parentID === undefined
       this.levelValidate();
       this.validation.lang = (this.file.id === null && this.file.lang === null)
-      this.validation.param =  false
+      this.validation.param = false
       if (this.file.params != null) {
-        this.file.params.forEach(param=> {
+        this.file.params.forEach(param => {
           if (param.value === null || param.value === '') {
             this.validation.param = true
           }
         })
       }
       if (this.approveInfo) {
-        this.validation.approvedBy = this.file.approvedBy=== null || this.file.approvedBy === '';
+        this.validation.approvedBy = this.file.approvedBy === null || this.file.approvedBy === '';
         this.validation.approveDate = this.file.approveDate === null || this.file.approveDate === undefined;
-        this.validation.author =  this.file.author === null || this.file.author === undefined;
+        this.validation.author = this.file.author === null || this.file.author === undefined;
       }
       if (this.showUploader) {
-        this.validation.file = this.$refs.ufile.files == undefined || this.$refs.ufile.files.length <=0
+        this.validation.file = this.$refs.ufile.files == undefined || this.$refs.ufile.files.length <= 0
       }
       if (this.showCatalog) {
         this.validation.catalog = this.catalog === null || this.catalog === undefined || this.catalogs === null;
@@ -345,23 +353,22 @@ export default {
       //var result = true;
       var validation = this.validation;
       var errors = [];
-      Object.keys(this.validation).forEach(function(k)
-      {
+      Object.keys(this.validation).forEach(function (k) {
         if (k === 'namekz' || k === 'nameru' || k === 'nameen') {
           return;
 
         }
-          if (validation[k] === true) errors.push(validation[k])
-          //result = result && validation[k];
+        if (validation[k] === true) errors.push(validation[k])
+        //result = result && validation[k];
       });
       return errors.length > 0
     },
-    imageSelected(event,param) {
+    imageSelected(event, param) {
       param.value = event.value.filePath;
       param.dialog = false;
     },
-    showMessage(msgtype,message,content) {
-      this.$toast.add({severity:msgtype, summary: message, detail:content, life: 3000});
+    showMessage(msgtype, message, content) {
+      this.$toast.add({severity: msgtype, summary: message, detail: content, life: 3000});
     },
     onUpload() {
       if (this.file.is_view_only && !this.isPdf(this.file.path)) {
@@ -377,8 +384,10 @@ export default {
       }
       const extension = fileName.split('.').pop().toLowerCase();
       switch (extension) {
-        case 'pdf': return true;
-        default: return false;
+        case 'pdf':
+          return true;
+        default:
+          return false;
       }
     },
     updateFile() {
@@ -389,82 +398,82 @@ export default {
         return;
       }
 
-        if (this.notValid()) {
-            return;
-        }
+      if (this.notValid()) {
+        return;
+      }
 
-        let locFolderId = this.parentID
-        if (this.catalogs !== null && this.catalog !== null) {
-          locFolderId = this.catalog.id
-        }
+      let locFolderId = this.parentID
+      if (this.catalogs !== null && this.catalog !== null) {
+        locFolderId = this.catalog.id
+      }
 
-        if (this.directory === 'normativeDocs' && (this.parentID === null || this.parentID === undefined || 
+      if (this.directory === 'normativeDocs' && (this.parentID === null || this.parentID === undefined ||
           locFolderId === null || locFolderId === undefined)) {
-          this.$toast.add({
-            severity: 'error', 
-            detail: this.$t('common.message.saveErrorToUpdate'), 
-            life: 3000
-          });
-          return;
+        this.$toast.add({
+          severity: 'error',
+          detail: this.$t('common.message.saveErrorToUpdate'),
+          life: 3000
+        });
+        return;
+      }
+
+      this.uploading = true;
+      const fd = new FormData();
+      var fcount = 0
+      if (this.$refs.ufile !== undefined) {
+        for (let i = 0; i < this.$refs.ufile.files.length; i++) {
+          fd.append('f' + i, this.$refs.ufile.files[i]);
         }
 
-        this.uploading = true;
-        const fd = new FormData();
-        var fcount = 0
-        if (this.$refs.ufile !== undefined) {
-          for (let i=0; i < this.$refs.ufile.files.length; i++) {
-            fd.append('f'+i, this.$refs.ufile.files[i]);
-          }
-        
         //var fcount = this.file.id !== null ? 0 : this.$refs.ufile.files.length
-          fcount = this.$refs.ufile.files.length
-        }
+        fcount = this.$refs.ufile.files.length
+      }
       if (this.file.fileDescription) {
-          let param = {
-            value: this.file.fileDescription,
-            name: 'FileDescription',
-            description: 'FileDescription'
-          };
+        let param = {
+          value: this.file.fileDescription,
+          name: 'FileDescription',
+          description: 'FileDescription'
+        };
 
         if (!this.file.params) {
           this.file.params = [];
         }
 
-          this.file.params.push(param);
+        this.file.params.push(param);
       }
-        fd.append('info', JSON.stringify({directory: this.directory, count: fcount, folderID: locFolderId, fileInfo: this.file}));
-        api.post("/doc/updateFile", fd, {
-          headers: getFileHeader()
-        })
-        .then(resp => {
-          if (this.file.id === null && resp.data.length>0) {
+      fd.append('info', JSON.stringify({directory: this.directory, count: fcount, folderID: locFolderId, fileInfo: this.file}));
+      api.post("/doc/updateFile", fd, {
+        headers: getFileHeader()
+      })
+          .then(resp => {
+            if (this.file.id === null && resp.data.length > 0) {
               this.file.id = resp.data[0].id
               this.file.key = resp.data[0].uuid
               this.file.path = resp.data[0].filePath
-              this.file.stateID =  1
+              this.file.stateID = 1
               this.file.statekz = "құрылды"
               this.file.stateru = "создан"
               this.file.stateen = "created"
 
-          }
-          this.uploading = false;
-          this.file.leaf = null;
-          this.$emit("updated", this.file);
-          this.onUpload();
-        })
-        .catch(error => {
-          this.uploading = false;
-          this.$toast.add({severity: 'error', summary: 'Error', detail: error.message, life: 3000});
-        });
+            }
+            this.uploading = false;
+            this.file.leaf = null;
+            this.$emit("updated", this.file);
+            this.onUpload();
+          })
+          .catch(error => {
+            this.uploading = false;
+            this.$toast.add({severity: 'error', summary: 'Error', detail: error.message, life: 3000});
+          });
     },
     deleteFile(hide) {
       let url = "/doc/deleteFile";
-      api.post(url, {id: this.folder.id, hide: hide}, { headers: getHeader() })
-      .then(response=>{
-          this.folder.key = response.data.id;
-          this.showMessage('success', this.$t('common.message.title.docCreation'),this.$t('common.message.catSuccesCreated'));
-          this.$emit("updated", this.folder);
-      })
+      api.post(url, {id: this.folder.id, hide: hide}, {headers: getHeader()})
+          .then(response => {
+            this.folder.key = response.data.id;
+            this.showMessage('success', this.$t('common.message.title.docCreation'), this.$t('common.message.catSuccesCreated'));
+            this.$emit("updated", this.folder);
+          })
     },
     getReadyDocCatalog() {
       api.post('/doc/getFoldersByType', {

@@ -1,8 +1,8 @@
 <template>
   <div class="layout-profile">
     <div>
-      <img class="round" v-if="loginedUser.photo != null && loginedUser.photo !=''"
-           :src="'data:image/jpeg;base64,' + loginedUser.photo "/>
+      <img class="round" v-if="loginedUser.photo_v2 != null && loginedUser.photo_v2 !=''"
+           :src="'data:image/jpeg;base64,' + loginedUser.photo_v2 "/>
       <img class="round" v-else src="assets/layout/images/default-user.jpg"/>
     </div>
     <button class="p-link layout-profile-link align-items-center px-3 justify-content-between" @click="onClick">
@@ -44,6 +44,11 @@
         <li v-if="!this.findRole(null, 'student')">
           <button @click="qr" class="p-link">
             <i :class="{active: activeItem === 'qr'}" class="pi pi-fw pi-qrcode"></i><span :class="{active: activeItem === 'qr'}" >{{ $t("common.qrGenerator") }}</span>
+          </button>
+        </li>
+        <li>
+          <button @click="myFinances" class="p-link">
+            <i :class="{active: activeItem === 'categories-finances'}" class="pi pi-wallet"></i><span :class="{active: activeItem === 'categories-finances'}" >{{ $t("common.myFinances") }}</span>
           </button>
         </li>
         <li>
@@ -124,6 +129,11 @@ export default {
       this.updateParentVariable('qr');
       localStorage.setItem('activeItem', 'qr');
       this.$router.push({path: "/qr"})
+    },
+    myFinances(){
+      this.updateParentVariable('categories-finances');
+      localStorage.setItem('activeItem', 'categories-finances');
+      this.$router.push({path: "/categories-finances"})
     },
     changeRole() {
       this.$refs.positionChangeDialog.show();

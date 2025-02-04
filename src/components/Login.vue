@@ -47,6 +47,11 @@
               </small>
             </div>
           </div>
+          <div class="p-fluid mb-3">
+            <div class="field col-12">
+              <InlineMessage severity="info">{{ $t('common.agreement') }}</InlineMessage>
+            </div>
+          </div>
           <div class="p-w-100 text-right">
             <Button :label="$t('common.login')" icon="pi pi-check" @click="login" iconPos="right"/>
           </div>

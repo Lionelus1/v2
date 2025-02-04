@@ -44,16 +44,16 @@
         <div v-else v-for="(n,ni) in notifications" :key="ni" class="notific_item">
           <div class="flex">
             <img class="notification_img round mr-3"
-                 v-if="n.senderObject.photo != null && n.senderObject.photo !=''"
-                 :src="'data:image/jpeg;base64,' + n.senderObject.photo " rounded/>
+                 v-if="n.senderObject.photo_v2 != null && n.senderObject.photo_v2 !=''"
+                 :src="'data:image/jpeg;base64,' + n.senderObject.photo_v2 " rounded/>
             <div v-else class="ava_user flex justify-content-center align-items-center notification_img round mr-3"><i class="pi pi-user"></i></div>
             <div class="flex flex-column gap-1" style="width: 75%;word-wrap: break-word;">
               <h6 :style="{margin:0,marginBottom:'2px',fontWeight : n.isSeen==0 ? 'bolder' : '400'}">
                 {{ n.senderObject.fullName }}</h6>
               <div :style="{fontWeight : n.isSeen==0 ? 'bolder' : '400'}" class="content_notific font-semibold"
-                   v-html="getContentWithLinkHandler(n['description_' + $i18n.locale])" :class="{ 'visible': n.isShow }">
+                   v-html="getContentWithLinkHandler(n['description_' + $i18n.locale])" :class="{ 'visible': n.isShow }"  @click="handleLinkClick">
               </div>
-              <div v-if="n.description_kz.length > maxLength" class="read_more" @click="toggleShowMore(n)" :class="{ 'visible': n.isShow }">
+              <div v-if="n.description_kz && n.description_kz.length > maxLength" class="read_more" @click="toggleShowMore(n)" :class="{ 'visible': n.isShow }">
                 {{ n.isShow ? $t("educomplex.tooltip.cover")+'^' : $t("common.readMore")+'...' }}
               </div>
               <span class="text-gray-500">{{ timeDifference(n.createdDate) }}</span>
@@ -132,11 +132,8 @@ export default {
       this.notificationService.viewNotifications({views: nots}).then(response => {
             if (this.newCount > 0)
               this.newCount = this.newCount - nots.length < 0 ? 0 : this.newCount - nots.length;
-            console.info("view result", response)
           }
-      ).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
-      });
+      );
     },
     loadNotifications() {
       if (this.loginedUser) {
@@ -147,7 +144,7 @@ export default {
         }
         this.notificationService.getNotifications(this.pageNum, this.itemsPerPage).then(response => {
           this.newCount = response.data.NewCount ? response.data.NewCount : 0;
-          let recordCount = response.data.RecordCount;
+          let recordCount = response.data.RecordCount
           this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
           //alert("private len "+response.data.private.length+" "+" general len"+response.data.general.length);
           if (!response.data.private) {
@@ -169,29 +166,26 @@ export default {
           this.pageNum = this.pageNum + 1;
             this.btnLoading = false;
             this.notLoading = false;
-          let newNots = this.notifications.filter(f => parseInt(f.isSeen) == 0);
+          let newNots = this.notifications.filter(f => parseInt(f.isSeen) === 0);
           if (newNots.length > 0) {
             this.ViewNotification(newNots);
           }
-        }).catch(error => {
-          console.log(error)
-        })
+        });
       }
     },
     isMobile() {
       return window.innerWidth <= 1024;
     },
+    handleLinkClick(event){
+      if (event.target.tagName === 'A') {
+        event.preventDefault();
+        window.location.href = event.target.href;
+        this.visibleRight = false
+      }
+    },
     getContentWithLinkHandler(content) {
        const div = document.createElement('div');
       div.innerHTML = content;
-      const link = div.querySelector('a');
-
-      if (link) {
-        link.addEventListener('click', (event) => {
-          event.preventDefault();
-          this.visibleRight = false
-        });
-      }
       return div.innerHTML;
     },
     toggleShowMore(item) {
@@ -225,9 +219,7 @@ export default {
         this.newCount = response.data.NewCount ? response.data.NewCount : 0;
         let recordCount = response.data.RecordCount;
         this.pageCount = recordCount % this.itemsPerPage == 0 ? parseInt(recordCount / this.itemsPerPage) : parseInt(recordCount / this.itemsPerPage) + 1;
-      }).catch(error => {
-        this.$toast.add({severity: "error", summary: error, life: 3000});
-      })
+      });
     }
   },
   async created() {

@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
+import {createRouter, createWebHashHistory} from 'vue-router';
 import Full from './components/Full.vue';
 import store from '@/store/store';
 
@@ -147,6 +147,12 @@ const routes = [
                 path: '/documents/catalog/acts',
                 name: '/documents/catalog/acts',
                 component: load('documents/catalog/Acts'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/documents/catalog/protocols',
+                name: 'ProtocolRegister',
+                component: load('documents/catalog/Protocols'),
                 beforeEnter: ifAuthenticated,
             },
             {
@@ -326,7 +332,7 @@ const routes = [
                 name: 'OrganizationList',
                 component: load('contragent/v2/OrganizationList'),
                 beforeEnter: ifUserRoles,
-                meta: { roles: ['student', 'personal'] }
+                meta: {roles: ['student', 'personal']}
             },
             {
                 path: '/contragent/organization/:id?',
@@ -334,7 +340,7 @@ const routes = [
                 component: load('contragent/v2/OrganizationPage'),
                 props: true,
                 beforeEnter: ifUserRoles,
-                meta: { roles: ['student', 'personal'] }
+                meta: {roles: ['student', 'personal']}
             },
             {
                 path: '/user/cv/:uuid',
@@ -347,7 +353,7 @@ const routes = [
                 name: 'PersonsList',
                 component: load('contragent/v2/PersonsList'),
                 beforeEnter: ifUserRoles,
-                meta: { roles: ['personal'] }
+                meta: {roles: ['personal']}
             },
             {
                 path: '/hdfs/hdfsmain',
@@ -547,11 +553,47 @@ const routes = [
                         beforeEnter: ifAuthenticated,
                     },
                     {
+                        path: 'reports/:id/:userId/:uuId/:doc',
+                        name: 'WorkPlanJournalReport',
+                        component: load('work_plan/WorkPlanJournalReport'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
                         path: 'report/:id',
                         name: 'WorkPlanReportView',
                         component: load('work_plan/WorkPlanReportView'),
                         beforeEnter: ifAuthenticated,
                     },
+                    {
+                        path: 'view/:id',
+                        name: 'WorkPlanView',
+                        component: load('work_plan/WorkPlanView'),
+                        beforeEnter: ifAuthenticated
+                    },
+                    {
+                        path: 'analysis/:id',
+                        name: 'WorkPlanAnalysisView',
+                        component: load('work_plan/analysis/OperPlanAnalysisView'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/work-plan/directors/protocol/:workPlanId/:protocolId',
+                        name: 'addWorkPlanProtocol',
+                        component: load('work_plan/protocol/Protocol'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/documents/catalog/protocols/:docType/:workPlanID',
+                        name: 'Protocols',
+                        component: load('documents/catalog/Protocols'),
+                        beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/documents/catalog/protocols/:docType/:workPlanID',
+                        name: 'ProtocolExtracts',
+                        component: load('documents/catalog/Protocols'),
+                        beforeEnter: ifAuthenticated,
+                    }
                 ]
             },
             {
@@ -694,17 +736,46 @@ const routes = [
                 path: '/telegram',
                 name: 'TelegramComponent',
                 component: load('telegram/Questions'),
-                meta: { roles: ['telegram', 'main_administrator'] },
+                meta: {roles: ['telegram', 'main_administrator']},
                 beforeEnter: ifUserRoles,
+            },
+            {
+                path: '/showcase',
+                name: 'ShowcaseComponent',
+                component: load('showcase/Showcase'),
+                meta: {roles: ['showcase']},
+                beforeEnter: ifUserRoles,
+
             },
             {
                 path: '/hikvision',
                 name: 'HikvisionTemplate',
                 component: load('hikvision/Hikvision'),
-                meta: { roles: ['personal'] },
+                meta: {roles: ['personal']},
                 beforeEnter: ifUserRoles,
             },
-
+            {
+                path: '/reports',
+                name: 'ReportsTemplate',
+                component: load('reports/Reports'),
+                meta: {roles: ['personal']},
+                beforeEnter: ifUserRoles,
+            },
+            {
+                path: '/report-preview',
+                name: 'ReportPreview',
+                component: load('reports/ReportPreview'),
+                meta: {roles: ['personal']},
+                beforeEnter: ifUserRoles,
+            },
+            {
+                path: '/report-view',
+                name: 'ReportView',
+                component: load('reports/ReportView'),
+                props: true,
+                meta: {roles: ['personal']},
+                beforeEnter: ifUserRoles,
+            },
             {
                 path: '/helpdesk/v2',
                 name: 'HelpDeskComponent',
@@ -946,6 +1017,62 @@ const routes = [
                 beforeEnter: ifMainAdministrator,
             },
             {
+                path: '/registry',
+                name: 'RegistryComponent',
+                component: load('registry/RegistryComponent'),
+                // beforeEnter: ifAuthenticated,
+                children: [
+                    {
+                        path: '',
+                        name: 'RegistryManagement',
+                        component: load('registry/RegistryManagement'),
+                        // beforeEnter: ifMainAdministrator,
+                    },
+                    {
+                        path: '/registry/RegistryAdd/:id',
+                        name: 'RegistryAdd',
+                        component: load('registry/RegistryAdd'),
+                        // beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/registry/Registry/:id',
+                        name: 'Registry',
+                        component: load('registry/Registry'),
+                        // beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/registry/Registry/:id1/:id2',
+                        name: 'RegistryPage',
+                        component: load('registry/RegistryPage'),
+                        // beforeEnter: ifAuthenticated,
+                    },
+                    {
+                        path: '/registry/RegistryTicket/:id1/:id2',
+                        name: 'RegistryTicket',
+                        component: load('registry/RegistryTicket'),
+                        // beforeEnter: ifAuthenticated,
+                    },
+                ]
+            },
+    //         {
+    //         path: '/helpdesk/v2',
+    // name: 'HelpDeskComponent',
+    // component: load('helpDesk/HelpDeskComponent'),
+    // beforeEnter: ifAuthenticated,
+    // children: [
+    // {
+    //     path: '',
+    //     name: 'DeskJournal',
+    //     component: load('helpDesk/DeskJournal'),
+    //     beforeEnter: ifAuthenticated,
+    // },
+    // {
+    //     path: 'request/:uuid',
+    //     name: 'Request',
+    //     component: load('helpDesk/Request'),
+    //     beforeEnter: ifAuthenticated,
+    // },
+            {
                 path: '/approvalList',
                 name: 'ApprovalListControl',
                 component: load('roleControl/ApprovalListControl'),
@@ -955,6 +1082,18 @@ const routes = [
                 path: '/qr',
                 name: 'QR',
                 component: () => import('./components/QrGenerator.vue'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/categories-finances',
+                name: 'categoriesFinances',
+                component: () => import('./components/CategoriesFinances'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/catfinances/:categoryID',
+                name: 'financeCat',
+                component: () => import('./components/MyFinances'),
                 beforeEnter: ifAuthenticated,
             },
             {

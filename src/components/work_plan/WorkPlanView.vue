@@ -37,6 +37,7 @@
         </Timeline>
       </div>
       <div class="card">
+        <ProgressBar v-if="!sourceb64" mode="indeterminate" style="height: .5em"/>
         <embed :src="sourceb64" style="width: 100%; height: 1000px" v-if="sourceb64" type="application/pdf"/>
       </div>
     </div>
@@ -60,6 +61,7 @@
 <script>
 import {runNCaLayer} from "../../helpers/SignDocFunctions";
 import {WorkPlanService} from "@/service/work.plan.service";
+import Enum from "@/enum/workplan/index"
 
 export default {
   name: "WorkPlanView",
@@ -129,11 +131,26 @@ export default {
       }
     },
     getFile() {
-      this.planService.getPlanFile(this.plan.doc_id).then(res => {
+      let isProtocolEvent = false;
+      if(this.plan?.plan_type?.code === Enum.WorkPlanTypes.Directors){
+        isProtocolEvent = true;
+      }
+      let data = {
+        work_plan_id: this.plan.work_plan_id,
+        is_protocol_event: isProtocolEvent
+      };
+      this.planService.getWorkPlanData(data).then(res => {
         if (res.data) {
-          this.source = `data:application/pdf;base64,${res.data}`;
-          this.sourceb64 = this.b64toBlob(res.data);
-          this.document = res.data;
+          
+          if(this.plan?.plan_type?.code === Enum.WorkPlanTypes.Directors){
+            this.source = `data:application/pdf;base64,${res.data.generate_byte}`;
+            this.sourceb64 = this.b64toBlob(res.data.generate_byte);
+            this.document = res.data.generate_byte;
+          }else{
+            this.source = `data:application/pdf;base64,${res.data}`;
+            this.sourceb64 = this.b64toBlob(res.data);
+            this.document = res.data;
+          }
         }
       }).catch(error => {
         if (error.response && error.response.status === 401) {
@@ -193,8 +210,15 @@ export default {
       });
     },
     getWorkPlanApprovalUsers() {
-      this.planService.getWorkPlanApprovalUsers(parseInt(this.work_plan_id)).then(res => {
-        if (res.data) {
+
+      let data = {
+        work_plan_id: parseInt(this.work_plan_id),
+        page: 0,
+        rows: 0,
+        is_contract: false
+      };
+      this.planService.getWorkPlanApprovalUsers(data).then(res => {
+        if (res.data?.work_plan_users) {
           this.approvals = [];
           const d = res.data;
           this.isPlanApproved = d.every(x => x.is_success);
@@ -207,15 +231,6 @@ export default {
           this.init();
         }
       }).catch(error => {
-        if (error.response && error.response.status === 401) {
-          this.$store.dispatch("logLout");
-        } else {
-          this.$toast.add({
-            severity: "error",
-            summary: error,
-            life: 3000,
-          });
-        }
       });
     },
 
@@ -402,6 +417,11 @@ export default {
   &.status-2 {
     background: #FEEDAF;
     color: #8A5340;
+  }
+
+  &.status-1 {
+    background: #B3E5FC;
+    color: #23547B;
   }
 }
 </style>

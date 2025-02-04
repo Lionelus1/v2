@@ -18,6 +18,8 @@
       <small class="p-error" v-if="submitted && !formData.plan_type">{{ $t('common.requiredField') }}</small>
     </div>
 
+    <!--    {{ params }}-->
+
     <DocParams :params="params"></DocParams>
 
     <template #footer>
@@ -50,7 +52,7 @@ const formData = reactive({
   work_plan_name: null,
   lang: null,
   plan_type: null,
-  science_params: null
+  params: null
 })
 
 const languages = ref([
@@ -80,13 +82,11 @@ const closeBasic = () => {
 
 const createPlan = () => {
   submitted.value = true;
-  isDisabled.value = true;
   if (!validate()) return
 
   const fd = new FormData()
-  formData.science_params = params.value?.filter(param => param.component != "file")
+  formData.params = params.value?.filter(param => param.component != "file")
   fd.append("workplan", JSON.stringify(formData))
-
   params.value?.forEach((param) => {
     if (param.component == "file" && param.value?.length > 0) {
       for (let file of param.value) {
@@ -140,16 +140,28 @@ onMounted(() => {
 })
 
 watch(() => formData.plan_type, () => {
-  const id = types.value[formData.plan_type - 1].dic_document_types
-  if (id == null) {
+  let id = null
+  types.value.forEach((type) => {
+    if (type.id === formData.plan_type) {
+      id = type.dic_document_types
+    }
+  })
+  if (id === null) {
     params.value = null
     return
   }
-  docService.getDocParams(id).then(res => {
-    params.value = JSON.parse(res.data)
-  }).catch(error => {
-    toast.add({severity: "error", summary: error, life: 3000});
-  })
 
+  docService.getDocParams(id).then(res => {
+    params.value = JSON.parse(res.data);
+    if (formData.plan_type === 9) {
+      let user = JSON.parse(localStorage.getItem("loginedUser"))
+      if (user?.mainPosition?.id === 37290) {
+        params.value = params.value.filter(item => item.name !== 'foreign_consultant');
+      }
+    }
+  }).catch(error => {
+    params.value = null
+  })
 })
+
 </script>

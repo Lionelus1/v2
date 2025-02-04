@@ -3,6 +3,10 @@ export default {
         Standart: "standart",
         Oper: "oper",
         Science: "science",
-        Magister: "masters",
+        WorkSchedule: "work",
+        Masters: "masters",
+        Doctors: "doctors",
+        Internship: "internship",
+        Directors: "directors"
     }
 }

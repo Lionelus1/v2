@@ -3,7 +3,7 @@
     <div class="flex flex-col items-center justify-center">
       <!-- ФОТО -->
       <div>
-        <img class="round sm:mr-3 mr-0" v-if="user.photo != null && user.photo !=''" :src="'data:image/jpeg;base64,'+user.photo" />
+        <img class="round sm:mr-3 mr-0" v-if="user.photo_v2 != null && user.photo_v2 !=''" :src="'data:image/jpeg;base64,'+user.photo_v2" />
         <img class="round sm:mr-3 mr-0" v-else src="assets/layout/images/default-user.jpg" />
         <FileUpload v-if="(userID === currentUser.userID || findRole(currentUser, 'main_administrator')) && findRole(currentUser, 'teacher')" ref="form" mode="basic" class="mt-2"
                     :customUpload="true" accept="image/*" :class="{'p-invalid': validation.file}"

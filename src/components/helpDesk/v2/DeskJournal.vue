@@ -592,7 +592,7 @@ const createHelpDesk = async () => {
 
     // Construct the formatted date string
     let formattedDate = `${day}.${month}.${year}`;
-    delete user.photo;
+    delete user.photo_v2;
     await camundaServiceInstance.startProcess("scope", {
         application: selectedDirection.value,
         user: user,

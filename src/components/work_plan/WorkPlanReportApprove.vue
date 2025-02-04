@@ -1,11 +1,13 @@
 <template>
-  <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{ width: '50vw' }" class="p-fluid" @closed="closeModal"
-    @hide="closeModal" :closeOnEscape="true">
-    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em" />
-    <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em" />
+  <Dialog :header="$t('common.action.sendToApprove')" v-model:visible="showModal" :style="{ width: '50vw' }"
+          class="p-fluid" @closed="closeModal"
+          @hide="closeModal" :closeOnEscape="true">
+    <ProgressBar v-if="loading" mode="indeterminate" style="height: .5em"/>
+    <ProgressBar v-if="approving" mode="indeterminate" style="height: .5em"/>
     <BlockUI :blocked="loading || approving">
       <div class="field">
-        <ApprovalUsers :approving="approving" v-model="approval_users" @closed="closeModal" @approve="approve($event)" :stages="stages" :mode="'standard'">
+        <ApprovalUsers :approving="approving" v-model="approval_users" @closed="closeModal" @approve="approve($event)"
+                       :stages="stages" :mode="'standard'">
         </ApprovalUsers>
       </div>
     </BlockUI>
@@ -14,13 +16,12 @@
 
 <script>
 import ApprovalUsers from "@/components/ncasigner/ApprovalUsers/ApprovalUsers";
-import { WorkPlanService } from "@/service/work.plan.service";
+import {WorkPlanService} from "@/service/work.plan.service";
 import Enum from "@/enum/workplan/index"
-import { b64toBlob } from "@/config/config";
 
 export default {
   name: "WorkPlanReportApprove",
-  components: { ApprovalUsers },
+  components: {ApprovalUsers},
   props: ['visible', 'docId', 'report', 'events', 'approvalStages', 'plan', 'reportFd'],
   emits: ['sentToApprove', 'closed'],
   data() {
@@ -76,17 +77,18 @@ export default {
       fd.append("file", this.file)
       fd.append("report_id", this.data.id)
       fd.append("doc_id", this.doc_id)
+      fd.append("eventUserId", this.$route.params.userId)
       fd.append("approval_users", JSON.stringify(this.approval_users))
       this.planService.approvePlan(fd).then(res => {
         if (res.data && res.data.is_success) {
-          this.$toast.add({ severity: "success", summary: this.$t('common.message.succesSendToApproval'), life: 3000 });
+          this.$toast.add({severity: "success", summary: this.$t('common.message.succesSendToApproval'), life: 3000});
           this.$emit('sentToApprove')
           this.submitted = false;
         }
         this.approving = false;
         this.showModal = false;
       }).catch(error => {
-        this.$toast.add({ severity: "error", summary: error, life: 3000 });
+        this.$toast.add({severity: "error", summary: error, life: 3000});
         this.submitted = false;
       });
 
@@ -95,6 +97,7 @@ export default {
       this.loading = true;
       let data = {
         work_plan_id: parseInt(this.plan.work_plan_id),
+        eventUserId: parseInt(this.$route.params.userId),
         quarter: this.report.report_type === 2 ? this.report.quarter : null,
         halfYearType: this.report.report_type === 3 ? this.report.halfYearType : null,
         department_id: this.report.department_id ? this.report.department_id : null,
@@ -133,7 +136,7 @@ export default {
         byteArrays.push(byteArray);
       }
 
-      const blob = new Blob(byteArrays, { type: "application/pdf" });
+      const blob = new Blob(byteArrays, {type: "application/pdf"});
       return blob;
     },
   },

@@ -15,4 +15,16 @@ export class AccountService {
         return api.post(`/account/info/update`, data, {headers: getHeader()});
     }
 
+    getAttempt(data) {
+        return api.post(`/user/account/attempt`, data, {headers: getHeader()});
+    }
+
+    getSettings() {
+        return api.get(`/smartenu/settings/get`, {headers: getHeader()});
+    }
+
+    saveSettings(data) {
+        return api.post(`/smartenu/settings/insert`, data, {headers: getHeader()});
+    }
+
 }
