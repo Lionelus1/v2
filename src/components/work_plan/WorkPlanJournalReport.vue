@@ -454,9 +454,13 @@ const getContrData = () => {
   agreeService.getSignInfo(data).then(res => {
     if(res.data){
       if(route.params.doc && route.params.doc === "Трехсторонний договор"){
-        if(res.data && res.data.newParams && res.data.newParams.contragent && res.data.newParams.contragent.value && res.data.newParams.contragent.value && res.data.newParams.contragent.value.data){
+
+        if (res.data && res.data.newParams && res.data.newParams.contragent && res.data.newParams.contragent.value.type === 1) {
+          contrData.value = res.data.newParams.contragent.value.data.signer
+        } else if (res.data && res.data.newParams && res.data.newParams.contragent && res.data.newParams.contragent.value.type === 4) {
           contrData.value = res.data.newParams.contragent.value.data
         }
+
       } else if(route.params.doc && route.params.doc === "Двухсторонний договор"){
         if(res.data && res.data.newParams && res.data.newParams.contragent && res.data.newParams.contragent.value && res.data.newParams.contragent.value && res.data.newParams.contragent.value.data
             && res.data.newParams.contragent.value.data.chief){
