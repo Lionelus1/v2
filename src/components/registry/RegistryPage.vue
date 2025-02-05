@@ -37,7 +37,7 @@
         <div class="image-section">
           <div v-for="(param, index) in extractedDataType4" :key="index">
             <h3 v-if="param.value_ru" style="margin-top: 20px">{{ t('registry.img') }}</h3>
-            <img :src="'http://testsmart.enu.kz/api/serve?path=' + param.value_ru" alt="Изображение объекта" />
+            <img :src="baseURL + param.value_ru" alt="Изображение объекта" />
           </div>
         </div>
       </div>
@@ -62,6 +62,7 @@ const {t, locale} = useI18n()
 const extractedData = ref(null)
 const extractedDataNot4 = ref(null)
 const extractedDataType4 = ref(null)
+const baseURL = ref(process.env.VUE_APP_SMARTENU_API)
 
 const getRegisterParameterApplication = () => {
   loading.value = true;
