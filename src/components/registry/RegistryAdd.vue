@@ -338,62 +338,62 @@ const selectedApplication = computed(() => {
 
 const getRegisterParameterApplication = () => {
   loading.value = true;
+  if (selectedApplication.value) {
+    const req = {
+      page: 0,
+      rows: 1,
+      registry_id: parseInt(route.params.id, 10),
+      id: parseInt(selectedApplication.value, 10),
+    };
 
-  const req = {
-    page: 0,
-    rows: 1,
-    registry_id: parseInt(route.params.id, 10),
-    id: parseInt(selectedApplication.value, 10),
-  };
+    registryService.getApplication(req)
+        .then((res) => {
+          if (res.data?.applications?.length === 1) {
 
-  registryService.getApplication(req)
-      .then((res) => {
-        if (res.data?.applications?.length === 1) {
+            const application = res.data.applications[0];
 
-          const application = res.data.applications[0];
+            application.parameters.forEach((param) => {
 
-          application.parameters.forEach((param) => {
+              const index = formFields.value.findIndex((p) => p.id === param.parameter.id);
 
-            const index = formFields.value.findIndex((p) => p.id === param.parameter.id);
+              if (index !== -1) {
+                formFields.value[index].value_kz = param.value_kz || '';
+                formFields.value[index].value_ru = param.value_ru || '';
+                formFields.value[index].value_en = param.value_en || '';
+              }
 
-            if (index !== -1) {
-              formFields.value[index].value_kz = param.value_kz || '';
-              formFields.value[index].value_ru = param.value_ru || '';
-              formFields.value[index].value_en = param.value_en || '';
-            }
-
-            if (param.parameter.type === 4) {
-              formFields.value.forEach((field) => {
+              if (param.parameter.type === 4) {
+                formFields.value.forEach((field) => {
 
 
-                const index = formFields.value.findIndex((p) => p.id === param.parameter.id);
+                  const index = formFields.value.findIndex((p) => p.id === param.parameter.id);
 
-                const req = {
-                  page:0,
-                  rows: 1,
-                  filter:{
-                    name: param.value_kz,
+                  const req = {
+                    page:0,
+                    rows: 1,
+                    filter:{
+                      name: param.value_kz,
+                    }
                   }
-                }
 
-                userService.getUsers(req).then((res) => {
-                  if (res.data) {
-                    formFields.value[index].applicant = res.data.foundUsers;
-                  }
+                  userService.getUsers(req).then((res) => {
+                    if (res.data) {
+                      formFields.value[index].applicant = res.data.foundUsers;
+                    }
+                  })
+
+
                 })
+              }
 
-
-              })
-            }
-
-          });
-        }
-        loading.value = false;
-      })
-      .catch(error => {
-        toast.add({severity: "error", summary: error, life: 3000});
-      })
-
+            });
+          }
+          loading.value = false;
+        })
+        .catch(error => {
+          toast.add({severity: "error", summary: error, life: 3000});
+        })
+  }
 };
 
 const getRegisterParameterApplicationSelect = () => {

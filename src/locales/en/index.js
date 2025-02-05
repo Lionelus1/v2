@@ -262,6 +262,7 @@ export default {
             deleted: "Deleted",
             replied: "Replied",
             pending: "Pending",
+            reserved: "Busy"
         },
 
         message: {

@@ -132,7 +132,7 @@ export default {
   },
   methods: {
     open(){
-      this.$router.push({ name: 'RegistryAdd', params: {id: parseInt(this.$route.params.id)} });
+      this.$router.push({ name: 'RegistryAdd', params: {id: parseInt(this.$route.params.id), query: {selectedApplicationId: null} } });
     },
     update() {
       this.$router.push({ name: 'RegistryAdd', params: {id: parseInt(this.$route.params.id)}, query: {selectedApplicationId: this.selectedApplication.id} });
