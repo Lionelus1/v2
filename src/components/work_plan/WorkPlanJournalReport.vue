@@ -725,7 +725,16 @@ const getDiaryReports = async () => {
     if (dRes && dRes.data && dRes.data.length > 0) {
       dReports.value = dRes.data;
       calcCC(); //для заключения контрагента
-      await getFile(0);
+
+      // dReports
+      let ind = 0
+      for (let i= 0; i < dReports.value.length; i++) {
+        if (dReports.value[i].report_type === 3) {
+          ind = i
+        }
+      }
+
+      await getFile(ind);
       // await getRespUsers();
       // loading.value = false;
     } else {
