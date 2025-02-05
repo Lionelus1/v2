@@ -242,6 +242,7 @@ export default {
       deleted: 'Өшірілді',
       replied: 'Жауап берілді',
       pending: 'Қарастырылуда',
+      reserved: "Бос емес"
     },
     message: {
       title: {
