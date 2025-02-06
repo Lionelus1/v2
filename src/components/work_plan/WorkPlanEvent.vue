@@ -2569,9 +2569,7 @@ export default {
           visible:
               this.isFinish && !this.isWorkSchedule &&
               !this.isSciencePlan && !this.isDirectorsPlan &&
-              (this.isApproval || this.isPlanCreator || this.isAdmin || this.isRespUser) &&
-              (!(this.isMastersPlan || this.isDoctorsPlan) ||
-                  this.isPlanApproved) && (!(this.isMastersPlan || this.isDoctorsPlan || this.isInternshipPlan) || this.isPlanApproved),
+              (this.isApproval || this.isPlanCreator || this.isAdmin || this.isRespUser) && (!(this.isMastersPlan || this.isDoctorsPlan || this.isInternshipPlan) || this.isPlanApproved),
           command: () => {
             this.navigateToReports();
           },
@@ -2684,9 +2682,15 @@ export default {
       return this.data && this.data.length > 0;
     },
     isRespUser() {
-      return this.plan?.doc_info?.approvalStages?.some((stage) =>
-          stage?.users?.some((user) => user?.userID === this.loginedUserId)
-      ) || false;
+      const isCreator = this.data?.some((event) =>
+        event?.resp_person_id === this.loginedUserId
+      );
+      if(isCreator) return true
+      const isInApprovalStage = this.plan?.doc_info?.approvalStages?.some((stage) =>
+        stage?.users?.some((user) => user?.userID === this.loginedUserId)
+      );
+
+      return isInApprovalStage;
     }
   },
 };
