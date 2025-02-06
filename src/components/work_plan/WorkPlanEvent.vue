@@ -2682,10 +2682,7 @@ export default {
       return this.data && this.data.length > 0;
     },
     isRespUser() {
-      const isCreator = this.data?.some((event) =>
-        event?.resp_person_id === this.loginedUserId
-      );
-      if(isCreator) return true
+      if(this.data?.length > 0) return true
       const isInApprovalStage = this.plan?.doc_info?.approvalStages?.some((stage) =>
         stage?.users?.some((user) => user?.userID === this.loginedUserId)
       );
