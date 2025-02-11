@@ -722,10 +722,32 @@ const getDiaryReports = async () => {
       student_id: student_id.value,
     };
     const dRes = await planService.getWorkPlanDiaryReports(data);
+
+    const sortOrder = [
+      "workPlan.journalReports",
+      "workPlan.safetyPrecautions",
+      "workPlan.conclusionCounterparty",
+      "workPlan.conclusionHeadDepartment",
+      "workPlan.practiceAssessment"
+    ];
+
     if (dRes && dRes.data && dRes.data.length > 0) {
-      dReports.value = dRes.data;
+      // Сортируем перед присваиванием
+      dReports.value = dRes.data.sort((a, b) => {
+        return sortOrder.indexOf(a.report_name) - sortOrder.indexOf(b.report_name);
+      });
+
       calcCC(); //для заключения контрагента
-      await getFile(0);
+
+      // dReports
+      let ind = 0
+      for (let i= 0; i < dReports.value.length; i++) {
+        if (dReports.value[i].report_name === 'workPlan.journalReports') {
+          ind = i
+        }
+      }
+
+      await getFile(ind);
       // await getRespUsers();
       // loading.value = false;
     } else {
