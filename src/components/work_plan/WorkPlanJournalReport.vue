@@ -739,7 +739,15 @@ const getDiaryReports = async () => {
 
       calcCC(); //для заключения контрагента
 
-      await getFile(0);
+      // dReports
+      let ind = 0
+      for (let i= 0; i < dReports.value.length; i++) {
+        if (dReports.value[i].report_name === 'workPlan.journalReports') {
+          ind = i
+        }
+      }
+
+      await getFile(ind);
       // await getRespUsers();
       // loading.value = false;
     } else {
