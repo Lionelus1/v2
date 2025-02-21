@@ -116,6 +116,17 @@ const routes = [
                 beforeEnter: ifAuthenticated,
             },
             {
+                path: '/ilyas',
+                name: 'Ilyas',
+                component: load('Training'),
+                beforeEnter: ifAuthenticated,
+            },
+            {
+                path: '/add',
+                name: 'AddPage',
+                component: () => import('@/views/AddPage.vue')  // Lazy-load
+            },
+            {
                 path: '/documents/catalog/normdoc',
                 name: '/documents/catalog/normdoc',
                 component: load('documents/catalog/NormativeDocuments'),

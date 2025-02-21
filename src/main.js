@@ -1,4 +1,5 @@
 import {createApp} from 'vue';
+import { createPinia } from 'pinia';
 import router from './router';
 import App from './App.vue';
 import PrimeVue from 'primevue/config';
@@ -72,6 +73,7 @@ import InputIcon from 'primevue/inputicon';
 import CodeHighlight from './AppCodeHighlight';
 import i18n from './locales/index'
 
+import 'primevue/resources/themes/lara-light-blue/theme.css';
 import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeflex/primeflex.css';
@@ -115,6 +117,12 @@ import AddInfo from "@/components/AddInfo.vue";
 import {isMobile} from "@/helpers/HelperUtil";
 import {VueReCaptcha} from "vue-recaptcha-v3";
 
+import AddPage from '@/views/AddPage.vue';
+import Training from '@/components/Training.vue';
+import FileUploadIcon from '@/components/icons/FileUpload.vue';
+import FileListIcon from '@/components/icons/FileList.vue';
+import FileEditor from '@/components/FileEditor.vue';
+
 Date.prototype.toJSON = function () {
     const hoursDiff = this.getHours() - this.getTimezoneOffset() / 60;
     this.setHours(hoursDiff);
@@ -128,9 +136,10 @@ router.beforeEach(function (to, from, next) {
     next();
 });
 const app = createApp(App);
+const pinia = createPinia();
 const emitter = mitt();
 app.provide('emitter', emitter);
-
+app.use(pinia);
 /* eslint-disable */
 app.use(PrimeVue, {
     locale: {
@@ -272,9 +281,18 @@ app.use(VueReCaptcha, {
     siteKey: process.env.VUE_APP_G_RECAPTCHA_SECRET_KEY,
 });
 
+
 app.directive('tooltip', Tooltip);
 app.directive('ripple', Ripple);
 app.directive('code', CodeHighlight);
+
+app.component('AddPage', AddPage);
+app.component('Training', Training);
+app.component('FileUploadIcon', FileUploadIcon);
+app.component('FileListIcon', FileListIcon);
+app.component('FileEditor', FileEditor);
+
+
 
 app.component('Accordion', Accordion);
 app.component('Badge', Badge)
