@@ -181,6 +181,10 @@ console.log("Дата перед сохранением:", formattedDate);
 };
 </script>
 <style scoped>
+.container {
+  display: flex;
+  justify-content: center; 
+}
 .form-container {
   width: 700px; 
   max-width: 100%;
@@ -189,7 +193,7 @@ console.log("Дата перед сохранением:", formattedDate);
   border-radius: 5px;
   box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
   background-color: #fff;
-  width: 100%;
+  width: 80%;
   margin-top: 30px;
 }
 .buttons {
