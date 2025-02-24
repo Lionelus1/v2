@@ -142,7 +142,7 @@ const saveCroppedImage = () => {
   } else {
     console.error("Ошибка: cropper не инициализирован");
   }
-}; // ← Закрыли фигурную скобку здесь!
+};
 
 
 
