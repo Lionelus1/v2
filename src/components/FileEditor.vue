@@ -20,12 +20,10 @@
         <div class="calendar-container">
           <Calendar
             ref="calendarRef"
-            v-model="date"
+            v-model="date"  
             :show-icon="false"
-            dateFormat="dd.mm.yyyy"
-            :minDate="minDate"
-            :maxDate="maxDate"
-            placeholder="дд.мм.гггг"
+            dateFormat="dd.mm.yy"
+            placeholder="дд.мм.гг"
           />
           <Button icon="pi pi-calendar" class="p-button-outlined" @click="openCalendar" />
         </div>    
@@ -94,10 +92,10 @@ export default {
     const calendarRef = ref(null);
 
     const minDate = new Date(2000, 0, 1);
-    const maxDate = new Date();
+    const maxDate = new Date(2100, 11, 31);
 
     const ports = ref([
-      { label: '1111111111111111111111', value: '1111111111111111111111' },
+      { label: 'УЛК', value: 'УЛК' },
       { label: 'Порт 2', value: 'Порт 2' },
       { label: 'Порт 3', value: 'Порт 3' },
       { label: 'port 4', value: 'port 4'},
@@ -162,7 +160,7 @@ console.log("Дата перед сохранением:", formattedDate);
 
   const newItem = {
     name: name.value,
-    port: port.value ? port.value.label : '', // Обновленный код
+    port: port.value ? port.value.label : '', 
     resolution: resolution.value,
     date: formattedDate,
     file: file.value
@@ -172,7 +170,7 @@ console.log("Дата перед сохранением:", formattedDate);
   console.log("Файл перед сохранением:", file.value);
   console.log("Данные в store после сохранения:", store.items);
 
-  router.push('/ilyas'); //  Перенаправление после сохранения
+  router.push('/ilyas'); 
 };
     return {
       name, port, resolution, date, file, cropFile, showCropper, cropper,
@@ -184,10 +182,11 @@ console.log("Дата перед сохранением:", formattedDate);
 </script>
 <style scoped>
 .form-container {
-  width: 700px; /* Делаем такую же ширину, как на первой странице */
+  width: 700px; 
   max-width: 100%;
   padding: 20px;
   border: 1px solid #ccc;
+  border-radius: 5px;
   box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
   background-color: #fff;
   width: 100%;
@@ -200,12 +199,12 @@ console.log("Дата перед сохранением:", formattedDate);
   margin-top: 15px;
 }
 .small-button {
-  width: 150px; /* Делаем кнопки короче */
+  width: 150px; 
 }
 .back-button {
-  display: flex;
+  
   align-items: center;
-  font-size: 18px;
+  font-size: 20px;
   text-decoration: none;
   color: black;
   font-weight: bold;
@@ -223,7 +222,7 @@ console.log("Дата перед сохранением:", formattedDate);
   margin-bottom: 5px;
 }
 .p-fluid > * {
-  margin-bottom: 15px; /* Отступ между полями */
+  margin-bottom: 15px; 
 }
 .p-button-warning {
   width: 150px;
@@ -234,12 +233,12 @@ console.log("Дата перед сохранением:", formattedDate);
 .file-buttons {
   display: flex;
   align-items: center;
-  gap: 15px; /* Расстояние между кнопками */
-  margin-bottom: 15px; /* Отступ перед кнопкой "Сохранить" */
+  gap: 15px; 
+  margin-bottom: 15px; 
 }
 .buttons-container {
   display: flex;
-  justify-content: flex-end; /* Прижимает кнопку "Сохранить" вправо */
+  justify-content: flex-end; 
   margin-top: 15px;
 }
 .save-button {

@@ -66,6 +66,7 @@ const deleteSelected = () => {
 .home-container {
   padding: 20px;
   background: white;
+  border-radius: 5px;
 }
 
 .add-button, .delete-button {

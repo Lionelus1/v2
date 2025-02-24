@@ -119,8 +119,6 @@ import {VueReCaptcha} from "vue-recaptcha-v3";
 
 import AddPage from '@/views/AddPage.vue';
 import Training from '@/components/Training.vue';
-import FileUploadIcon from '@/components/icons/FileUpload.vue';
-import FileListIcon from '@/components/icons/FileList.vue';
 import FileEditor from '@/components/FileEditor.vue';
 
 Date.prototype.toJSON = function () {
@@ -288,8 +286,6 @@ app.directive('code', CodeHighlight);
 
 app.component('AddPage', AddPage);
 app.component('Training', Training);
-app.component('FileUploadIcon', FileUploadIcon);
-app.component('FileListIcon', FileListIcon);
 app.component('FileEditor', FileEditor);
 
 
