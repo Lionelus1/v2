@@ -21,7 +21,7 @@
           <span v-else>Нет файла</span>
         </template>
       </Column>
-      <Column field="port" header="Порт"></Column>
+      <Column field="port" header="Здание"></Column>
       <Column field="resolution" header="Разрешение"></Column>
       <Column field="date" header="Дата"></Column>
     </DataTable>

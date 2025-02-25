@@ -10,176 +10,178 @@
         <label>Название</label>
         <InputText v-model="name" />
 
-        <label>Выберите порт</label>
-        <Dropdown v-model="port" :options="ports" optionLabel="label" />
+        <label>Выберите здание</label>
+        <Dropdown v-model="building" :options="buildings" optionLabel="label" optionValue="value" @change="updateFloors" />
+
+
+
+        <label>Выберите этаж</label>
+      <Dropdown v-model="floor" :options="floors" optionLabel="label" optionValue="value" :disabled="!floors.length" />
+
+
 
         <label>Разрешение</label>
         <InputText v-model="resolution" disabled />
 
-        <label>Выберите дату</label>
-        <div class="calendar-container">
-          <Calendar
-            ref="calendarRef"
-            v-model="date"  
-            :show-icon="false"
-            dateFormat="dd.mm.yy"
-            placeholder="дд.мм.гг"
-          />
-          <Button icon="pi pi-calendar" class="p-button-outlined" @click="openCalendar" />
-        </div>    
+        <label>Дата начала</label>
+        <Calendar v-model="startDate" showTime :showIcon="false" dateFormat="dd.mm.yy" placeholder="дд.мм.гг чч:мм" />
 
-<label>Выберите файл</label>
-<div class="file-buttons">
-  <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" @select="handleFileUpload" />
-  <Button @click="openCropper" :disabled="!file" icon="pi pi-file-edit" label="Редактировать" class="p-button-warning" />
-</div>
+        <label>Дата окончания</label>
+        <Calendar v-model="endDate" showTime :showIcon="false" dateFormat="dd.mm.yy" placeholder="дд.мм.гг чч:мм" />
 
-<div class="buttons-container">
-  <Button @click="saveData" icon="pi pi-save" label="Сохранить" class="p-button-success save-button" />
-</div>
+        <label>Примечание</label>
+        <Textarea v-model="monitorNote" disabled />
+
+        <label>Выберите файл</label>
+        <div class="file-buttons">
+          <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" @select="handleFileUpload" />
+          <Button @click="openCropper" :disabled="!file" icon="pi pi-file-edit" label="Редактировать" class="p-button-warning" />
+        </div>
+
+        <div class="buttons-container">
+          <Button @click="saveData" icon="pi pi-save" label="Сохранить" class="p-button-success save-button" />
+        </div>
       </div>
     </div>
-
-    <!-- Модальное окно кроппера -->
-    <Dialog v-model:visible="showCropper" modal header="Редактирование изображения" :style="{ width: '50vw' }">
-      <div class="cropper-container">
-        <vue-cropper ref="cropper" :src="cropFile" :aspect-ratio="16/9" guides></vue-cropper>
-      </div>
-      <template #footer>
-        <Button @click="saveCroppedImage" icon="pi pi-check" label="Сохранить" class="p-button-success" />
-        <Button @click="showCropper = false" icon="pi pi-times" label="Отмена" class="p-button-secondary" />
-      </template>
-    </Dialog>
   </div>
+
+  <!-- Модальное окно кроппера -->
+  <Dialog v-model:visible="showCropper" modal header="Редактирование изображения" :style="{ width: '50vw' }">
+    <div class="cropper-container">
+      <vue-cropper ref="cropper" :src="cropFile" :aspect-ratio="16/9" guides></vue-cropper>
+    </div>
+    <template #footer>
+      <Button @click="saveCroppedImage" icon="pi pi-check" label="Сохранить" class="p-button-success" />
+      <Button @click="showCropper = false" icon="pi pi-times" label="Отмена" class="p-button-secondary" />
+    </template>
+  </Dialog>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import VueCropper from 'vue-cropperjs';
-import 'cropperjs/dist/cropper.css';
-
-import { useDataStore } from '@/store/dataStore';
 import { Button } from 'primevue/button';
 import { InputText } from 'primevue/inputtext';
 import { Dropdown } from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
 import { FileUpload } from 'primevue/fileupload';
+import Textarea from 'primevue/textarea';
 import { Dialog } from 'primevue/dialog';
-import { watch } from 'vue';
+import VueCropper from 'vue-cropperjs';
+import 'cropperjs/dist/cropper.css';
+import { useDataStore } from '@/store/dataStore';
+
+
+
 export default {
   components: {
-    VueCropper,
     Button,
     InputText,
     Dropdown,
     Calendar,
     FileUpload,
-    Dialog
+    Textarea,
+    Dialog,
+    VueCropper
   },
   setup() {
-    console.log("Компонент FileEditor загружается");
-    console.log("Calendar импортирован:", Calendar);
     const router = useRouter();
     const name = ref('');
-    const port = ref(null);
+    const building = ref(null);
+    const floor = ref(null);
     const resolution = ref('1920×1080');
-    const date = ref(null);
+    const startDate = ref(null);
+    const endDate = ref(null);
+    const monitorNote = ref('');
     const file = ref(null);
     const cropFile = ref(null);
     const showCropper = ref(false);
     const cropper = ref(null);
-    const calendarRef = ref(null);
 
-    const minDate = new Date(2000, 0, 1);
-    const maxDate = new Date(2100, 11, 31);
-
-    const ports = ref([
-      { label: 'УЛК', value: 'УЛК' },
-      { label: 'Порт 2', value: 'Порт 2' },
-      { label: 'Порт 3', value: 'Порт 3' },
-      { label: 'port 4', value: 'port 4'},
+    const buildings = ref([
+      { label: 'УЛК', value: 'ulk' },
+      { label: 'Здание 2', value: 'building2' }
     ]);
 
+    const allFloors = {
+      ulk: [
+        { label: '1 этаж', value: 'floor1' },
+        { label: '2 этаж', value: 'floor2' }
+      ],
+      building2: [
+        { label: '1 этаж', value: 'floor1' },
+        { label: '2 этаж', value: 'floor2' },
+        { label: '3 этаж', value: 'floor3' }
+      ]
+    };
+
+    const floors = ref([]);
+    
+const updateFloors = () => {
+  console.log("Выбрано здание:", building.value);
+  floors.value = allFloors[building.value] || [];
+  console.log("Доступные этажи:", floors.value);
+  floor.value = null; // Сброс этажа
+  monitorNote.value = ''; // Сброс примечания
+};
+
+
+
+const saveCroppedImage = () => {
+  if (!cropper.value) return;
+
+  cropper.value.getCroppedCanvas().toBlob((blob) => {
+    const croppedFile = new File([blob], "cropped-image.jpg", { type: "image/jpeg" });
+    file.value = croppedFile;
+    cropFile.value = URL.createObjectURL(croppedFile);
+    showCropper.value = false;
+  }, "image/jpeg");
+};
     const handleFileUpload = (event) => {
       const uploadedFile = event.files[0];
       if (!uploadedFile) return;
-
-      const fileType = uploadedFile.type;
       file.value = uploadedFile;
-
-      if (fileType.startsWith('image/')) {
-        cropFile.value = URL.createObjectURL(uploadedFile);
-      } else {
-        cropFile.value = null;
-      }
+      cropFile.value = URL.createObjectURL(uploadedFile);
     };
-watch(date, (newVal) => {
-  console.log("Выбранная дата:", newVal);
-});
-const openCalendar = () => {
-  if (calendarRef.value?.$el) {
-    calendarRef.value.$el.querySelector('input').focus();
-  }
-};
-
 
     const openCropper = () => {
       if (file.value && cropFile.value) showCropper.value = true;
     };
-
-const saveCroppedImage = () => {
-  if (cropper.value && cropper.value.getCroppedCanvas()) {
-    cropper.value.getCroppedCanvas().toBlob((blob) => {
-      if (blob) {
-        file.value = new File([blob], "cropped_image.png", { type: "image/png" });
-        cropFile.value = URL.createObjectURL(blob);
-        showCropper.value = false;
-      } else {
-        console.error("Ошибка: не удалось создать Blob из обрезанного изображения");
+    const monitorNotesData = {
+      ulk: {
+        floor1: ['У кабинета 101', 'У кабинета 103', 'У входа'],
+        floor2: ['У кабинета 201', 'Возле лифта']
+      },
+      building2: {
+        floor1: ['В холле', 'Возле стойки администратора'],
+        floor2: ['У окна в коридоре'],
+        floor3: ['У выхода на крышу']
       }
-    });
-  } else {
-    console.error("Ошибка: cropper не инициализирован");
-  }
-};
-
-
-
-    const store = useDataStore();
-
-const saveData = () => {
-  if (!date.value) {
-    console.error("Дата не выбрана!");
-    return;
-  }
-
-const formattedDate = date.value.toLocaleDateString('ru-RU');
-
-console.log("Дата перед сохранением:", formattedDate);
-
-  const newItem = {
-    name: name.value,
-    port: port.value ? port.value.label : '', 
-    resolution: resolution.value,
-    date: formattedDate,
-    file: file.value
-  };
-
-  store.addItem(newItem);
-  console.log("Файл перед сохранением:", file.value);
-  console.log("Данные в store после сохранения:", store.items);
-
-  router.push('/ilyas'); 
-};
-    return {
-      name, port, resolution, date, file, cropFile, showCropper, cropper,
-      minDate, maxDate, openCalendar, calendarRef,
-      handleFileUpload, openCropper, saveCroppedImage, saveData, ports
     };
+    const store = useDataStore();
+    const saveData = () => {
+      store.addItem({
+        name: name.value,
+        building: building.value,
+        floor: floor.value,
+        resolution: resolution.value,
+        file: file.value
+      });
+      router.push('/ilyas');
+    };
+watch(floor, (newFloor) => {
+  if (building.value && newFloor) {
+    monitorNote.value = monitorNotesData[building.value]?.[newFloor]?.join(', ') || '';
+  } else {
+    monitorNote.value = '';
+  }
+});
+    return { name, building, floor, resolution, startDate, endDate, monitorNote, file, cropFile,saveCroppedImage, showCropper, cropper, buildings, floors, updateFloors, handleFileUpload, openCropper, saveData };
   }
 };
 </script>
+
+
 <style scoped>
 .container {
   display: flex;
