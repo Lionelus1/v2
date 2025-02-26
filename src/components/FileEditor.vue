@@ -99,12 +99,12 @@ export default {
     const cropper = ref(null);
 
     const buildings = ref([
-      { label: 'УЛК', value: 'ulk' },
+      { label: 'УЛК', value: 'УЛК' },
       { label: 'Здание 2', value: 'building2' }
     ]);
 
     const allFloors = {
-      ulk: [
+      УЛК: [
         { label: '1 этаж', value: 'floor1' },
         { label: '2 этаж', value: 'floor2' }
       ],
@@ -116,7 +116,7 @@ export default {
     };
 
     const floors = ref([]);
-    
+
 const updateFloors = () => {
   console.log("Выбрано здание:", building.value);
   floors.value = allFloors[building.value] || [];
@@ -148,7 +148,7 @@ const saveCroppedImage = () => {
       if (file.value && cropFile.value) showCropper.value = true;
     };
     const monitorNotesData = {
-      ulk: {
+      УЛК: {
         floor1: ['У кабинета 101', 'У кабинета 103', 'У входа'],
         floor2: ['У кабинета 201', 'Возле лифта']
       },
@@ -160,11 +160,14 @@ const saveCroppedImage = () => {
     };
     const store = useDataStore();
     const saveData = () => {
+      console.log("Сохраняемый этаж:", floor.value);
       store.addItem({
         name: name.value,
         building: building.value,
         floor: floor.value,
         resolution: resolution.value,
+        startDate: startDate.value,
+        endDate: endDate.value,
         file: file.value
       });
       router.push('/ilyas');

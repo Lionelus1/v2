@@ -1,16 +1,44 @@
 import { defineStore } from "pinia";
 import { ref, watch } from "vue";
 
+const allFloors = {
+  УЛК: [
+    { label: '1 этаж', value: 'floor1' },
+    { label: '2 этаж', value: 'floor2' }
+  ],
+  building1: [
+    { value: "floor1", label: "1 этаж" },
+    { value: "floor2", label: "2 этаж" }
+  ],
+  building2: [
+    { value: "floor1", label: "1 этаж" },
+    { value: "floor2", label: "2 этаж" },
+    { value: "floor3", label: "3 этаж" }
+  ],
+  building3: [
+    { value: "floorA", label: "Этаж A" },
+    { value: "floorB", label: "Этаж B" },
+    { value: "floorC", label: "Этаж C" }
+  ]
+};
+
 function loadStoredData() {
   try {
-    const data = JSON.parse(localStorage.getItem("dataStore")) || [];
+    const storedData = localStorage.getItem("dataStore");
+    if (!storedData) return [];
+
+    const data = JSON.parse(storedData);
+    if (!Array.isArray(data)) throw new Error("Неверный формат данных");
+
     return data.map((item, index) => ({
       id: item.id || index + 1,
       name: item.name || "Без названия",
-      fileUrl: item.fileUrl || null,
-      port: item.port || "",
+      fileUrl: item.fileUrl || null, 
+      building: item.building || "",
       resolution: item.resolution || "",
-      date: item.date || "",
+      startDate: item.startDate || "",  
+      endDate: item.endDate || "",  
+      floor: allFloors[item.building]?.find(f => f.value === item.floor)?.label || item.floor,
     }));
   } catch (error) {
     console.error("Ошибка при загрузке данных из localStorage:", error);
@@ -29,6 +57,9 @@ export const useDataStore = defineStore("dataStore", () => {
       newItem.fileUrl = URL.createObjectURL(newItem.file);
     }
 
+    // Сохраняем `label`, а не `value`
+    newItem.floor = allFloors[newItem.building]?.find(f => f.value === newItem.floor)?.label || newItem.floor;
+
     items.value.push(newItem);
     saveToLocalStorage();
   };
@@ -46,7 +77,13 @@ export const useDataStore = defineStore("dataStore", () => {
     }
   };
 
-  watch(items, saveToLocalStorage, { deep: true });
+  watch(
+    items,
+    () => {
+      saveToLocalStorage();
+    },
+    { deep: true }
+  );
 
   return { items, addItem, removeItems };
 });

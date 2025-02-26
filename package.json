@@ -62,6 +62,7 @@
 		"cropperjs": "^1.6.2",
 		"crypto-browserify": "^3.12.0",
 		"crypto-js": "^4.2.0",
+		"date-fns": "^4.1.0",
 		"file-saver": "^2.0.5",
 		"generate-password": "^1.7.1",
 		"howler": "^2.2.3",

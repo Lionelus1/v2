@@ -21,9 +21,19 @@
           <span v-else>Нет файла</span>
         </template>
       </Column>
-      <Column field="port" header="Здание"></Column>
+      <Column field="building" header="Здание"></Column>
+      <Column field="floor" header="Этаж"></Column>
       <Column field="resolution" header="Разрешение"></Column>
-      <Column field="date" header="Дата"></Column>
+      <Column field="startDate" header="Дата начала">
+      <template #body="slotProps">
+        {{ formatDate(slotProps.data.startDate) }}
+      </template>
+    </Column>
+      <Column field="endDate" header="Дата окончания">
+      <template #body="slotProps">
+        {{ formatDate(slotProps.data.endDate) }}
+      </template>
+    </Column>
     </DataTable>
   </div>
 </template>
@@ -34,6 +44,8 @@ import { computed, ref, watchEffect } from 'vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
 
 export default {
   components: {
@@ -46,18 +58,20 @@ export default {
     const items = computed(() => store.items);
     const selectedItems = ref([]);
 
-    // Функция для удаления выбранных элементов
-const deleteSelected = () => {
-  store.removeItems(selectedItems.value.map(item => item.id));
-  selectedItems.value = [];
+    const deleteSelected = () => {
+      store.removeItems(selectedItems.value.map(item => item.id));
+      selectedItems.value = [];
+    };
+    const formatDate = (date) => {
+  if (!date) return "";
+  return format(new Date(date), "dd.MM.yyyy HH:mm", { locale: ru });
 };
-
 
     watchEffect(() => {
       console.log("Обновленные items:", items.value);
     });
 
-    return { items, selectedItems, deleteSelected };
+    return { items, selectedItems, deleteSelected,formatDate };
   }
 };
 </script>
