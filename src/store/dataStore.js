@@ -6,20 +6,11 @@ const allFloors = {
     { label: '1 этаж', value: 'floor1' },
     { label: '2 этаж', value: 'floor2' }
   ],
-  building1: [
-    { value: "floor1", label: "1 этаж" },
-    { value: "floor2", label: "2 этаж" }
-  ],
   building2: [
-    { value: "floor1", label: "1 этаж" },
-    { value: "floor2", label: "2 этаж" },
-    { value: "floor3", label: "3 этаж" }
+    { label: '1 этаж', value: 'floor1' },
+    { label: '2 этаж', value: 'floor2' },
+    { label: '3 этаж', value: 'floor3' }
   ],
-  building3: [
-    { value: "floorA", label: "Этаж A" },
-    { value: "floorB", label: "Этаж B" },
-    { value: "floorC", label: "Этаж C" }
-  ]
 };
 
 function loadStoredData() {

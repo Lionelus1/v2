@@ -100,7 +100,7 @@ export default {
 
     const buildings = ref([
       { label: 'УЛК', value: 'УЛК' },
-      { label: 'Здание 2', value: 'building2' }
+      { label: 'Здание', value: 'Здание' }
     ]);
 
     const allFloors = {
@@ -108,7 +108,7 @@ export default {
         { label: '1 этаж', value: 'floor1' },
         { label: '2 этаж', value: 'floor2' }
       ],
-      building2: [
+      Здание: [
         { label: '1 этаж', value: 'floor1' },
         { label: '2 этаж', value: 'floor2' },
         { label: '3 этаж', value: 'floor3' }
@@ -152,7 +152,7 @@ const saveCroppedImage = () => {
         floor1: ['У кабинета 101', 'У кабинета 103', 'У входа'],
         floor2: ['У кабинета 201', 'Возле лифта']
       },
-      building2: {
+      Здание: {
         floor1: ['В холле', 'Возле стойки администратора'],
         floor2: ['У окна в коридоре'],
         floor3: ['У выхода на крышу']
