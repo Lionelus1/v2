@@ -149,7 +149,7 @@ const saveCroppedImage = () => {
     };
     const monitorNotesData = {
       УЛК: {
-        floor1: ['У кабинета 101', 'У кабинета 103', 'У входа'],
+        floor1: ['У кабинета 101','У входа'],
         floor2: ['У кабинета 201', 'Возле лифта']
       },
       Здание: {
@@ -168,7 +168,8 @@ const saveCroppedImage = () => {
         resolution: resolution.value,
         startDate: startDate.value,
         endDate: endDate.value,
-        file: file.value
+        file: file.value,
+        monitorNote: monitorNote.value,
       });
       router.push('/ilyas');
     };

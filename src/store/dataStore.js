@@ -6,7 +6,7 @@ const allFloors = {
     { label: '1 этаж', value: 'floor1' },
     { label: '2 этаж', value: 'floor2' }
   ],
-  building2: [
+  Здание: [
     { label: '1 этаж', value: 'floor1' },
     { label: '2 этаж', value: 'floor2' },
     { label: '3 этаж', value: 'floor3' }
@@ -30,6 +30,7 @@ function loadStoredData() {
       startDate: item.startDate || "",  
       endDate: item.endDate || "",  
       floor: allFloors[item.building]?.find(f => f.value === item.floor)?.label || item.floor,
+      monitorNote: item.monitorNote || "", // Добавлено поле monitorNote
     }));
   } catch (error) {
     console.error("Ошибка при загрузке данных из localStorage:", error);
@@ -50,6 +51,8 @@ export const useDataStore = defineStore("dataStore", () => {
 
     // Сохраняем `label`, а не `value`
     newItem.floor = allFloors[newItem.building]?.find(f => f.value === newItem.floor)?.label || newItem.floor;
+    
+    newItem.monitorNote = newItem.monitorNote || ""; // Сохранение monitorNote
 
     items.value.push(newItem);
     saveToLocalStorage();
