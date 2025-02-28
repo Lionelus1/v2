@@ -13,21 +13,17 @@
         <label>Выберите здание</label>
         <Dropdown v-model="building" :options="buildings" optionLabel="label" optionValue="value" @change="updateFloors" />
 
-
-
         <label>Выберите этаж</label>
-      <Dropdown v-model="floor" :options="floors" optionLabel="label" optionValue="value" :disabled="!floors.length" />
-
-
+        <Dropdown v-model="floor" :options="floors" optionLabel="label" optionValue="value" :disabled="!floors.length" @change="updateMonitorNote" />
 
         <label>Разрешение</label>
         <InputText v-model="resolution" disabled />
 
         <label>Дата начала</label>
-        <Calendar v-model="startDate" showTime :showIcon="false" dateFormat="dd.mm.yy" placeholder="дд.мм.гг чч:мм" />
+        <Calendar v-model="startDate" showTime dateFormat="dd.mm.yy" placeholder="дд.мм.гг чч:мм" />
 
         <label>Дата окончания</label>
-        <Calendar v-model="endDate" showTime :showIcon="false" dateFormat="dd.mm.yy" placeholder="дд.мм.гг чч:мм" />
+        <Calendar v-model="endDate" showTime dateFormat="dd.mm.yy" placeholder="дд.мм.гг чч:мм" />
 
         <label>Примечание</label>
         <Textarea v-model="monitorNote" disabled />
@@ -37,15 +33,8 @@
           <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" @select="handleFileUpload" />
           <Button @click="openCropper" :disabled="!file" icon="pi pi-file-edit" label="Редактировать" class="p-button-warning" />
         </div>
-
-        <div class="buttons-container">
-          <Button @click="saveData" icon="pi pi-save" label="Сохранить" class="p-button-success save-button" />
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Модальное окно кроппера -->
+ 
+<!-- Модальное окно кроппера -->
   <Dialog v-model:visible="showCropper" modal header="Редактирование изображения" :style="{ width: '50vw' }">
     <div class="cropper-container">
       <vue-cropper ref="cropper" :src="cropFile" :aspect-ratio="16/9" guides></vue-cropper>
@@ -55,135 +44,159 @@
       <Button @click="showCropper = false" icon="pi pi-times" label="Отмена" class="p-button-secondary" />
     </template>
   </Dialog>
+        <div class="buttons-container">
+          <Button @click="saveData" icon="pi pi-save" label="Сохранить" class="p-button-success save-button" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { ref, onMounted, nextTick  } from 'vue';
 import { useRouter } from 'vue-router';
-import { Button } from 'primevue/button';
+import { useDataStore } from '@/store/dataStore';
 import { InputText } from 'primevue/inputtext';
 import { Dropdown } from 'primevue/dropdown';
 import Calendar from 'primevue/calendar';
-import { FileUpload } from 'primevue/fileupload';
 import Textarea from 'primevue/textarea';
-import { Dialog } from 'primevue/dialog';
+import { Button } from 'primevue/button';
+import { FileUpload } from 'primevue/fileupload';
+import Dialog from 'primevue/dialog';
 import VueCropper from 'vue-cropperjs';
-import 'cropperjs/dist/cropper.css';
-import { useDataStore } from '@/store/dataStore';
-
-
-
+import "cropperjs/dist/cropper.css";
 export default {
   components: {
-    Button,
     InputText,
     Dropdown,
     Calendar,
-    FileUpload,
     Textarea,
-    Dialog,
-    VueCropper
+    Button,
+    FileUpload,
+    VueCropper,
   },
-  setup() {
-    const router = useRouter();
-    const name = ref('');
-    const building = ref(null);
-    const floor = ref(null);
-    const resolution = ref('1920×1080');
-    const startDate = ref(null);
-    const endDate = ref(null);
-    const monitorNote = ref('');
-    const file = ref(null);
-    const cropFile = ref(null);
-    const showCropper = ref(false);
-    const cropper = ref(null);
+setup() {
+  const router = useRouter();
+  const store = useDataStore();
+  const name = ref('');
+  const building = ref(null);
+  const floor = ref(null);
+  const resolution = ref('1920×1080');
+  const startDate = ref(null);
+  const endDate = ref(null);
+  const monitorNote = ref('');
+  const file = ref(null);
+  const cropFile = ref(null);
+  const showCropper = ref(false);
+  const cropper = ref(null);
 
-    const buildings = ref([
-      { label: 'УЛК', value: 'УЛК' },
-      { label: 'Здание', value: 'Здание' }
-    ]);
+  const buildings = ref([]);
+  const floors = ref([]);
+ 
+  const fetchBuildings = async () => {
+    try {
+      const response = await fetch('http://localhost:8080/api/buildings');
+      const data = await response.json();
+      buildings.value = data.map((b) => ({
+        label: b.label,
+        value: b.value,
+        floors: b.floors.map((f) => ({
+          label: f.label,
+          value: f.value,
+          notes: f.notes,
+        })),
+      }));
+    } catch (error) {
+      console.error('Ошибка загрузки зданий:', error);
+    }
+  };
+  onMounted(fetchBuildings);
 
-    const allFloors = {
-      УЛК: [
-        { label: '1 этаж', value: 'floor1' },
-        { label: '2 этаж', value: 'floor2' }
-      ],
-      Здание: [
-        { label: '1 этаж', value: 'floor1' },
-        { label: '2 этаж', value: 'floor2' },
-        { label: '3 этаж', value: 'floor3' }
-      ]
-    };
+  const updateFloors = () => {
+    const selectedBuilding = buildings.value.find((b) => b.value === building.value);
+    floors.value = selectedBuilding ? selectedBuilding.floors : [];
+    floor.value = null;
+    monitorNote.value = '';
+  };
 
-    const floors = ref([]);
+  const updateMonitorNote = () => {
+    const selectedBuilding = buildings.value.find((b) => b.value === building.value);
+    const selectedFloor = selectedBuilding?.floors.find((f) => f.value === floor.value);
+    monitorNote.value = selectedFloor?.notes.join(', ') || '';
+  };
 
-const updateFloors = () => {
-  console.log("Выбрано здание:", building.value);
-  floors.value = allFloors[building.value] || [];
-  console.log("Доступные этажи:", floors.value);
-  floor.value = null; // Сброс этажа
-  monitorNote.value = ''; // Сброс примечания
-};
+  const handleFileUpload = (event) => {
+    const uploadedFile = event.files[0];
+    if (!uploadedFile) return;
+    file.value = uploadedFile;
+    cropFile.value = URL.createObjectURL(uploadedFile);
+  };
 
-
-
-const saveCroppedImage = () => {
-  if (!cropper.value) return;
-
-  cropper.value.getCroppedCanvas().toBlob((blob) => {
-    const croppedFile = new File([blob], "cropped-image.jpg", { type: "image/jpeg" });
-    file.value = croppedFile;
-    cropFile.value = URL.createObjectURL(croppedFile);
-    showCropper.value = false;
-  }, "image/jpeg");
-};
-    const handleFileUpload = (event) => {
-      const uploadedFile = event.files[0];
-      if (!uploadedFile) return;
-      file.value = uploadedFile;
-      cropFile.value = URL.createObjectURL(uploadedFile);
-    };
-
-    const openCropper = () => {
-      if (file.value && cropFile.value) showCropper.value = true;
-    };
-    const monitorNotesData = {
-      УЛК: {
-        floor1: ['У кабинета 101','У входа'],
-        floor2: ['У кабинета 201', 'Возле лифта']
-      },
-      Здание: {
-        floor1: ['Возле стойки администратора'],
-        floor2: ['У окна в коридоре'],
-        floor3: ['У выхода на крышу']
+   const openCropper = async () => {
+      if (!file.value || !cropFile.value) return;
+      showCropper.value = false;
+         await nextTick();
+         showCropper.value = true; 
+      if (cropper.value) {
+        cropper.value.replace(cropFile.value);
       }
     };
-    const store = useDataStore();
-    const saveData = () => {
-      console.log("Сохраняемый этаж:", floor.value);
-      store.addItem({
-        name: name.value,
-        building: building.value,
-        floor: floor.value,
-        resolution: resolution.value,
-        startDate: startDate.value,
-        endDate: endDate.value,
-        file: file.value,
-        monitorNote: monitorNote.value,
-      });
-      router.push('/ilyas');
+
+    const saveCroppedImage = () => {
+      if (!cropper.value) return;
+
+      cropper.value.getCroppedCanvas().toBlob((blob) => {
+        if (!blob) return;
+        const croppedFile = new File([blob], "cropped-image.jpg", { type: "image/jpeg" });
+        file.value = croppedFile;
+        cropFile.value = URL.createObjectURL(croppedFile);
+        showCropper.value = false;
+      }, "image/jpeg");
     };
-watch(floor, (newFloor) => {
-  if (building.value && newFloor) {
-    monitorNote.value = monitorNotesData[building.value]?.[newFloor]?.join(', ') || '';
-  } else {
-    monitorNote.value = '';
-  }
-});
-    return { name, building, floor, resolution, startDate, endDate, monitorNote, file, cropFile,saveCroppedImage, showCropper, cropper, buildings, floors, updateFloors, handleFileUpload, openCropper, saveData };
-  }
-};
+
+  const saveData = () => {
+    store.addItem({
+      name: name.value,
+      building: building.value,
+      floor: floor.value,
+      resolution: resolution.value,
+      startDate: startDate.value,
+      endDate: endDate.value,
+      file: file.value,
+      monitorNote: monitorNote.value,
+    });
+    router.push('/ilyas');
+  };
+
+  return {
+    name,
+    building,
+    floor,
+    resolution,
+    startDate,
+    endDate,
+    monitorNote,
+    file,
+    buildings,
+    floors,
+    fetchBuildings,
+    updateFloors,
+    updateMonitorNote,
+    handleFileUpload,
+    saveData,
+    showCropper,
+    cropFile,
+    openCropper,
+    saveCroppedImage,
+    cropper,
+  };
+}
+}
+
 </script>
+
 
 
 <style scoped>
