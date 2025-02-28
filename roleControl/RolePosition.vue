@@ -1,0 +1,475 @@
+<template>
+  <div>
+    <div class="mb-3"
+      style="display: flex; justify-content: space-between; margin-bottom: 20px"
+    >
+      <Button
+        :label="$t('roleControl.givePosRel')"
+        icon="pi pi-plus"
+        class="p-button-success p-mr-2"
+        v-on:click="openSidebar"
+      />
+      <span class="p-input-icon-left mr-2">
+        <InputText
+          type="search"
+          v-model="searchText"
+          :placeholder="$t('common.search')"
+          @keyup.enter="initPositionRels"
+          @click="clearData"
+        />
+        <Button
+          icon="pi pi-search"
+          class="p-ml-1"
+          @click="initPositionRels()"
+        />
+      </span>
+    </div>
+    <DataTable
+      :lazy="true"
+      :value="positionRels"
+      @page="onPage($event)"
+      :totalRecords="total"
+      :paginator="true"
+      paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+      :rowsPerPageOptions="[10, 25, 50]"
+      :currentPageReportTemplate="
+        $t('common.showingRecordsCount', {
+          first: '{first}',
+          last: '{last}',
+          totalRecords: '{totalRecords}',
+        })
+      "
+      :rows="10"
+      :rowHover="true"
+      :loading="loading"
+      responsiveLayout="scroll"
+    >
+      <template #empty> {{ $t("common.noData") }}</template>
+      <template #loading> {{ $t("common.loading") }}</template>
+      <Column :header="$t('common.fullName')">
+        <template #body="slotProps">
+          <span v-if="slotProps.data.user">
+            {{ slotProps.data.user.fullName }}
+          </span>
+        </template>
+      </Column>
+      <Column :header="$t('contact.iin')">
+        <template #body="slotProps">
+          <span v-if="slotProps.data.user">
+            {{ slotProps.data.user.IIN }}
+          </span>
+        </template>
+      </Column>
+      <Column :header="$t('common.organizationName')">
+        <template #body="slotProps">
+          <span v-if="slotProps.data.user.mainPosition">
+            {{ slotProps.data.user.mainPosition.organization.name }}
+          </span>
+        </template>
+      </Column>
+      <Column :header="$t('roleControl.departmentName')">
+        <template #body="slotProps">
+          <span v-if="slotProps.data.department">
+            {{ slotProps.data.department["name" + capitalize(locale)] }}
+          </span>
+        </template>
+      </Column>
+      <Column :header="$t('roleControl.positionName')">
+        <template #body="slotProps">
+          <span v-if="slotProps.data.position">
+            {{ slotProps.data.position["name" + locale] }}
+          </span>
+        </template>
+      </Column>
+      <Column>
+        <template #body="slotProps">
+          <Button
+            icon="pi pi-times"
+            class="p-button-danger"
+            @click="open(slotProps.data)"
+          />
+        </template>
+      </Column>
+    </DataTable>
+    <Sidebar
+      v-model:visible="sidebarVisible"
+      position="right"
+      class="p-sidebar-lg"
+      style="overflow-y: scroll"
+    >
+      <div>
+        <h3 style="">
+          {{ $t("roleControl.givePosRel") }}
+        </h3>
+        <div>
+          <Menubar
+            :model="menu"
+            style="
+              height: 36px;
+              margin-top: -7px;
+              margin-left: -14px;
+              margin-right: -14px;"></Menubar>
+        </div>
+      </div>
+      <div style="padding: 1em">
+        <div style="padding-bottom: 1rem">
+          <label>{{ $t("common.fullName") }}</label>
+          <FindUser :placeholder="$t('requests.params.full_name')" :userType="3" v-model="user" :max="1" style="width: 100%" />
+        </div>
+        <div style="padding-bottom: 1rem">
+          <label>{{ $t("contact.position") }}</label>
+          <br />
+          <Dropdown
+            :placeholder="$t('roleControl.selectPosition')"
+            v-model="position"
+            :filter="true"
+            :showClear="true"
+            :optionLabel="positionLabel"
+            :options="positions"
+            :emptyFilterMessage="$t('roleControl.noResult')"
+            class="dropdown"
+          ></Dropdown>
+        </div>
+        <div style="padding-bottom: 1rem">
+          <label>{{ $t("common.organizationName") }}</label>
+          <br />
+          <Dropdown
+            class="dropdown"
+            v-model="selectedOrganization"
+            :options="organizations"
+            :optionLabel="organizationLabel"
+            :placeholder="$t('roleControl.selectOrg')"
+            :filter="true"
+            :showClear="true"
+            @change="handleSelectedOrgChanged"
+            dataKey="id"
+            :emptyFilterMessage="$t('roleControl.noResult')"
+            @filter="handleFilter"
+          />
+        </div>
+        <div>
+          <label>{{ $t("roleControl.departmentName") }}</label>
+          <br />
+          <Dropdown
+            class="dropdown"
+            v-model="selectedDepartment"
+            :options="departments"
+            :optionLabel="departmentLabel"
+            :placeholder="$t('roleControl.selectDep')"
+            :filter="true"
+            :showClear="true"
+            dataKey="id"
+            :emptyFilterMessage="$t('roleControl.noResult')"
+            @filter="handleFilterDepartment"
+          />
+        </div>
+      </div>
+    </Sidebar>
+    <Dialog
+      v-model:visible="deleteView"
+      :style="{ width: '450px' }"
+      :modal="true"
+      :closable="false"
+    >
+      <div class="confirmation-content">
+        <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem" />
+        <span> {{ $t("common.doYouWantDelete") }}? </span>
+      </div>
+      <template #footer>
+        <Button
+          :label="$t('common.yes')"
+          icon="pi pi-check"
+          class="p-button p-component p-button-success p-mr-2"
+          @click="deletePositionRelation"
+        />
+        <Button
+          :label="$t('common.no')"
+          icon="pi pi-times"
+          class="p-button p-component p-button-danger p-mr-2"
+          @click="close()"
+        />
+      </template>
+    </Dialog>
+  </div>
+</template>
+<script setup>
+import { smartEnuApi, getHeader } from "@/config/config";
+import axios from "axios";
+import { ref, onMounted } from "vue";
+import { useI18n } from "vue-i18n";
+import { useToast } from "primevue/usetoast";
+import FindUser from "@/helpers/FindUser";
+import RoleControlService from "./RoleControlService";
+
+const loading = ref(false);
+const toast = useToast();
+const { t, locale } = useI18n();
+const total = ref(0);
+const sidebarVisible = ref(false);
+const dialogVisible = ref(false);
+const selectedOrganization = ref(null);
+const selectedDepartment = ref(null);
+const user = ref(null);
+const positionRels = ref([]);
+const deleteView = ref(false);
+const getParams = {
+  page: 0,
+  rows: 10,
+  searchText: null,
+};
+const positions = ref([]);
+const position = ref(null);
+const roleControlService = new RoleControlService();
+const orgParams = {
+  searchText: null,
+};
+const departmentRequest = {
+  page: 0,
+  rows: 10,
+  orgId: null,
+  searchText: null,
+};
+const organizations = ref([]);
+const departments = ref([]);
+const forDeleting = ref(null);
+const searchText = ref(null);
+const menu = ref([
+  {
+    label: t("common.save"),
+    icon: "pi pi-fw pi-save",
+    disabled: () => isDisabled(),
+    command: () => savePositionRel(),
+  },
+]);
+
+const isDisabled = () => {
+  return !(
+    selectedOrganization.value !== null &&
+    selectedDepartment.value !== null &&
+    user.value !== null &&
+    position.value !== null
+  );
+};
+
+const capitalize = (str) => {
+  if (typeof str !== "string") return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const clearData = () => {
+  if (!searchText.value) {
+    return;
+  }
+  searchText.value = null;
+};
+
+const close = () => {
+  deleteView.value = false;
+};
+
+const initPositionRels = () => {
+  loading.value = true;
+  if (searchText.value) {
+    getParams.searchText = searchText.value;
+  }
+  axios
+    .post(smartEnuApi + "/positionRel", getParams, {
+      headers: getHeader(),
+    })
+    .then((res) => {
+      positionRels.value = res.data.departments;
+      total.value = res.data.total;
+      loading.value = false;
+    })
+    .catch((err) => {
+      loading.value = false;
+    });
+
+  getParams.searchText = null;
+};
+const initPositions = () => {
+  axios
+    .get(smartEnuApi + "/positionRoleRel/positions", {
+      headers: getHeader(),
+    })
+    .then((res) => {
+      positions.value = res.data;
+    });
+};
+
+const onPage = (event) => {
+  getParams.page = event.page;
+  getParams.rows = event.rows;
+  initPositionRels();
+};
+
+const positionLabel = (item) => {
+  return item["namekz"];
+};
+
+const organizationLabel = (item) => {
+  if (item.bin) {
+    return item.bin + " - " + item["name" + locale.value];
+  } else {
+    return item["name" + locale.value];
+  }
+};
+
+const departmentLabel = (item) => {
+  return item.name;
+};
+
+const getOrganizations = () => {
+  roleControlService
+    .getOrganizations(orgParams)
+    .then((response) => {
+      organizations.value = response.data;
+    });
+};
+
+const handleSelectedOrgChanged = (event) => {
+  if (selectedOrganization.value) {
+    departmentRequest.orgId = selectedOrganization.value.id;
+    departmentRequest.searchText = null;
+    getDepartments();
+  }
+};
+
+const getDepartments = (res) => {
+  departmentRequest.orgId = selectedOrganization.value.id;
+
+  axios
+    .post(smartEnuApi + "/departments", departmentRequest, {
+      headers: getHeader(),
+    })
+    .then((response) => {
+      departments.value = response.data.departments;
+    })
+    .catch((error) => {
+      if (error.response.status == 401) {
+        this.$store.dispatch("logLout");
+      }
+      this.$toast.add({
+        severity: "error",
+        summary: error,
+        life: 3000,
+      });
+    });
+};
+
+const handleFilter = (event) => {
+  if (event.value && event.value.length > 3) {
+    orgParams.searchText = event.value;
+    getOrganizations();
+  } else if (orgParams.searchText.length > 3) {
+    orgParams.searchText = null;
+    getOrganizations();
+  }
+};
+
+const handleFilterDepartment = (event) => {
+  if (event.value && event.value.length > 3) {
+    departmentRequest.searchText = event.value;
+    getDepartments();
+  } else if (
+    departmentRequest.searchText &&
+    departmentRequest.searchText.length > 3
+  ) {
+    departmentRequest.searchText = null;
+    getDepartments();
+  }
+};
+
+const savePositionRel = () => {
+  if (
+    position.value === null ||
+    selectedDepartment.value === null ||
+    user.value === null
+  ) {
+    return;
+  }
+
+  loading.value = true;
+
+  axios
+    .post(
+      smartEnuApi + "/positionRel/create",
+      {
+        position_id: position.value.id,
+        department_id: selectedDepartment.value.id,
+        user_id: user.value[0].userID,
+      },
+      {
+        headers: getHeader(),
+      }
+    )
+    .then((res) => {
+      closeSidebar();
+    })
+  closeSidebar();
+  loading.value = false;
+};
+
+const closeSidebar = () => {
+  position.value = null;
+  user.value = null;
+  selectedDepartment.value = null;
+  selectedOrganization.value = null;
+  sidebarVisible.value = false;
+  initPositionRels();
+};
+const open = (data) => {
+  deleteView.value = true;
+  forDeleting.value = data;
+};
+const openSidebar = () => {
+  sidebarVisible.value = true;
+  initPositions();
+  getOrganizations();
+};
+
+const deletePositionRelation = () => {
+  if (!forDeleting.value) {
+    return;
+  }
+
+  loading.value = true;
+
+  axios
+    .post(
+      smartEnuApi + "/positionRel/delete",
+      {
+        id: forDeleting.value.department_position_user_rel_id,
+      },
+      {
+        headers: getHeader(),
+      }
+    )
+    .then((_) => {
+      initPositionRels();
+    })
+    .catch((_) => {
+      deleteView.value = false;
+      loading.value = false;
+    })
+    .finally(close());
+};
+onMounted(() => {
+  initPositionRels();
+});
+</script>
+
+<style>
+.line-container {
+  padding: 0.5rem;
+  background: #f8f9fa;
+  color: #495057;
+  border: 1px solid #dee2e6;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+}
+.dropdown {
+  width: 100%;
+}
+</style>

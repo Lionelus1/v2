@@ -1,0 +1,227 @@
+<template>
+    <TreeTable class="tree_table p-treetable-sm" :value="guides" :loading="loading" :lazy="true"
+               @nodeExpand="onExpand" @page="onPage" :expandedKeys="expandedKeys" responsiveLayout="scroll"
+               selectionMode="single" v-model:selectionKeys="currentNode" @nodeSelect="navigateToEvent">
+        <Column :expander="true">
+            <template #body="slotProps">
+                    <span v-for="i in slotProps" :key="i" class="menu_text" :class="[{'active': currentNode === i}]">
+                            {{$i18n.locale === 'kz'
+                            ? i.name
+                            : $i18n.locale === 'ru'
+                            ? i.nameRu
+                            : i.nameEn}}
+                </span>
+            </template>
+        </Column>
+        <Column>
+            <template #body="slotProps">
+                <div v-show="role">
+                    <Button type="button" icon="pi pi-fw pi-cog"
+                            @click="onNodeSelect(slotProps.node),toggle('op', $event)"
+                            aria-controls="overlay_panel" class="p-button-link"/>
+                    <OverlayPanel ref="op">
+                        <div class="overlay_buttons">
+                            <!--<Button
+                                    icon="pi pi-plus"
+                                    v-tooltip.bottom="$t('common.add')"
+                                    class="p-button-success"
+                                    @click="createGuide(parent)"/>-->
+                            <Button
+                                    icon="pi pi-pencil"
+                                    v-tooltip.bottom="$t('common.edit')"
+                                    class="p-button-warning"
+                                    @click="editGuide(parent)"/>
+                            <Button
+                                    icon="pi pi-trash"
+                                    v-tooltip.bottom="$t('common.delete')"
+                                    class="p-button-danger"
+                                    @click="delGuide(parent)"/>
+                        </div>
+                    </OverlayPanel>
+                </div>
+            </template>
+        </Column>
+    </TreeTable>
+    <AddGuide v-if="addViewVisible" :is-visible="addViewVisible" :selected-guide="selectedGuide"/>
+    <EditGuide v-if="editViewVisible" :is-visible="editViewVisible" :selected-guide="selectedGuide"/>
+</template>
+
+<script>
+    import api from "@/service/api";
+    import {findRole, getHeader, smartEnuApi} from "@/config/config";
+    import AddGuide from "./AddGuide";
+    import EditGuide from "./EditGuide";
+
+    export default {
+        name: "MenuGuide",
+        components: {AddGuide, EditGuide},
+        data() {
+            return {
+                role: {},
+                bg: "color: black",
+                currentNode: null,
+                findRole: findRole,
+                selectedGuide: {},
+                addViewVisible: false,
+                editViewVisible: false,
+                expandedKeys: {},
+                loading: false,
+                lazyParams: {
+                    parentId: null,
+                },
+                guides: [],
+                parent: null,
+                routePath: this.$route.params.id,
+                parentGuideId: null
+            }
+        },
+        methods: {
+            getGuides(parentId, parent) {
+                this.lazyParams.parentId = parentId
+                this.loading = true
+                api.post("/manual/getManuals", this.lazyParams, {
+                    headers: getHeader(),
+                }).then((response) => {
+                    if (parentId !== null) {
+                        parent.children = response.data.manuals;
+                        parent.children.map(e => {
+                            e.leaf = !e.children;
+                            if (e.pageLink === this.routePath) {
+                                this.currentNode = e;
+                            }
+                        })
+                    } else {
+                        this.guides = response.data.manuals;
+                        this.guides.map(e => {
+                            e.leaf = !e.children;
+                            if (e.pageLink === this.routePath) {
+                                this.currentNode = e;
+                            }
+                        });
+                    }
+
+                    if (this.parentGuideId) {
+                        let parentGuide = this.guides.find(x => x.key === this.parentGuideId);
+                        if (parentGuide) {
+                            this.parentGuideId = null;
+                            this.onExpand(parentGuide)
+                            this.expandedKeys[parentGuide.key] = true;
+                        }
+                    }
+
+                    this.loading = false;
+                }).catch((error) => {
+                    if (error.response.status === 401) {
+                        this.$store.dispatch("logLout");
+                    } else {
+                        this.$toast.add({
+                            severity: "error",
+                            summary: this.$t("smartenu.loadAllNewsError") + ":\n" + error,
+                            life: 3000,
+                        });
+                    }
+                });
+            },
+            toggle(ref, event) {
+                this.$refs[ref].toggle(event);
+            },
+            onNodeSelect(node) {
+                this.parent = node;
+            },
+            createGuide(item) {
+                this.selectedGuide = item;
+                this.addViewVisible = true;
+            },
+            editGuide(item) {
+                this.selectedGuide = item;
+                this.editViewVisible = true;
+            },
+            delGuide(event) {
+                this.$confirm.require({
+                    message: this.$t('common.doYouWantDelete'),
+                    header: this.$t('common.delete'),
+                    icon: 'pi pi-info-circle',
+                    acceptClass: 'p-button-rounded p-button-success',
+                    rejectClass: 'p-button-rounded p-button-danger',
+                    accept: () => {
+                        this.delete(event);
+                    },
+                });
+            },
+            delete(event) {
+                api.post(`/manual/delManual`, {manualId: event.manualId}, {headers: getHeader()})
+                    .then(response => {
+                        this.$toast.add({
+                            severity: "success",
+                            summary: this.$t('common.success'),
+                            life: 3000,
+                        });
+                        this.getGuides(null, null);
+                        this.$router.push({path: '/guide'});
+                    }).catch(error => {
+                    if (error.response && error.response.status === 401) {
+                        this.$store.dispatch("logLout");
+                    } else {
+                        this.$toast.add({
+                            severity: "error",
+                            summary: error,
+                            life: 3000,
+                        });
+                    }
+                });
+            },
+            navigateToEvent(event) {
+                if (!event.children)
+                    this.$router.push({name: 'MainGuide', params: {id: event.pageLink}});
+            },
+            onExpand(node) {
+                this.getGuides(node.key, node)
+            },
+            onPage(event) {
+                this.lazyParams = event;
+                this.getGuides(null, null)
+            },
+        },
+        created() {
+            this.role = this.findRole(null, "manual_moderator");
+        },
+        mounted() {
+            this.getGuides(null, null);
+            this.emitter.on('addViewModalClose', data => {
+                if (data) {
+                    this.addViewVisible = false;
+                    this.getGuides(null, null);
+                }
+            });
+            this.emitter.on('editViewModalClose', data => {
+                if (data) {
+                    this.editViewVisible = false;
+                    this.getGuides(null, null);
+                }
+            });
+            this.emitter.on('expandParentGuide', data => {
+                if (data) {
+                    this.expandedKeys = {};
+                    this.parentGuideId = data;
+
+                }
+            });
+        },
+    }
+</script>
+
+<style lang="scss" scoped>
+    .bg {
+        background: red;
+    }
+
+    .menu_text.active {
+        color: #007bff;
+    }
+
+    .overlay_buttons {
+        width: 80px;
+        display: flex;
+        flex-order-: space-between;
+    }
+</style>
