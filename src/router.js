@@ -123,8 +123,8 @@ const routes = [
             },
             {
                 path: '/add',
-                name: 'AddPage',
-                component: () => import('@/views/AddPage.vue')  // Lazy-load
+                name: 'AddsPage',
+                component: () => import('@/views/AddsPage.vue')  // Lazy-load
             },
             {
                 path: '/documents/catalog/normdoc',

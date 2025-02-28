@@ -117,7 +117,7 @@ import AddInfo from "@/components/AddInfo.vue";
 import {isMobile} from "@/helpers/HelperUtil";
 import {VueReCaptcha} from "vue-recaptcha-v3";
 
-import AddPage from '@/views/AddPage.vue';
+import AddsPage from '@/views/AddsPage.vue';
 import Training from '@/components/Training.vue';
 import FileEditor from '@/components/FileEditor.vue';
 
@@ -284,7 +284,7 @@ app.directive('tooltip', Tooltip);
 app.directive('ripple', Ripple);
 app.directive('code', CodeHighlight);
 
-app.component('AddPage', AddPage);
+app.component('AddsPage', AddsPage);
 app.component('Training', Training);
 app.component('FileEditor', FileEditor);
 
